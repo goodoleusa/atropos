@@ -47,4 +47,4 @@ integrations = ["javascript_log_in_with_replit:2.0.0", "javascript_openrouter_ai
 
 [userenv.shared]
 AI_INTEGRATIONS_OPENROUTER_BASE_URL = "http://localhost:1106/modelfarm/openrouter"
-AI_INTEGRATIONS_OPENROUTER_API_KEY = "_DUMMY_API_KEY_"
+AI_INTEGRATIONS_OPENROUTER_API_KEY = "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"
