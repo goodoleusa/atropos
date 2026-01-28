@@ -14,6 +14,7 @@ interface GameState {
   sessionToken: string;
   username: string;
   synced: boolean;
+  devMode: boolean;
 }
 
 interface GameContextType {
@@ -23,6 +24,7 @@ interface GameContextType {
   setSessionUsername: (name: string) => void;
   syncSession: () => Promise<void>;
   importSession: (token: string) => Promise<boolean>;
+  toggleDevMode: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -43,7 +45,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return { ...parsed, synced: false };
+        return { ...parsed, synced: false, devMode: parsed.devMode || false };
       } catch (e) {
         console.error("Corrupted save file", e);
       }
@@ -52,7 +54,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       inventory: [],
       sessionToken: Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2),
       username: 'Guest',
-      synced: false
+      synced: false,
+      devMode: false
     };
   });
 
