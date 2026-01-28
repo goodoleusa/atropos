@@ -22,6 +22,7 @@ interface GameContextType {
   hasClue: (id: string) => boolean;
   setSessionUsername: (name: string) => void;
   syncSession: () => Promise<void>;
+  importSession: (token: string) => Promise<boolean>;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -154,8 +155,43 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }).catch(console.error);
   };
 
+  const importSession = async (token: string): Promise<boolean> => {
+    try {
+      // Try to fetch the session from server
+      const response = await fetch(`/api/session/${token}`);
+      if (!response.ok) return false;
+      
+      const serverSession = await response.json();
+      
+      // Update local state with imported session
+      setGameState({
+        sessionToken: token,
+        username: serverSession.username || 'Guest',
+        inventory: serverSession.collectedClues?.map((id: string) => ({
+          id,
+          name: `Clue ${id}`,
+          description: 'Imported from session',
+          content: 'Restored from server',
+          foundAt: new Date().toISOString()
+        })) || [],
+        synced: true
+      });
+      
+      toast({
+        title: "SESSION IMPORTED",
+        description: `Restored session with ${serverSession.collectedClues?.length || 0} fragments`,
+        className: "border-teal-500 text-teal-400 bg-black/90 font-mono",
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Failed to import session:', error);
+      return false;
+    }
+  };
+
   return (
-    <GameContext.Provider value={{ gameState, collectClue, hasClue, setSessionUsername, syncSession }}>
+    <GameContext.Provider value={{ gameState, collectClue, hasClue, setSessionUsername, syncSession, importSession }}>
       {children}
     </GameContext.Provider>
   );

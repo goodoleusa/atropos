@@ -7,21 +7,30 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { 
-  LayoutDashboard, 
   Key, 
   Trophy, 
   Terminal, 
-  Users, 
   Plus, 
-  Eye,
   Map,
   QrCode,
   Server,
   Database,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Sparkles,
+  Zap,
+  MessageSquare,
+  Settings,
+  Edit,
+  Trash2,
+  Save,
+  Bug,
+  BookOpen
 } from "lucide-react";
+import { CHAOS_MESSAGES, MYSTICAL_CARDS, TOAST_MESSAGES, UI_TEXT } from "@/config/messages";
 
 interface Clue {
   id: string;
@@ -47,6 +56,14 @@ export default function AdminDashboard() {
   const [newQuest, setNewQuest] = useState<Partial<Quest>>({});
   const [clueDialogOpen, setClueDialogOpen] = useState(false);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
+  const [editingClue, setEditingClue] = useState<Clue | null>(null);
+  const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
+  
+  // Local state for live config editing (these would sync to server/localStorage)
+  const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
+  const [mysticalEnabled, setMysticalEnabled] = useState(MYSTICAL_CARDS.enabled);
+  const [subliminalMessages, setSubliminalMessages] = useState(CHAOS_MESSAGES.subliminal);
+  const [newSubliminal, setNewSubliminal] = useState('');
 
   const { data: clues = [] } = useQuery<Clue[]>({
     queryKey: ['/api/clues'],
@@ -85,6 +102,59 @@ export default function AdminDashboard() {
       setNewQuest({});
     }
   });
+
+  const updateClueMutation = useMutation({
+    mutationFn: (clue: Clue) => 
+      fetch(`/api/clues/${clue.id}`, { 
+        method: 'PATCH', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clue)
+      }).then(r => r.json()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
+      setEditingClue(null);
+    }
+  });
+
+  const deleteClueMutation = useMutation({
+    mutationFn: (id: string) => 
+      fetch(`/api/clues/${id}`, { method: 'DELETE' }).then(r => r.json()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
+    }
+  });
+
+  const updateQuestMutation = useMutation({
+    mutationFn: (quest: Quest) => 
+      fetch(`/api/quests/${quest.id}`, { 
+        method: 'PATCH', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quest)
+      }).then(r => r.json()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
+      setEditingQuest(null);
+    }
+  });
+
+  const deleteQuestMutation = useMutation({
+    mutationFn: (id: string) => 
+      fetch(`/api/quests/${id}`, { method: 'DELETE' }).then(r => r.json()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
+    }
+  });
+
+  const addSubliminalMessage = () => {
+    if (newSubliminal.trim()) {
+      setSubliminalMessages([...subliminalMessages, newSubliminal.trim()]);
+      setNewSubliminal('');
+    }
+  };
+
+  const removeSubliminalMessage = (index: number) => {
+    setSubliminalMessages(subliminalMessages.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="min-h-screen bg-[#050200] text-stone-300 font-mono">
@@ -212,15 +282,24 @@ export default function AdminDashboard() {
 
         {/* Content Management Tabs */}
         <Tabs defaultValue="clues" className="space-y-6">
-          <TabsList className="bg-[#0a0500] border border-amber-900/30">
+          <TabsList className="bg-[#0a0500] border border-amber-900/30 flex-wrap h-auto gap-1 p-1">
             <TabsTrigger value="clues" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Key className="w-4 h-4 mr-2" /> Clues ({clues.length})
             </TabsTrigger>
             <TabsTrigger value="quests" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Trophy className="w-4 h-4 mr-2" /> Quests ({quests.length})
             </TabsTrigger>
+            <TabsTrigger value="messages" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
+              <MessageSquare className="w-4 h-4 mr-2" /> Messages
+            </TabsTrigger>
+            <TabsTrigger value="mystical" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-500">
+              <Sparkles className="w-4 h-4 mr-2" /> Mystical
+            </TabsTrigger>
             <TabsTrigger value="terminal" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Terminal className="w-4 h-4 mr-2" /> Commands
+            </TabsTrigger>
+            <TabsTrigger value="config" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
+              <Settings className="w-4 h-4 mr-2" /> Config
             </TabsTrigger>
           </TabsList>
 
@@ -384,6 +463,155 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
+          {/* Messages Tab */}
+          <TabsContent value="messages">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Chaos/Glitch Messages */}
+              <Card className="bg-[#0a0500] border-amber-900/30">
+                <CardHeader>
+                  <CardTitle className="text-amber-500 font-mono flex items-center gap-2">
+                    <Zap className="w-5 h-5" /> Chaos Overlay Messages
+                  </CardTitle>
+                  <CardDescription className="text-stone-600">
+                    Subliminal messages that flash during glitch effects
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="chaos-enabled" className="text-stone-400">Enable Chaos Overlay</Label>
+                    <Switch 
+                      id="chaos-enabled" 
+                      checked={chaosEnabled} 
+                      onCheckedChange={setChaosEnabled}
+                      data-testid="chaos-toggle"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {subliminalMessages.map((msg, i) => (
+                      <div key={i} className="flex items-center justify-between bg-black/50 p-2 rounded border border-amber-900/20">
+                        <span className="text-amber-500 text-sm font-mono">{msg}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => removeSubliminalMessage(i)}
+                          className="text-red-500 hover:text-red-400 h-6 w-6 p-0"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Input 
+                      placeholder="New subliminal message..."
+                      value={newSubliminal}
+                      onChange={e => setNewSubliminal(e.target.value)}
+                      className="bg-black/50 border-amber-900/30 text-amber-500"
+                      data-testid="new-subliminal-input"
+                    />
+                    <Button onClick={addSubliminalMessage} className="bg-amber-700 hover:bg-amber-600 text-black">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Toast Messages */}
+              <Card className="bg-[#0a0500] border-amber-900/30">
+                <CardHeader>
+                  <CardTitle className="text-amber-500 font-mono flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5" /> Toast Notifications
+                  </CardTitle>
+                  <CardDescription className="text-stone-600">
+                    System notification messages
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="p-3 bg-black/50 rounded border border-amber-900/20">
+                    <p className="text-amber-600 font-bold">{TOAST_MESSAGES.clueAcquired.title}</p>
+                    <p className="text-stone-500">Clue collection notification</p>
+                  </div>
+                  <div className="p-3 bg-black/50 rounded border border-amber-900/20">
+                    <p className="text-amber-600 font-bold">{TOAST_MESSAGES.questComplete.title}</p>
+                    <p className="text-stone-500">Quest completion notification</p>
+                  </div>
+                  <div className="p-3 bg-black/50 rounded border border-red-900/20">
+                    <p className="text-red-500 font-bold">{TOAST_MESSAGES.adminDenied.title}</p>
+                    <p className="text-stone-500">Failed login attempt</p>
+                  </div>
+                  <div className="p-3 bg-black/50 rounded border border-teal-900/20">
+                    <p className="text-teal-500 font-bold">{TOAST_MESSAGES.secretFound.title}</p>
+                    <p className="text-stone-500">Hidden path discovery</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Mystical Cards Tab */}
+          <TabsContent value="mystical">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-orbitron text-purple-400">Mystical Card System</h3>
+                <div className="flex items-center gap-4">
+                  <Label htmlFor="mystical-enabled" className="text-stone-400">Enable Mystical Popups</Label>
+                  <Switch 
+                    id="mystical-enabled" 
+                    checked={mysticalEnabled} 
+                    onCheckedChange={setMysticalEnabled}
+                    data-testid="mystical-toggle"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Tarot Cards */}
+                <Card className="bg-[#0a0500] border-amber-900/30">
+                  <CardHeader>
+                    <CardTitle className="text-amber-500 font-mono">Tarot Cards ({MYSTICAL_CARDS.tarot.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
+                    {MYSTICAL_CARDS.tarot.map((card, i) => (
+                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-amber-900/20">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{card.icon}</span>
+                          <div>
+                            <p className="text-amber-500 text-sm font-bold">{card.name}</p>
+                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{card.hint}</p>
+                          </div>
+                        </div>
+                        <Switch checked={card.enabled} className="scale-75" />
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Zodiac Signs */}
+                <Card className="bg-[#0a0500] border-purple-900/30">
+                  <CardHeader>
+                    <CardTitle className="text-purple-400 font-mono">Zodiac Signs ({MYSTICAL_CARDS.zodiac.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
+                    {MYSTICAL_CARDS.zodiac.map((sign, i) => (
+                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-purple-900/20">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl text-purple-400">{sign.symbol}</span>
+                          <div>
+                            <p className="text-purple-400 text-sm font-bold">{sign.name}</p>
+                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{sign.hint}</p>
+                          </div>
+                        </div>
+                        <Switch checked={sign.enabled} className="scale-75" />
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Terminal Commands Tab */}
           <TabsContent value="terminal">
             <Card className="bg-[#0a0500] border-amber-900/30">
@@ -411,6 +639,172 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* UX Config / Playground Tab */}
+          <TabsContent value="config">
+            <div className="space-y-6">
+              <h3 className="text-lg font-orbitron text-amber-600 flex items-center gap-2">
+                <Settings className="w-5 h-5" /> UX Playground - Visual Effects
+              </h3>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Background Effects */}
+                <Card className="bg-[#0a0500] border-amber-900/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-amber-500 font-mono text-sm">Background Effects</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Gradient Overlay</Label>
+                      <Switch defaultChecked data-testid="gradient-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Scanlines</Label>
+                      <Switch defaultChecked data-testid="scanlines-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Noise Texture</Label>
+                      <Switch data-testid="noise-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Vignette</Label>
+                      <Switch defaultChecked data-testid="vignette-toggle" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Mouse Effects */}
+                <Card className="bg-[#0a0500] border-teal-900/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-teal-400 font-mono text-sm">Mouse Tracking Effects</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Lens Distortion</Label>
+                      <Switch defaultChecked data-testid="lens-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Glow Follow</Label>
+                      <Switch data-testid="glow-follow-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Cursor Trail</Label>
+                      <Switch data-testid="cursor-trail-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Magnetic Buttons</Label>
+                      <Switch data-testid="magnetic-toggle" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Glitch Effects */}
+                <Card className="bg-[#0a0500] border-purple-900/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-purple-400 font-mono text-sm">Glitch & Chaos</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Text Glitch</Label>
+                      <Switch defaultChecked data-testid="text-glitch-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">RGB Split</Label>
+                      <Switch data-testid="rgb-split-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Screen Shake</Label>
+                      <Switch data-testid="shake-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Flicker</Label>
+                      <Switch data-testid="flicker-toggle" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Popup Timing */}
+                <Card className="bg-[#0a0500] border-amber-900/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-amber-500 font-mono text-sm">Popup Timing</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Mystical Card Interval</Label>
+                      <Input type="number" defaultValue="15" className="bg-black/50 border-amber-900/30 text-amber-500 w-20" />
+                      <span className="text-stone-600 text-xs ml-2">seconds</span>
+                    </div>
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Chaos Flash Duration</Label>
+                      <Input type="number" defaultValue="150" className="bg-black/50 border-amber-900/30 text-amber-500 w-20" />
+                      <span className="text-stone-600 text-xs ml-2">ms</span>
+                    </div>
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Quantum Check Interval</Label>
+                      <Input type="number" defaultValue="20" className="bg-black/50 border-amber-900/30 text-amber-500 w-20" />
+                      <span className="text-stone-600 text-xs ml-2">seconds</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Color Palette */}
+                <Card className="bg-[#0a0500] border-amber-900/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-amber-500 font-mono text-sm">Color Palette</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded bg-amber-600 border border-amber-500"></div>
+                      <span className="text-stone-400 text-xs">Primary (Amber)</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded bg-teal-500 border border-teal-400"></div>
+                      <span className="text-stone-400 text-xs">Accent (Teal)</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded bg-purple-500 border border-purple-400"></div>
+                      <span className="text-stone-400 text-xs">Mystical (Purple)</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded bg-red-500 border border-red-400"></div>
+                      <span className="text-stone-400 text-xs">Danger (Red)</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Probability Settings */}
+                <Card className="bg-[#0a0500] border-purple-900/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-purple-400 font-mono text-sm">Event Probability</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Mystical Card Chance</Label>
+                      <Input type="number" defaultValue="8" min="0" max="100" className="bg-black/50 border-amber-900/30 text-amber-500 w-20" />
+                      <span className="text-stone-600 text-xs ml-2">%</span>
+                    </div>
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Chaos Flash Chance</Label>
+                      <Input type="number" defaultValue="3" min="0" max="100" className="bg-black/50 border-amber-900/30 text-amber-500 w-20" />
+                      <span className="text-stone-600 text-xs ml-2">%</span>
+                    </div>
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Quantum Event Chance</Label>
+                      <Input type="number" defaultValue="15" min="0" max="100" className="bg-black/50 border-amber-900/30 text-amber-500 w-20" />
+                      <span className="text-stone-600 text-xs ml-2">%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Save Config Button */}
+              <div className="flex justify-end pt-4">
+                <Button className="bg-teal-600 hover:bg-teal-500 text-black font-bold" data-testid="save-config">
+                  <Save className="w-4 h-4 mr-2" /> Save Configuration
+                </Button>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

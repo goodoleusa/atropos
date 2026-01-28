@@ -276,6 +276,78 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="session" className="space-y-4 mt-4">
+            {/* Current Session Info */}
+            <div className="p-4 bg-teal-950/20 rounded border border-teal-900/30">
+              <h3 className="text-teal-400 font-bold mb-3 flex items-center gap-2">
+                <Key className="w-4 h-4" /> Current Session
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-stone-500">Token:</span>
+                  <code className="text-xs text-teal-400 bg-black/50 px-2 py-1 rounded max-w-[200px] truncate">
+                    {gameState.sessionToken}
+                  </code>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-stone-500">Fragments:</span>
+                  <span className="text-xs text-teal-400">{gameState.inventory.length}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-stone-500">Username:</span>
+                  <span className="text-xs text-teal-400">{gameState.username}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Copy Token */}
+            <Button 
+              onClick={copySessionToken}
+              className="w-full bg-teal-700 hover:bg-teal-600 text-black font-bold"
+              data-testid="copy-session-token"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              COPY SESSION TOKEN
+            </Button>
+
+            {sessionStatus !== 'idle' && (
+              <div className={`p-3 rounded border font-mono text-sm flex items-center gap-2 ${
+                sessionStatus === 'success'
+                  ? 'bg-teal-950/30 border-teal-800/50 text-teal-400' 
+                  : 'bg-red-950/30 border-red-800/50 text-red-400'
+              }`}>
+                {sessionStatus === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                {sessionMessage}
+              </div>
+            )}
+
+            {/* Import Session */}
+            <div className="pt-4 border-t border-stone-800">
+              <h4 className="text-sm text-amber-600 font-bold mb-3">Import Existing Session</h4>
+              <div className="space-y-3">
+                <Input
+                  value={sessionInput}
+                  onChange={(e) => setSessionInput(e.target.value)}
+                  className="bg-black/50 border-amber-900/30 text-amber-500 font-mono"
+                  placeholder="Paste session token here..."
+                  data-testid="session-input"
+                />
+                <Button 
+                  onClick={handleImportSession}
+                  disabled={loading || !sessionInput.trim()}
+                  className="w-full bg-amber-700 hover:bg-amber-600 text-black font-bold"
+                  data-testid="import-session-btn"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {loading ? 'IMPORTING...' : 'IMPORT SESSION'}
+                </Button>
+              </div>
+              <p className="text-xs text-stone-600 mt-2">
+                Importing a session will replace your current progress with the imported session's data.
+              </p>
+            </div>
+          </TabsContent>
+
           <TabsContent value="generate" className="space-y-4 mt-4">
             {/* Action Type Selector */}
             <div className="space-y-2">
