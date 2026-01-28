@@ -10,6 +10,8 @@ import TerminalPage from "@/pages/Terminal";
 import AdminLogin from "@/pages/Admin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import TheVoid from "@/pages/TheVoid";
+import Archive from "@/pages/Archive";
+import Debug from "@/pages/Debug";
 
 function Router() {
   return (
@@ -19,6 +21,8 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={AdminLogin} />
       <Route path="/void" component={TheVoid} />
+      <Route path="/archive" component={Archive} />
+      <Route path="/debug" component={Debug} />
       <Route component={NotFound} />
     </Switch>
   );
