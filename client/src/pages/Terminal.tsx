@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 
 export default function TerminalPage() {
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#050301] flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Background Matrix Rain Effect (Simulated with simple CSS for now, could be canvas later) */}
-      <div className="absolute inset-0 bg-[url('/assets/grid-noise.png')] opacity-20 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('/assets/grid-noise.png')] opacity-10 pointer-events-none mix-blend-color-dodge"></div>
       
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
@@ -16,20 +16,20 @@ export default function TerminalPage() {
       >
         <div className="mb-4 flex items-end justify-between">
             <div>
-                <GlitchText text="SYSTEM_ROOT_ACCESS" as="h1" className="text-2xl md:text-4xl font-bold text-green-600 font-orbitron" />
-                <p className="text-green-800 font-mono text-xs mt-1">WARNING: UNAUTHORIZED ACCESS IS A FEDERAL CRIME</p>
+                <GlitchText text="KERNEL_ACCESS_POINT" as="h1" className="text-2xl md:text-4xl font-bold text-amber-700 font-orbitron" />
+                <p className="text-amber-900/60 font-mono text-xs mt-1">WARNING: UNAUTHORIZED ACCESS WILL BE INCINERATED</p>
             </div>
             <div className="text-right hidden md:block">
-                <div className="text-xs text-red-500 font-mono animate-pulse">CONNECTION: UNSECURE</div>
-                <div className="text-xs text-green-900 font-mono">IP: 192.168.0.X</div>
+                <div className="text-xs text-red-900 font-mono animate-pulse">CONNECTION: UNSTABLE</div>
+                <div className="text-xs text-amber-900/40 font-mono">IP: HIDDEN</div>
             </div>
         </div>
         
         <CustomTerminal />
         
         <div className="mt-8 text-center">
-             <p className="text-gray-600 text-xs font-mono max-w-md mx-auto">
-                "The only winning move is not to play."
+             <p className="text-stone-700 text-xs font-mono max-w-md mx-auto">
+                "The metal remembers what the code forgets."
              </p>
         </div>
       </motion.div>
