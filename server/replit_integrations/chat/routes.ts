@@ -1,6 +1,31 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import OpenAI from "openai";
 import { chatStorage } from "./storage";
+
+// Simple rate limiter for chat routes
+const chatRateLimitStore = new Map<string, { count: number; resetTime: number }>();
+const chatRateLimit = (maxRequests: number, windowMs: number) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const clientId = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+    const key = `${clientId}:${req.path}`;
+    const now = Date.now();
+    
+    const record = chatRateLimitStore.get(key);
+    if (!record || now > record.resetTime) {
+      chatRateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+      return next();
+    }
+    if (record.count >= maxRequests) {
+      return res.status(429).json({ 
+        error: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many chat requests. Please slow down.',
+        retryAfter: Math.ceil((record.resetTime - now) / 1000)
+      });
+    }
+    record.count++;
+    next();
+  };
+};
 
 // Support user's own OpenRouter key (full access) or Replit integration (paid models only)
 // User's key unlocks ALL models including free tier without data policy restrictions
@@ -53,8 +78,8 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
-  // Create new conversation
-  app.post("/api/conversations", async (req: Request, res: Response) => {
+  // Create new conversation (rate limited: 30/min)
+  app.post("/api/conversations", chatRateLimit(30, 60000), async (req: Request, res: Response) => {
     try {
       const { title } = req.body;
       const conversation = await chatStorage.createConversation(title || "New Chat");
@@ -78,9 +103,8 @@ export function registerChatRoutes(app: Express): void {
   });
 
   // Send message and get AI response (streaming)
-  // Note: The model should be configured based on your requirements. 
-  // Use the OpenRouter API to find available models.
-  app.post("/api/conversations/:id/messages", async (req: Request, res: Response) => {
+  // Rate limited: 20 messages per minute per IP
+  app.post("/api/conversations/:id/messages", chatRateLimit(20, 60000), async (req: Request, res: Response) => {
     try {
       const conversationId = parseInt(req.params.id as string);
       const { content, model = "meta-llama/llama-3.3-70b-instruct" } = req.body;
