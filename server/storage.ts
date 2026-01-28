@@ -25,11 +25,15 @@ export interface IStorage {
   getAllClues(): Promise<Clue[]>;
   getClueById(id: string): Promise<Clue | undefined>;
   createClue(clue: InsertClue): Promise<Clue>;
+  updateClue(id: string, updates: Partial<Clue>): Promise<Clue | undefined>;
+  deleteClue(id: string): Promise<boolean>;
   
   // Quests
   getAllQuests(): Promise<Quest[]>;
   getQuestById(id: string): Promise<Quest | undefined>;
   createQuest(quest: InsertQuest): Promise<Quest>;
+  updateQuest(id: string, updates: Partial<Quest>): Promise<Quest | undefined>;
+  deleteQuest(id: string): Promise<boolean>;
   
   // Command Logs
   logCommand(log: InsertCommandLog): Promise<CommandLog>;
@@ -76,6 +80,24 @@ export class DatabaseStorage implements IStorage {
     return newClue;
   }
 
+  async updateClue(id: string, updates: Partial<Clue>): Promise<Clue | undefined> {
+    const [updated] = await db
+      .update(clues)
+      .set(updates)
+      .where(eq(clues.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteClue(id: string): Promise<boolean> {
+    const [deleted] = await db
+      .update(clues)
+      .set({ isActive: false })
+      .where(eq(clues.id, id))
+      .returning();
+    return !!deleted;
+  }
+
   // Quests
   async getAllQuests(): Promise<Quest[]> {
     return await db.select().from(quests).where(eq(quests.isActive, true));
@@ -89,6 +111,24 @@ export class DatabaseStorage implements IStorage {
   async createQuest(quest: InsertQuest): Promise<Quest> {
     const [newQuest] = await db.insert(quests).values(quest).returning();
     return newQuest;
+  }
+
+  async updateQuest(id: string, updates: Partial<Quest>): Promise<Quest | undefined> {
+    const [updated] = await db
+      .update(quests)
+      .set(updates)
+      .where(eq(quests.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteQuest(id: string): Promise<boolean> {
+    const [deleted] = await db
+      .update(quests)
+      .set({ isActive: false })
+      .where(eq(quests.id, id))
+      .returning();
+    return !!deleted;
   }
 
   // Command Logs

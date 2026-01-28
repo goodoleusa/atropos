@@ -107,6 +107,34 @@ export async function registerRoutes(
     }
   });
 
+  // Update a clue
+  app.patch("/api/clues/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const clue = await storage.updateClue(id, updates);
+      if (!clue) {
+        return res.status(404).json({ error: "Clue not found" });
+      }
+      res.json(clue);
+    } catch (error) {
+      console.error("Update clue error:", error);
+      res.status(500).json({ error: "Failed to update clue" });
+    }
+  });
+
+  // Delete a clue
+  app.delete("/api/clues/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteClue(id);
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete clue error:", error);
+      res.status(500).json({ error: "Failed to delete clue" });
+    }
+  });
+
   // Get all available quests
   app.get("/api/quests", async (_req, res) => {
     try {
@@ -135,6 +163,34 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Create quest error:", error);
       res.status(500).json({ error: "Failed to create quest" });
+    }
+  });
+
+  // Update a quest
+  app.patch("/api/quests/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const quest = await storage.updateQuest(id, updates);
+      if (!quest) {
+        return res.status(404).json({ error: "Quest not found" });
+      }
+      res.json(quest);
+    } catch (error) {
+      console.error("Update quest error:", error);
+      res.status(500).json({ error: "Failed to update quest" });
+    }
+  });
+
+  // Delete a quest
+  app.delete("/api/quests/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteQuest(id);
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete quest error:", error);
+      res.status(500).json({ error: "Failed to delete quest" });
     }
   });
 
