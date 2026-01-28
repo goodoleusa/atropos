@@ -25,10 +25,15 @@ export async function registerRoutes(
   // Register chat routes for AI agent
   registerChatRoutes(app);
   
-  // Get or create game session
-  app.post("/api/session", async (req, res) => {
+  // Get or create game session (rate limited: 30/min)
+  app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
     try {
       const { sessionToken, username } = req.body;
+      
+      // Validate session token format
+      if (!validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: 'Invalid session token format' });
+      }
       
       // Try to get existing session
       let session = await storage.getSessionByToken(sessionToken);
@@ -52,10 +57,16 @@ export async function registerRoutes(
     }
   });
 
-  // Update game session
-  app.patch("/api/session/:token", async (req, res) => {
+  // Update game session (rate limited: 60/min)
+  app.patch("/api/session/:token", rateLimit(60, 60000), async (req, res) => {
     try {
       const { token } = req.params;
+      
+      // Validate session token format
+      if (!validateSessionToken(token)) {
+        return res.status(400).json({ error: 'Invalid session token format' });
+      }
+      
       const updates = req.body;
       
       const session = await storage.updateSession(token, updates);
@@ -99,15 +110,22 @@ export async function registerRoutes(
     }
   });
 
-  // Create a new clue
-  app.post("/api/clues", async (req, res) => {
+  // Create a new clue (with validation)
+  app.post("/api/clues", rateLimit(30, 60000), async (req, res) => {
     try {
+      // Validate input
+      const validation = clueSchema.safeParse(req.body);
+      if (!validation.success) {
+        logSecurityEvent('INVALID_CLUE_INPUT', { errors: validation.error.issues });
+        return res.status(400).json({ error: 'Invalid clue data', details: validation.error.issues });
+      }
+      
       const clueData = {
-        id: req.body.id,
-        name: req.body.name,
-        description: req.body.description || '',
-        content: req.body.content || '',
-        location: req.body.location || 'unknown',
+        id: sanitizeInput(validation.data.id),
+        name: sanitizeInput(validation.data.name),
+        description: sanitizeInput(validation.data.description || ''),
+        content: sanitizeInput(req.body.content || ''),
+        location: sanitizeInput(validation.data.location || 'unknown'),
         difficulty: req.body.difficulty || 1,
         isActive: true
       };
@@ -119,12 +137,22 @@ export async function registerRoutes(
     }
   });
 
-  // Update a clue
-  app.patch("/api/clues/:id", async (req, res) => {
+  // Update a clue (with validation)
+  app.patch("/api/clues/:id", rateLimit(30, 60000), async (req, res) => {
     try {
       const { id } = req.params;
-      const updates = req.body;
-      const clue = await storage.updateClue(id, updates);
+      
+      // Sanitize string fields in updates
+      const sanitizedUpdates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body)) {
+        if (typeof value === 'string') {
+          sanitizedUpdates[key] = sanitizeInput(value);
+        } else {
+          sanitizedUpdates[key] = value;
+        }
+      }
+      
+      const clue = await storage.updateClue(id, sanitizedUpdates);
       if (!clue) {
         return res.status(404).json({ error: "Clue not found" });
       }
@@ -158,16 +186,23 @@ export async function registerRoutes(
     }
   });
 
-  // Create a new quest
-  app.post("/api/quests", async (req, res) => {
+  // Create a new quest (with validation)
+  app.post("/api/quests", rateLimit(30, 60000), async (req, res) => {
     try {
+      // Validate input
+      const validation = questSchema.safeParse(req.body);
+      if (!validation.success) {
+        logSecurityEvent('INVALID_QUEST_INPUT', { errors: validation.error.issues });
+        return res.status(400).json({ error: 'Invalid quest data', details: validation.error.issues });
+      }
+      
       const questData = {
-        id: req.body.id,
-        name: req.body.name,
-        description: req.body.description || '',
-        requiredClues: req.body.requiredClues || [],
-        reward: req.body.reward || null,
-        unlocks: req.body.unlocks || null,
+        id: sanitizeInput(validation.data.id),
+        name: sanitizeInput(validation.data.name),
+        description: sanitizeInput(validation.data.description || ''),
+        requiredClues: validation.data.requiredClues || [],
+        reward: validation.data.reward ? sanitizeInput(validation.data.reward) : null,
+        unlocks: validation.data.unlocks ? sanitizeInput(validation.data.unlocks) : null,
         isActive: true
       };
       const quest = await storage.createQuest(questData);
@@ -178,12 +213,22 @@ export async function registerRoutes(
     }
   });
 
-  // Update a quest
-  app.patch("/api/quests/:id", async (req, res) => {
+  // Update a quest (with validation)
+  app.patch("/api/quests/:id", rateLimit(30, 60000), async (req, res) => {
     try {
       const { id } = req.params;
-      const updates = req.body;
-      const quest = await storage.updateQuest(id, updates);
+      
+      // Sanitize string fields in updates
+      const sanitizedUpdates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body)) {
+        if (typeof value === 'string') {
+          sanitizedUpdates[key] = sanitizeInput(value);
+        } else {
+          sanitizedUpdates[key] = value;
+        }
+      }
+      
+      const quest = await storage.updateQuest(id, sanitizedUpdates);
       if (!quest) {
         return res.status(404).json({ error: "Quest not found" });
       }
