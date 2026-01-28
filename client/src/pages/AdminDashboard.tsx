@@ -883,6 +883,151 @@ export default function AdminDashboard() {
               </div>
             </div>
           </TabsContent>
+
+          {/* Campaigns Tab */}
+          <TabsContent value="campaigns">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-orbitron text-teal-400 flex items-center gap-2">
+                  <Rocket className="w-5 h-5" /> Investigation Campaigns
+                </h3>
+                <Badge variant="outline" className="border-teal-600 text-teal-400">
+                  {AGENT_CAMPAIGNS.length} Campaigns
+                </Badge>
+              </div>
+
+              {/* Campaign Categories */}
+              <div className="space-y-4">
+                {CAMPAIGN_CATEGORIES.map(category => (
+                  <Card key={category.id} className="bg-[#0a0500] border-amber-900/30">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-amber-500 font-mono text-sm">{category.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {category.campaigns.map(campaignId => {
+                          const campaign = AGENT_CAMPAIGNS.find(c => c.id === campaignId);
+                          if (!campaign) return null;
+                          return (
+                            <button
+                              key={campaign.id}
+                              onClick={() => setSelectedCampaign(campaign)}
+                              className={`p-3 rounded border text-left transition-all hover:scale-[1.02] ${
+                                selectedCampaign?.id === campaign.id
+                                  ? 'border-teal-500 bg-teal-950/30'
+                                  : 'border-amber-900/30 hover:border-amber-600/50'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xl">{campaign.icon}</span>
+                                <span className="text-amber-500 font-bold text-sm">{campaign.name}</span>
+                              </div>
+                              <p className="text-stone-500 text-xs line-clamp-2">{campaign.description}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className={`text-[10px] ${getDifficultyColor(campaign.difficulty)}`}>
+                                  {campaign.difficulty.toUpperCase()}
+                                </span>
+                                <span className="text-stone-600 text-[10px]">{campaign.estimatedTime}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Selected Campaign Details */}
+              {selectedCampaign && (
+                <Card className="bg-[#0a0500] border-teal-900/50">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-teal-400 font-mono flex items-center gap-2">
+                        <span className="text-2xl">{selectedCampaign.icon}</span>
+                        {selectedCampaign.name}
+                      </CardTitle>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setSelectedCampaign(null)}
+                        className="text-stone-500"
+                      >
+                        Close
+                      </Button>
+                    </div>
+                    <CardDescription className="text-stone-400">
+                      {selectedCampaign.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="text-amber-600 text-sm font-bold mb-2">Objectives</h4>
+                        <ul className="space-y-1">
+                          {selectedCampaign.objectives.map((obj, i) => (
+                            <li key={i} className="text-stone-400 text-xs flex items-center gap-2">
+                              <Target className="w-3 h-3 text-teal-500" /> {obj}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-amber-600 text-sm font-bold mb-2">Tools</h4>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedCampaign.tools.map((tool, i) => (
+                            <Badge key={i} variant="outline" className="text-[10px] border-stone-700 text-stone-400">
+                              {tool}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-amber-600 text-sm font-bold mb-2">Starter Prompt</h4>
+                      <pre className="bg-black/50 p-3 rounded border border-amber-900/20 text-xs text-stone-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                        {selectedCampaign.starterPrompt}
+                      </pre>
+                    </div>
+
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        variant="outline" 
+                        className="border-amber-800 text-amber-500"
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedCampaign.starterPrompt);
+                        }}
+                      >
+                        Copy Prompt
+                      </Button>
+                      <Link href="/terminal">
+                        <Button className="bg-teal-600 hover:bg-teal-500 text-black">
+                          <Play className="w-4 h-4 mr-2" /> Launch Campaign
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Tags Overview */}
+              <Card className="bg-[#0a0500] border-amber-900/30">
+                <CardHeader>
+                  <CardTitle className="text-amber-500 font-mono text-sm">Campaign Tags</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from(new Set(AGENT_CAMPAIGNS.flatMap(c => c.tags))).map(tag => (
+                      <Badge key={tag} variant="outline" className="text-xs border-amber-800 text-amber-400">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
