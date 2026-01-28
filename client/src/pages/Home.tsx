@@ -4,18 +4,20 @@ import { GlitchText } from "@/components/GlitchText";
 import { ChaosOverlay } from "@/components/ChaosOverlay";
 import { ClueItem } from "@/components/ClueItem";
 import { QRCodeModal } from "@/components/QRCodeModal";
+import { AgentChat } from "@/components/AgentChat";
 import { MysticalPopups } from "@/components/MysticalPopups";
 import { QuantumField } from "@/components/QuantumField";
 import { useGame } from "@/hooks/useGameSession";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShieldAlert, Network, Server, Eye, QrCode } from "lucide-react";
+import { ShieldAlert, Network, Server, Eye, QrCode, Bot } from "lucide-react";
 import { motion, useMotionValue } from "framer-motion";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const { gameState } = useGame();
   const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [agentChatOpen, setAgentChatOpen] = useState(false);
   
   // Mouse tracking for "Focus/Hump" effect
   const mouseX = useMotionValue(0);
@@ -218,13 +220,23 @@ export default function Home() {
       <MysticalPopups />
       <QuantumField />
       
-      {/* Floating QR Code Button - Always Visible */}
+      {/* Floating Buttons - QR Code & Agent */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.3 }}
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-6 right-6 z-50 flex flex-col gap-3"
       >
+        {/* Agent Chat Button */}
+        <Button
+          onClick={() => setAgentChatOpen(true)}
+          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50"
+          data-testid="floating-agent-button"
+        >
+          <Bot className="w-6 h-6" />
+        </Button>
+        
+        {/* QR Code Button */}
         <Button
           onClick={() => setQrModalOpen(true)}
           className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30"
@@ -232,10 +244,13 @@ export default function Home() {
         >
           <QrCode className="w-6 h-6" />
         </Button>
-        <span className="absolute -top-8 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
-          Export/Import
+        <span className="absolute -bottom-6 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
+          QR | Agent
         </span>
       </motion.div>
+      
+      {/* Agent Chat Modal */}
+      <AgentChat open={agentChatOpen} onOpenChange={setAgentChatOpen} />
     </div>
   );
 }

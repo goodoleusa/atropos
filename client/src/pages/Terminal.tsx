@@ -2,13 +2,15 @@ import { useState } from "react";
 import { CustomTerminal } from "@/components/CustomTerminal";
 import { GlitchText } from "@/components/GlitchText";
 import { QRCodeModal } from "@/components/QRCodeModal";
+import { AgentChat } from "@/components/AgentChat";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { QrCode, Home } from "lucide-react";
+import { QrCode, Home, Bot } from "lucide-react";
 import { Link } from "wouter";
 
 export default function TerminalPage() {
   const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [agentChatOpen, setAgentChatOpen] = useState(false);
   
   return (
     <div className="min-h-screen bg-[#050301] flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -56,13 +58,23 @@ export default function TerminalPage() {
         </Link>
       </div>
       
-      {/* Floating QR Code Button */}
+      {/* Floating Buttons */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.3 }}
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-6 right-6 z-50 flex flex-col gap-3"
       >
+        {/* Agent Chat Button */}
+        <Button
+          onClick={() => setAgentChatOpen(true)}
+          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50"
+          data-testid="terminal-agent-button"
+        >
+          <Bot className="w-6 h-6" />
+        </Button>
+        
+        {/* QR Code Button */}
         <Button
           onClick={() => setQrModalOpen(true)}
           className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30"
@@ -70,13 +82,16 @@ export default function TerminalPage() {
         >
           <QrCode className="w-6 h-6" />
         </Button>
-        <span className="absolute -top-8 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
-          Session QR
+        <span className="absolute -bottom-6 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
+          QR | Agent
         </span>
       </motion.div>
       
       {/* QR Code Modal */}
       <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
+      
+      {/* Agent Chat Modal */}
+      <AgentChat open={agentChatOpen} onOpenChange={setAgentChatOpen} />
     </div>
   );
 }
