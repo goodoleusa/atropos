@@ -3,11 +3,15 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertGameSessionSchema, insertCommandLogSchema } from "../shared/schema";
 import { generateSessionExportCode, generateSecretCode, decodeQRPayload } from "./qrcode";
+import { registerChatRoutes } from "./replit_integrations/chat";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  
+  // Register chat routes for AI agent
+  registerChatRoutes(app);
   
   // Get or create game session
   app.post("/api/session", async (req, res) => {
@@ -268,9 +272,16 @@ export async function registerRoutes(
       const action = typeof payload === 'string' ? JSON.parse(payload) : payload;
       const actionType = action.type;
       
-      // Log agent execution attempt
-      if (sessionToken) {
-        await storage.logCommand(sessionToken, `[AGENT:${agentId || 'unknown'}] ${actionType}`);
+      // Log agent execution attempt (only if valid sessionToken provided)
+      if (sessionToken && typeof sessionToken === 'string' && sessionToken.length > 0) {
+        try {
+          await storage.logCommand({
+            sessionToken,
+            command: `[AGENT:${agentId || 'unknown'}] ${actionType}`
+          });
+        } catch (logError) {
+          console.error('Failed to log agent command:', logError);
+        }
       }
       
       // Execute based on action type - mirrors real security tool intents

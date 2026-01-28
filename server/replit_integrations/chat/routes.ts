@@ -2,11 +2,28 @@ import type { Express, Request, Response } from "express";
 import OpenAI from "openai";
 import { chatStorage } from "./storage";
 
-// This is using Replit's AI Integrations service, which provides OpenRouter-compatible API access without requiring your own OpenRouter API key.
-const openrouter = new OpenAI({
-  baseURL: process.env.AI_INTEGRATIONS_OPENROUTER_BASE_URL,
-  apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
-});
+// Support user's own OpenRouter key (full access) or Replit integration (paid models only)
+// User's key unlocks ALL models including free tier without data policy restrictions
+function getOpenRouterClient() {
+  if (process.env.OPENROUTER_API_KEY) {
+    console.log("[chat] Using user's OpenRouter API key - full model access");
+    return new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
+      defaultHeaders: {
+        "HTTP-Referer": "https://sysadmin.corp",
+        "X-Title": "SysAdmin Corp NEXUS Agent"
+      }
+    });
+  }
+  console.log("[chat] Using Replit AI Integrations - paid models recommended");
+  return new OpenAI({
+    baseURL: process.env.AI_INTEGRATIONS_OPENROUTER_BASE_URL,
+    apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
+  });
+}
+
+const openrouter = getOpenRouterClient();
 
 export function registerChatRoutes(app: Express): void {
   // Get all conversations
