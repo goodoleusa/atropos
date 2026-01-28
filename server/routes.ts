@@ -375,13 +375,13 @@ export async function registerRoutes(
     }
   });
 
-  // ============================================
-  // AGENT EXECUTION API
-  // QR codes can be given to agents to execute elsewhere in system
-  // ============================================
-  
   // Execute QR payload via agent - supports all action types
-  // Rate limited: 30 requests per minute per IP
+  // This endpoint processes the simulated security actions defined in the QR payloads.
+  // Flow:
+  // 1. Receive encoded payload from client scan.
+  // 2. Validate session token if provided.
+  // 3. Parse action type and execute corresponding game logic (clue discovery, recon, etc).
+  // 4. Return execution results to be displayed in the terminal.
   app.post("/api/agent/execute", rateLimit(30, 60000), async (req, res) => {
     try {
       const { payload, sessionToken, agentId } = req.body;
@@ -527,25 +527,93 @@ export async function registerRoutes(
   });
   
   // Get agent execution schema (for documentation/validation)
+  // This schema provides the structure for QR code payloads that can be scanned or executed.
   app.get("/api/agent/schema", (req, res) => {
     res.json({
-      version: "1.0.0",
+      version: "1.1.0",
       description: "SysAdmin Corp Agent Execution API - QR payloads can be executed here",
+      flow: {
+        step1: "Generate a payload matching one of the action types below.",
+        step2: "Encode the payload as a JSON string and create a QR code (or use /api/qr/secret).",
+        step3: "Scan the QR code via the NEXUS terminal or send to /api/agent/execute.",
+        step4: "The server validates the session and processes the simulated security intent."
+      },
       actions: [
-        { type: 'raw', fields: ['data', 'encoding'], description: 'Raw data injection' },
-        { type: 'beacon', fields: ['callback', 'agent_id', 'interval'], description: 'C2 beacon check-in' },
-        { type: 'exfil', fields: ['target', 'fields', 'dest'], description: 'Data exfiltration' },
-        { type: 'inject', fields: ['payload', 'shell', 'sandbox'], description: 'Code injection' },
-        { type: 'phish', fields: ['redirect', 'spoof', 'capture'], description: 'Credential harvest' },
-        { type: 'dropper', fields: ['artifact', 'autorun'], description: 'Payload dropper' },
-        { type: 'pivot', fields: ['from', 'to', 'tunnel', 'port'], description: 'Network pivot' },
-        { type: 'recon', fields: ['scan', 'targets', 'output'], description: 'Reconnaissance' },
-        { type: 'persist', fields: ['method', 'key', 'value', 'ttl'], description: 'Persistence' },
-        { type: 'crypto', fields: ['cipher', 'data', 'hint'], description: 'Crypto challenge' }
+        { 
+          type: 'raw', 
+          fields: ['data', 'encoding'], 
+          description: 'Raw data injection - used for seeding buffers or passing opaque tokens.',
+          example: { type: 'raw', data: 'SGVsbG8=', encoding: 'base64' }
+        },
+        { 
+          type: 'beacon', 
+          fields: ['callback', 'agentId', 'interval'], 
+          description: 'C2 beacon check-in - simulates an agent checking into a command & control server.',
+          example: { type: 'beacon', callback: 'http://c2.internal', agentId: 'node-01', interval: 30 }
+        },
+        { 
+          type: 'exfil', 
+          fields: ['fields'], 
+          description: 'Data exfiltration - extracts specific session fields (username, clues, token).',
+          example: { type: 'exfil', fields: ['username', 'clues'] }
+        },
+        { 
+          type: 'inject', 
+          fields: ['payload', 'shell', 'sandbox'], 
+          description: 'Code injection - simulates running a script in a specific environment.',
+          example: { type: 'inject', payload: 'whoami', shell: 'bash', sandbox: true }
+        },
+        { 
+          type: 'phish', 
+          fields: ['redirect', 'spoof', 'capture'], 
+          description: 'Credential harvest - simulates a redirect to a fake login page.',
+          example: { type: 'phish', redirect: '/login', spoof: 'Active Directory', capture: ['password'] }
+        },
+        { 
+          type: 'dropper', 
+          fields: ['artifact', 'autorun'], 
+          description: 'Payload dropper - adds a new discovery or clue directly to the player session.',
+          example: { type: 'dropper', artifact: { id: 'secret-key-01' }, autorun: true }
+        },
+        { 
+          type: 'pivot', 
+          fields: ['from', 'to', 'tunnel', 'port'], 
+          description: 'Network pivot - simulates jumping from a compromised host to an internal network.',
+          example: { type: 'pivot', from: 'dmz', to: 'internal-db', port: 5432 }
+        },
+        { 
+          type: 'recon', 
+          fields: ['scan', 'targets'], 
+          description: 'Reconnaissance - enumerates system endpoints, routes, and active sessions.',
+          example: { type: 'recon', scan: 'full', targets: ['/api'] }
+        },
+        { 
+          type: 'persist', 
+          fields: ['method', 'key', 'ttl'], 
+          description: 'Persistence - simulates installing a backdoor via scheduled tasks or registry keys.',
+          example: { type: 'persist', method: 'cron', key: 'backup-task', ttl: 3600 }
+        },
+        { 
+          type: 'crypto', 
+          fields: ['cipher', 'data', 'hint'], 
+          description: 'Crypto challenge - returns a challenge for the player to decode manually or via tools.',
+          example: { type: 'crypto', cipher: 'rot13', data: 'uryyb', hint: 'Basic rotation' }
+        }
       ],
       endpoints: {
-        execute: 'POST /api/agent/execute',
-        schema: 'GET /api/agent/schema'
+        execute: {
+          method: 'POST',
+          path: '/api/agent/execute',
+          body: {
+            payload: "Object or JSON string matching an action type",
+            sessionToken: "Valid player session identifier",
+            agentId: "Optional identifier for the executing agent"
+          }
+        },
+        schema: {
+          method: 'GET',
+          path: '/api/agent/schema'
+        }
       }
     });
   });
