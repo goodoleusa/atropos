@@ -36,9 +36,10 @@ export const ChaosOverlay = () => {
             initial={{ opacity: 0, scale: 1.5 }}
             animate={{ opacity: 0.8, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center z-[100] pointer-events-none"
+            className="fixed inset-0 flex items-center justify-center z-[100] cursor-pointer"
+            onClick={() => setMessage(null)}
           >
-            <h1 className="text-8xl font-black text-amber-600/50 tracking-widest uppercase font-display blur-sm">
+            <h1 className="text-4xl md:text-8xl font-black text-amber-600/50 tracking-widest uppercase font-display blur-sm px-4 text-center">
               {message}
             </h1>
           </motion.div>
