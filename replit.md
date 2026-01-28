@@ -150,6 +150,87 @@ The NEXUS agent is an integrated AI assistant for executing payloads and interac
 - `POST /api/conversations` - Create conversation
 - `POST /api/conversations/:id/messages` - Send message (SSE streaming)
 
+### Agent Campaigns
+The NEXUS agent now features pre-built investigation campaign paths:
+
+**Campaign Config**: `client/src/config/agentCampaigns.ts`
+
+Available campaigns:
+- **Shell Corp Investigation** - OSINT investigation of suspicious corporations
+- **BGP Route Tracing** - Trace IP hops via BGP relationships
+- **Passive Reconnaissance** - Gather intel without touching target
+- **Active Reconnaissance** - Port scanning, service enumeration
+- **Network Topology Mapping** - Map internal network architecture
+- **Threat Hunting** - Hunt for indicators of compromise
+- **Malware Triage** - Static/behavioral malware analysis
+- **Social Engineering Recon** - Build target profiles for SE
+- **Dark Web Intelligence** - Monitor for breaches and leaks
+- **Cryptocurrency Tracing** - Blockchain transaction analysis
+- **Incident Response** - Active IR methodology
+- **Phishing Email Analysis** - Extract IOCs from suspicious emails
+
+Each campaign includes:
+- Difficulty level (beginner/intermediate/advanced/expert)
+- Estimated completion time
+- Tools and techniques used
+- Pre-filled starter prompt
+- Objectives checklist
+
+## Admin Dashboard
+
+### Content Management
+The admin dashboard (`/dashboard`) provides comprehensive content management:
+
+**Tabs Available**:
+- **Clues**: Create, edit, delete game clues with rarity and locations
+- **Quests**: Manage quest chains with required clues and rewards
+- **Messages**: Configure chaos overlay subliminal messages and toast notifications
+- **Mystical**: Toggle and manage tarot cards and zodiac signs
+- **Terminal**: View available terminal commands
+- **Config (UX Playground)**: Tweak visual effects in real-time
+
+**UX Playground Controls**:
+- Background effects (gradient, scanlines, noise, vignette)
+- Mouse tracking effects (lens distortion, glow follow, cursor trail, magnetic buttons)
+- Glitch effects (text glitch, RGB split, screen shake, flicker)
+- Popup timing (mystical card interval, chaos flash duration, quantum check)
+- Event probabilities (mystical card chance, chaos flash chance, quantum event)
+
+## Security Hardening
+
+### Intentionally Vulnerable Design
+This app is an "escape room" style CTF where users are meant to discover hidden paths and secrets, but real attacks are prevented.
+
+**Allowed (Game Mechanics)**:
+- Enumeration of hidden routes (/void, /archive, /debug)
+- Discovery of secret clues and payloads
+- Simulated hacking commands in terminal
+- QR payload execution (sandboxed)
+
+**Protected (Real Security)**:
+- Input sanitization on all write endpoints
+- Rate limiting on critical APIs (agent, QR, chat)
+- CSP headers preventing XSS
+- Session token validation
+- No actual shell execution
+
+### Security Middleware
+**File**: `server/security.ts`
+
+Features:
+- `securityHeaders` - CSP, X-Frame-Options, X-Content-Type-Options
+- `rateLimit(max, windowMs)` - IP-based rate limiting
+- `sanitizeInput` - Strip dangerous HTML/JS
+- `validateSessionToken` - Format validation
+- `clueSchema/questSchema` - Zod validation schemas
+- `logSecurityEvent` - Security event logging
+
+### Rate Limits Applied
+- `/api/agent/execute` - 30 requests/minute
+- `/api/qr/export` - 10 requests/minute
+- `/api/qr/secret` - 10 requests/minute
+- `/api/qr/import` - 20 requests/minute
+
 ## Global Attack Map
 
 ### Live Threat Visualization
