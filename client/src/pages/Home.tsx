@@ -1,17 +1,21 @@
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { GlitchText } from "@/components/GlitchText";
 import { ChaosOverlay } from "@/components/ChaosOverlay";
 import { ClueItem } from "@/components/ClueItem";
+import { QRCodeModal } from "@/components/QRCodeModal";
+import { MysticalPopups } from "@/components/MysticalPopups";
+import { QuantumField } from "@/components/QuantumField";
 import { useGame } from "@/hooks/useGameSession";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShieldAlert, Network, Lock, Server, Eye } from "lucide-react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { ShieldAlert, Network, Server, Eye, QrCode } from "lucide-react";
+import { motion, useMotionValue } from "framer-motion";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const { gameState } = useGame();
+  const [qrModalOpen, setQrModalOpen] = useState(false);
   
   // Mouse tracking for "Focus/Hump" effect
   const mouseX = useMotionValue(0);
@@ -65,7 +69,7 @@ export default function Home() {
               SYS<span className="text-amber-600">ADMIN</span> CORP
             </span>
           </div>
-          <div className="hidden md:flex gap-8 text-sm font-medium text-stone-500">
+          <div className="hidden md:flex gap-6 text-sm font-medium text-stone-500 items-center">
             <a href="#" className="hover:text-amber-500 transition-colors">Services</a>
             <a href="#" className="hover:text-amber-500 transition-colors">About Us</a>
             <div className="flex items-center gap-2">
@@ -77,7 +81,18 @@ export default function Home() {
                 </span>
             </div>
             
-            {/* Hidden clickable area in nav - Easier to find now */}
+            {/* QR Code Tool Button */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setQrModalOpen(true)}
+              className="text-amber-700 hover:text-amber-500 hover:bg-amber-950/30"
+              data-testid="qr-tool-button"
+            >
+              <QrCode className="w-4 h-4" />
+            </Button>
+            
+            {/* Hidden clickable area in nav */}
             <div 
                className="w-4 h-4 cursor-pointer opacity-0 hover:opacity-50 transition-opacity bg-amber-600/50 rounded-full"
                onClick={() => setLocation("/admin")}
@@ -194,6 +209,13 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      
+      {/* QR Code Modal */}
+      <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
+      
+      {/* Mystical & Quantum Systems */}
+      <MysticalPopups />
+      <QuantumField />
     </div>
   );
 }
