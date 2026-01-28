@@ -58,7 +58,7 @@ export const MysticalPopups = () => {
   const handleCollect = () => {
     if (!activeCard) return;
     
-    const clueId = `mystical-${activeCard.type}-${activeCard.data.name.toLowerCase().replace(' ', '-')}`;
+    const clueId = `mystical-${activeCard.type}-${activeCard.data.name.toLowerCase().replace(/\s+/g, '-')}`;
     
     if (!hasClue(clueId)) {
       collectClue({

@@ -37,7 +37,7 @@ const PROBABILITY_EVENTS: ProbabilityEvent[] = [
 ];
 
 export const QuantumField = () => {
-  const { gameState, collectClue, hasClue } = useGame();
+  const { gameState, collectClue } = useGame();
   const [quantumState, setQuantumState] = useState<QuantumState>({
     probability: 0.5,
     collapsed: false,
@@ -46,8 +46,6 @@ export const QuantumField = () => {
   });
   const [activeEvent, setActiveEvent] = useState<ProbabilityEvent | null>(null);
   const [showMeter, setShowMeter] = useState(false);
-  const [fluctuation, setFluctuation] = useState(0);
-
   // Calculate probability modifiers based on player actions
   const calculateModifiers = useCallback(() => {
     const clueCount = gameState.inventory.length;
@@ -63,11 +61,6 @@ export const QuantumField = () => {
   // Quantum fluctuation effect
   useEffect(() => {
     const interval = setInterval(() => {
-      setFluctuation(prev => {
-        const delta = (Math.random() - 0.5) * 0.1;
-        return Math.max(0, Math.min(1, prev + delta));
-      });
-      
       setQuantumState(prev => ({
         ...prev,
         entropy: Math.random(),
