@@ -1,0 +1,394 @@
+export const BOUNTY_RSS_FEEDS = [
+  {
+    id: "hackerone-hacktivity",
+    name: "HackerOne Hacktivity",
+    url: "https://hackerone.com/hacktivity.rss",
+    category: "bug_bounty",
+    platform: "hackerone",
+    icon: "🎯"
+  },
+  {
+    id: "bugcrowd-programs",
+    name: "Bugcrowd Programs",
+    url: "https://bugcrowd.com/programs.rss",
+    category: "bug_bounty",
+    platform: "bugcrowd",
+    icon: "🐛"
+  },
+  {
+    id: "nvd-cve",
+    name: "NVD CVE Feed",
+    url: "https://nvd.nist.gov/feeds/xml/cve/misc/nvd-rss.xml",
+    category: "vulnerability",
+    platform: "nvd",
+    icon: "🔓"
+  },
+  {
+    id: "us-cert",
+    name: "CISA Alerts",
+    url: "https://www.cisa.gov/cybersecurity-advisories/all.xml",
+    category: "vulnerability",
+    platform: "cisa",
+    icon: "🛡️"
+  },
+  {
+    id: "exploit-db",
+    name: "Exploit-DB",
+    url: "https://www.exploit-db.com/rss.xml",
+    category: "vulnerability",
+    platform: "exploit-db",
+    icon: "💉"
+  },
+  {
+    id: "fbi-cyber",
+    name: "FBI Cyber Division",
+    url: "https://www.fbi.gov/feeds/fbi-cyber/rss.xml",
+    category: "cybercrime",
+    platform: "fbi",
+    icon: "🔍"
+  },
+  {
+    id: "europol-cybercrime",
+    name: "Europol Cybercrime",
+    url: "https://www.europol.europa.eu/rss.xml",
+    category: "cybercrime",
+    platform: "europol",
+    icon: "🇪🇺"
+  },
+  {
+    id: "immunefi-web3",
+    name: "Immunefi Web3 Bounties",
+    url: "https://immunefi.com/bounty/feed",
+    category: "bug_bounty",
+    platform: "immunefi",
+    icon: "⛓️"
+  }
+];
+
+export const CYBERCRIME_REWARD_PROGRAMS = [
+  {
+    id: "fbi-most-wanted",
+    name: "FBI Most Wanted Cyber",
+    organization: "FBI",
+    rewards: "Up to $5,000,000",
+    url: "https://www.fbi.gov/wanted/cyber",
+    category: "international",
+    icon: "🇺🇸"
+  },
+  {
+    id: "doj-rewards",
+    name: "DOJ Rewards for Justice",
+    organization: "US Department of Justice",
+    rewards: "Up to $10,000,000",
+    url: "https://rewardsforjustice.net/topics/cybercrime/",
+    category: "international",
+    icon: "⚖️"
+  },
+  {
+    id: "secret-service",
+    name: "Secret Service Cyber Fraud",
+    organization: "US Secret Service",
+    rewards: "Varies",
+    url: "https://www.secretservice.gov/investigation/cyber",
+    category: "financial",
+    icon: "💳"
+  },
+  {
+    id: "interpol-cyber",
+    name: "INTERPOL Cybercrime",
+    organization: "INTERPOL",
+    rewards: "International Cooperation",
+    url: "https://www.interpol.int/Crimes/Cybercrime",
+    category: "international",
+    icon: "🌐"
+  },
+  {
+    id: "ncsc-uk",
+    name: "UK NCSC Vulnerability Disclosure",
+    organization: "UK National Cyber Security Centre",
+    rewards: "Recognition",
+    url: "https://www.ncsc.gov.uk/information/vulnerability-disclosure",
+    category: "government",
+    icon: "🇬🇧"
+  }
+];
+
+export const SECURITY_TOOLS = [
+  {
+    id: "rita",
+    name: "RITA",
+    fullName: "Real Intelligence Threat Analytics",
+    description: "Detect C2 beaconing, DNS tunneling, and long connections through network traffic analysis",
+    url: "https://www.activecountermeasures.com/free-tools/rita/",
+    github: "https://github.com/activecm/rita",
+    category: "threat_hunting",
+    features: [
+      "Beacon Detection",
+      "DNS Tunneling Detection", 
+      "Long Connection Detection",
+      "Threat Intel Feed Checking",
+      "Severity Scoring (Critical/High/Medium/Low)"
+    ],
+    difficulty: "intermediate",
+    icon: "📡"
+  },
+  {
+    id: "cai",
+    name: "CAI",
+    fullName: "Cybersecurity AI Framework",
+    description: "AI-powered pentesting automation with intelligent agents for security testing",
+    url: "https://aliasrobotics.github.io/cai/",
+    github: "https://github.com/aliasrobotics/cai",
+    category: "pentesting",
+    features: [
+      "AI-Powered Pentesting",
+      "Web Pentester Agent",
+      "Prompt Injection Testing",
+      "Session Management",
+      "Multi-Model Support (OpenAI, Ollama)"
+    ],
+    difficulty: "advanced",
+    icon: "🤖"
+  },
+  {
+    id: "lotus",
+    name: "Lotus",
+    fullName: "Dynamic Application Security Testing (DAST)",
+    description: "Fast web security scanner in Rust with Lua scripting for automated vulnerability detection",
+    url: "https://lotus.knas.me/",
+    github: "https://github.com/Zeronleft/lotus",
+    category: "scanning",
+    features: [
+      "Chainable Fluent Lua API",
+      "CSS Selector HTML Parsing",
+      "Multi-Threading Managers",
+      "Built-in Encoding (Base64, URL, HTML)",
+      "Custom HTTP Request Handling"
+    ],
+    difficulty: "intermediate",
+    icon: "🪷"
+  }
+];
+
+export const LEARNING_PATHS = [
+  {
+    id: "threat-hunter",
+    name: "Threat Hunter Path",
+    description: "Learn to detect advanced persistent threats and command-and-control traffic",
+    difficulty: "intermediate",
+    estimatedTime: "40 hours",
+    tools: ["rita", "zeek"],
+    objectives: [
+      { id: 1, title: "Install RITA and Zeek", completed: false },
+      { id: 2, title: "Capture and analyze network traffic", completed: false },
+      { id: 3, title: "Identify beaconing behavior", completed: false },
+      { id: 4, title: "Detect DNS tunneling", completed: false },
+      { id: 5, title: "Integrate threat intelligence feeds", completed: false },
+      { id: 6, title: "Generate threat hunting report", completed: false }
+    ],
+    resources: [
+      { title: "RITA v5 Video Series", url: "https://www.activecountermeasures.com/ritav5-the-video-series/" },
+      { title: "Threat Hunter Community Discord", url: "https://discord.gg/threathunter" }
+    ]
+  },
+  {
+    id: "ai-pentester",
+    name: "AI-Powered Pentesting Path",
+    description: "Leverage AI agents for automated security testing and vulnerability discovery",
+    difficulty: "advanced",
+    estimatedTime: "60 hours",
+    tools: ["cai", "openai", "ollama"],
+    objectives: [
+      { id: 1, title: "Set up CAI environment", completed: false },
+      { id: 2, title: "Configure AI model (OpenAI/Ollama)", completed: false },
+      { id: 3, title: "Run web pentester agent", completed: false },
+      { id: 4, title: "Understand prompt injection risks", completed: false },
+      { id: 5, title: "Create custom security agents", completed: false },
+      { id: 6, title: "Document and report findings", completed: false }
+    ],
+    resources: [
+      { title: "CAI Documentation", url: "https://aliasrobotics.github.io/cai/" },
+      { title: "CAI Examples", url: "https://github.com/aliasrobotics/cai/tree/main/examples" }
+    ]
+  },
+  {
+    id: "web-scanner",
+    name: "Web Security Scanner Path",
+    description: "Build and customize automated web vulnerability scanners with Lua scripting",
+    difficulty: "intermediate",
+    estimatedTime: "30 hours",
+    tools: ["lotus", "lua"],
+    objectives: [
+      { id: 1, title: "Install Lotus scanner", completed: false },
+      { id: 2, title: "Learn Lua scripting basics", completed: false },
+      { id: 3, title: "Write custom scan scripts", completed: false },
+      { id: 4, title: "Use chainable Fluent API", completed: false },
+      { id: 5, title: "Implement custom vulnerability checks", completed: false },
+      { id: 6, title: "Export and analyze results", completed: false }
+    ],
+    resources: [
+      { title: "Lotus Documentation", url: "https://lotus.knas.me/" },
+      { title: "Lotus Scripts Repository", url: "https://github.com/BugBlocker/lotus-scripts" }
+    ]
+  },
+  {
+    id: "bug-bounty-hunter",
+    name: "Bug Bounty Hunter Path",
+    description: "Complete path from reconnaissance to report submission for profitable bug hunting",
+    difficulty: "beginner",
+    estimatedTime: "80 hours",
+    tools: ["lotus", "cai", "rita"],
+    objectives: [
+      { id: 1, title: "Understand bug bounty platforms", completed: false },
+      { id: 2, title: "Set up reconnaissance toolkit", completed: false },
+      { id: 3, title: "Learn common vulnerability types", completed: false },
+      { id: 4, title: "Practice on legal targets (labs)", completed: false },
+      { id: 5, title: "Write professional vulnerability reports", completed: false },
+      { id: 6, title: "Submit first bug bounty report", completed: false }
+    ],
+    resources: [
+      { title: "HackerOne Hacker101", url: "https://www.hacker101.com/" },
+      { title: "PortSwigger Web Security Academy", url: "https://portswigger.net/web-security" }
+    ]
+  }
+];
+
+export const DOSSIER_TEMPLATE = `# THREAT INTELLIGENCE DOSSIER
+
+## Executive Summary
+**Target:** {{target}}
+**Date:** {{date}}
+**Severity:** {{severity}}
+**Status:** {{status}}
+
+---
+
+## 1. Overview
+{{summary}}
+
+---
+
+## 2. Indicators of Compromise (IOCs)
+
+### IP Addresses
+{{#each iocs.ips}}
+- \`{{this}}\`
+{{/each}}
+
+### Domains
+{{#each iocs.domains}}
+- \`{{this}}\`
+{{/each}}
+
+### File Hashes
+{{#each iocs.hashes}}
+- \`{{this}}\`
+{{/each}}
+
+---
+
+## 3. Technical Findings
+
+{{#each findings}}
+### Finding {{@index}}: {{this.title}}
+**Severity:** {{this.severity}}
+**CVSS Score:** {{this.cvss}}
+
+**Description:**
+{{this.description}}
+
+**Proof of Concept:**
+\`\`\`
+{{this.poc}}
+\`\`\`
+
+**Remediation:**
+{{this.remediation}}
+
+---
+{{/each}}
+
+## 4. Attack Chain Analysis
+
+\`\`\`
+{{attackChain}}
+\`\`\`
+
+---
+
+## 5. Tools Used
+{{#each tools}}
+- **{{this.name}}**: {{this.purpose}}
+{{/each}}
+
+---
+
+## 6. Recommendations
+
+1. {{recommendations.immediate}}
+2. {{recommendations.shortTerm}}
+3. {{recommendations.longTerm}}
+
+---
+
+## 7. References
+{{#each references}}
+- [{{this.title}}]({{this.url}})
+{{/each}}
+
+---
+
+**Report Generated by:** SysAdmin Corp NEXUS Platform
+**Classification:** {{classification}}
+**Distribution:** {{distribution}}
+`;
+
+export const REPORT_TEMPLATE_BOUNTY = `# Bug Bounty Vulnerability Report
+
+## Summary
+| Field | Value |
+|-------|-------|
+| **Title** | {{title}} |
+| **Severity** | {{severity}} |
+| **Program** | {{program}} |
+| **Asset** | {{asset}} |
+| **Weakness** | {{weakness}} |
+
+## Description
+{{description}}
+
+## Steps to Reproduce
+{{#each steps}}
+{{@index}}. {{this}}
+{{/each}}
+
+## Proof of Concept
+\`\`\`
+{{poc}}
+\`\`\`
+
+## Impact
+{{impact}}
+
+## Suggested Fix
+{{suggestedFix}}
+
+## Supporting Materials
+{{#each attachments}}
+- {{this}}
+{{/each}}
+
+---
+*Generated with SysAdmin Corp Bug Bounty Report Generator*
+`;
+
+export const IOC_TYPES = [
+  { id: "ip", name: "IP Address", regex: /^(?:\d{1,3}\.){3}\d{1,3}$/, icon: "🌐" },
+  { id: "domain", name: "Domain", regex: /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/, icon: "🔗" },
+  { id: "md5", name: "MD5 Hash", regex: /^[a-fA-F0-9]{32}$/, icon: "🔐" },
+  { id: "sha1", name: "SHA1 Hash", regex: /^[a-fA-F0-9]{40}$/, icon: "🔐" },
+  { id: "sha256", name: "SHA256 Hash", regex: /^[a-fA-F0-9]{64}$/, icon: "🔐" },
+  { id: "url", name: "URL", regex: /^https?:\/\/[^\s]+$/, icon: "🔗" },
+  { id: "email", name: "Email", regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, icon: "📧" },
+  { id: "cve", name: "CVE ID", regex: /^CVE-\d{4}-\d+$/, icon: "⚠️" }
+];

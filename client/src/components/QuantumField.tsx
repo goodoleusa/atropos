@@ -246,9 +246,13 @@ export const QuantumField = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none"
+            className="fixed inset-0 z-[90] flex items-center justify-center p-4 cursor-pointer"
+            onClick={() => setActiveEvent(null)}
           >
-            <div className="bg-[#0a0500]/95 border border-amber-600/50 rounded-lg p-6 max-w-sm backdrop-blur-md shadow-[0_0_50px_rgba(184,115,51,0.2)] pointer-events-auto">
+            <div 
+              className="bg-[#0a0500]/95 border border-amber-600/50 rounded-lg p-4 md:p-6 w-full max-w-sm backdrop-blur-md shadow-[0_0_50px_rgba(184,115,51,0.2)]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="text-center">
                 <motion.div
                   animate={{ 

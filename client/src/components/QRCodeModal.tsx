@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGame } from '@/hooks/useGameSession';
-import { Download, Copy, Upload, QrCode, RefreshCw, Zap, Bot, Play } from 'lucide-react';
+import { Download, Copy, Upload, QrCode, RefreshCw, Zap, Bot, Play, Key, CheckCircle, AlertCircle } from 'lucide-react';
 
 // QR Action Templates - Mirror real security tools with game intents
 // These match real-world CTF/OSINT patterns for authenticity
@@ -79,7 +79,7 @@ interface QRCodeModalProps {
 }
 
 export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
-  const { gameState, collectClue } = useGame();
+  const { gameState, collectClue, importSession } = useGame();
   const [code, setCode] = useState(QR_ACTION_PRESETS[0].template);
   const [selectedPreset, setSelectedPreset] = useState('custom');
   const [qrImage, setQrImage] = useState<string | null>(null);
@@ -87,6 +87,9 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
   const [importCode, setImportCode] = useState('');
   const [importResult, setImportResult] = useState<string | null>(null);
   const [agentResult, setAgentResult] = useState<string | null>(null);
+  const [sessionInput, setSessionInput] = useState('');
+  const [sessionStatus, setSessionStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [sessionMessage, setSessionMessage] = useState('');
 
   const generateQR = async () => {
     setLoading(true);
@@ -207,6 +210,40 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
     navigator.clipboard.writeText(agentPayload);
   };
 
+  const copySessionToken = () => {
+    navigator.clipboard.writeText(gameState.sessionToken);
+    setSessionStatus('success');
+    setSessionMessage('Token copied to clipboard!');
+    setTimeout(() => setSessionStatus('idle'), 2000);
+  };
+
+  const handleImportSession = async () => {
+    if (!sessionInput.trim()) {
+      setSessionStatus('error');
+      setSessionMessage('Please enter a session token');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const success = await importSession(sessionInput.trim());
+      if (success) {
+        setSessionStatus('success');
+        setSessionMessage('Session imported successfully! Refreshing...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        setSessionStatus('error');
+        setSessionMessage('Invalid session token or session not found');
+      }
+    } catch (error) {
+      setSessionStatus('error');
+      setSessionMessage('Failed to import session: ' + String(error));
+    }
+    setLoading(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-2xl">
@@ -221,7 +258,10 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
         </DialogHeader>
 
         <Tabs defaultValue="generate" className="w-full">
-          <TabsList className="bg-amber-950/30 border border-amber-900/30">
+          <TabsList className="bg-amber-950/30 border border-amber-900/30 flex-wrap h-auto">
+            <TabsTrigger value="session" className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-400">
+              <Key className="w-3 h-3 mr-1" /> Session
+            </TabsTrigger>
             <TabsTrigger value="generate" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400">
               Generate
             </TabsTrigger>
