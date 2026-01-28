@@ -136,7 +136,7 @@ export default function PromptBuilder() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <Link href="/">
-            <Button variant="ghost" className="text-amber-600 hover:text-amber-500">
+            <Button variant="ghost" className="text-amber-600 hover:text-amber-500" data-testid="back-button">
               <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
           </Link>
@@ -159,6 +159,7 @@ export default function PromptBuilder() {
                 <button
                   key={step.num}
                   onClick={() => setActiveStep(step.num)}
+                  data-testid={`step-button-${step.num}`}
                   className={`p-3 rounded-lg border transition-all text-left ${
                     activeStep === step.num 
                       ? 'border-amber-600 bg-amber-900/20' 
@@ -192,6 +193,7 @@ export default function PromptBuilder() {
                 key={step.num}
                 value={`step-${step.num}`}
                 onClick={() => setActiveStep(step.num)}
+                data-testid={`tab-step-${step.num}`}
                 className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500"
               >
                 Step {step.num}
@@ -229,6 +231,7 @@ export default function PromptBuilder() {
                           : 'border-amber-900/30 bg-black/30'
                       }`}
                       onClick={() => toggleModule(mod)}
+                      data-testid={`module-toggle-${mod}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -238,7 +241,7 @@ export default function PromptBuilder() {
                             <p className="text-stone-500 text-xs">{moduleDescriptions[mod].desc}</p>
                           </div>
                         </div>
-                        <Switch checked={enabledModules.includes(mod)} />
+                        <Switch checked={enabledModules.includes(mod)} data-testid={`switch-${mod}`} />
                       </div>
                     </div>
                   ))}
@@ -281,6 +284,7 @@ export default function PromptBuilder() {
                       onChange={e => setConversationHistory(e.target.value)}
                       placeholder="User: Can you help me decode this base64?&#10;Agent: Sure! What's the encoded string?&#10;User: SGVsbG8gV29ybGQ=&#10;..."
                       className="bg-black/50 border-amber-900/30 text-stone-300 h-40 text-xs font-mono"
+                      data-testid="textarea-conversation-history"
                     />
                   </div>
                   <div>
@@ -291,6 +295,7 @@ export default function PromptBuilder() {
                       onChange={e => setCompressedContext(e.target.value)}
                       placeholder="[TASK] Decode base64 message from QR&#10;[STATE] {encoded: 'SGVsbG8...', decoded: 'Hello World'}&#10;[HISTORY] • Found QR in /void • Scanned payload&#10;[NEXT] Interpret decoded message"
                       className="bg-black/50 border-teal-900/30 text-teal-400 h-40 text-xs font-mono"
+                      data-testid="textarea-compressed-context"
                     />
                   </div>
                 </div>
@@ -340,6 +345,7 @@ export default function PromptBuilder() {
                     onChange={e => setTaskFocus(e.target.value)}
                     placeholder="Analyze the decoded message 'Hello World' for hidden patterns. Check if it's a hint for the /archive route."
                     className="bg-black/50 border-amber-900/30 text-amber-400 h-24 text-sm"
+                    data-testid="textarea-task-focus"
                   />
                 </div>
 
@@ -349,6 +355,7 @@ export default function PromptBuilder() {
                     size="sm"
                     onClick={() => setTaskFocus('Continue decoding the cipher chain from prior context')}
                     className="border-amber-900/30 text-amber-600 text-xs"
+                    data-testid="button-preset-cipher"
                   >
                     Continue Cipher
                   </Button>
@@ -357,6 +364,7 @@ export default function PromptBuilder() {
                     size="sm"
                     onClick={() => setTaskFocus('Enumerate hidden routes and report findings')}
                     className="border-amber-900/30 text-amber-600 text-xs"
+                    data-testid="button-preset-route"
                   >
                     Route Enum
                   </Button>
@@ -365,6 +373,7 @@ export default function PromptBuilder() {
                     size="sm"
                     onClick={() => setTaskFocus('Execute the pending payload and analyze results')}
                     className="border-amber-900/30 text-amber-600 text-xs"
+                    data-testid="button-preset-payload"
                   >
                     Execute Payload
                   </Button>
@@ -373,6 +382,7 @@ export default function PromptBuilder() {
                     size="sm"
                     onClick={() => setTaskFocus('Summarize all collected clues and suggest next quest')}
                     className="border-amber-900/30 text-amber-600 text-xs"
+                    data-testid="button-preset-clue"
                   >
                     Clue Summary
                   </Button>
@@ -397,12 +407,14 @@ export default function PromptBuilder() {
                   <Button 
                     onClick={generatePrompt}
                     className="bg-amber-700 hover:bg-amber-600 text-black"
+                    data-testid="button-generate-prompt"
                   >
                     <Zap className="w-4 h-4 mr-2" /> Generate System Prompt
                   </Button>
                   <Button 
                     onClick={generateHandoff}
                     className="bg-teal-700 hover:bg-teal-600 text-black"
+                    data-testid="button-generate-handoff"
                   >
                     <ArrowRight className="w-4 h-4 mr-2" /> Generate Handoff Packet
                   </Button>
@@ -417,6 +429,7 @@ export default function PromptBuilder() {
                         size="sm"
                         onClick={() => copyToClipboard(generatedPrompt)}
                         className="text-stone-500 hover:text-amber-500"
+                        data-testid="button-copy-prompt"
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       </Button>
@@ -439,6 +452,7 @@ export default function PromptBuilder() {
                         size="sm"
                         onClick={() => copyToClipboard(generatedHandoff)}
                         className="text-stone-500 hover:text-teal-500"
+                        data-testid="button-copy-handoff"
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       </Button>
