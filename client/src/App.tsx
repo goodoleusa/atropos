@@ -12,6 +12,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import TheVoid from "@/pages/TheVoid";
 import Archive from "@/pages/Archive";
 import Debug from "@/pages/Debug";
+import PromptBuilder from "@/pages/PromptBuilder";
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/void" component={TheVoid} />
       <Route path="/archive" component={Archive} />
       <Route path="/debug" component={Debug} />
+      <Route path="/prompt-builder" component={PromptBuilder} />
       <Route component={NotFound} />
     </Switch>
   );
