@@ -81,15 +81,16 @@ export default function Home() {
                 </span>
             </div>
             
-            {/* QR Code Tool Button */}
+            {/* QR Code Tool Button - More Prominent */}
             <Button 
-              variant="ghost" 
+              variant="outline"
               size="sm"
               onClick={() => setQrModalOpen(true)}
-              className="text-amber-700 hover:text-amber-500 hover:bg-amber-950/30"
+              className="border-amber-700/50 text-amber-600 hover:text-amber-400 hover:bg-amber-950/30 hover:border-amber-500 gap-2"
               data-testid="qr-tool-button"
             >
               <QrCode className="w-4 h-4" />
+              <span className="hidden lg:inline">QR Tools</span>
             </Button>
             
             {/* Hidden clickable area in nav */}
@@ -216,6 +217,25 @@ export default function Home() {
       {/* Mystical & Quantum Systems */}
       <MysticalPopups />
       <QuantumField />
+      
+      {/* Floating QR Code Button - Always Visible */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, duration: 0.3 }}
+        className="fixed bottom-6 right-6 z-50"
+      >
+        <Button
+          onClick={() => setQrModalOpen(true)}
+          className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30"
+          data-testid="floating-qr-button"
+        >
+          <QrCode className="w-6 h-6" />
+        </Button>
+        <span className="absolute -top-8 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
+          Export/Import
+        </span>
+      </motion.div>
     </div>
   );
 }

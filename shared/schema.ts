@@ -67,3 +67,7 @@ export type Quest = typeof quests.$inferSelect;
 export type InsertQuest = z.infer<typeof insertQuestSchema>;
 export type CommandLog = typeof commandLogs.$inferSelect;
 export type InsertCommandLog = z.infer<typeof insertCommandLogSchema>;
+
+// Export auth and chat models
+export * from "./models/auth";
+export * from "./models/chat";
