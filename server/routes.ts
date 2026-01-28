@@ -4,11 +4,23 @@ import { storage } from "./storage";
 import { insertGameSessionSchema, insertCommandLogSchema } from "../shared/schema";
 import { generateSessionExportCode, generateSecretCode, decodeQRPayload } from "./qrcode";
 import { registerChatRoutes } from "./replit_integrations/chat";
+import { 
+  securityHeaders, 
+  rateLimit, 
+  sanitizeInput, 
+  validateSessionToken,
+  clueSchema,
+  questSchema,
+  logSecurityEvent 
+} from "./security";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  
+  // Apply security headers to all responses
+  app.use(securityHeaders);
   
   // Register chat routes for AI agent
   registerChatRoutes(app);
@@ -220,8 +232,8 @@ export async function registerRoutes(
     }
   });
 
-  // Generate QR code for session export
-  app.post("/api/qr/export", async (req, res) => {
+  // Generate QR code for session export (rate limited: 10/min)
+  app.post("/api/qr/export", rateLimit(10, 60000), async (req, res) => {
     try {
       const { sessionToken } = req.body;
       
@@ -243,8 +255,8 @@ export async function registerRoutes(
     }
   });
 
-  // Generate secret QR code (for placing around the app)
-  app.post("/api/qr/secret", async (req, res) => {
+  // Generate secret QR code (rate limited: 10/min)
+  app.post("/api/qr/secret", rateLimit(10, 60000), async (req, res) => {
     try {
       const { secretId, hint } = req.body;
       
@@ -256,8 +268,8 @@ export async function registerRoutes(
     }
   });
 
-  // Import session from QR code
-  app.post("/api/qr/import", async (req, res) => {
+  // Import session from QR code (rate limited: 20/min)
+  app.post("/api/qr/import", rateLimit(20, 60000), async (req, res) => {
     try {
       const { encoded, targetSessionToken } = req.body;
       
@@ -320,9 +332,16 @@ export async function registerRoutes(
   // ============================================
   
   // Execute QR payload via agent - supports all action types
-  app.post("/api/agent/execute", async (req, res) => {
+  // Rate limited: 30 requests per minute per IP
+  app.post("/api/agent/execute", rateLimit(30, 60000), async (req, res) => {
     try {
       const { payload, sessionToken, agentId } = req.body;
+      
+      // Validate session token format
+      if (sessionToken && !validateSessionToken(sessionToken)) {
+        logSecurityEvent('INVALID_SESSION_TOKEN', { ip: req.ip, agentId });
+        return res.status(400).json({ error: 'Invalid session token format' });
+      }
       
       // Parse the payload (can be JSON string or object)
       const action = typeof payload === 'string' ? JSON.parse(payload) : payload;

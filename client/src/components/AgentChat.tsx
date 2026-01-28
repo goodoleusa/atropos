@@ -5,7 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from '@/hooks/useGameSession';
-import { Bot, Send, Loader2, Zap, Terminal, QrCode } from 'lucide-react';
+import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target } from 'lucide-react';
+import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign } from '@/config/agentCampaigns';
 
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
@@ -103,6 +104,8 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const [selectedModel, setSelectedModel] = useState('moonshotai/kimi-k2.5');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [conversationId, setConversationId] = useState<number | null>(null);
+  const [showCampaigns, setShowCampaigns] = useState(true);
+  const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
 
   // Initialize with payload if provided
   useEffect(() => {
@@ -268,23 +271,53 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     { label: 'Help', payload: 'What commands are available in this system?' },
   ];
 
+  const startCampaign = (campaign: Campaign) => {
+    setActiveCampaign(campaign);
+    setShowCampaigns(false);
+    setInput(campaign.starterPrompt);
+  };
+
+  const resetChat = () => {
+    setMessages([]);
+    setConversationId(null);
+    setActiveCampaign(null);
+    setShowCampaigns(true);
+    setInput('');
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-2xl h-[80vh] flex flex-col">
+      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono w-[95vw] max-w-2xl h-[90vh] md:h-[80vh] flex flex-col p-3 md:p-6">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="text-amber-600 font-orbitron flex items-center gap-2">
-            <Bot className="w-5 h-5" />
-            NEXUS AGENT
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-amber-600 font-orbitron flex items-center gap-2 text-sm md:text-base">
+              <Bot className="w-4 h-4 md:w-5 md:h-5" />
+              NEXUS AGENT
+              {activeCampaign && (
+                <span className="text-xs text-teal-400 ml-2 hidden md:inline">
+                  [{activeCampaign.name}]
+                </span>
+              )}
+            </DialogTitle>
+            {messages.length > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={resetChat}
+                className="text-stone-500 hover:text-amber-500 h-7 text-xs"
+              >
+                <ArrowLeft className="w-3 h-3 mr-1" /> New Session
+              </Button>
+            )}
+          </div>
           
-          {/* Model Selector with categories */}
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs text-stone-500">Model:</span>
+          {/* Model Selector - mobile optimized */}
+          <div className="flex flex-wrap items-center gap-2 mt-2">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-8 w-auto min-w-[220px]">
+              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50 max-h-80">
+              <SelectContent className="bg-[#0a0500] border-amber-900/50 max-h-60">
                 {MODEL_LIST.map((model: any) => (
                   model.disabled ? (
                     <div key={model.id} className="text-stone-600 text-[10px] px-2 py-1 font-bold">
@@ -297,41 +330,105 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                       className="text-amber-500 focus:bg-amber-900/30 focus:text-amber-400 text-xs"
                     >
                       <span className="font-mono text-amber-400">[{model.short}]</span> {model.name}
-                      <span className="text-stone-600 ml-1">- {model.desc}</span>
                     </SelectItem>
                   )
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded">
-              Type shortcut in chat: /kimi /nemo /gpt4o
+            <span className="text-[9px] md:text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
+              /kimi /nemo /gpt4o
             </span>
           </div>
         </DialogHeader>
 
         {/* Messages Area */}
-        <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
-          <div className="space-y-4 py-4">
-            {messages.length === 0 && (
-              <div className="text-center text-stone-600 py-8">
-                <Bot className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                <p className="text-sm">NEXUS agent ready.</p>
-                <p className="text-xs mt-2">Send commands, payloads, or ask questions.</p>
+        <ScrollArea className="flex-1 pr-2 md:pr-4" ref={scrollRef}>
+          <div className="space-y-3 md:space-y-4 py-2 md:py-4">
+            {messages.length === 0 && showCampaigns && (
+              <div className="space-y-4">
+                {/* Campaign Header */}
+                <div className="text-center py-2">
+                  <Rocket className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 text-teal-500 opacity-70" />
+                  <p className="text-sm md:text-base text-amber-500 font-bold">Choose a Campaign</p>
+                  <p className="text-[10px] md:text-xs text-stone-500 mt-1">Select an investigation path or start a freeform session</p>
+                </div>
+
+                {/* Campaign Grid - Mobile Optimized */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
+                  {AGENT_CAMPAIGNS.slice(0, 8).map((campaign) => (
+                    <button
+                      key={campaign.id}
+                      onClick={() => startCampaign(campaign)}
+                      className="text-left p-3 bg-black/50 border border-amber-900/20 rounded-lg hover:border-amber-600/50 hover:bg-amber-900/10 transition-all group"
+                      data-testid={`campaign-${campaign.id}`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="text-xl md:text-2xl">{campaign.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-amber-500 font-bold text-xs md:text-sm truncate group-hover:text-amber-400">
+                            {campaign.name}
+                          </p>
+                          <p className="text-stone-500 text-[10px] md:text-xs line-clamp-2 mt-0.5">
+                            {campaign.description}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                            <span className={`text-[9px] md:text-[10px] ${getDifficultyColor(campaign.difficulty)}`}>
+                              {campaign.difficulty.toUpperCase()}
+                            </span>
+                            <span className="text-[9px] md:text-[10px] text-stone-600 flex items-center gap-0.5">
+                              <Clock className="w-2.5 h-2.5" /> {campaign.estimatedTime}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Freeform Option */}
+                <div className="pt-2 border-t border-amber-900/20">
+                  <button
+                    onClick={() => setShowCampaigns(false)}
+                    className="w-full p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg hover:bg-amber-900/30 transition-all text-center"
+                    data-testid="freeform-session"
+                  >
+                    <Terminal className="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-amber-600" />
+                    <p className="text-amber-500 font-bold text-xs md:text-sm">Freeform Session</p>
+                    <p className="text-stone-500 text-[10px] md:text-xs">Start without a campaign template</p>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {messages.length === 0 && !showCampaigns && (
+              <div className="text-center text-stone-600 py-4 md:py-8">
+                <Bot className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-xs md:text-sm">NEXUS agent ready.</p>
+                <p className="text-[10px] md:text-xs mt-1">Send commands, payloads, or ask questions.</p>
                 
                 {/* Quick Actions */}
-                <div className="flex gap-2 justify-center mt-4">
+                <div className="flex gap-2 justify-center mt-3 flex-wrap">
                   {quickActions.map((action, i) => (
                     <Button
                       key={i}
                       variant="outline"
                       size="sm"
                       onClick={() => setInput(action.payload)}
-                      className="border-amber-900/30 text-amber-600 text-xs h-7"
+                      className="border-amber-900/30 text-amber-600 text-[10px] md:text-xs h-6 md:h-7 px-2"
                     >
                       {action.label}
                     </Button>
                   ))}
                 </div>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCampaigns(true)}
+                  className="mt-3 text-stone-500 hover:text-teal-400 text-[10px] md:text-xs"
+                >
+                  <ArrowLeft className="w-3 h-3 mr-1" /> Back to Campaigns
+                </Button>
               </div>
             )}
 
@@ -368,7 +465,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         </ScrollArea>
 
         {/* Input Area */}
-        <div className="flex-shrink-0 border-t border-amber-900/20 pt-4">
+        <div className="flex-shrink-0 border-t border-amber-900/20 pt-2 md:pt-4">
           <div className="flex gap-2">
             <Textarea
               value={input}
@@ -380,17 +477,17 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                 }
               }}
               placeholder="Enter command, payload, or question..."
-              className="bg-black/50 border-amber-900/30 text-amber-500 font-mono resize-none h-20"
+              className="bg-black/50 border-amber-900/30 text-amber-500 font-mono resize-none h-16 md:h-20 text-xs md:text-sm"
             />
             <Button
               onClick={sendMessage}
               disabled={loading || !input.trim()}
-              className="bg-amber-700 hover:bg-amber-600 text-black h-20 w-20"
+              className="bg-amber-700 hover:bg-amber-600 text-black h-16 w-14 md:h-20 md:w-20"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
               ) : (
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4 md:w-5 md:h-5" />
               )}
             </Button>
           </div>
