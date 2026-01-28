@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GameProvider } from "@/hooks/useGameSession";
+import DevModePanel from "@/components/DevModePanel";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
@@ -39,6 +40,7 @@ function App() {
         <GameProvider>
           <Toaster />
           <Router />
+          <DevModePanel />
         </GameProvider>
       </TooltipProvider>
     </QueryClientProvider>

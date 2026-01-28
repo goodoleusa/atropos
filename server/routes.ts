@@ -618,5 +618,175 @@ export async function registerRoutes(
     });
   });
 
+  // ============================================================================
+  // CLIENT INFO & ADMIN ESCALATION ENDPOINTS
+  // ============================================================================
+
+  // In-memory storage for escalations (in production, use database)
+  const escalationStore: Map<string, any> = new Map();
+  const metricsStore: Map<string, any> = new Map();
+
+  // Get client info (IP, user agent) for escalation purposes
+  // Note: This endpoint is only called during escalation, not routinely
+  app.get("/api/client-info", (req, res) => {
+    // Only allow if referred from same origin (basic protection)
+    const referer = req.headers['referer'] || '';
+    const host = req.headers['host'] || '';
+    if (!referer.includes(host) && process.env.NODE_ENV === 'production') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    
+    const ip = req.headers['x-forwarded-for'] || 
+               req.headers['x-real-ip'] || 
+               req.socket.remoteAddress || 
+               'unknown';
+    
+    res.json({
+      ip: Array.isArray(ip) ? ip[0] : ip,
+      userAgent: req.headers['user-agent'] || 'unknown',
+      timestamp: Date.now()
+    });
+  });
+
+  // Admin escalation endpoint - stores FULL context server-side
+  app.post("/api/admin/escalations", rateLimit(10, 60000), async (req, res) => {
+    try {
+      const escalation = req.body;
+      
+      // Store full escalation data server-side
+      const serverRecord = {
+        ...escalation,
+        receivedAt: Date.now(),
+        serverIp: req.socket.remoteAddress,
+        reviewed: false,
+        feedback: null
+      };
+      
+      escalationStore.set(escalation.id, serverRecord);
+      
+      // Log escalation for monitoring
+      logSecurityEvent('escalation', {
+        id: escalation.id,
+        category: escalation.alert?.category || 'unknown',
+        severity: escalation.alert?.severity || 'warning',
+        ipAddress: escalation.userContext?.ipAddress || 'unknown',
+        requiresImmediate: escalation.alert?.requiresImmediateReview || false
+      });
+      
+      // Critical alerts get extra logging
+      if (escalation.alert?.requiresImmediateReview) {
+        console.error('[CRITICAL ESCALATION]', {
+          id: escalation.id,
+          category: escalation.alert.category,
+          confidence: escalation.alert.confidence,
+          triggerPatterns: escalation.alert.triggerPatterns
+        });
+      }
+      
+      res.json({ 
+        success: true, 
+        escalationId: escalation.id,
+        stored: true,
+        message: 'Escalation stored for admin review'
+      });
+    } catch (error) {
+      console.error("Escalation error:", error);
+      res.status(500).json({ error: "Failed to store escalation" });
+    }
+  });
+
+  // Get pending escalations for admin dashboard
+  // In production, add authentication middleware here
+  app.get("/api/admin/escalations", async (req, res) => {
+    try {
+      const pending = Array.from(escalationStore.values())
+        .filter(e => !e.reviewed)
+        .sort((a, b) => {
+          // Priority: critical first, then by time
+          const aCritical = a.alert?.requiresImmediateReview ? 1 : 0;
+          const bCritical = b.alert?.requiresImmediateReview ? 1 : 0;
+          if (aCritical !== bCritical) return bCritical - aCritical;
+          return b.receivedAt - a.receivedAt;
+        });
+      
+      res.json({ 
+        escalations: pending,
+        total: escalationStore.size,
+        pending: pending.length
+      });
+    } catch (error) {
+      console.error("Get escalations error:", error);
+      res.status(500).json({ error: "Failed to retrieve escalations" });
+    }
+  });
+
+  // Get specific escalation with full context
+  app.get("/api/admin/escalations/:id", async (req, res) => {
+    try {
+      const escalation = escalationStore.get(req.params.id);
+      if (!escalation) {
+        return res.status(404).json({ error: "Escalation not found" });
+      }
+      res.json(escalation);
+    } catch (error) {
+      console.error("Get escalation error:", error);
+      res.status(500).json({ error: "Failed to retrieve escalation" });
+    }
+  });
+
+  // Submit RLHF feedback for an escalation
+  app.post("/api/admin/feedback", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const feedback = req.body;
+      
+      // Update escalation with feedback
+      const escalation = escalationStore.get(feedback.escalationId);
+      if (escalation) {
+        escalation.reviewed = true;
+        escalation.feedback = feedback;
+        escalation.reviewedAt = Date.now();
+        escalationStore.set(feedback.escalationId, escalation);
+      }
+      
+      // Log feedback for model improvement
+      logSecurityEvent('rlhf_feedback', {
+        escalationId: feedback.escalationId,
+        classification: feedback.classification,
+        reviewerId: feedback.reviewerId,
+        grades: feedback.grades
+      });
+      
+      res.json({ 
+        success: true, 
+        feedbackId: feedback.id,
+        message: 'Feedback recorded for model improvement'
+      });
+    } catch (error) {
+      console.error("Feedback error:", error);
+      res.status(500).json({ error: "Failed to record feedback" });
+    }
+  });
+
+  // Store confusion matrix metrics from client
+  app.post("/api/admin/metrics", rateLimit(10, 60000), async (req, res) => {
+    try {
+      const { matrix, timestamp } = req.body;
+      metricsStore.set('confusion_matrix', { matrix, timestamp });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to store metrics" });
+    }
+  });
+
+  // Get confusion matrix metrics
+  app.get("/api/admin/metrics", async (req, res) => {
+    try {
+      const metrics = metricsStore.get('confusion_matrix') || null;
+      res.json({ metrics });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to retrieve metrics" });
+    }
+  });
+
   return httpServer;
 }
