@@ -41,4 +41,10 @@ waitForPort = 5000
 [agent]
 stack = "MOCKUP_JS"
 mockupState = "FULLSTACK"
-integrations = ["javascript_log_in_with_replit:2.0.0"]
+integrations = ["javascript_log_in_with_replit:2.0.0", "javascript_openrouter_ai_integrations:2.0.0"]
+
+[userenv]
+
+[userenv.shared]
+AI_INTEGRATIONS_OPENROUTER_BASE_URL = "http://localhost:1106/modelfarm/openrouter"
+AI_INTEGRATIONS_OPENROUTER_API_KEY = "_DUMMY_API_KEY_"

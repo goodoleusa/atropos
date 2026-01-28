@@ -254,5 +254,166 @@ export async function registerRoutes(
     }
   });
 
+  // ============================================
+  // AGENT EXECUTION API
+  // QR codes can be given to agents to execute elsewhere in system
+  // ============================================
+  
+  // Execute QR payload via agent - supports all action types
+  app.post("/api/agent/execute", async (req, res) => {
+    try {
+      const { payload, sessionToken, agentId } = req.body;
+      
+      // Parse the payload (can be JSON string or object)
+      const action = typeof payload === 'string' ? JSON.parse(payload) : payload;
+      const actionType = action.type;
+      
+      // Log agent execution attempt
+      if (sessionToken) {
+        await storage.logCommand(sessionToken, `[AGENT:${agentId || 'unknown'}] ${actionType}`);
+      }
+      
+      // Execute based on action type - mirrors real security tool intents
+      const result: Record<string, any> = {
+        executed: true,
+        actionType,
+        timestamp: new Date().toISOString(),
+        agentId: agentId || 'anonymous'
+      };
+      
+      switch (actionType) {
+        case 'raw':
+          // Raw data injection
+          result.data = action.data;
+          result.encoding = action.encoding || 'utf8';
+          break;
+          
+        case 'beacon':
+          // C2 beacon check-in (simulated)
+          result.callback = action.callback;
+          result.agentRegistered = true;
+          result.nextCheckIn = action.interval || 60;
+          break;
+          
+        case 'exfil':
+          // Data exfiltration (returns requested session fields)
+          if (sessionToken) {
+            const session = await storage.getSessionByToken(sessionToken);
+            if (session) {
+              result.exfiltrated = {};
+              for (const field of action.fields || []) {
+                if (field === 'token') result.exfiltrated.token = session.sessionToken;
+                if (field === 'clues') result.exfiltrated.clues = session.collectedClues;
+                if (field === 'username') result.exfiltrated.username = session.username;
+              }
+            }
+          }
+          break;
+          
+        case 'inject':
+          // Code injection (sandboxed - just returns the payload for terminal)
+          result.payload = action.payload;
+          result.shell = action.shell || 'bash';
+          result.sandboxed = action.sandbox !== false;
+          result.terminalCommand = action.payload;
+          break;
+          
+        case 'phish':
+          // Credential harvest redirect
+          result.redirect = action.redirect;
+          result.spoofType = action.spoof;
+          result.captureFields = action.capture;
+          break;
+          
+        case 'dropper':
+          // Payload dropper - adds artifact/clue to session
+          if (sessionToken && action.artifact) {
+            const session = await storage.getSessionByToken(sessionToken);
+            if (session) {
+              const clues = [...(session.collectedClues || []), action.artifact.id];
+              await storage.updateSession(sessionToken, { collectedClues: clues });
+              result.dropped = action.artifact;
+              result.autorun = action.autorun || false;
+            }
+          }
+          break;
+          
+        case 'pivot':
+          // Network pivot - returns routing info
+          result.from = action.from;
+          result.to = action.to;
+          result.tunnel = action.tunnel;
+          result.port = action.port;
+          result.redirectUrl = action.to;
+          break;
+          
+        case 'recon':
+          // Reconnaissance - enumerate system state
+          result.scan = action.scan;
+          result.targets = action.targets;
+          result.findings = {
+            routes: ['/terminal', '/admin', '/void', '/archive', '/debug'],
+            cluesAvailable: 5,
+            questsAvailable: 3
+          };
+          break;
+          
+        case 'persist':
+          // Persistence mechanism
+          result.method = action.method;
+          result.key = action.key;
+          result.installed = true;
+          result.ttl = action.ttl || 86400;
+          break;
+          
+        case 'crypto':
+          // Crypto challenge - return encrypted data for client to solve
+          result.cipher = action.cipher;
+          result.data = action.data;
+          result.hint = action.hint;
+          // Include solution for server-side validation later
+          if (action.cipher === 'rot13') {
+            result.solution = action.data.replace(/[a-zA-Z]/g, (c: string) => 
+              String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c.charCodeAt(0) + 13) ? c.charCodeAt(0) + 13 : c.charCodeAt(0) - 13)
+            );
+          }
+          break;
+          
+        default:
+          result.executed = false;
+          result.error = `Unknown action type: ${actionType}`;
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Agent execution error:", error);
+      res.status(500).json({ error: "Failed to execute agent payload", details: String(error) });
+    }
+  });
+  
+  // Get agent execution schema (for documentation/validation)
+  app.get("/api/agent/schema", (req, res) => {
+    res.json({
+      version: "1.0.0",
+      description: "SysAdmin Corp Agent Execution API - QR payloads can be executed here",
+      actions: [
+        { type: 'raw', fields: ['data', 'encoding'], description: 'Raw data injection' },
+        { type: 'beacon', fields: ['callback', 'agent_id', 'interval'], description: 'C2 beacon check-in' },
+        { type: 'exfil', fields: ['target', 'fields', 'dest'], description: 'Data exfiltration' },
+        { type: 'inject', fields: ['payload', 'shell', 'sandbox'], description: 'Code injection' },
+        { type: 'phish', fields: ['redirect', 'spoof', 'capture'], description: 'Credential harvest' },
+        { type: 'dropper', fields: ['artifact', 'autorun'], description: 'Payload dropper' },
+        { type: 'pivot', fields: ['from', 'to', 'tunnel', 'port'], description: 'Network pivot' },
+        { type: 'recon', fields: ['scan', 'targets', 'output'], description: 'Reconnaissance' },
+        { type: 'persist', fields: ['method', 'key', 'value', 'ttl'], description: 'Persistence' },
+        { type: 'crypto', fields: ['cipher', 'data', 'hint'], description: 'Crypto challenge' }
+      ],
+      endpoints: {
+        execute: 'POST /api/agent/execute',
+        schema: 'GET /api/agent/schema'
+      }
+    });
+  });
+
   return httpServer;
 }

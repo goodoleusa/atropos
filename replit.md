@@ -76,3 +76,47 @@ Preferred communication style: Simple, everyday language.
 ### Development Tools
 - **Vite**: Development server with HMR
 - **Replit Plugins**: Dev banner, cartographer, runtime error overlay (dev only)
+
+## Message & Campaign Configuration
+
+### Editing System Messages
+All game messages are centralized in config files for easy modification:
+
+**Message Config**: `client/src/config/messages.ts`
+- Terminal messages (welcome, errors, system status)
+- Toast notifications (clue acquired, access denied, etc.)
+- Chaos overlay subliminal messages
+- Mystical card hints (tarot and zodiac)
+- UI text and labels
+- ASCII art logo
+
+To disable a message, set `enabled: false` or comment it out.
+
+**Campaign System**: `client/src/config/campaigns.ts`
+- Switch entire themes on the fly by changing `ACTIVE_CAMPAIGN`
+- Available campaigns: 'default', 'halloween', 'ctf_event', 'training'
+- Each campaign defines its own messages, toasts, chaos text, and UI labels
+
+### QR Code System
+The QR code system allows creating executable payloads that mirror real security tools:
+
+**QR Action Types** (in QRCodeModal):
+- `raw` - Raw data injection
+- `beacon` - C2 beacon check-in
+- `exfil` - Data exfiltration
+- `inject` - Code injection
+- `phish` - Credential harvest redirect
+- `dropper` - Payload/artifact dropper
+- `pivot` - Network pivot/redirect
+- `recon` - Reconnaissance scan
+- `persist` - Persistence mechanism
+- `crypto` - Cipher/decryption challenge
+
+**Agent Execution API**:
+- `POST /api/agent/execute` - Execute QR payloads via external agents
+- `GET /api/agent/schema` - Get schema documentation
+- Payloads can be given to AI agents or automated systems to execute elsewhere
+
+### Integrations
+- **Replit Auth**: OpenID Connect authentication (Google/GitHub/X/Apple/email)
+- **OpenRouter AI**: LLM assistance via Replit AI Integrations (no API key needed)
