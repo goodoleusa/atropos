@@ -13,6 +13,7 @@ import TheVoid from "@/pages/TheVoid";
 import Archive from "@/pages/Archive";
 import Debug from "@/pages/Debug";
 import PromptBuilder from "@/pages/PromptBuilder";
+import ReportBuilder from "@/pages/ReportBuilder";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/archive" component={Archive} />
       <Route path="/debug" component={Debug} />
       <Route path="/prompt-builder" component={PromptBuilder} />
+      <Route path="/report" component={ReportBuilder} />
       <Route component={NotFound} />
     </Switch>
   );

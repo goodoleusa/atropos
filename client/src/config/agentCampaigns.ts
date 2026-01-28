@@ -10,6 +10,185 @@ export interface Campaign {
   objectives: string[];
   tools: string[];
   color: string;
+  steps?: CampaignStep[];
+  adaptivePrompts?: string[];
+}
+
+export interface CampaignStep {
+  id: string;
+  title: string;
+  guidance: string;
+  toolsForStep: string[];
+  questions: string[];
+  redFlags: string[];
+  successIndicators: string[];
+  nextStepConditions: { condition: string; nextStep: string; rationale: string }[];
+}
+
+export interface ToolIntegration {
+  name: string;
+  purpose: string;
+  whenToUse: string;
+  exampleQuery: string;
+  outputInterpretation: string;
+  externalUrl?: string;
+}
+
+export const INVESTIGATION_PERSPECTIVES = [
+  { id: 'adversary', name: 'Adversary Mindset', icon: '🎯', prompt: 'Think like the attacker. What would they target first? What\'s the path of least resistance?' },
+  { id: 'defender', name: 'Defender Analysis', icon: '🛡️', prompt: 'What controls are in place? Where are the gaps? What would you recommend fixing first?' },
+  { id: 'insider', name: 'Insider Threat', icon: '🔓', prompt: 'What could a malicious employee access? What trust assumptions exist?' },
+  { id: 'supply_chain', name: 'Supply Chain Risk', icon: '🔗', prompt: 'What third parties have access? What dependencies could be compromised?' },
+  { id: 'temporal', name: 'Temporal Analysis', icon: '⏱️', prompt: 'How has this changed over time? What historical data reveals patterns?' },
+  { id: 'financial', name: 'Follow the Money', icon: '💰', prompt: 'Who profits? What are the financial relationships? Payment flows?' }
+];
+
+export const OSINT_TOOLS: ToolIntegration[] = [
+  { name: 'Shodan', purpose: 'Internet-connected device search', whenToUse: 'Finding exposed services, IoT, infrastructure', exampleQuery: 'org:"Target Corp" port:22,3389', outputInterpretation: 'Look for: unusual ports, outdated services, exposed admin panels' },
+  { name: 'Censys', purpose: 'Certificate and host search', whenToUse: 'Discovering subdomains via certs, TLS analysis', exampleQuery: 'parsed.subject.common_name: *.target.com', outputInterpretation: 'Extract SANs for subdomain enumeration' },
+  { name: 'SecurityTrails', purpose: 'Historical DNS/WHOIS', whenToUse: 'Finding old infrastructure, tracking changes', exampleQuery: 'target.com history', outputInterpretation: 'Old IPs may still be alive and less secured' },
+  { name: 'crt.sh', purpose: 'Certificate transparency logs', whenToUse: 'Subdomain discovery via SSL certificates', exampleQuery: '%.target.com', outputInterpretation: 'Wildcards and SANs reveal hidden subdomains' },
+  { name: 'Wayback Machine', purpose: 'Historical web snapshots', whenToUse: 'Finding old pages, leaked info, removed content', exampleQuery: 'web.archive.org/web/*/target.com/*', outputInterpretation: 'Check for exposed credentials, old endpoints, removed features' },
+  { name: 'Hunter.io', purpose: 'Email pattern discovery', whenToUse: 'Finding employee emails and patterns', exampleQuery: 'target.com', outputInterpretation: 'Email pattern + LinkedIn = complete employee list' },
+  { name: 'BuiltWith', purpose: 'Technology profiling', whenToUse: 'Identifying tech stack and third-party services', exampleQuery: 'target.com', outputInterpretation: 'Each technology has known vulnerabilities and attack patterns' },
+  { name: 'WHOIS/RDAP', purpose: 'Domain registration data', whenToUse: 'Registrant info, related domains', exampleQuery: 'whois target.com', outputInterpretation: 'Same registrant = related infrastructure' },
+  { name: 'theHarvester', purpose: 'Multi-source aggregation', whenToUse: 'Quick passive recon from multiple sources', exampleQuery: '-d target.com -b all', outputInterpretation: 'Aggregates emails, hosts, IPs from many sources' },
+  { name: 'Amass', purpose: 'Subdomain enumeration', whenToUse: 'Deep subdomain discovery', exampleQuery: 'amass enum -passive -d target.com', outputInterpretation: 'Compare results with crt.sh for completeness' },
+  { name: 'nmap', purpose: 'Port and service scanning', whenToUse: 'Active enumeration of discovered hosts', exampleQuery: 'nmap -sV -sC -p- target.com', outputInterpretation: 'Version info enables CVE matching' },
+  { name: 'Nuclei', purpose: 'Vulnerability scanning', whenToUse: 'Automated vuln detection on web targets', exampleQuery: 'nuclei -u https://target.com -t cves/', outputInterpretation: 'Prioritize by severity, verify manually' }
+];
+
+export const ADAPTIVE_RESPONSES: Record<string, string> = {
+  found_subdomain: `Great find! A new subdomain often reveals different attack surfaces:
+  
+**HIGH VALUE INDICATORS:**
+- dev/staging/test prefixes → Often less hardened
+- admin/portal/dashboard → Admin functionality
+- api/ws/graphql → Direct backend access
+- internal/corp/intra → Internal tools exposed
+
+**NEXT ACTIONS:**
+1. Resolve and check if it's alive
+2. Technology fingerprint (Wappalyzer, BuiltWith)
+3. Check for exposed endpoints (/robots.txt, /.well-known/)
+4. Certificate analysis for more SANs
+
+**QUESTIONS TO ASK:**
+- Why does this exist? What's its purpose?
+- Is it in the same security zone as production?
+- When was it last updated?`,
+
+  found_credential: `⚠️ STOP - Credential discovered. Handle carefully:
+
+**IMMEDIATE STEPS:**
+1. Document EXACTLY where you found it (URL, file, timestamp)
+2. DO NOT attempt to use it
+3. Check scope - is credential testing allowed?
+4. Report to program if valid/in-scope
+
+**CONTEXT TO GATHER:**
+- Is this a test/demo account?
+- When was it exposed? (Wayback, git history)
+- What systems could it access?
+
+**LEGAL NOTE:** Using credentials without authorization is illegal, even in bug bounties.`,
+
+  found_vuln_indicator: `Potential vulnerability indicator detected!
+
+**VALIDATION CHECKLIST:**
+1. Is this reproducible?
+2. Is it in scope?
+3. What's the actual impact?
+4. Is there a PoC without causing harm?
+
+**PRIORITIZATION FACTORS:**
+- Authentication bypass → HIGH VALUE
+- Data exposure → HIGH VALUE  
+- Self-XSS → LIKELY DUPLICATE
+- Missing headers only → LOW VALUE
+
+**NEXT STEPS:**
+- Document current state before testing further
+- Check program policy on this vuln type
+- Search for existing reports (avoid duplicates)`,
+
+  hit_dead_end: `Dead ends teach us too. Let's pivot strategically:
+
+**WHAT DEAD END TELLS US:**
+- This vector is likely protected
+- They've invested in security here
+- Other paths may be less guarded
+
+**PIVOT STRATEGIES:**
+1. **Change perspective** - Switch from adversary to insider mindset
+2. **Change target** - Adjacent systems/subdomains
+3. **Change technique** - If injection fails, try auth bypass
+4. **Change time** - Historical data may show old vulnerabilities
+
+**QUESTIONS:**
+- What assumption was wrong?
+- What would bypass this control?
+- Where else would this data/function be?`,
+
+  overwhelmed_by_data: `Too much data? Let's prioritize like a pro:
+
+**TRIAGE BY BOUNTY VALUE:**
+1. **Critical** ($$$$): RCE, Auth bypass, Data breach
+2. **High** ($$$): SQLi, SSRF, Privilege escalation  
+3. **Medium** ($$): XSS, IDOR, Info disclosure
+4. **Low** ($): Missing headers, Best practices
+
+**FOCUS STRATEGY:**
+- Pick the ONE most promising lead
+- Follow it to conclusion before switching
+- Document everything for later
+
+**HIGH-VALUE LEAD INDICATORS:**
+- Affects authentication/authorization
+- Touches payment/PII data
+- Affects all users, not just self
+- Chainable with other findings`,
+
+  need_perspective_shift: `Let's shift perspective to unlock new insights:
+
+**AVAILABLE PERSPECTIVES:**
+🎯 **Adversary**: What would an attacker do first?
+🛡️ **Defender**: What controls exist? Where are gaps?
+🔓 **Insider**: What could an employee abuse?
+🔗 **Supply Chain**: What third parties have access?
+⏱️ **Temporal**: How has this changed over time?
+💰 **Financial**: Who benefits? Follow the money.
+
+**TRY THIS:**
+Pick a different perspective and re-examine your findings.
+Often the breakthrough comes from asking a different question.`
+};
+
+export const GUIDED_QUESTIONS = {
+  starting: [
+    "What's the target scope? (domains, IPs, apps)",
+    "What type of program is this? (Bug bounty, VDP, pentest)",
+    "What's already been tested/reported?",
+    "What technologies do we know about?"
+  ],
+  recon: [
+    "Have we enumerated all subdomains?",
+    "Do we know the full tech stack?",
+    "Who are the key personnel?",
+    "What third-party services are in use?"
+  ],
+  testing: [
+    "What's the highest-impact thing we could find?",
+    "What auth mechanisms exist?",
+    "Where is user input processed?",
+    "What data is most sensitive?"
+  ],
+  stuck: [
+    "What perspective haven't we tried?",
+    "What assumption might be wrong?",
+    "Is there adjacent attack surface?",
+    "What would a more experienced hunter try?"
+  ]
 }
 
 export const AGENT_CAMPAIGNS: Campaign[] = [

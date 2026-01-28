@@ -12,7 +12,7 @@ import {
   Zap, 
   Cpu, 
   FileText, 
-  Compress, 
+  Minimize2, 
   ArrowRight, 
   Copy, 
   Check,
@@ -115,7 +115,7 @@ export default function PromptBuilder() {
       num: 2,
       title: 'Compress History',
       desc: 'Distill long conversations into dense context blobs',
-      icon: <Compress className="w-5 h-5" />
+      icon: <Minimize2 className="w-5 h-5" />
     },
     {
       num: 3,
@@ -256,7 +256,7 @@ export default function PromptBuilder() {
             <Card className="bg-black/50 border-amber-900/30">
               <CardHeader>
                 <CardTitle className="text-amber-500 flex items-center gap-2">
-                  <Compress className="w-5 h-5" /> Step 2: Compress Conversation History
+                  <Minimize2 className="w-5 h-5" /> Step 2: Compress Conversation History
                 </CardTitle>
                 <CardDescription className="text-stone-500">
                   <span className="text-teal-400">WHY:</span> Long conversations eat tokens. 
