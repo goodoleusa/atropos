@@ -8,77 +8,58 @@ import { useGame } from '@/hooks/useGameSession';
 import { Bot, Send, Loader2, Zap, Terminal, QrCode } from 'lucide-react';
 
 // OpenRouter models - January 2026
-// Prioritized by coding/agent capability
-const FREE_MODELS = [
-  // Paid models (marked with $)
-  {
-    id: 'openai/gpt-4o',
-    name: '$ GPT-4o',
-    description: 'OpenAI flagship - fast, multimodal',
-    category: 'paid'
-  },
-  {
-    id: 'openai/gpt-4o-mini',
-    name: '$ GPT-4o Mini',
-    description: 'Affordable, beats GPT-3.5',
-    category: 'paid'
-  },
-  // Free coding models
-  {
-    id: 'moonshotai/kimi-k2:free',
-    name: 'Kimi K2',
-    description: 'Moonshot AI - general chat',
-    category: 'coding'
-  },
-  {
-    id: 'moonshotai/kimi-dev-72b:free',
-    name: 'Kimi Dev 72B',
-    description: 'Moonshot AI - 72B dev model',
-    category: 'coding'
-  },
-  {
-    id: 'nvidia/nemotron-3-nano-30b-a3b:free',
-    name: 'Nemotron 3 Nano 30B',
-    description: 'NVIDIA - 1M context, agentic AI',
-    category: 'coding'
-  },
-  {
-    id: 'mistralai/codestral:free',
-    name: 'Codestral',
-    description: 'Mistral 123B - best free coder',
-    category: 'coding'
-  },
-  {
-    id: 'qwen/qwen3-coder:free',
-    name: 'Qwen3 Coder 480B',
-    description: '262K context, tool use',
-    category: 'coding'
-  },
-  {
-    id: 'deepseek/deepseek-chat-v3-0324:free',
-    name: 'DeepSeek Chat V3',
-    description: 'Strong reasoning + debugging',
-    category: 'coding'
-  },
-  {
-    id: 'meta-llama/llama-3.3-70b-instruct:free',
-    name: 'Llama 3.3 70B',
-    description: 'Meta flagship, GPT-4 level',
-    category: 'general'
-  },
-  {
-    id: 'google/gemini-2.0-flash-exp:free',
-    name: 'Gemini 2.0 Flash',
-    description: '1M context, fast multimodal',
-    category: 'general'
-  },
-  {
-    id: 'mistralai/mistral-small-3.1-24b-instruct:free',
-    name: 'Mistral Small 3.1',
-    description: 'Fast general-purpose',
-    category: 'general'
-  },
+// Organized by category with easy shortcuts
+const MODELS = {
+  // Premium paid models
+  paid: [
+    { id: 'openai/gpt-4o', short: 'gpt4o', name: 'GPT-4o', desc: 'OpenAI flagship' },
+    { id: 'openai/gpt-4o-mini', short: 'gpt4m', name: 'GPT-4o Mini', desc: 'Fast & cheap' },
+    { id: 'anthropic/claude-sonnet-4', short: 'claude', name: 'Claude Sonnet 4', desc: 'Anthropic best' },
+  ],
+  // Kimi models (user favorite)
+  kimi: [
+    { id: 'moonshotai/kimi-k2.5', short: 'kimi', name: 'Kimi K2.5', desc: 'Latest Moonshot' },
+    { id: 'moonshotai/kimi-k2-thinking', short: 'kimiT', name: 'Kimi K2 Thinking', desc: 'With reasoning' },
+  ],
+  // Nemotron models (user favorite)  
+  nemotron: [
+    { id: 'nvidia/nemotron-3-nano-30b-a3b:free', short: 'nemo', name: 'Nemotron 30B', desc: 'NVIDIA 1M ctx' },
+    { id: 'nvidia/nemotron-nano-12b-v2-vl:free', short: 'nemoV', name: 'Nemotron 12B VL', desc: 'Vision model' },
+  ],
+  // Coding specialists
+  code: [
+    { id: 'mistralai/codestral:free', short: 'code', name: 'Codestral', desc: 'Mistral 123B coder' },
+    { id: 'qwen/qwen3-coder:free', short: 'qwen', name: 'Qwen3 Coder', desc: '480B MoE' },
+    { id: 'deepseek/deepseek-v3.2', short: 'ds', name: 'DeepSeek V3.2', desc: 'Latest DS' },
+  ],
+  // General purpose free
+  general: [
+    { id: 'meta-llama/llama-3.3-70b-instruct:free', short: 'llama', name: 'Llama 3.3 70B', desc: 'Meta flagship' },
+    { id: 'google/gemini-2.0-flash-exp:free', short: 'gem', name: 'Gemini 2.0 Flash', desc: '1M context' },
+    { id: 'mistralai/mistral-small-3.1-24b-instruct:free', short: 'mis', name: 'Mistral Small', desc: 'Fast' },
+  ],
+};
+
+// Flatten for dropdown with category headers
+const MODEL_LIST = [
+  { id: 'header-paid', name: '── PAID ($) ──', disabled: true },
+  ...MODELS.paid.map(m => ({ ...m, category: 'paid' })),
+  { id: 'header-kimi', name: '── KIMI ──', disabled: true },
+  ...MODELS.kimi.map(m => ({ ...m, category: 'kimi' })),
+  { id: 'header-nemo', name: '── NEMOTRON ──', disabled: true },
+  ...MODELS.nemotron.map(m => ({ ...m, category: 'nemotron' })),
+  { id: 'header-code', name: '── CODING ──', disabled: true },
+  ...MODELS.code.map(m => ({ ...m, category: 'code' })),
+  { id: 'header-gen', name: '── GENERAL ──', disabled: true },
+  ...MODELS.general.map(m => ({ ...m, category: 'general' })),
 ];
+
+// Quick lookup by shortcut
+const MODEL_SHORTCUTS: Record<string, string> = {};
+Object.values(MODELS).flat().forEach(m => {
+  MODEL_SHORTCUTS[m.short] = m.id;
+  MODEL_SHORTCUTS[m.short.toLowerCase()] = m.id;
+});
 
 // System prompt that makes the agent understand QR payloads
 const SYSTEM_PROMPT = `You are NEXUS, an AI agent embedded in the SysAdmin Corp terminal system. You help users navigate the system, execute payloads, and uncover secrets.
@@ -119,7 +100,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('moonshotai/kimi-k2:free');
+  const [selectedModel, setSelectedModel] = useState('moonshotai/kimi-k2.5');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [conversationId, setConversationId] = useState<number | null>(null);
 
@@ -155,7 +136,26 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
-    const userMessage = input.trim();
+    let userMessage = input.trim();
+    
+    // Handle model switching shortcuts like /kimi, /nemo, /gpt4o
+    if (userMessage.startsWith('/')) {
+      const shortcut = userMessage.slice(1).split(' ')[0].toLowerCase();
+      if (MODEL_SHORTCUTS[shortcut]) {
+        setSelectedModel(MODEL_SHORTCUTS[shortcut]);
+        const remaining = userMessage.slice(shortcut.length + 1).trim();
+        if (!remaining) {
+          setInput('');
+          setMessages(prev => [...prev, { 
+            role: 'assistant', 
+            content: `Model switched to: ${shortcut.toUpperCase()}` 
+          }]);
+          return;
+        }
+        userMessage = remaining;
+      }
+    }
+    
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setLoading(true);
@@ -277,29 +277,35 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
             NEXUS AGENT
           </DialogTitle>
           
-          {/* Model Selector */}
+          {/* Model Selector with categories */}
           <div className="flex items-center gap-2 mt-2">
             <span className="text-xs text-stone-500">Model:</span>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-8 w-auto min-w-[200px]">
+              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-8 w-auto min-w-[220px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50">
-                {FREE_MODELS.map((model) => (
-                  <SelectItem 
-                    key={model.id} 
-                    value={model.id}
-                    className="text-amber-500 focus:bg-amber-900/30 focus:text-amber-400 text-xs"
-                  >
-                    <div className="flex flex-col">
-                      <span>{model.name}</span>
-                      <span className="text-stone-600 text-[10px]">{model.description}</span>
+              <SelectContent className="bg-[#0a0500] border-amber-900/50 max-h-80">
+                {MODEL_LIST.map((model: any) => (
+                  model.disabled ? (
+                    <div key={model.id} className="text-stone-600 text-[10px] px-2 py-1 font-bold">
+                      {model.name}
                     </div>
-                  </SelectItem>
+                  ) : (
+                    <SelectItem 
+                      key={model.id} 
+                      value={model.id}
+                      className="text-amber-500 focus:bg-amber-900/30 focus:text-amber-400 text-xs"
+                    >
+                      <span className="font-mono text-amber-400">[{model.short}]</span> {model.name}
+                      <span className="text-stone-600 ml-1">- {model.desc}</span>
+                    </SelectItem>
+                  )
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded">FREE</span>
+            <span className="text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded">
+              Type shortcut in chat: /kimi /nemo /gpt4o
+            </span>
           </div>
         </DialogHeader>
 
