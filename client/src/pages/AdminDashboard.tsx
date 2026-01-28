@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { 
   Key, 
   Trophy, 
@@ -28,9 +29,19 @@ import {
   Trash2,
   Save,
   Bug,
-  BookOpen
+  BookOpen,
+  Eye,
+  EyeOff,
+  Rocket,
+  Target,
+  ExternalLink,
+  Play,
+  FileText,
+  Bot
 } from "lucide-react";
 import { CHAOS_MESSAGES, MYSTICAL_CARDS, TOAST_MESSAGES, UI_TEXT } from "@/config/messages";
+import { AGENT_CAMPAIGNS, CAMPAIGN_CATEGORIES, getDifficultyColor, type Campaign } from "@/config/agentCampaigns";
+import { useGame } from "@/hooks/useGameSession";
 
 interface Clue {
   id: string;
@@ -52,12 +63,14 @@ interface Quest {
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
+  const { gameState, toggleDevMode } = useGame();
   const [newClue, setNewClue] = useState<Partial<Clue>>({});
   const [newQuest, setNewQuest] = useState<Partial<Quest>>({});
   const [clueDialogOpen, setClueDialogOpen] = useState(false);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
   const [editingClue, setEditingClue] = useState<Clue | null>(null);
   const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   
   // Local state for live config editing (these would sync to server/localStorage)
   const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
@@ -166,8 +179,23 @@ export default function AdminDashboard() {
             <h1 className="font-orbitron text-xl font-bold">
               <span className="text-amber-600">ADMIN</span> CONSOLE
             </h1>
+            <Badge 
+              variant="outline" 
+              className={`ml-2 ${gameState.devMode ? 'border-teal-500 text-teal-400 bg-teal-950/30' : 'border-amber-900/50 text-amber-600'}`}
+            >
+              {gameState.devMode ? 'DEV MODE' : 'GAME MODE'}
+            </Badge>
           </div>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded border border-amber-900/30 bg-black/30">
+              <Label htmlFor="dev-mode-toggle" className="text-stone-400 text-xs">Dev Mode</Label>
+              <Switch 
+                id="dev-mode-toggle"
+                checked={gameState.devMode} 
+                onCheckedChange={toggleDevMode}
+                data-testid="dev-mode-toggle"
+              />
+            </div>
             <Link href="/">
               <Button variant="ghost" className="text-stone-500 hover:text-amber-500">
                 View Site
@@ -181,6 +209,52 @@ export default function AdminDashboard() {
           </div>
         </div>
       </header>
+
+      {/* Dev Mode Quick Nav */}
+      {gameState.devMode && (
+        <div className="bg-teal-950/20 border-b border-teal-900/30 py-3">
+          <div className="container mx-auto px-6">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-teal-400 text-xs font-bold mr-2">QUICK NAV:</span>
+              <Link href="/terminal">
+                <Button size="sm" variant="outline" className="h-7 text-xs border-teal-800 text-teal-400 hover:bg-teal-950/50">
+                  <Terminal className="w-3 h-3 mr-1" /> Terminal
+                </Button>
+              </Link>
+              <Link href="/void">
+                <Button size="sm" variant="outline" className="h-7 text-xs border-purple-800 text-purple-400 hover:bg-purple-950/50">
+                  <Sparkles className="w-3 h-3 mr-1" /> The Void
+                </Button>
+              </Link>
+              <Link href="/archive">
+                <Button size="sm" variant="outline" className="h-7 text-xs border-amber-800 text-amber-400 hover:bg-amber-950/50">
+                  <FileText className="w-3 h-3 mr-1" /> Archive
+                </Button>
+              </Link>
+              <Link href="/debug">
+                <Button size="sm" variant="outline" className="h-7 text-xs border-red-800 text-red-400 hover:bg-red-950/50">
+                  <Bug className="w-3 h-3 mr-1" /> Debug
+                </Button>
+              </Link>
+              <Link href="/prompt-builder">
+                <Button size="sm" variant="outline" className="h-7 text-xs border-blue-800 text-blue-400 hover:bg-blue-950/50">
+                  <Bot className="w-3 h-3 mr-1" /> Prompt Builder
+                </Button>
+              </Link>
+              <Link href="/report">
+                <Button size="sm" variant="outline" className="h-7 text-xs border-orange-800 text-orange-400 hover:bg-orange-950/50">
+                  <FileText className="w-3 h-3 mr-1" /> Report Builder
+                </Button>
+              </Link>
+              <a href="/api/agent/schema" target="_blank" rel="noopener noreferrer">
+                <Button size="sm" variant="outline" className="h-7 text-xs border-stone-700 text-stone-400 hover:bg-stone-900/50">
+                  <ExternalLink className="w-3 h-3 mr-1" /> API Schema
+                </Button>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-6 py-8">
         {/* Architecture Overview */}
@@ -300,6 +374,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="config" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Settings className="w-4 h-4 mr-2" /> Config
+            </TabsTrigger>
+            <TabsTrigger value="campaigns" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
+              <Rocket className="w-4 h-4 mr-2" /> Campaigns
             </TabsTrigger>
           </TabsList>
 
