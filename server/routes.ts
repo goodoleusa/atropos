@@ -11,7 +11,8 @@ import {
   validateSessionToken,
   clueSchema,
   questSchema,
-  logSecurityEvent 
+  logSecurityEvent,
+  appAccessGate
 } from "./security";
 
 export async function registerRoutes(
@@ -21,6 +22,9 @@ export async function registerRoutes(
   
   // Apply security headers to all responses
   app.use(securityHeaders);
+  
+  // Apply access gate (requires token in URL or valid cookie)
+  app.use(appAccessGate);
   
   // Register chat routes for AI agent
   registerChatRoutes(app);

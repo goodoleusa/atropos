@@ -3,6 +3,68 @@ import { z } from 'zod';
 
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
+export const appAccessGate = (req: Request, res: Response, next: NextFunction) => {
+  const accessToken = process.env.APP_ACCESS_TOKEN;
+  
+  if (!accessToken) {
+    return next();
+  }
+  
+  const tokenFromQuery = req.query.token as string;
+  const tokenFromCookie = req.cookies?.access_token;
+  const tokenFromHeader = req.headers['x-access-token'] as string;
+  
+  if (tokenFromQuery === accessToken) {
+    res.cookie('access_token', accessToken, { 
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000
+    });
+    return next();
+  }
+  
+  if (tokenFromCookie === accessToken || tokenFromHeader === accessToken) {
+    return next();
+  }
+  
+  if (req.path.startsWith('/api/')) {
+    return res.status(401).json({ error: 'Unauthorized', message: 'Valid access token required' });
+  }
+  
+  res.status(401).send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Access Required</title>
+      <style>
+        body { 
+          background: #0a0500; 
+          color: #d97706; 
+          font-family: monospace; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          height: 100vh; 
+          margin: 0;
+        }
+        .container { text-align: center; }
+        h1 { font-size: 2rem; margin-bottom: 1rem; }
+        p { color: #78716c; }
+        code { background: #1c1917; padding: 0.25rem 0.5rem; border-radius: 4px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>ACCESS DENIED</h1>
+        <p>This system requires authorization.</p>
+        <p>Add <code>?token=YOUR_ACCESS_TOKEN</code> to the URL.</p>
+      </div>
+    </body>
+    </html>
+  `);
+};
+
 export const securityHeaders = (_req: Request, res: Response, next: NextFunction) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
