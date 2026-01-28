@@ -167,7 +167,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       const serverSession = await response.json();
       
       // Update local state with imported session
-      setGameState({
+      setGameState(prev => ({
+        ...prev,
         sessionToken: token,
         username: serverSession.username || 'Guest',
         inventory: serverSession.collectedClues?.map((id: string) => ({
@@ -178,7 +179,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           foundAt: new Date().toISOString()
         })) || [],
         synced: true
-      });
+      }));
       
       toast({
         title: "SESSION IMPORTED",
@@ -193,8 +194,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const toggleDevMode = () => {
+    setGameState(prev => ({ ...prev, devMode: !prev.devMode }));
+  };
+
   return (
-    <GameContext.Provider value={{ gameState, collectClue, hasClue, setSessionUsername, syncSession, importSession }}>
+    <GameContext.Provider value={{ gameState, collectClue, hasClue, setSessionUsername, syncSession, importSession, toggleDevMode }}>
       {children}
     </GameContext.Provider>
   );
