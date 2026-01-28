@@ -230,6 +230,27 @@ Features:
 - `/api/qr/export` - 10 requests/minute
 - `/api/qr/secret` - 10 requests/minute
 - `/api/qr/import` - 20 requests/minute
+- `/api/session` - 30 requests/minute
+- `/api/clues` (POST/PATCH) - 30 requests/minute
+- `/api/quests` (POST/PATCH) - 30 requests/minute
+- `/api/conversations` - 30 requests/minute
+- `/api/conversations/:id/messages` - 20 requests/minute
+
+### App Access Gate
+The entire application is protected by a secret access token:
+
+**Configuration**: Set `APP_ACCESS_TOKEN` in Replit Secrets
+
+**Access Methods**:
+1. URL Query Parameter: `https://yourapp.replit.app?token=YOUR_TOKEN`
+2. Cookie: Once authenticated, a cookie is set for 24 hours
+3. API Header: Send `X-Access-Token: YOUR_TOKEN` header for API requests
+
+**Behavior**:
+- Without token: Shows "ACCESS DENIED" page
+- With valid token: Sets secure cookie and grants access
+- Cookie persists for 24 hours (no need to re-enter token)
+- If `APP_ACCESS_TOKEN` is not set, access gate is disabled
 
 ## Global Attack Map
 
