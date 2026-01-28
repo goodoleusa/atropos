@@ -119,4 +119,61 @@ The QR code system allows creating executable payloads that mirror real security
 
 ### Integrations
 - **Replit Auth**: OpenID Connect authentication (Google/GitHub/X/Apple/email)
-- **OpenRouter AI**: LLM assistance via Replit AI Integrations (no API key needed)
+- **OpenRouter AI**: LLM assistance via user's API key (stored in `OPENROUTER_API_KEY` secret)
+
+## NEXUS Agent System
+
+### AI Chat Agent
+The NEXUS agent is an integrated AI assistant for executing payloads and interacting with the game:
+
+**Component**: `client/src/components/AgentChat.tsx`
+- Floating button available on Home and Terminal pages
+- Streaming responses via SSE (Server-Sent Events)
+- Model selector with categorized dropdown
+
+**Available Models** (via OpenRouter):
+- **Recommended**: Kimi K2.5 (default), Claude 3.5 Haiku
+- **Fast & Capable**: Nemotron Ultra, Nemotron Super, GPT-4o-mini
+- **Coding**: DeepSeek V3, Qwen3 235B
+- **General Free**: Llama 3.3 70B, DeepSeek R1 0528, Gemini Flash 2.0
+
+**Model Shortcuts**: Type in chat to quickly switch models:
+- `/kimi` - Kimi K2.5 (recommended)
+- `/nemo` - Nemotron Ultra
+- `/gpt4o` - GPT-4o-mini
+- `/ds` - DeepSeek V3
+- `/claude` - Claude 3.5 Haiku
+- `/llama` - Llama 3.3 70B
+
+**API Routes**:
+- `GET /api/conversations` - List conversations
+- `POST /api/conversations` - Create conversation
+- `POST /api/conversations/:id/messages` - Send message (SSE streaming)
+
+## Global Attack Map
+
+### Live Threat Visualization
+The home page features an animated global attack map similar to Kaspersky/cybersecurity firm dashboards:
+
+**Component**: `client/src/components/GlobalAttackMap.tsx`
+- Animated attack lines between 15 global cities
+- 5 attack types: DDoS, Intrusion, Malware, Phishing, Data Exfil
+- Live stats: Threats Blocked, Active Monitors, Response Time, Uptime
+- Vaporwave/cassette futurism aesthetic with teal contrast
+
+**City Nodes**: New York, London, Tokyo, Sydney, Moscow, Beijing, Singapore, Dubai, São Paulo, Lagos, Mumbai, Berlin, Los Angeles, Toronto, Seoul
+
+## Visual Design
+
+### Color Palette
+The design uses a vaporwave/cassette futurism aesthetic:
+- **Primary**: Burnt orange/amber (#d97706, #f97316)
+- **Accent**: Teal (#14b8a6) for contrast
+- **Background**: Deep warm black with gradient overlays
+- **No green elements** - intentionally avoiding Matrix-style aesthetics
+
+### Background Effects
+- Diagonal gradient with teal and orange accents
+- Radial gradient "glow" spots at corners
+- Subtle scanline overlay for retro CRT feel
+- Mouse-following lens distortion effect

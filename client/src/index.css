@@ -78,14 +78,16 @@
   body {
     @apply font-mono antialiased bg-background text-foreground;
     background-image: 
-      radial-gradient(circle at 50% 50%, rgba(184, 115, 51, 0.05), transparent 70%),
-      url('/assets/grid-noise.png');
-    background-size: 100% 100%, cover;
+      linear-gradient(135deg, rgba(20, 184, 166, 0.03) 0%, transparent 50%, rgba(249, 115, 22, 0.05) 100%),
+      radial-gradient(ellipse at 80% 20%, rgba(217, 119, 6, 0.08), transparent 50%),
+      radial-gradient(ellipse at 20% 80%, rgba(20, 184, 166, 0.06), transparent 50%),
+      linear-gradient(to bottom, #0a0500 0%, #050208 100%);
+    background-size: 100% 100%;
     background-attachment: fixed;
     overflow-x: hidden;
   }
   
-  /* Molten Scanline Effect - Muted Bronze */
+  /* Cassette Futurism Scanline Effect - Bronze with Teal hints */
   body::after {
     content: " ";
     display: block;
@@ -95,10 +97,10 @@
     bottom: 0;
     right: 0;
     background: 
-        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(20, 10, 5, 0.1) 50%), 
-        linear-gradient(90deg, rgba(184, 115, 51, 0.03), rgba(184, 115, 51, 0.01), rgba(139, 69, 19, 0.03));
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(10, 5, 15, 0.08) 50%), 
+        linear-gradient(90deg, rgba(20, 184, 166, 0.02), rgba(249, 115, 22, 0.02), rgba(20, 184, 166, 0.02));
     z-index: 9999;
-    background-size: 100% 3px, 4px 100%;
+    background-size: 100% 2px, 3px 100%;
     pointer-events: none;
     mix-blend-mode: overlay;
   }

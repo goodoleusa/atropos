@@ -7,10 +7,11 @@ import { QRCodeModal } from "@/components/QRCodeModal";
 import { AgentChat } from "@/components/AgentChat";
 import { MysticalPopups } from "@/components/MysticalPopups";
 import { QuantumField } from "@/components/QuantumField";
+import { GlobalAttackMap } from "@/components/GlobalAttackMap";
 import { useGame } from "@/hooks/useGameSession";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShieldAlert, Network, Server, Eye, QrCode, Bot } from "lucide-react";
+import { ShieldAlert, Network, Server, Eye, QrCode, Bot, Shield, Zap, Lock, Globe, Activity } from "lucide-react";
 import { motion, useMotionValue } from "framer-motion";
 
 export default function Home() {
@@ -113,80 +114,140 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-24 flex flex-col items-center text-center relative">
-        <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.8 }}
-        >
-          <div className="inline-block px-3 py-1 mb-6 text-xs font-mono text-amber-500 border border-amber-900/50 bg-amber-950/20 rounded-full">
-            INFRASTRUCTURE. STABILITY. CONTROL.
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold font-orbitron mb-6 bg-clip-text text-transparent bg-gradient-to-b from-stone-100 to-stone-600">
-            Total Network <br/>
-            <GlitchText text="Control" className="text-amber-600" />
-          </h1>
-          <p className="max-w-2xl text-stone-500 text-lg mb-8 leading-relaxed font-light">
-            We provide state-of-the-art infrastructure monitoring for the modern enterprise. 
-            Reliability is not just a metric; it is our religion.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Button size="lg" className="bg-amber-700 hover:bg-amber-600 text-black font-bold border-none">
-              Schedule Audit
-            </Button>
-            <Button size="lg" variant="outline" className="border-stone-800 text-stone-400 hover:border-amber-700 hover:text-amber-500 bg-transparent">
-              View Documentation
-            </Button>
-          </div>
-        </motion.div>
-        
-        {/* Hidden Clue 1: In plain sight but needs hover */}
-        <div className="absolute bottom-10 right-10 opacity-30 hover:opacity-100 transition-opacity duration-1000">
-           <ClueItem 
-             id="clue-01" 
-             name="Obsolete Protocol" 
-             description="A reference to an old port number." 
-             content="Port 8080 is open on the legacy mainframe." 
-             triggerText="Inspect Anomaly"
-           />
+      <section className="container mx-auto px-4 py-16 md:py-24 relative">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-left"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-xs font-mono border rounded-full bg-gradient-to-r from-teal-950/50 to-amber-950/50 border-teal-800/30">
+              <Activity className="w-3 h-3 text-teal-500" />
+              <span className="text-teal-400">LIVE THREAT INTELLIGENCE</span>
+              <span className="text-amber-500">|</span>
+              <span className="text-amber-400">GLOBAL NETWORK</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold font-orbitron mb-6">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600">
+                Cyber Defense
+              </span>
+              <br/>
+              <span className="text-stone-200">For The </span>
+              <GlitchText text="Modern Era" className="text-teal-500" />
+            </h1>
+            <p className="max-w-xl text-stone-400 text-lg mb-8 leading-relaxed">
+              Real-time threat detection across 15+ global nodes. We neutralize attacks before they reach your infrastructure.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Button size="lg" className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-black font-bold border-none shadow-lg shadow-amber-900/30">
+                <Shield className="w-4 h-4 mr-2" />
+                Request Security Audit
+              </Button>
+              <Button size="lg" variant="outline" className="border-teal-800/50 text-teal-400 hover:border-teal-600 hover:text-teal-300 bg-teal-950/20">
+                <Globe className="w-4 h-4 mr-2" />
+                View Global Status
+              </Button>
+            </div>
+            
+            {/* Quick stats */}
+            <div className="flex gap-8 mt-10 pt-8 border-t border-stone-800/50">
+              <div>
+                <div className="text-2xl font-orbitron font-bold text-amber-500">99.99%</div>
+                <div className="text-xs text-stone-500 font-mono">UPTIME SLA</div>
+              </div>
+              <div>
+                <div className="text-2xl font-orbitron font-bold text-teal-500">&lt;3ms</div>
+                <div className="text-xs text-stone-500 font-mono">RESPONSE TIME</div>
+              </div>
+              <div>
+                <div className="text-2xl font-orbitron font-bold text-orange-500">24/7</div>
+                <div className="text-xs text-stone-500 font-mono">SOC COVERAGE</div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Attack Map */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative"
+          >
+            <GlobalAttackMap />
+            
+            {/* Hidden Clue 1: In plain sight but needs hover */}
+            <div className="absolute -bottom-4 right-4 opacity-30 hover:opacity-100 transition-opacity duration-1000">
+              <ClueItem 
+                id="clue-01" 
+                name="Obsolete Protocol" 
+                description="A reference to an old port number." 
+                content="Port 8080 is open on the legacy mainframe." 
+                triggerText="Inspect Anomaly"
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Features Grid */}
+      {/* Services Section */}
       <section className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-orbitron font-bold text-stone-200 mb-4">
+            Enterprise <span className="text-teal-500">Security</span> Solutions
+          </h2>
+          <p className="text-stone-500 max-w-2xl mx-auto">
+            Comprehensive protection powered by machine learning and 24/7 human oversight
+          </p>
+        </div>
+        
         <div className="grid md:grid-cols-3 gap-6">
-          <Card className="bg-[#0f0a05]/80 border-amber-900/20 backdrop-blur-sm group hover:border-amber-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(184,115,51,0.1)]">
+          <Card className="bg-gradient-to-br from-[#0f0a05]/90 to-[#050a0f]/80 border-amber-900/20 backdrop-blur-sm group hover:border-teal-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(20,184,166,0.1)]">
             <CardHeader>
-              <ShieldAlert className="w-10 h-10 text-amber-700 mb-2 group-hover:text-amber-500 transition-colors" />
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-amber-900/30 to-amber-950/50 flex items-center justify-center mb-3 group-hover:from-amber-800/40 group-hover:to-amber-900/60 transition-all">
+                <ShieldAlert className="w-6 h-6 text-amber-500" />
+              </div>
               <CardTitle className="text-xl font-orbitron text-stone-200">Threat Mitigation</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-stone-500">
-                Advanced heuristics designed to neutralize unauthorized access attempts immediately.
+                AI-powered threat detection neutralizes attacks in milliseconds. Zero-day protection included.
               </CardDescription>
+              <div className="mt-4 flex gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">ML-POWERED</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">REAL-TIME</span>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0f0a05]/80 border-amber-900/20 backdrop-blur-sm group hover:border-amber-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(184,115,51,0.1)]">
+          <Card className="bg-gradient-to-br from-[#0f0a05]/90 to-[#050a0f]/80 border-teal-900/20 backdrop-blur-sm group hover:border-teal-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(20,184,166,0.1)]">
             <CardHeader>
-              <Network className="w-10 h-10 text-stone-700 mb-2 group-hover:text-stone-400 transition-colors" />
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-teal-900/30 to-teal-950/50 flex items-center justify-center mb-3 group-hover:from-teal-800/40 group-hover:to-teal-900/60 transition-all">
+                <Network className="w-6 h-6 text-teal-500" />
+              </div>
               <CardTitle className="text-xl font-orbitron text-stone-200">Mesh Connectivity</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-stone-500">
-                A seamless fabric of copper and light, binding every node into a singular consciousness.
+                Encrypted node-to-node communication across 15 global data centers. Zero trust architecture.
               </CardDescription>
+              <div className="mt-4 flex gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">ZERO-TRUST</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">E2E ENCRYPTED</span>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0f0a05]/80 border-amber-900/20 backdrop-blur-sm group hover:border-amber-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(184,115,51,0.1)]">
+          <Card className="bg-gradient-to-br from-[#0f0a05]/90 to-[#050a0f]/80 border-amber-900/20 backdrop-blur-sm group hover:border-amber-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(249,115,22,0.1)]">
             <CardHeader>
-              <Eye className="w-10 h-10 text-amber-900/50 mb-2 group-hover:text-amber-500 transition-colors" />
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-900/30 to-orange-950/50 flex items-center justify-center mb-3 group-hover:from-orange-800/40 group-hover:to-orange-900/60 transition-all">
+                <Eye className="w-6 h-6 text-orange-500" />
+              </div>
               <CardTitle className="text-xl font-orbitron text-stone-200">Deep Oversight</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-stone-500 relative">
-                Nothing is deleted. Every packet is archived in the molten core.
+                Full packet inspection and forensic logging. Nothing escapes the archive.
                 <div className="absolute top-0 right-0">
                     <ClueItem 
                         id="clue-02" 
@@ -197,8 +258,30 @@ export default function Home() {
                     />
                 </div>
               </CardDescription>
+              <div className="mt-4 flex gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">FORENSIC</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">90-DAY RETENTION</span>
+              </div>
             </CardContent>
           </Card>
+        </div>
+      </section>
+      
+      {/* Certifications / Trust badges */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="flex flex-wrap justify-center items-center gap-8 opacity-50">
+          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
+            <Lock className="w-4 h-4" /> SOC 2 TYPE II
+          </div>
+          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
+            <Shield className="w-4 h-4" /> ISO 27001
+          </div>
+          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
+            <Zap className="w-4 h-4" /> GDPR COMPLIANT
+          </div>
+          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
+            <Globe className="w-4 h-4" /> FEDRAMP AUTHORIZED
+          </div>
         </div>
       </section>
       
