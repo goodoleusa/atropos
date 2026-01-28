@@ -122,8 +122,8 @@ export default function Debug() {
 
   const getStatusColor = (status: SystemMetric["status"]) => {
     switch (status) {
-      case "OK": return "text-green-500";
-      case "WARNING": return "text-yellow-500";
+      case "OK": return "text-amber-500";
+      case "WARNING": return "text-orange-500";
       case "CRITICAL": return "text-red-500";
       default: return "text-stone-500";
     }

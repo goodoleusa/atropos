@@ -82,8 +82,8 @@ export default function Archive() {
 
   const getClassColor = (classification: ArchivedFile["classification"]) => {
     switch (classification) {
-      case "PUBLIC": return "text-green-500 border-green-900/50";
-      case "CLASSIFIED": return "text-yellow-500 border-yellow-900/50";
+      case "PUBLIC": return "text-amber-500 border-amber-900/50";
+      case "CLASSIFIED": return "text-orange-500 border-orange-900/50";
       case "REDACTED": return "text-red-500 border-red-900/50";
       case "VOID": return "text-purple-500 border-purple-900/50";
     }
@@ -142,7 +142,7 @@ export default function Archive() {
                         <FileText className="w-4 h-4" /> {file.name}
                       </CardTitle>
                       {accessible ? (
-                        <Unlock className="w-4 h-4 text-green-600" />
+                        <Unlock className="w-4 h-4 text-amber-500" />
                       ) : (
                         <Lock className="w-4 h-4 text-red-600" />
                       )}
