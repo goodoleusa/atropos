@@ -156,7 +156,7 @@ export async function registerRoutes(
         }
       }
       
-      const clue = await storage.updateClue(id, sanitizedUpdates);
+      const clue = await storage.updateClue(id, sanitizedUpdates as any);
       if (!clue) {
         return res.status(404).json({ error: "Clue not found" });
       }
@@ -232,7 +232,7 @@ export async function registerRoutes(
         }
       }
       
-      const quest = await storage.updateQuest(id, sanitizedUpdates);
+      const quest = await storage.updateQuest(id, sanitizedUpdates as any);
       if (!quest) {
         return res.status(404).json({ error: "Quest not found" });
       }
