@@ -198,10 +198,10 @@ export default function AdminDashboard() {
                       <span className="text-amber-600">/admin</span> <ArrowRight className="w-3 h-3" /> This Dashboard
                     </div>
                     <div className="flex items-center gap-2 text-stone-400">
-                      <span className="text-amber-600">/archive</span> <ArrowRight className="w-3 h-3" /> Data Archive (TODO)
+                      <span className="text-amber-600">/archive</span> <ArrowRight className="w-3 h-3" /> Data Archive
                     </div>
                     <div className="flex items-center gap-2 text-stone-400">
-                      <span className="text-amber-600">/debug</span> <ArrowRight className="w-3 h-3" /> Debug Console (TODO)
+                      <span className="text-amber-600">/debug</span> <ArrowRight className="w-3 h-3" /> Debug Console
                     </div>
                   </div>
                 </div>
