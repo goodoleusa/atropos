@@ -5,6 +5,9 @@ import {
   quests, 
   commandLogs,
   behavioralProfiles,
+  adminPrompts,
+  campaignTemplates,
+  flowNodes,
   type GameSession, 
   type InsertGameSession,
   type Clue,
@@ -14,7 +17,13 @@ import {
   type CommandLog,
   type InsertCommandLog,
   type BehavioralProfile,
-  type InsertBehavioralProfile
+  type InsertBehavioralProfile,
+  type AdminPrompt,
+  type InsertAdminPrompt,
+  type CampaignTemplate,
+  type InsertCampaignTemplate,
+  type FlowNode,
+  type InsertFlowNode
 } from "@shared/schema";
 import { eq, desc, sql, count, gte } from "drizzle-orm";
 
@@ -47,6 +56,24 @@ export interface IStorage {
   getBehaviorsBySession(sessionToken: string): Promise<BehavioralProfile[]>;
   getBehavioralTrends(days?: number): Promise<any>;
   getAllBehaviors(limit?: number): Promise<BehavioralProfile[]>;
+  
+  // Admin Prompts
+  getAdminPromptByKey(key: string): Promise<AdminPrompt | undefined>;
+  getAllAdminPrompts(): Promise<AdminPrompt[]>;
+  upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt>;
+  
+  // Campaign Templates
+  getCampaignByKey(key: string): Promise<CampaignTemplate | undefined>;
+  getAllCampaigns(): Promise<CampaignTemplate[]>;
+  createCampaign(campaign: InsertCampaignTemplate): Promise<CampaignTemplate>;
+  updateCampaign(key: string, updates: Partial<CampaignTemplate>): Promise<CampaignTemplate | undefined>;
+  deleteCampaign(key: string): Promise<boolean>;
+  
+  // Flow Nodes
+  getFlowNodesByKey(key: string): Promise<FlowNode[]>;
+  getAllFlowNodes(): Promise<FlowNode[]>;
+  upsertFlowNode(nodeId: string, data: Partial<InsertFlowNode>): Promise<FlowNode>;
+  deleteFlowNode(nodeId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -225,6 +252,111 @@ export class DatabaseStorage implements IStorage {
       uniqueUsers: uniqueSessions.length,
       totalEvents: categoryStats.reduce((sum, c) => sum + Number(c.count), 0)
     };
+  }
+
+  // Admin Prompts
+  async getAdminPromptByKey(key: string): Promise<AdminPrompt | undefined> {
+    const [prompt] = await db
+      .select()
+      .from(adminPrompts)
+      .where(eq(adminPrompts.key, key))
+      .limit(1);
+    return prompt;
+  }
+
+  async getAllAdminPrompts(): Promise<AdminPrompt[]> {
+    return await db.select().from(adminPrompts).orderBy(adminPrompts.category);
+  }
+
+  async upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt> {
+    const existing = await this.getAdminPromptByKey(key);
+    if (existing) {
+      const [updated] = await db
+        .update(adminPrompts)
+        .set({ ...data, version: existing.version + 1, updatedAt: new Date() })
+        .where(eq(adminPrompts.key, key))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(adminPrompts)
+        .values({ key, name: data.name || key, content: data.content || '', ...data })
+        .returning();
+      return created;
+    }
+  }
+
+  // Campaign Templates
+  async getCampaignByKey(key: string): Promise<CampaignTemplate | undefined> {
+    const [campaign] = await db
+      .select()
+      .from(campaignTemplates)
+      .where(eq(campaignTemplates.key, key))
+      .limit(1);
+    return campaign;
+  }
+
+  async getAllCampaigns(): Promise<CampaignTemplate[]> {
+    return await db.select().from(campaignTemplates).orderBy(campaignTemplates.category);
+  }
+
+  async createCampaign(campaign: InsertCampaignTemplate): Promise<CampaignTemplate> {
+    const [created] = await db.insert(campaignTemplates).values(campaign).returning();
+    return created;
+  }
+
+  async updateCampaign(key: string, updates: Partial<CampaignTemplate>): Promise<CampaignTemplate | undefined> {
+    const [updated] = await db
+      .update(campaignTemplates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(campaignTemplates.key, key))
+      .returning();
+    return updated;
+  }
+
+  async deleteCampaign(key: string): Promise<boolean> {
+    const result = await db.delete(campaignTemplates).where(eq(campaignTemplates.key, key));
+    return true;
+  }
+
+  // Flow Nodes
+  async getFlowNodesByKey(campaignKey: string): Promise<FlowNode[]> {
+    return await db
+      .select()
+      .from(flowNodes)
+      .where(eq(flowNodes.campaignKey, campaignKey));
+  }
+
+  async getAllFlowNodes(): Promise<FlowNode[]> {
+    return await db.select().from(flowNodes);
+  }
+
+  async upsertFlowNode(nodeId: string, data: Partial<InsertFlowNode>): Promise<FlowNode> {
+    const [existing] = await db
+      .select()
+      .from(flowNodes)
+      .where(eq(flowNodes.nodeId, nodeId))
+      .limit(1);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(flowNodes)
+        .set(data)
+        .where(eq(flowNodes.nodeId, nodeId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(flowNodes)
+        .values({ nodeId, title: data.title || 'Untitled', type: data.type || 'clue', ...data })
+        .returning();
+      return created;
+    }
+  }
+
+  async deleteFlowNode(nodeId: string): Promise<boolean> {
+    await db.delete(flowNodes).where(eq(flowNodes.nodeId, nodeId));
+    return true;
   }
 }
 

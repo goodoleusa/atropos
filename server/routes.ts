@@ -151,7 +151,7 @@ export async function registerRoutes(
   // Update a clue (with validation)
   app.patch("/api/clues/:id", rateLimit(30, 60000), async (req, res) => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       
       // Sanitize string fields in updates
       const sanitizedUpdates: Record<string, any> = {};
@@ -227,7 +227,7 @@ export async function registerRoutes(
   // Update a quest (with validation)
   app.patch("/api/quests/:id", rateLimit(30, 60000), async (req, res) => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       
       // Sanitize string fields in updates
       const sanitizedUpdates: Record<string, any> = {};
@@ -414,6 +414,180 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Check flagged error:", error);
       res.status(500).json({ error: "Failed to check flagged status" });
+    }
+  });
+
+  // ===== ADMIN PROMPTS =====
+  
+  // Get admin prompt by key
+  app.get("/api/admin/prompts/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      let prompt = await storage.getAdminPromptByKey(key);
+      
+      // If master_system doesn't exist, create default
+      if (!prompt && key === 'master_system') {
+        prompt = await storage.upsertAdminPrompt('master_system', {
+          name: 'Master System Prompt',
+          content: `NEXUS v2.0 | SysAdmin Corp Terminal Agent
+Role: CTF/OSINT assistant, payload interpreter, system navigator
+Context: Escape room game with hidden routes, QR mechanics, clue collection
+
+BEHAVIOR:
+- Be concise, technical, slightly mysterious
+- Parse payloads, explain effects, suggest next steps
+- Drop cryptic hints about hidden content
+- Never break character as NEXUS`,
+          category: 'system'
+        });
+      }
+      
+      if (!prompt) {
+        return res.status(404).json({ error: 'Prompt not found' });
+      }
+      res.json(prompt);
+    } catch (error) {
+      console.error("Get admin prompt error:", error);
+      res.status(500).json({ error: "Failed to get admin prompt" });
+    }
+  });
+
+  // Get all admin prompts
+  app.get("/api/admin/prompts", async (req, res) => {
+    try {
+      const prompts = await storage.getAllAdminPrompts();
+      res.json(prompts);
+    } catch (error) {
+      console.error("Get all admin prompts error:", error);
+      res.status(500).json({ error: "Failed to get admin prompts" });
+    }
+  });
+
+  // Update admin prompt
+  app.put("/api/admin/prompts/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      const { content, name, category } = req.body;
+      const prompt = await storage.upsertAdminPrompt(key, { content, name, category });
+      res.json(prompt);
+    } catch (error) {
+      console.error("Update admin prompt error:", error);
+      res.status(500).json({ error: "Failed to update admin prompt" });
+    }
+  });
+
+  // ===== CAMPAIGN TEMPLATES =====
+  
+  // Get all campaigns
+  app.get("/api/admin/campaigns", async (req, res) => {
+    try {
+      const campaigns = await storage.getAllCampaigns();
+      res.json(campaigns);
+    } catch (error) {
+      console.error("Get campaigns error:", error);
+      res.status(500).json({ error: "Failed to get campaigns" });
+    }
+  });
+
+  // Get campaign by key
+  app.get("/api/admin/campaigns/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      const campaign = await storage.getCampaignByKey(key);
+      if (!campaign) {
+        return res.status(404).json({ error: 'Campaign not found' });
+      }
+      res.json(campaign);
+    } catch (error) {
+      console.error("Get campaign error:", error);
+      res.status(500).json({ error: "Failed to get campaign" });
+    }
+  });
+
+  // Create campaign
+  app.post("/api/admin/campaigns", async (req, res) => {
+    try {
+      const campaign = await storage.createCampaign(req.body);
+      res.json(campaign);
+    } catch (error) {
+      console.error("Create campaign error:", error);
+      res.status(500).json({ error: "Failed to create campaign" });
+    }
+  });
+
+  // Update campaign
+  app.put("/api/admin/campaigns/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      const campaign = await storage.updateCampaign(key, req.body);
+      if (!campaign) {
+        return res.status(404).json({ error: 'Campaign not found' });
+      }
+      res.json(campaign);
+    } catch (error) {
+      console.error("Update campaign error:", error);
+      res.status(500).json({ error: "Failed to update campaign" });
+    }
+  });
+
+  // Delete campaign
+  app.delete("/api/admin/campaigns/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      await storage.deleteCampaign(key);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete campaign error:", error);
+      res.status(500).json({ error: "Failed to delete campaign" });
+    }
+  });
+
+  // ===== FLOW NODES =====
+  
+  // Get all flow nodes
+  app.get("/api/admin/flows", async (req, res) => {
+    try {
+      const nodes = await storage.getAllFlowNodes();
+      res.json(nodes);
+    } catch (error) {
+      console.error("Get flow nodes error:", error);
+      res.status(500).json({ error: "Failed to get flow nodes" });
+    }
+  });
+
+  // Get flow nodes by campaign key
+  app.get("/api/admin/flows/:campaignKey", async (req, res) => {
+    try {
+      const { campaignKey } = req.params;
+      const nodes = await storage.getFlowNodesByKey(campaignKey);
+      res.json(nodes);
+    } catch (error) {
+      console.error("Get flow nodes error:", error);
+      res.status(500).json({ error: "Failed to get flow nodes" });
+    }
+  });
+
+  // Upsert flow node
+  app.put("/api/admin/flows/:nodeId", async (req, res) => {
+    try {
+      const { nodeId } = req.params;
+      const node = await storage.upsertFlowNode(nodeId, req.body);
+      res.json(node);
+    } catch (error) {
+      console.error("Upsert flow node error:", error);
+      res.status(500).json({ error: "Failed to upsert flow node" });
+    }
+  });
+
+  // Delete flow node
+  app.delete("/api/admin/flows/:nodeId", async (req, res) => {
+    try {
+      const { nodeId } = req.params;
+      await storage.deleteFlowNode(nodeId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete flow node error:", error);
+      res.status(500).json({ error: "Failed to delete flow node" });
     }
   });
 
