@@ -50,6 +50,8 @@ import { ContentSearch, type SearchableItem, type ContentType } from "@/componen
 import { WikiLinkInput, extractLinkIds } from "@/components/WikiLinkInput";
 import { ClueGraph } from "@/components/ClueGraph";
 import { ClueBreadcrumbs } from "@/components/ClueBreadcrumbs";
+import { ApiPlayground } from "@/components/ApiPlayground";
+import CampaignDesigner from "@/components/CampaignDesigner";
 
 interface Clue {
   id: string;
@@ -76,6 +78,8 @@ export default function AdminDashboard() {
   const [newQuest, setNewQuest] = useState<Partial<Quest>>({});
   const [clueDialogOpen, setClueDialogOpen] = useState(false);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
+  const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
+  const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
   const [editingClue, setEditingClue] = useState<Clue | null>(null);
   const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
@@ -371,14 +375,32 @@ export default function AdminDashboard() {
                   <FileText className="w-3 h-3 mr-1" /> Archive
                 </Button>
               </Link>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="h-7 text-xs border-blue-800 text-blue-400 hover:bg-blue-950/50"
+                onClick={() => setApiPlaygroundOpen(true)}
+                data-testid="api-playground-button"
+              >
+                <Zap className="w-3 h-3 mr-1" /> API Playground
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="h-7 text-xs border-purple-800 text-purple-400 hover:bg-purple-950/50"
+                onClick={() => setCampaignDesignerOpen(true)}
+                data-testid="campaign-designer-button"
+              >
+                <Layers className="w-3 h-3 mr-1" /> Campaign Designer
+              </Button>
               <Link href="/debug">
                 <Button size="sm" variant="outline" className="h-7 text-xs border-red-800 text-red-400 hover:bg-red-950/50">
                   <Bug className="w-3 h-3 mr-1" /> Debug
                 </Button>
               </Link>
-              <Link href="/prompt-builder">
+              <Link href="/ai-lab">
                 <Button size="sm" variant="outline" className="h-7 text-xs border-blue-800 text-blue-400 hover:bg-blue-950/50">
-                  <Bot className="w-3 h-3 mr-1" /> Prompt Builder
+                  <Bot className="w-3 h-3 mr-1" /> AI Lab
                 </Button>
               </Link>
               <Link href="/report">
@@ -1459,6 +1481,10 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* API Playground Modal */}
+      <ApiPlayground open={apiPlaygroundOpen} onOpenChange={setApiPlaygroundOpen} />
+      <CampaignDesigner open={campaignDesignerOpen} onOpenChange={setCampaignDesignerOpen} />
     </div>
   );
 }

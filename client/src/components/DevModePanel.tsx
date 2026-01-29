@@ -54,12 +54,12 @@ interface RouteInfo {
 const SITEMAP: RouteInfo[] = [
   { path: '/', name: 'Home', icon: <Home className="w-3 h-3" />, color: 'amber', hidden: false, description: 'Corporate facade landing' },
   { path: '/login', name: 'Login', icon: <LogIn className="w-3 h-3" />, color: 'stone', hidden: false, description: 'Fake login portal' },
-  { path: '/terminal', name: 'Terminal', icon: <Terminal className="w-3 h-3" />, color: 'teal', hidden: true, description: 'Command interface' },
+  { path: '/terminal', name: 'Terminal', icon: <Terminal className="w-3 h-3" />, color: 'teal', hidden: true, description: 'Command interface with missions' },
   { path: '/void', name: 'The Void', icon: <Sparkles className="w-3 h-3" />, color: 'purple', hidden: true, description: 'Mystical easter egg' },
   { path: '/archive', name: 'Archive', icon: <FileText className="w-3 h-3" />, color: 'amber', hidden: true, description: 'Data archive' },
   { path: '/debug', name: 'Debug', icon: <Bug className="w-3 h-3" />, color: 'red', hidden: true, description: 'Debug console' },
-  { path: '/admin', name: 'Admin', icon: <Settings className="w-3 h-3" />, color: 'amber', hidden: true, description: 'Admin dashboard' },
-  { path: '/prompt-builder', name: 'Prompt Builder', icon: <Bot className="w-3 h-3" />, color: 'blue', hidden: true, description: 'AI prompt optimizer' },
+  { path: '/admin', name: 'Admin', icon: <Settings className="w-3 h-3" />, color: 'amber', hidden: true, description: 'Dashboard, API Playground, Behavior Analytics' },
+  { path: '/ai-lab', name: 'AI Lab', icon: <Bot className="w-3 h-3" />, color: 'blue', hidden: true, description: 'Prompt battleground, cost tracking, model comparison' },
   { path: '/report', name: 'Report Builder', icon: <BarChart3 className="w-3 h-3" />, color: 'orange', hidden: true, description: 'Bug bounty reports' },
 ];
 
@@ -80,6 +80,37 @@ export default function DevModePanel() {
 
   return (
     <>
+      {/* Quick Admin Access Button - Always visible when Dev Mode is ON */}
+      {gameState.devMode && !expanded && (
+        <motion.div
+          className="fixed bottom-20 sm:bottom-4 right-16 sm:right-20 z-50 flex gap-2"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+        >
+          <Link href="/admin">
+            <Button
+              size="sm"
+              className="bg-amber-700 hover:bg-amber-600 text-black font-bold shadow-lg min-h-[44px] px-4"
+              data-testid="quick-admin-button"
+            >
+              <Settings className="w-4 h-4 mr-1" />
+              Admin
+            </Button>
+          </Link>
+          <Link href="/terminal">
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-teal-700 text-teal-400 hover:bg-teal-950/50 shadow-lg min-h-[44px]"
+              data-testid="quick-terminal-button"
+            >
+              <Terminal className="w-4 h-4" />
+            </Button>
+          </Link>
+        </motion.div>
+      )}
+
       {/* Floating Toggle Button (Always Visible) - positioned to not conflict with terminal buttons */}
       <motion.div
         className="fixed bottom-20 sm:bottom-4 right-2 sm:right-4 z-50"
