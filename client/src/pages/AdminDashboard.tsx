@@ -37,9 +37,13 @@ import {
   ExternalLink,
   Play,
   FileText,
-  Bot
+  Bot,
+  ChevronRight,
+  ChevronDown,
+  Folder,
+  File
 } from "lucide-react";
-import { CHAOS_MESSAGES, MYSTICAL_CARDS, TOAST_MESSAGES, UI_TEXT } from "@/config/messages";
+import { CHAOS_MESSAGES, MYSTICAL_CARDS, TOAST_MESSAGES, UI_TEXT, TERMINAL_MESSAGES } from "@/config/messages";
 import { AGENT_CAMPAIGNS, CAMPAIGN_CATEGORIES, getDifficultyColor, type Campaign } from "@/config/agentCampaigns";
 import { useGame } from "@/hooks/useGameSession";
 
@@ -71,6 +75,57 @@ export default function AdminDashboard() {
   const [editingClue, setEditingClue] = useState<Clue | null>(null);
   const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({ 'root': true });
+
+  const toggleNode = (id: string) => {
+    setExpandedNodes(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const renderTree = (data: any, path: string = 'root') => {
+    if (typeof data !== 'object' || data === null) {
+      return (
+        <div className="flex items-center gap-2 py-1 pl-6">
+          <File className="w-3 h-3 text-stone-600" />
+          <span className="text-stone-400 text-xs">{String(data)}</span>
+        </div>
+      );
+    }
+
+    return Object.entries(data).map(([key, value]) => {
+      const currentPath = `${path}.${key}`;
+      const isExpanded = expandedNodes[currentPath];
+      const hasChildren = typeof value === 'object' && value !== null;
+
+      return (
+        <div key={currentPath} className="pl-4">
+          <div 
+            className="flex items-center gap-2 py-1 cursor-pointer hover:bg-amber-900/10 rounded px-1 transition-colors"
+            onClick={() => hasChildren && toggleNode(currentPath)}
+          >
+            {hasChildren ? (
+              isExpanded ? <ChevronDown className="w-3 h-3 text-amber-600" /> : <ChevronRight className="w-3 h-3 text-amber-600" />
+            ) : (
+              <File className="w-3 h-3 text-stone-600" />
+            )}
+            {hasChildren ? <Folder className="w-3 h-3 text-amber-700" /> : null}
+            <span className={`text-xs font-mono ${hasChildren ? 'text-amber-500 font-bold' : 'text-stone-400'}`}>
+              {key}
+            </span>
+            {!hasChildren && (
+              <span className="text-[10px] text-stone-600 italic truncate ml-2">
+                {String(value).substring(0, 50)}{String(value).length > 50 ? '...' : ''}
+              </span>
+            )}
+          </div>
+          {hasChildren && isExpanded && (
+            <div className="border-l border-amber-900/20 ml-1.5">
+              {renderTree(value, currentPath)}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
   
   // Local state for live config editing (these would sync to server/localStorage)
   const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
@@ -550,46 +605,72 @@ export default function AdminDashboard() {
                     <DialogTitle className="text-amber-600 font-orbitron">Create New Quest</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
-                    <Input 
-                      placeholder="Quest ID (e.g., quest-01)" 
-                      value={newQuest.id || ''}
-                      onChange={e => setNewQuest({...newQuest, id: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Name" 
-                      value={newQuest.name || ''}
-                      onChange={e => setNewQuest({...newQuest, name: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Textarea 
-                      placeholder="Description" 
-                      value={newQuest.description || ''}
-                      onChange={e => setNewQuest({...newQuest, description: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Required Clues (comma-separated IDs)" 
-                      onChange={e => setNewQuest({...newQuest, requiredClues: e.target.value.split(',').map(s => s.trim())})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Reward text" 
-                      value={newQuest.reward || ''}
-                      onChange={e => setNewQuest({...newQuest, reward: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Unlocks (route or feature)" 
-                      value={newQuest.unlocks || ''}
-                      onChange={e => setNewQuest({...newQuest, unlocks: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
+                    <div className="space-y-2">
+                      <Label className="text-amber-600 text-xs">Quest ID</Label>
+                      <Input 
+                        placeholder="e.g., quest-01" 
+                        value={newQuest.id || ''}
+                        onChange={e => setNewQuest({...newQuest, id: e.target.value})}
+                        className="bg-black/50 border-amber-900/30 text-amber-500"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-amber-600 text-xs">Quest Name</Label>
+                      <Input 
+                        placeholder="Quest Name" 
+                        value={newQuest.name || ''}
+                        onChange={e => setNewQuest({...newQuest, name: e.target.value})}
+                        className="bg-black/50 border-amber-900/30 text-amber-500"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-amber-600 text-xs">Description</Label>
+                      <Textarea 
+                        placeholder="Detailed quest description" 
+                        value={newQuest.description || ''}
+                        onChange={e => setNewQuest({...newQuest, description: e.target.value})}
+                        className="bg-black/50 border-amber-900/30 text-amber-500"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-amber-600 text-xs">Required Clues (IDs, comma-separated)</Label>
+                      <Input 
+                        placeholder="clue-01, clue-02" 
+                        value={newQuest.requiredClues?.join(', ') || ''}
+                        onChange={e => setNewQuest({...newQuest, requiredClues: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
+                        className="bg-black/50 border-amber-900/30 text-amber-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-amber-600 text-xs">Reward (Optional)</Label>
+                      <Input 
+                        placeholder="e.g., Access to Archive" 
+                        value={newQuest.reward || ''}
+                        onChange={e => setNewQuest({...newQuest, reward: e.target.value})}
+                        className="bg-black/50 border-amber-900/30 text-amber-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-amber-600 text-xs">Unlocks (Optional)</Label>
+                      <Input 
+                        placeholder="e.g., /archive" 
+                        value={newQuest.unlocks || ''}
+                        onChange={e => setNewQuest({...newQuest, unlocks: e.target.value})}
+                        className="bg-black/50 border-amber-900/30 text-amber-500"
+                      />
+                    </div>
                     <Button 
-                      onClick={() => createQuestMutation.mutate(newQuest)}
-                      className="w-full bg-amber-700 hover:bg-amber-600 text-black"
+                      onClick={() => {
+                        console.log("Submitting quest:", newQuest);
+                        createQuestMutation.mutate(newQuest);
+                      }}
+                      disabled={createQuestMutation.isPending || !newQuest.id || !newQuest.name}
+                      className="w-full bg-amber-700 hover:bg-amber-600 text-black font-bold"
                     >
-                      Create Quest
+                      {createQuestMutation.isPending ? 'Processing...' : 'Create Quest'}
                     </Button>
                   </div>
                 </DialogContent>
@@ -618,90 +699,94 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
-          {/* Messages Tab */}
           <TabsContent value="messages">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Chaos/Glitch Messages */}
-              <Card className="bg-[#0a0500] border-amber-900/30">
-                <CardHeader>
-                  <CardTitle className="text-amber-500 font-mono flex items-center gap-2">
-                    <Zap className="w-5 h-5" /> Chaos Overlay Messages
-                  </CardTitle>
-                  <CardDescription className="text-stone-600">
-                    Subliminal messages that flash during glitch effects
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="chaos-enabled" className="text-stone-400">Enable Chaos Overlay</Label>
-                    <Switch 
-                      id="chaos-enabled" 
-                      checked={chaosEnabled} 
-                      onCheckedChange={setChaosEnabled}
-                      data-testid="chaos-toggle"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {subliminalMessages.map((msg, i) => (
-                      <div key={i} className="flex items-center justify-between bg-black/50 p-2 rounded border border-amber-900/20">
-                        <span className="text-amber-500 text-sm font-mono">{msg}</span>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => removeSubliminalMessage(i)}
-                          className="text-red-500 hover:text-red-400 h-6 w-6 p-0"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="New subliminal message..."
-                      value={newSubliminal}
-                      onChange={e => setNewSubliminal(e.target.value)}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                      data-testid="new-subliminal-input"
-                    />
-                    <Button onClick={addSubliminalMessage} className="bg-amber-700 hover:bg-amber-600 text-black">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-orbitron text-teal-400 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" /> Game Narrative & Message Tree
+                </h3>
+                <Badge variant="outline" className="border-teal-600 text-teal-400">
+                  Read Only / Simulation
+                </Badge>
+              </div>
 
-              {/* Toast Messages */}
-              <Card className="bg-[#0a0500] border-amber-900/30">
-                <CardHeader>
-                  <CardTitle className="text-amber-500 font-mono flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5" /> Toast Notifications
-                  </CardTitle>
-                  <CardDescription className="text-stone-600">
-                    System notification messages
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <div className="p-3 bg-black/50 rounded border border-amber-900/20">
-                    <p className="text-amber-600 font-bold">{TOAST_MESSAGES.clueAcquired.title}</p>
-                    <p className="text-stone-500">Clue collection notification</p>
-                  </div>
-                  <div className="p-3 bg-black/50 rounded border border-amber-900/20">
-                    <p className="text-amber-600 font-bold">{TOAST_MESSAGES.questComplete.title}</p>
-                    <p className="text-stone-500">Quest completion notification</p>
-                  </div>
-                  <div className="p-3 bg-black/50 rounded border border-red-900/20">
-                    <p className="text-red-500 font-bold">{TOAST_MESSAGES.adminDenied.title}</p>
-                    <p className="text-stone-500">Failed login attempt</p>
-                  </div>
-                  <div className="p-3 bg-black/50 rounded border border-teal-900/20">
-                    <p className="text-teal-500 font-bold">{TOAST_MESSAGES.secretFound.title}</p>
-                    <p className="text-stone-500">Hidden path discovery</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="grid lg:grid-cols-3 gap-6">
+                {/* Message Tree View */}
+                <Card className="lg:col-span-2 bg-[#0a0500] border-amber-900/30 overflow-hidden">
+                  <CardHeader className="bg-amber-950/10 border-b border-amber-900/20">
+                    <CardTitle className="text-amber-500 font-mono text-sm flex items-center gap-2">
+                      <Folder className="w-4 h-4" /> root/messages/config
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 overflow-y-auto max-h-[600px] custom-scrollbar">
+                    {renderTree({
+                      TERMINAL_MESSAGES,
+                      TOAST_MESSAGES,
+                      CHAOS_MESSAGES,
+                      MYSTICAL_CARDS,
+                      UI_TEXT
+                    })}
+                  </CardContent>
+                </Card>
+
+                {/* Direct Quantum Controls */}
+                <div className="space-y-4">
+                  <Card className="bg-[#0a0500] border-teal-900/30">
+                    <CardHeader>
+                      <CardTitle className="text-teal-400 font-mono text-sm flex items-center gap-2">
+                        <Zap className="w-4 h-4" /> Quantum Probability Text
+                      </CardTitle>
+                      <CardDescription className="text-stone-500 text-[10px]">
+                        Manage strings used in the quantum fluctuation simulations
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="bg-black/50 p-3 rounded border border-teal-900/20">
+                        <Label className="text-teal-600 text-[10px] uppercase font-bold mb-2 block">Active Wave Strings</Label>
+                        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                          {CHAOS_MESSAGES.subliminal.map((msg, i) => (
+                            <div key={i} className="flex items-center justify-between group bg-teal-950/10 p-2 rounded border border-teal-900/10 hover:border-teal-500/30 transition-all">
+                              <span className="text-xs font-mono text-stone-300">{msg}</span>
+                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Trash2 className="w-3 h-3 text-red-500" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-4 flex gap-2">
+                          <Input 
+                            placeholder="New quantum string..." 
+                            className="bg-black/50 border-teal-900/30 text-teal-400 text-xs h-8" 
+                          />
+                          <Button size="sm" className="bg-teal-600 hover:bg-teal-500 text-black h-8">
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-[#0a0500] border-amber-900/30">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-amber-500 font-mono text-sm">System Simulation</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Button className="w-full bg-amber-900/20 border border-amber-700/30 text-amber-500 text-xs py-6 hover:bg-amber-900/40 transition-all group">
+                        <div className="flex flex-col items-center gap-1">
+                          <Zap className="w-4 h-4 group-hover:animate-pulse" />
+                          <span>TRIGGER CHAOS FLASH</span>
+                        </div>
+                      </Button>
+                      <Button className="w-full bg-teal-900/20 border border-teal-700/30 text-teal-500 text-xs py-6 hover:bg-teal-900/40 transition-all group">
+                        <div className="flex flex-col items-center gap-1">
+                          <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                          <span>SPAWN MYSTICAL POPUP</span>
+                        </div>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
