@@ -80,9 +80,9 @@ export default function DevModePanel() {
 
   return (
     <>
-      {/* Floating Toggle Button (Always Visible) */}
+      {/* Floating Toggle Button (Always Visible) - positioned to not conflict with terminal buttons */}
       <motion.div
-        className="fixed bottom-4 right-4 z-50"
+        className="fixed bottom-20 sm:bottom-4 right-2 sm:right-4 z-50"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5 }}
@@ -94,7 +94,7 @@ export default function DevModePanel() {
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
-              className="bg-[#0a0500] border border-amber-900/50 rounded-lg shadow-2xl p-4 w-72"
+              className="bg-[#0a0500] border border-amber-900/50 rounded-lg shadow-2xl p-3 sm:p-4 w-[85vw] sm:w-72 max-w-72"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
@@ -228,26 +228,26 @@ export default function DevModePanel() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Dev Mode Indicator Bar */}
+      {/* Dev Mode Indicator Bar - responsive for mobile */}
       {gameState.devMode && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="fixed top-0 left-0 right-0 z-40 bg-teal-950/90 border-b border-teal-600 py-1 px-4"
+          className="fixed top-0 left-0 right-0 z-40 bg-teal-950/90 border-b border-teal-600 py-1 px-2 sm:px-4"
         >
           <div className="flex items-center justify-between max-w-7xl mx-auto">
-            <div className="flex items-center gap-3">
-              <Badge className="bg-teal-600 text-black text-[10px]">
-                <Zap className="w-3 h-3 mr-1" /> DEV MODE ACTIVE
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Badge className="bg-teal-600 text-black text-[8px] sm:text-[10px] px-1.5 sm:px-2">
+                <Zap className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> DEV
               </Badge>
-              <span className="text-teal-400 text-xs">All routes visible • Debug info enabled</span>
+              <span className="text-teal-400 text-[10px] sm:text-xs hidden sm:inline">All routes visible • Debug info enabled</span>
             </div>
-            <div className="flex items-center gap-2">
-              {SITEMAP.filter(r => r.hidden).slice(0, 4).map(route => (
+            <div className="flex items-center gap-1 sm:gap-2">
+              {SITEMAP.filter(r => r.hidden).slice(0, 3).map(route => (
                 <Link key={route.path} href={route.path}>
-                  <Button size="sm" variant="ghost" className="h-6 text-[10px] text-teal-400 hover:text-teal-300">
+                  <Button size="sm" variant="ghost" className="h-6 min-w-[36px] sm:min-w-0 text-[10px] text-teal-400 hover:text-teal-300 px-1 sm:px-2">
                     {route.icon}
-                    <span className="ml-1">{route.name}</span>
+                    <span className="ml-1 hidden sm:inline">{route.name}</span>
                   </Button>
                 </Link>
               ))}
