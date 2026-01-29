@@ -130,14 +130,53 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
+  // Single model test - for AI Lab testing
+  // Rate limited: 10/min
+  app.post("/api/chat/test", chatRateLimit(10, 60000), async (req: Request, res: Response) => {
+    try {
+      const { prompt, systemPrompt, model = "meta-llama/llama-3.3-70b-instruct:free" } = req.body;
+
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt required" });
+      }
+
+      const messages: Array<{role: string; content: string}> = [];
+      if (systemPrompt) {
+        messages.push({ role: 'system', content: systemPrompt });
+      }
+      messages.push({ role: 'user', content: prompt });
+
+      const startTime = Date.now();
+      const response = await openrouter.chat.completions.create({
+        model,
+        messages: messages as any,
+        max_tokens: 1024,
+        temperature: 0.7,
+      });
+
+      const content = response.choices[0]?.message?.content || '';
+      const latency = Date.now() - startTime;
+
+      res.json({ 
+        content, 
+        model,
+        latency,
+        usage: response.usage
+      });
+    } catch (error: any) {
+      console.error("Error in chat test:", error);
+      res.status(500).json({ error: error.message || "Test failed" });
+    }
+  });
+
   // Model Battleground - compare same prompt across multiple models
   // Rate limited: 5/min - very expensive operation
   app.post("/api/chat/battleground", chatRateLimit(5, 60000), async (req: Request, res: Response) => {
     try {
       const { prompt, systemPrompt, models } = req.body;
 
-      if (!prompt || !models || !Array.isArray(models) || models.length < 2) {
-        return res.status(400).json({ error: "Prompt and at least 2 models required" });
+      if (!prompt || !models || !Array.isArray(models) || models.length < 1) {
+        return res.status(400).json({ error: "Prompt and at least 1 model required" });
       }
 
       // Limit to 4 models max
