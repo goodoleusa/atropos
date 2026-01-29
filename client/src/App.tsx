@@ -15,6 +15,7 @@ import Archive from "@/pages/Archive";
 import Debug from "@/pages/Debug";
 import PromptBuilder from "@/pages/PromptBuilder";
 import ReportBuilder from "@/pages/ReportBuilder";
+import Wiki from "@/pages/Wiki";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/debug" component={Debug} />
       <Route path="/prompt-builder" component={PromptBuilder} />
       <Route path="/report" component={ReportBuilder} />
+      <Route path="/wiki" component={Wiki} />
       <Route component={NotFound} />
     </Switch>
   );
