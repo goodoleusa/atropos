@@ -176,21 +176,21 @@ export default function AILab() {
     const startTime = Date.now();
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/chat/battleground', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: selectedModel,
-          messages: [
-            { role: 'system', content: generatedPrompt },
-            { role: 'user', content: testPrompt }
-          ]
+          prompt: testPrompt,
+          systemPrompt: generatedPrompt,
+          models: [selectedModel]
         })
       });
 
       const data = await res.json();
       const latencyMs = Date.now() - startTime;
-      const responseText = data.content || data.message || JSON.stringify(data);
+      
+      const result = data.results?.[selectedModel];
+      const responseText = result?.response || JSON.stringify(data);
       setResponse(responseText);
 
       const inputTokens = estimatedTokens.total;
@@ -207,7 +207,7 @@ export default function AILab() {
         outputTokens,
         totalTokens: inputTokens + outputTokens,
         costUsd,
-        latencyMs,
+        latencyMs: result?.latency || latencyMs,
         taskCompletion: taskCompletionRating,
         coherence: coherenceRating,
         contextAwareness: contextRating,
@@ -215,7 +215,7 @@ export default function AILab() {
       };
 
       setRuns(prev => [...prev, newRun]);
-      toast({ title: 'Test completed', description: `Cost: $${costUsd.toFixed(4)} | Latency: ${latencyMs}ms` });
+      toast({ title: 'Test completed', description: `Cost: $${costUsd.toFixed(4)} | Latency: ${newRun.latencyMs}ms` });
     } catch (err) {
       setResponse(`Error: ${err}`);
       toast({ title: 'Test failed', variant: 'destructive' });
