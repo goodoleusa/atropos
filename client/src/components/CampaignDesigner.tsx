@@ -513,15 +513,15 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
             </div>
 
             {editingNode && (
-              <div className="w-72 border-l border-amber-900/30 p-4 overflow-y-auto">
-                <div className="flex items-center justify-between mb-4">
+              <div className="fixed inset-0 sm:relative sm:inset-auto z-50 sm:z-0 bg-[#0a0500] sm:bg-transparent sm:w-72 sm:border-l border-amber-900/30 p-4 overflow-y-auto">
+                <div className="flex items-center justify-between mb-4 sticky top-0 bg-[#0a0500] py-2 z-10">
                   <h3 className="text-sm font-bold text-amber-500">Edit Node</h3>
-                  <Button size="sm" variant="ghost" onClick={() => setEditingNode(null)}>
-                    <span className="text-stone-500">×</span>
+                  <Button size="sm" variant="ghost" onClick={() => setEditingNode(null)} className="min-h-[44px] min-w-[44px]">
+                    <span className="text-stone-500 text-xl">×</span>
                   </Button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-6 pb-20 sm:pb-0">
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Title</label>
                     <Input
@@ -531,7 +531,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         setEditingNode(prev => prev ? { ...prev, title: newTitle } : null);
                         updateNode(editingNode.id, { title: newTitle });
                       }}
-                      className="bg-black/50 border-stone-700 text-sm"
+                      className="bg-black/50 border-stone-700 text-base min-h-[44px]"
                     />
                   </div>
 
@@ -544,19 +544,19 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         setEditingNode(prev => prev ? { ...prev, content: newContent } : null);
                         updateNode(editingNode.id, { content: newContent });
                       }}
-                      className="bg-black/50 border-stone-700 text-sm h-32"
+                      className="bg-black/50 border-stone-700 text-base min-h-[120px]"
                     />
                   </div>
 
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Color</label>
-                    <div className="flex gap-1 mt-1">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {['amber', 'teal', 'purple', 'blue', 'red', 'green'].map(color => (
                         <button
                           key={color}
-                          className={`w-6 h-6 rounded border-2 ${
-                            editingNode.color === color ? 'ring-2 ring-white' : ''
-                          } bg-${color}-600 border-${color}-400`}
+                          className={`w-10 h-10 rounded border-2 ${
+                            editingNode.color === color ? 'ring-2 ring-white border-white' : 'border-transparent'
+                          } bg-${color}-600`}
                           onClick={() => {
                             setEditingNode(prev => prev ? { ...prev, color } : null);
                             updateNode(editingNode.id, { color });
@@ -592,7 +592,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         />
                         <div className="flex flex-wrap gap-1 mt-1">
                           {editingNode.metadata.toolsForStep?.map((tool, i) => (
-                            <Badge key={i} variant="outline" className="text-[8px] border-teal-600 text-teal-400">
+                            <Badge key={i} variant="outline" className="text-[8px] border-amber-600 text-amber-400">
                               {tool}
                             </Badge>
                           ))}
@@ -661,6 +661,15 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         />
                       </div>
                     </div>
+                  </div>
+
+                  <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0500] border-t border-amber-900/30 sm:relative sm:p-0 sm:bg-transparent sm:border-0 sm:mt-6">
+                    <Button 
+                      onClick={() => setEditingNode(null)} 
+                      className="w-full min-h-[50px] bg-amber-700 hover:bg-amber-600 text-black font-bold"
+                    >
+                      Save Changes
+                    </Button>
                   </div>
                 </div>
               </div>
