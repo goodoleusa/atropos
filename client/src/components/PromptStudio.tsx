@@ -26,6 +26,7 @@ import {
   CollapsibleTrigger 
 } from '@/components/ui/collapsible';
 import { CAPABILITY_MODULES, buildSystemPrompt, CONTEXT_COMPRESSION_PROMPT } from '@/config/agentPrompts';
+import { LearningSettings } from '@/components/LearningSettings';
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
@@ -199,6 +200,9 @@ export function PromptStudio({
                 </p>
               </div>
             )}
+
+            {/* Learning Profile Settings */}
+            <LearningSettings compact={true} />
 
             {/* Temperature Slider */}
             <div>

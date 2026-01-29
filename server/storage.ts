@@ -4,6 +4,7 @@ import {
   clues, 
   quests, 
   commandLogs,
+  behavioralProfiles,
   type GameSession, 
   type InsertGameSession,
   type Clue,
@@ -11,9 +12,11 @@ import {
   type Quest,
   type InsertQuest,
   type CommandLog,
-  type InsertCommandLog
+  type InsertCommandLog,
+  type BehavioralProfile,
+  type InsertBehavioralProfile
 } from "@shared/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql, count, gte } from "drizzle-orm";
 
 export interface IStorage {
   // Game Sessions
@@ -38,6 +41,12 @@ export interface IStorage {
   // Command Logs
   logCommand(log: InsertCommandLog): Promise<CommandLog>;
   getCommandHistory(sessionToken: string, limit?: number): Promise<CommandLog[]>;
+  
+  // Behavioral Profiles
+  logBehavior(profile: InsertBehavioralProfile): Promise<BehavioralProfile>;
+  getBehaviorsBySession(sessionToken: string): Promise<BehavioralProfile[]>;
+  getBehavioralTrends(days?: number): Promise<any>;
+  getAllBehaviors(limit?: number): Promise<BehavioralProfile[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -144,6 +153,78 @@ export class DatabaseStorage implements IStorage {
       .where(eq(commandLogs.sessionToken, sessionToken))
       .orderBy(desc(commandLogs.timestamp))
       .limit(limit);
+  }
+
+  // Behavioral Profiles
+  async logBehavior(profile: InsertBehavioralProfile): Promise<BehavioralProfile> {
+    const [newProfile] = await db.insert(behavioralProfiles).values(profile).returning();
+    return newProfile;
+  }
+
+  async getBehaviorsBySession(sessionToken: string): Promise<BehavioralProfile[]> {
+    return await db
+      .select()
+      .from(behavioralProfiles)
+      .where(eq(behavioralProfiles.sessionToken, sessionToken))
+      .orderBy(desc(behavioralProfiles.timestamp));
+  }
+
+  async getAllBehaviors(limit: number = 100): Promise<BehavioralProfile[]> {
+    return await db
+      .select()
+      .from(behavioralProfiles)
+      .orderBy(desc(behavioralProfiles.timestamp))
+      .limit(limit);
+  }
+
+  async getBehavioralTrends(days: number = 7): Promise<any> {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    // Get category distribution
+    const categoryStats = await db
+      .select({
+        category: behavioralProfiles.category,
+        count: count()
+      })
+      .from(behavioralProfiles)
+      .where(gte(behavioralProfiles.timestamp, cutoff))
+      .groupBy(behavioralProfiles.category);
+
+    // Get action type distribution
+    const actionStats = await db
+      .select({
+        actionType: behavioralProfiles.actionType,
+        count: count()
+      })
+      .from(behavioralProfiles)
+      .where(gte(behavioralProfiles.timestamp, cutoff))
+      .groupBy(behavioralProfiles.actionType);
+
+    // Get daily activity
+    const dailyActivity = await db
+      .select({
+        date: sql<string>`DATE(${behavioralProfiles.timestamp})`,
+        count: count()
+      })
+      .from(behavioralProfiles)
+      .where(gte(behavioralProfiles.timestamp, cutoff))
+      .groupBy(sql`DATE(${behavioralProfiles.timestamp})`)
+      .orderBy(sql`DATE(${behavioralProfiles.timestamp})`);
+
+    // Get unique sessions
+    const uniqueSessions = await db
+      .selectDistinct({ sessionToken: behavioralProfiles.sessionToken })
+      .from(behavioralProfiles)
+      .where(gte(behavioralProfiles.timestamp, cutoff));
+
+    return {
+      categoryDistribution: categoryStats,
+      actionTypeDistribution: actionStats,
+      dailyActivity,
+      uniqueUsers: uniqueSessions.length,
+      totalEvents: categoryStats.reduce((sum, c) => sum + Number(c.count), 0)
+    };
   }
 }
 
