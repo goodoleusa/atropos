@@ -92,13 +92,26 @@ export default function AdminDashboard() {
     mutationFn: (clue: Partial<Clue>) => 
       fetch('/api/clues', { 
         method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(clue)
-      }).then(r => r.json()),
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
+        body: JSON.stringify({ ...clue, content: clue.content || '' })
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.error || 'Failed to create clue');
+        }
+        return r.json();
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
       setClueDialogOpen(false);
       setNewClue({});
+    },
+    onError: (error: Error) => {
+      console.error('Clue creation failed:', error);
+      alert(`Error: ${error.message}`);
     }
   });
 
@@ -106,13 +119,26 @@ export default function AdminDashboard() {
     mutationFn: (quest: Partial<Quest>) => 
       fetch('/api/quests', { 
         method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
         body: JSON.stringify(quest)
-      }).then(r => r.json()),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.error || 'Failed to create quest');
+        }
+        return r.json();
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
       setQuestDialogOpen(false);
       setNewQuest({});
+    },
+    onError: (error: Error) => {
+      console.error('Quest creation failed:', error);
+      alert(`Error: ${error.message}`);
     }
   });
 
@@ -120,20 +146,46 @@ export default function AdminDashboard() {
     mutationFn: (clue: Clue) => 
       fetch(`/api/clues/${clue.id}`, { 
         method: 'PATCH', 
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
         body: JSON.stringify(clue)
-      }).then(r => r.json()),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.error || 'Failed to update clue');
+        }
+        return r.json();
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
       setEditingClue(null);
+    },
+    onError: (error: Error) => {
+      alert(`Update failed: ${error.message}`);
     }
   });
 
   const deleteClueMutation = useMutation({
     mutationFn: (id: string) => 
-      fetch(`/api/clues/${id}`, { method: 'DELETE' }).then(r => r.json()),
+      fetch(`/api/clues/${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        }
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.error || 'Failed to delete clue');
+        }
+        return r.json();
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
+    },
+    onError: (error: Error) => {
+      alert(`Delete failed: ${error.message}`);
     }
   });
 
@@ -141,20 +193,46 @@ export default function AdminDashboard() {
     mutationFn: (quest: Quest) => 
       fetch(`/api/quests/${quest.id}`, { 
         method: 'PATCH', 
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
         body: JSON.stringify(quest)
-      }).then(r => r.json()),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.error || 'Failed to update quest');
+        }
+        return r.json();
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
       setEditingQuest(null);
+    },
+    onError: (error: Error) => {
+      alert(`Update failed: ${error.message}`);
     }
   });
 
   const deleteQuestMutation = useMutation({
     mutationFn: (id: string) => 
-      fetch(`/api/quests/${id}`, { method: 'DELETE' }).then(r => r.json()),
+      fetch(`/api/quests/${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        }
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.error || 'Failed to delete quest');
+        }
+        return r.json();
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
+    },
+    onError: (error: Error) => {
+      alert(`Delete failed: ${error.message}`);
     }
   });
 

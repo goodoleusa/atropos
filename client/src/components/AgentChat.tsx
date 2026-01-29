@@ -125,9 +125,13 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     try {
       const res = await fetch('/api/conversations', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
         body: JSON.stringify({ title: `Agent Session ${Date.now()}` })
       });
+      if (!res.ok) throw new Error('Unauthorized');
       const data = await res.json();
       return data.id;
     } catch (error) {
@@ -174,7 +178,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       if (!convId) {
         setMessages(prev => [...prev, { 
           role: 'assistant', 
-          content: 'ERROR: Failed to initialize conversation. Please try again.' 
+          content: 'ERROR: Failed to initialize conversation. Please check your access token.' 
         }]);
         setLoading(false);
         return;
@@ -183,7 +187,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       // Build context with system prompt
       const contextMessages = [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'system', content: `Current session token: ${gameState.sessionToken.substring(0, 8)}... | Clues: ${gameState.inventory.length}` },
+        { role: 'system', content: `Current session token: ${gameState.sessionToken.substring(0, 8)}... | Clues: ${gameState.inventory?.length || 0}` },
         ...messages,
         { role: 'user', content: userMessage }
       ];
@@ -191,7 +195,10 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       // Stream response
       const response = await fetch(`/api/conversations/${convId}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
         body: JSON.stringify({ 
           content: userMessage,
           model: selectedModel,
