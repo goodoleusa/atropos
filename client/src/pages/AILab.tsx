@@ -59,15 +59,48 @@ const MODEL_PRICING: Record<string, { input: number; output: number }> = {
   'mistralai/codestral:free': { input: 0.0, output: 0.0 },
 };
 
-const MODELS = [
-  { id: 'openai/gpt-4o', name: 'GPT-4o', tier: 'paid' },
-  { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', tier: 'paid' },
-  { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', tier: 'paid' },
-  { id: 'moonshotai/kimi-k2.5', name: 'Kimi K2.5', tier: 'free' },
-  { id: 'nvidia/nemotron-3-nano-30b-a3b:free', name: 'Nemotron 30B', tier: 'free' },
-  { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', tier: 'free' },
-  { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash', tier: 'free' },
-  { id: 'mistralai/codestral:free', name: 'Codestral', tier: 'free' },
+interface ModelInfo {
+  id: string;
+  name: string;
+  tier: 'free' | 'paid';
+  category: 'coding' | 'reasoning' | 'creative' | 'general' | 'fast';
+  strengths: string[];
+}
+
+const MODEL_CATEGORIES = {
+  coding: { label: 'Coding & Technical', icon: '💻', color: 'teal' },
+  reasoning: { label: 'Reasoning & Analysis', icon: '🧠', color: 'purple' },
+  creative: { label: 'Creative & Writing', icon: '✨', color: 'amber' },
+  general: { label: 'General Purpose', icon: '🎯', color: 'blue' },
+  fast: { label: 'Fast & Efficient', icon: '⚡', color: 'green' }
+};
+
+const MODELS: ModelInfo[] = [
+  // Coding & Technical
+  { id: 'mistralai/codestral-latest', name: 'Codestral', tier: 'paid', category: 'coding', strengths: ['Code generation', 'Debugging', '80+ languages'] },
+  { id: 'deepseek/deepseek-coder', name: 'DeepSeek Coder', tier: 'free', category: 'coding', strengths: ['Code completion', 'Algorithms', 'Open source'] },
+  { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'Qwen 2.5 Coder 32B', tier: 'free', category: 'coding', strengths: ['Code review', 'Refactoring', 'Fast'] },
+  
+  // Reasoning & Analysis
+  { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', tier: 'paid', category: 'reasoning', strengths: ['Deep analysis', 'Long context', 'Safety'] },
+  { id: 'openai/gpt-4o', name: 'GPT-4o', tier: 'paid', category: 'reasoning', strengths: ['Multimodal', 'Complex tasks', 'Tool use'] },
+  { id: 'google/gemini-2.0-flash-thinking-exp:free', name: 'Gemini 2.0 Thinking', tier: 'free', category: 'reasoning', strengths: ['Chain of thought', 'Math', 'Logic'] },
+  { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1', tier: 'free', category: 'reasoning', strengths: ['Math reasoning', 'Step-by-step', 'Open weights'] },
+  
+  // Creative & Writing
+  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', tier: 'paid', category: 'creative', strengths: ['Creative writing', 'Nuance', 'Style'] },
+  { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', tier: 'free', category: 'creative', strengths: ['Storytelling', 'Roleplay', 'Open source'] },
+  { id: 'mistralai/mistral-large-2411', name: 'Mistral Large', tier: 'paid', category: 'creative', strengths: ['Multilingual', 'Nuanced', 'European'] },
+  
+  // General Purpose
+  { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', tier: 'paid', category: 'general', strengths: ['Balanced', 'Cost-effective', 'Reliable'] },
+  { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash', tier: 'free', category: 'general', strengths: ['Multimodal', 'Fast', 'Free'] },
+  { id: 'meta-llama/llama-3.1-8b-instruct:free', name: 'Llama 3.1 8B', tier: 'free', category: 'general', strengths: ['Lightweight', 'Quick', 'Efficient'] },
+  
+  // Fast & Efficient
+  { id: 'groq/llama-3.3-70b-versatile', name: 'Groq Llama 70B', tier: 'paid', category: 'fast', strengths: ['Ultra-fast', 'Low latency', 'Groq chip'] },
+  { id: 'google/gemini-flash-1.5-8b', name: 'Gemini Flash 1.5 8B', tier: 'free', category: 'fast', strengths: ['Instant', 'Cheap', 'Streaming'] },
+  { id: 'mistralai/ministral-8b', name: 'Ministral 8B', tier: 'paid', category: 'fast', strengths: ['Edge-ready', 'Compact', 'Efficient'] },
 ];
 
 const TEST_SCENARIOS = [
@@ -176,21 +209,19 @@ export default function AILab() {
     const startTime = Date.now();
 
     try {
-      const res = await fetch('/api/chat/battleground', {
+      const res = await fetch('/api/chat/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: testPrompt,
           systemPrompt: generatedPrompt,
-          models: [selectedModel]
+          model: selectedModel
         })
       });
 
       const data = await res.json();
-      const latencyMs = Date.now() - startTime;
-      
-      const result = data.results?.[selectedModel];
-      const responseText = result?.response || JSON.stringify(data);
+      const latencyMs = data.latency || (Date.now() - startTime);
+      const responseText = data.content || data.error || JSON.stringify(data);
       setResponse(responseText);
 
       const inputTokens = estimatedTokens.total;
@@ -207,7 +238,7 @@ export default function AILab() {
         outputTokens,
         totalTokens: inputTokens + outputTokens,
         costUsd,
-        latencyMs: result?.latency || latencyMs,
+        latencyMs,
         taskCompletion: taskCompletionRating,
         coherence: coherenceRating,
         contextAwareness: contextRating,
@@ -365,25 +396,55 @@ export default function AILab() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm text-stone-400 mb-2 block">Model</label>
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger className="bg-black/50 border-stone-700 min-h-[48px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-stone-900 border-stone-700">
-                  {MODELS.map(m => (
-                    <SelectItem key={m.id} value={m.id} className="min-h-[44px]">
-                      <span className="flex items-center gap-2">
-                        {m.name}
-                        <Badge variant="outline" className={`text-[10px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
-                          {m.tier.toUpperCase()}
-                        </Badge>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="space-y-3">
+              <label className="text-sm text-stone-400 block">Select Model</label>
+              {(Object.keys(MODEL_CATEGORIES) as Array<keyof typeof MODEL_CATEGORIES>).map(cat => {
+                const catInfo = MODEL_CATEGORIES[cat];
+                const catModels = MODELS.filter(m => m.category === cat);
+                return (
+                  <div key={cat} className="space-y-2">
+                    <p className="text-xs text-stone-500 flex items-center gap-1">
+                      <span>{catInfo.icon}</span> {catInfo.label}
+                    </p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {catModels.map(m => {
+                        const isSelected = selectedModel === m.id;
+                        return (
+                          <button
+                            key={m.id}
+                            onClick={() => setSelectedModel(m.id)}
+                            className={`p-3 rounded-lg border-2 text-left transition-all min-h-[56px] active:scale-[0.98] ${
+                              isSelected 
+                                ? `border-${catInfo.color}-600 bg-${catInfo.color}-900/20` 
+                                : 'border-stone-800 bg-stone-900/20 hover:border-stone-600'
+                            }`}
+                            data-testid={`model-${m.id}`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className={`font-medium text-sm ${isSelected ? `text-${catInfo.color}-400` : 'text-stone-300'}`}>
+                                    {m.name}
+                                  </span>
+                                  <Badge variant="outline" className={`text-[9px] shrink-0 ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
+                                    {m.tier.toUpperCase()}
+                                  </Badge>
+                                </div>
+                                <p className="text-[10px] text-stone-500 truncate mt-0.5">
+                                  {m.strengths.join(' • ')}
+                                </p>
+                              </div>
+                              {isSelected && (
+                                <div className={`w-3 h-3 rounded-full bg-${catInfo.color}-500 shrink-0`} />
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             <div>
