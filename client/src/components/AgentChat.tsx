@@ -121,7 +121,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || 'sy-corp-dev-token'
         },
         body: JSON.stringify({ title: `Agent Session ${Date.now()}` })
       });
@@ -187,7 +187,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       
       const contextMessages = [
         { role: 'system', content: dynamicSystemPrompt },
-        { role: 'system', content: `Current session token: ${gameState.sessionToken.substring(0, 8)}... | Clues: ${gameState.inventory?.length || 0}` },
+        { role: 'system', content: `Current session token: ${gameState.sessionToken.substring(0, 8)}... | Clues: ${gameState.inventory?.length || 0} | Username: ${gameState.username}` },
         ...messages,
         { role: 'user', content: userMessage }
       ];
@@ -197,7 +197,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || 'sy-corp-dev-token'
         },
         body: JSON.stringify({ 
           content: userMessage,
