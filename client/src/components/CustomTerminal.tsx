@@ -2,6 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGame } from '@/hooks/useGameSession';
+import { 
+  SPY_MISSIONS, 
+  getMissionById, 
+  getHandlerInfo, 
+  BEACON_COMMANDS_HELP,
+  C2_BEACON_CONFIG,
+  MISSION_PHASES,
+  type MissionBriefing,
+  type LearningStyle
+} from '@/config/spyMissions';
 
 interface TerminalLine {
   type: 'input' | 'output' | 'error' | 'system' | 'clue' | 'ascii' | 'success' | 'warning';
@@ -82,6 +92,14 @@ const EXPLOITS: Record<string, { name: string; severity: string; desc: string }>
   'NoAuth': { name: 'MongoDB No Authentication', severity: 'CRITICAL', desc: 'Database exposed without auth' },
 };
 
+const ALL_COMMANDS = ['help', 'modules', 'whoami', 'ls', 'cd', 'cat', 'pwd', 'clear', 
+  'nmap', 'netstat', 'ping', 'traceroute', 'dig', 'whois', 'curl',
+  'ssh', 'crack', 'hashid', 'exploit', 'enum', 'gobuster', 'inject',
+  'recon', 'dossier', 'social', 'shodan', 'exif',
+  'decode', 'encode', 'rot13', 'xor', 'hex', 'strings', 'binwalk',
+  'probe', 'inventory', 'history', 'export',
+  'missions', 'mission', 'beacon', 'handler', 'style'];
+
 export const CustomTerminal = () => {
   const { gameState, collectClue } = useGame();
   
@@ -89,6 +107,7 @@ export const CustomTerminal = () => {
     { type: 'ascii', content: ASCII_LOGO },
     { type: 'system', content: 'Connection established via encrypted tunnel.' },
     { type: 'output', content: 'Type "help" for available commands. Type "modules" for CTF tools.' },
+    { type: 'system', content: 'Type "missions" to receive your first assignment from home base.' },
   ]);
   const [input, setInput] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -96,8 +115,23 @@ export const CustomTerminal = () => {
   const [currentDir, setCurrentDir] = useState('/home/guest');
   const [activeMinigame, setActiveMinigame] = useState<string | null>(null);
   const [minigameState, setMinigameState] = useState<any>(null);
+  const [activeMission, setActiveMission] = useState<MissionBriefing | null>(null);
+  const [beaconActive, setBeaconActive] = useState(false);
+  const [beaconInterval, setBeaconInterval] = useState(300);
+  const [learningStyle, setLearningStyle] = useState<LearningStyle>('kinesthetic');
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  
+  const suggestions = input.length > 0 
+    ? ALL_COMMANDS.filter(c => c.startsWith(input.toLowerCase())).slice(0, 6)
+    : [];
+    
+  const selectSuggestion = (cmd: string) => {
+    setInput(cmd);
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -144,6 +178,8 @@ export const CustomTerminal = () => {
         newHistory.push({ type: 'output', content: '║    recon, dossier, exif, social, shodan                ║' });
         newHistory.push({ type: 'output', content: '║  CTF                                                   ║' });
         newHistory.push({ type: 'output', content: '║    decode, encode, xor, rot13, hex, binwalk, strings   ║' });
+        newHistory.push({ type: 'output', content: '║  SPY MISSIONS                                          ║' });
+        newHistory.push({ type: 'output', content: '║    missions, mission, beacon, handler, style           ║' });
         newHistory.push({ type: 'output', content: '║  SYSTEM                                                ║' });
         newHistory.push({ type: 'output', content: '║    probe, inventory, history, export                   ║' });
         newHistory.push({ type: 'output', content: '╚════════════════════════════════════════════════════════╝' });
@@ -780,6 +816,282 @@ export const CustomTerminal = () => {
       case 'quit':
         newHistory.push({ type: 'warning', content: 'There is no escape from SysAdmin Corp.' });
         break;
+
+      // === SPY MISSION COMMANDS ===
+      case 'missions':
+        newHistory.push({ type: 'system', content: '╔══════════════════════════════════════════════════════════════════╗' });
+        newHistory.push({ type: 'system', content: '║           INCOMING TRANSMISSION FROM HOME BASE                  ║' });
+        newHistory.push({ type: 'system', content: '╠══════════════════════════════════════════════════════════════════╣' });
+        newHistory.push({ type: 'output', content: '║  AVAILABLE ASSIGNMENTS:                                         ║' });
+        SPY_MISSIONS.forEach((m, i) => {
+          const phase = MISSION_PHASES[m.phase];
+          const missionComplete = gameState.inventory.some(c => c.id === `mission-${m.id}-complete`);
+          const status = missionComplete ? '✓ COMPLETE' : 
+                        activeMission?.id === m.id ? '→ ACTIVE' : '  PENDING';
+          newHistory.push({ type: 'output', content: `║  ${i + 1}. [${m.classification}] ${m.codename.padEnd(20)} ${status.padEnd(12)}║` });
+          newHistory.push({ type: 'output', content: `║     Phase: ${phase.name.padEnd(20)} Difficulty: ${m.difficulty.padEnd(12)}║` });
+        });
+        newHistory.push({ type: 'system', content: '╠══════════════════════════════════════════════════════════════════╣' });
+        newHistory.push({ type: 'output', content: '║  COMMANDS:                                                       ║' });
+        newHistory.push({ type: 'output', content: '║    mission <id>     - Accept and view mission briefing          ║' });
+        newHistory.push({ type: 'output', content: '║    mission status   - View current mission objectives           ║' });
+        newHistory.push({ type: 'output', content: '║    mission abort    - Abort current mission                     ║' });
+        newHistory.push({ type: 'output', content: '║    style <type>     - Set learning style (visual/reading/       ║' });
+        newHistory.push({ type: 'output', content: '║                       kinesthetic/auditory)                     ║' });
+        newHistory.push({ type: 'system', content: '╚══════════════════════════════════════════════════════════════════╝' });
+        break;
+
+      case 'mission':
+        const missionArg = args[0];
+        if (!missionArg) {
+          newHistory.push({ type: 'error', content: 'Usage: mission <id|status|abort>' });
+          newHistory.push({ type: 'output', content: 'Try: missions (to see available assignments)' });
+        } else if (missionArg === 'status') {
+          if (!activeMission) {
+            newHistory.push({ type: 'warning', content: 'No active mission. Type "missions" to see available assignments.' });
+          } else {
+            const handler = getHandlerInfo(activeMission.handler);
+            newHistory.push({ type: 'system', content: `╔══════════════════════════════════════════════════════════════════╗` });
+            newHistory.push({ type: 'system', content: `║  ${handler.avatar} ${handler.name}: MISSION STATUS - ${activeMission.codename.padEnd(25)}║` });
+            newHistory.push({ type: 'system', content: `╠══════════════════════════════════════════════════════════════════╣` });
+            newHistory.push({ type: 'output', content: `║  OBJECTIVES:                                                     ║` });
+            activeMission.objectives.forEach((obj, i) => {
+              const completed = gameState.inventory.some(c => c.id.includes(obj.id)) ? '✓' : '○';
+              newHistory.push({ type: 'output', content: `║  ${completed} ${(i+1)}. ${obj.description.substring(0, 50).padEnd(52)}║` });
+            });
+            newHistory.push({ type: 'system', content: `╠══════════════════════════════════════════════════════════════════╣` });
+            newHistory.push({ type: 'output', content: `║  INTEL:                                                          ║` });
+            activeMission.intel.slice(0, 2).forEach(intel => {
+              newHistory.push({ type: 'clue', content: `║  • ${intel.substring(0, 58).padEnd(60)}║` });
+            });
+            newHistory.push({ type: 'system', content: `╚══════════════════════════════════════════════════════════════════╝` });
+          }
+        } else if (missionArg === 'abort') {
+          if (!activeMission) {
+            newHistory.push({ type: 'warning', content: 'No active mission to abort.' });
+          } else {
+            newHistory.push({ type: 'warning', content: `Aborting mission: ${activeMission.codename}` });
+            newHistory.push({ type: 'system', content: 'Handler notified. Awaiting new orders.' });
+            setActiveMission(null);
+          }
+        } else {
+          const missionId = missionArg.toLowerCase().replace(/\s+/g, '-');
+          const mission = getMissionById(missionId) || SPY_MISSIONS.find(m => 
+            m.codename.toLowerCase().includes(missionArg.toLowerCase()) ||
+            m.id.includes(missionArg)
+          );
+          if (mission) {
+            setActiveMission(mission);
+            const handler = getHandlerInfo(mission.handler);
+            newHistory.push({ type: 'system', content: '' });
+            newHistory.push({ type: 'system', content: `${handler.avatar} ${handler.greeting}` });
+            newHistory.push({ type: 'system', content: '' });
+            mission.briefing.split('\n').forEach(line => {
+              if (line.includes('╔') || line.includes('╚') || line.includes('╠')) {
+                newHistory.push({ type: 'system', content: line });
+              } else if (line.includes('║')) {
+                newHistory.push({ type: 'output', content: line });
+              } else {
+                newHistory.push({ type: 'output', content: line });
+              }
+            });
+            newHistory.push({ type: 'system', content: '' });
+            newHistory.push({ type: 'clue', content: `SUGGESTED COMMANDS: ${mission.terminalCommands.slice(0, 4).join(', ')}` });
+            collectClue({
+              id: `mission-${mission.id}-started`,
+              name: `Mission: ${mission.codename}`,
+              description: 'Mission briefing received',
+              content: `Phase: ${MISSION_PHASES[mission.phase].name}`,
+              foundAt: new Date().toISOString()
+            });
+          } else {
+            newHistory.push({ type: 'error', content: `Mission "${missionArg}" not found.` });
+            newHistory.push({ type: 'output', content: 'Try: missions (to see available assignments)' });
+          }
+        }
+        break;
+
+      case 'style':
+        const styleArg = args[0]?.toLowerCase() as LearningStyle;
+        const validStyles: LearningStyle[] = ['visual', 'reading', 'kinesthetic', 'auditory'];
+        if (!styleArg) {
+          newHistory.push({ type: 'output', content: `Current learning style: ${learningStyle}` });
+          newHistory.push({ type: 'output', content: 'Available styles:' });
+          newHistory.push({ type: 'output', content: '  visual      - Diagrams, flowcharts, network maps' });
+          newHistory.push({ type: 'output', content: '  reading     - Detailed technical documentation' });
+          newHistory.push({ type: 'output', content: '  kinesthetic - Hands-on, minimal explanation' });
+          newHistory.push({ type: 'output', content: '  auditory    - Conversational explanations' });
+          newHistory.push({ type: 'output', content: 'Usage: style <type>' });
+        } else if (validStyles.includes(styleArg)) {
+          setLearningStyle(styleArg);
+          newHistory.push({ type: 'success', content: `Learning style set to: ${styleArg}` });
+          newHistory.push({ type: 'system', content: 'Mission briefings will adapt to your preference.' });
+        } else {
+          newHistory.push({ type: 'error', content: `Invalid style: ${styleArg}` });
+          newHistory.push({ type: 'output', content: 'Valid styles: visual, reading, kinesthetic, auditory' });
+        }
+        break;
+
+      // === C2 BEACON COMMANDS ===
+      case 'beacon':
+        const beaconCmd = args[0]?.toLowerCase();
+        if (!beaconCmd || beaconCmd === 'help') {
+          BEACON_COMMANDS_HELP.split('\n').forEach(line => {
+            if (line.includes('╔') || line.includes('╚') || line.includes('╠')) {
+              newHistory.push({ type: 'system', content: line });
+            } else {
+              newHistory.push({ type: 'output', content: line });
+            }
+          });
+        } else if (beaconCmd === 'checkin') {
+          newHistory.push({ type: 'system', content: '📡 Initiating beacon check-in...' });
+          newHistory.push({ type: 'output', content: `Callsign: ${C2_BEACON_CONFIG.callsign}` });
+          newHistory.push({ type: 'output', content: `Protocol: ${C2_BEACON_CONFIG.protocol.toUpperCase()}` });
+          newHistory.push({ type: 'output', content: `Encryption: ${C2_BEACON_CONFIG.encryption}` });
+          setTimeout(() => {
+            setBeaconActive(true);
+            addLines([
+              { type: 'success', content: '✓ BEACON CHECK-IN SUCCESSFUL' },
+              { type: 'system', content: 'Home base confirms receipt. Awaiting tasking.' },
+              { type: 'clue', content: 'C2 CONCEPT: Beacons periodically "call home" to receive commands.' },
+              { type: 'clue', content: 'Jitter randomizes timing to avoid pattern detection.' }
+            ]);
+          }, 1500);
+          collectClue({
+            id: 'beacon-checkin',
+            name: 'C2 Beacon Established',
+            description: 'Successfully connected to C2 server',
+            content: `Callsign: ${C2_BEACON_CONFIG.callsign}`,
+            foundAt: new Date().toISOString()
+          });
+        } else if (beaconCmd === 'tasking') {
+          if (!beaconActive) {
+            newHistory.push({ type: 'error', content: 'Beacon not active. Run "beacon checkin" first.' });
+          } else {
+            newHistory.push({ type: 'system', content: '📡 Requesting tasking from C2...' });
+            newHistory.push({ type: 'output', content: '...' });
+            const taskings = [
+              'TASK-001: Enumerate target network infrastructure',
+              'TASK-002: Locate and exfiltrate credentials file',
+              'TASK-003: Establish persistence mechanism',
+              'TASK-004: Map internal network topology'
+            ];
+            const task = taskings[Math.floor(Math.random() * taskings.length)];
+            newHistory.push({ type: 'success', content: `NEW TASKING RECEIVED: ${task}` });
+            newHistory.push({ type: 'clue', content: 'C2 CONCEPT: Operators send tasks to implants via the C2 channel.' });
+            collectClue({
+              id: 'beacon-tasking',
+              name: 'C2 Tasking Received',
+              description: 'Received instructions from command',
+              content: task,
+              foundAt: new Date().toISOString()
+            });
+          }
+        } else if (beaconCmd === 'sleep') {
+          const sleepTime = parseInt(args[1]) || 300;
+          setBeaconInterval(sleepTime);
+          newHistory.push({ type: 'success', content: `Beacon interval set to ${sleepTime} seconds` });
+          newHistory.push({ type: 'output', content: `Jitter: ±${Math.round(sleepTime * 0.15)} seconds` });
+          newHistory.push({ type: 'clue', content: 'C2 CONCEPT: Longer sleep = stealthier but slower response.' });
+        } else if (beaconCmd === 'exfil') {
+          const exfilFile = args[1];
+          if (!exfilFile) {
+            newHistory.push({ type: 'error', content: 'Usage: beacon exfil <filename>' });
+          } else if (!beaconActive) {
+            newHistory.push({ type: 'error', content: 'Beacon not active. Run "beacon checkin" first.' });
+          } else {
+            newHistory.push({ type: 'warning', content: `⚠️  HIGH RISK OPERATION: Exfiltrating ${exfilFile}` });
+            newHistory.push({ type: 'system', content: 'Chunking data for stealth transfer...' });
+            newHistory.push({ type: 'system', content: 'Encrypting with AES-256-GCM...' });
+            newHistory.push({ type: 'system', content: 'Sending via HTTPS to blend with traffic...' });
+            newHistory.push({ type: 'success', content: `✓ EXFILTRATION COMPLETE: ${exfilFile}` });
+            newHistory.push({ type: 'clue', content: 'C2 CONCEPT: Data is encrypted and chunked to avoid DLP detection.' });
+            collectClue({
+              id: 'beacon-exfil',
+              name: 'Data Exfiltrated',
+              description: 'Successfully sent data to C2',
+              content: `File: ${exfilFile}`,
+              foundAt: new Date().toISOString()
+            });
+          }
+        } else if (beaconCmd === 'persist') {
+          if (!beaconActive) {
+            newHistory.push({ type: 'error', content: 'Beacon not active. Run "beacon checkin" first.' });
+          } else {
+            newHistory.push({ type: 'warning', content: '⚠️  HIGH RISK: Installing persistence mechanism...' });
+            newHistory.push({ type: 'system', content: 'Creating scheduled task...' });
+            newHistory.push({ type: 'system', content: 'Adding registry run key...' });
+            newHistory.push({ type: 'success', content: '✓ PERSISTENCE ESTABLISHED' });
+            newHistory.push({ type: 'clue', content: 'PERSIST CONCEPT: Ensures implant survives reboots and user logoffs.' });
+            collectClue({
+              id: 'beacon-persist',
+              name: 'Persistence Installed',
+              description: 'Implant will survive reboot',
+              content: 'Scheduled task + registry key',
+              foundAt: new Date().toISOString()
+            });
+          }
+        } else if (beaconCmd === 'shell') {
+          const shellCmd = args.slice(1).join(' ');
+          if (!shellCmd) {
+            newHistory.push({ type: 'error', content: 'Usage: beacon shell <command>' });
+          } else if (!beaconActive) {
+            newHistory.push({ type: 'error', content: 'Beacon not active. Run "beacon checkin" first.' });
+          } else {
+            newHistory.push({ type: 'warning', content: `⚠️  CRITICAL RISK: Executing: ${shellCmd}` });
+            newHistory.push({ type: 'system', content: 'Command sent to implant...' });
+            newHistory.push({ type: 'output', content: `[SIMULATED OUTPUT]` });
+            newHistory.push({ type: 'output', content: `> ${shellCmd}` });
+            newHistory.push({ type: 'output', content: 'Command executed successfully.' });
+            newHistory.push({ type: 'clue', content: 'C2 CONCEPT: Shell access is the highest-risk capability.' });
+          }
+        } else if (beaconCmd === 'kill') {
+          if (!beaconActive) {
+            newHistory.push({ type: 'warning', content: 'Beacon not active. Nothing to kill.' });
+          } else {
+            newHistory.push({ type: 'warning', content: '💀 INITIATING SELF-DESTRUCT SEQUENCE...' });
+            newHistory.push({ type: 'system', content: 'Wiping beacon from memory...' });
+            newHistory.push({ type: 'system', content: 'Removing persistence mechanisms...' });
+            newHistory.push({ type: 'system', content: 'Clearing logs and artifacts...' });
+            newHistory.push({ type: 'success', content: '✓ BEACON TERMINATED - NO TRACE LEFT' });
+            newHistory.push({ type: 'clue', content: 'CLEANUP CONCEPT: Good tradecraft leaves no evidence.' });
+            setBeaconActive(false);
+            collectClue({
+              id: 'beacon-cleanup',
+              name: 'Clean Extraction',
+              description: 'Beacon self-destructed cleanly',
+              content: 'No traces left behind',
+              foundAt: new Date().toISOString()
+            });
+          }
+        } else {
+          newHistory.push({ type: 'error', content: `Unknown beacon command: ${beaconCmd}` });
+          newHistory.push({ type: 'output', content: 'Try: beacon help' });
+        }
+        break;
+
+      case 'handler':
+        const handlerName = args[0];
+        if (!handlerName) {
+          newHistory.push({ type: 'output', content: 'Available handlers:' });
+          newHistory.push({ type: 'output', content: '  👻 GHOST   - Senior Handler (cryptic style)' });
+          newHistory.push({ type: 'output', content: '  🔐 CIPHER  - Technical Specialist (detailed)' });
+          newHistory.push({ type: 'output', content: '  🔮 ORACLE  - Intelligence Analyst (analytical)' });
+          newHistory.push({ type: 'output', content: '  🔥 PHOENIX - Field Commander (direct)' });
+          newHistory.push({ type: 'output', content: 'Usage: handler <name> - Contact your handler for guidance' });
+        } else {
+          const handler = getHandlerInfo(handlerName.toLowerCase());
+          newHistory.push({ type: 'system', content: `Establishing secure channel to ${handler.name}...` });
+          newHistory.push({ type: 'system', content: `${handler.avatar} ${handler.greeting}` });
+          if (activeMission) {
+            newHistory.push({ type: 'output', content: `Current mission: ${activeMission.codename}` });
+            newHistory.push({ type: 'clue', content: `HINT: ${activeMission.objectives[0].hint}` });
+          } else {
+            newHistory.push({ type: 'output', content: 'No active mission. Type "missions" to see available ops.' });
+          }
+          newHistory.push({ type: 'system', content: handler.signoff });
+        }
+        break;
         
       default:
         if (trimmedCmd !== '') {
@@ -839,69 +1151,104 @@ export const CustomTerminal = () => {
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      // Simple tab completion
-      const commands = ['help', 'modules', 'whoami', 'ls', 'cd', 'cat', 'pwd', 'clear', 
-        'nmap', 'netstat', 'ping', 'traceroute', 'dig', 'whois', 'curl',
-        'ssh', 'crack', 'hashid', 'exploit', 'enum', 'gobuster', 'inject',
-        'recon', 'dossier', 'social', 'shodan', 'exif',
-        'decode', 'encode', 'rot13', 'xor', 'hex', 'strings', 'binwalk',
-        'probe', 'inventory', 'history', 'export'];
-      const matches = commands.filter(c => c.startsWith(input.toLowerCase()));
+      const matches = ALL_COMMANDS.filter(c => c.startsWith(input.toLowerCase()));
       if (matches.length === 1) {
         setInput(matches[0]);
+        setShowSuggestions(false);
+      } else if (matches.length > 1) {
+        setShowSuggestions(true);
       }
     }
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setInput(val);
+    setShowSuggestions(val.length > 0 && suggestions.length > 0);
   };
 
   return (
     <div 
-      className="w-full h-[600px] bg-[#0a0500]/95 border border-amber-900/50 rounded-lg p-4 font-mono text-sm shadow-[0_0_30px_rgba(184,115,51,0.1)] relative overflow-hidden backdrop-blur-md"
+      className="w-full h-[50vh] sm:h-[60vh] md:h-[600px] max-h-[80vh] bg-[#0a0500]/95 border border-amber-900/50 rounded-lg p-2 sm:p-4 font-mono text-xs sm:text-sm shadow-[0_0_30px_rgba(184,115,51,0.1)] relative overflow-hidden backdrop-blur-md flex flex-col"
       onClick={() => inputRef.current?.focus()}
       data-testid="terminal-container"
     >
-      <div className="absolute top-0 left-0 w-full h-8 bg-amber-950/40 border-b border-amber-900/30 flex items-center px-4 space-x-2">
-        <div className="w-3 h-3 rounded-full bg-red-800/50"></div>
-        <div className="w-3 h-3 rounded-full bg-amber-600/50"></div>
-        <div className="w-3 h-3 rounded-full bg-stone-600/50"></div>
-        <span className="ml-4 text-xs text-amber-700">guest@molten-core:{currentDir}</span>
-        {activeMinigame && <span className="ml-auto text-xs text-amber-500">[{activeMinigame.toUpperCase()}]</span>}
+      <div className="absolute top-0 left-0 w-full h-8 bg-amber-950/40 border-b border-amber-900/30 flex items-center px-2 sm:px-4 space-x-1 sm:space-x-2 z-10">
+        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-800/50"></div>
+        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-amber-600/50"></div>
+        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-stone-600/50"></div>
+        <span className="ml-2 sm:ml-4 text-[10px] sm:text-xs text-amber-700 truncate max-w-[100px] sm:max-w-none">guest@molten:{currentDir}</span>
+        <div className="ml-auto flex items-center gap-1 sm:gap-3">
+          {beaconActive && (
+            <span className="text-[10px] sm:text-xs text-red-400 animate-pulse flex items-center gap-1">
+              <span className="hidden sm:inline">📡</span> C2
+            </span>
+          )}
+          {activeMission && (
+            <span className="text-[10px] sm:text-xs text-amber-400 flex items-center gap-1 truncate max-w-[80px] sm:max-w-none">
+              <span className="hidden sm:inline">🎯</span> {activeMission.codename.split(' ')[0]}
+            </span>
+          )}
+          {activeMinigame && <span className="text-[10px] sm:text-xs text-amber-500">[{activeMinigame.toUpperCase()}]</span>}
+        </div>
       </div>
       
-      <ScrollArea className="h-full pt-10 pb-4">
+      <ScrollArea className="flex-1 pt-10 pb-2">
         <div className="space-y-1">
           {history.map((line, i) => (
             <div key={i} className={cn(
-              "break-words whitespace-pre-wrap",
+              "break-words whitespace-pre-wrap text-xs sm:text-sm",
               line.type === 'input' && "text-stone-300 font-bold mt-3",
-              line.type === 'output' && "text-amber-600 pl-2",
-              line.type === 'error' && "text-red-600 pl-2",
+              line.type === 'output' && "text-amber-600 pl-1 sm:pl-2",
+              line.type === 'error' && "text-red-600 pl-1 sm:pl-2",
               line.type === 'system' && "text-stone-500 italic",
-              line.type === 'clue' && "text-amber-400 font-bold pl-2",
-              line.type === 'ascii' && "text-amber-700/70 text-xs leading-none",
-              line.type === 'success' && "text-amber-500 pl-2 font-bold",
-              line.type === 'warning' && "text-orange-500 pl-2"
+              line.type === 'clue' && "text-amber-400 font-bold pl-1 sm:pl-2",
+              line.type === 'ascii' && "text-amber-700/70 text-[8px] sm:text-xs leading-none hidden sm:block",
+              line.type === 'success' && "text-amber-500 pl-1 sm:pl-2 font-bold",
+              line.type === 'warning' && "text-orange-500 pl-1 sm:pl-2"
             )}>
               {line.content}
             </div>
           ))}
           <div className="flex items-center text-stone-300 font-bold mt-2">
-            <span className="mr-2 text-amber-700">{currentDir}$</span>
+            <span className="mr-1 sm:mr-2 text-amber-700 text-xs sm:text-sm">$</span>
             <input
               ref={inputRef}
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              className="bg-transparent border-none outline-none flex-1 text-amber-500 font-mono placeholder-amber-900/50 caret-amber-500"
+              onFocus={() => setShowSuggestions(input.length > 0 && suggestions.length > 0)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              className="bg-transparent border-none outline-none flex-1 text-amber-500 font-mono placeholder-amber-900/50 caret-amber-500 text-sm sm:text-base min-h-[44px]"
               autoFocus
               spellCheck={false}
               autoComplete="off"
               data-testid="terminal-input"
+              placeholder="Type command..."
             />
           </div>
           <div ref={bottomRef} />
         </div>
       </ScrollArea>
+      
+      {(showSuggestions || suggestions.length > 0) && input.length > 0 && (
+        <div className="border-t border-amber-900/30 bg-stone-900/90 p-2 flex gap-1 sm:gap-2 flex-wrap max-h-[80px] overflow-y-auto" data-testid="suggestions-bar">
+          {suggestions.map(cmd => (
+            <button
+              key={cmd}
+              onClick={() => selectSuggestion(cmd)}
+              className="px-2 sm:px-3 py-1.5 sm:py-1 bg-amber-900/40 hover:bg-amber-800/60 text-amber-400 rounded text-xs sm:text-sm font-mono min-h-[36px] sm:min-h-[32px] touch-manipulation active:scale-95 transition-transform"
+              data-testid={`suggestion-${cmd}`}
+            >
+              {cmd}
+            </button>
+          ))}
+          {suggestions.length === 0 && input.length > 0 && (
+            <span className="text-stone-500 text-xs">No matching commands</span>
+          )}
+        </div>
+      )}
     </div>
   );
 };
