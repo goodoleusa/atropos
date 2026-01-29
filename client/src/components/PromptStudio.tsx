@@ -167,7 +167,10 @@ export function PromptStudio({
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                onClick={onCompress}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCompress();
+                }}
                 disabled={isCompressing || messages.length < 3}
                 className="flex-1 bg-teal-700 hover:bg-teal-600 text-black text-xs h-8"
               >
