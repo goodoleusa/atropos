@@ -477,6 +477,53 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
             </div>
 
             <div className="flex-1 overflow-hidden relative">
+              {/* Mobile action bar for selected node */}
+              {selectedNode && (
+                <div className="sm:hidden sticky top-0 z-10 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30 p-2 flex items-center gap-2" data-testid="mobile-action-bar">
+                  <span className="text-xs text-stone-400 truncate flex-1" data-testid="selected-node-title">
+                    {campaign.nodes.find(n => n.id === selectedNode)?.title}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const node = campaign.nodes.find(n => n.id === selectedNode);
+                      if (node) setEditingNode(node);
+                    }}
+                    className="min-h-[36px] min-w-[36px] p-0 border-amber-700 text-amber-400"
+                    data-testid="mobile-edit-btn"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setLinkingFrom(selectedNode)}
+                    className="min-h-[36px] min-w-[36px] p-0 border-teal-700 text-teal-400"
+                    data-testid="mobile-link-btn"
+                  >
+                    <Link2 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => deleteNode(selectedNode)}
+                    className="min-h-[36px] min-w-[36px] p-0 border-red-700 text-red-400"
+                    data-testid="mobile-delete-btn"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSelectedNode(null)}
+                    className="min-h-[36px] min-w-[36px] p-0 text-stone-400"
+                    data-testid="mobile-close-btn"
+                  >
+                    ×
+                  </Button>
+                </div>
+              )}
               {mode === 'tree' ? (
                 <ScrollArea className="h-full p-4">
                   <div className="space-y-1">

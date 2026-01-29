@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Zap, Cpu, Copy, Check, Brain, Target,
   Play, DollarSign, BarChart3, Clock, TrendingUp, Download, RefreshCw,
-  AlertTriangle, Lightbulb, Eye, Send, Loader2, Shield, Bug, ChevronDown
+  AlertTriangle, Lightbulb, Eye, Send, Loader2, Shield, Bug, ChevronDown, FileText
 } from 'lucide-react';
 import { CAPABILITY_MODULES, buildSystemPrompt } from '@/config/agentPrompts';
 
@@ -32,6 +32,7 @@ interface ModelRun {
   coherence: number;
   contextAwareness: number;
   modules: ModuleKey[];
+  notes?: string;
 }
 
 interface SessionSummary {
@@ -255,22 +256,89 @@ export default function AILab() {
     }
   };
 
-  const exportSessionReport = () => {
-    const report = {
-      generatedAt: new Date().toISOString(),
-      summary: sessionSummary,
-      runs: runs,
-      recommendations: sessionSummary.recommendations,
-      bugReports: sessionSummary.bugReports
-    };
+  const exportSessionReport = (format: 'json' | 'markdown' = 'json') => {
+    const now = new Date();
     
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ai-lab-session-${Date.now()}.json`;
-    a.click();
-    toast({ title: 'Report exported' });
+    if (format === 'markdown') {
+      const md = `# AI Lab Evaluation Report
+
+**Generated:** ${now.toISOString()}
+**Session ID:** LAB-${now.getTime()}
+
+---
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Total Runs | ${sessionSummary.totalRuns} |
+| Total Tokens | ${sessionSummary.totalTokens.toLocaleString()} |
+| Total Cost | $${sessionSummary.totalCost.toFixed(4)} |
+| Avg Latency | ${sessionSummary.avgLatency.toFixed(0)}ms |
+| Avg Task Completion | ${sessionSummary.avgTaskCompletion.toFixed(1)}% |
+| Avg Coherence | ${sessionSummary.avgCoherence.toFixed(1)}% |
+| Avg Context Awareness | ${sessionSummary.avgContextAwareness.toFixed(1)}% |
+
+**Best Model:** ${sessionSummary.bestModel}
+**Worst Model:** ${sessionSummary.worstModel}
+
+---
+
+## Runs
+
+${runs.map((r, i) => `
+### Run ${i + 1}: ${r.model}
+
+- **Prompt:** ${r.prompt.substring(0, 200)}${r.prompt.length > 200 ? '...' : ''}
+- **Tokens:** ${r.totalTokens} (${r.inputTokens} in / ${r.outputTokens} out)
+- **Cost:** $${r.costUsd.toFixed(4)}
+- **Latency:** ${r.latencyMs}ms
+- **Scores:** Task ${r.taskCompletion}% | Coherence ${r.coherence}% | Context ${r.contextAwareness}%
+${r.notes ? `- **Notes:** ${r.notes}` : ''}
+`).join('\n')}
+
+---
+
+## Recommendations
+
+${sessionSummary.recommendations.length > 0 
+  ? sessionSummary.recommendations.map(r => `- ${r}`).join('\n') 
+  : '*No recommendations generated yet*'}
+
+---
+
+## Bug Reports
+
+${sessionSummary.bugReports.length > 0 
+  ? sessionSummary.bugReports.map((b, i) => `${i + 1}. ${b}`).join('\n') 
+  : '*No bug reports submitted*'}
+`;
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ai-lab-report-${Date.now()}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast({ title: 'Markdown report exported' });
+    } else {
+      const report = {
+        generatedAt: now.toISOString(),
+        summary: sessionSummary,
+        runs: runs,
+        recommendations: sessionSummary.recommendations,
+        bugReports: sessionSummary.bugReports
+      };
+      
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ai-lab-session-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast({ title: 'JSON report exported' });
+    }
   };
 
   const copyPrompt = () => {
@@ -292,9 +360,14 @@ export default function AILab() {
             <Brain className="w-5 h-5" />
             AI Lab
           </h1>
-          <Button onClick={exportSessionReport} variant="outline" className="border-amber-800 text-amber-400 min-h-[44px]">
-            <Download className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-400 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
+              <FileText className="w-4 h-4" />
+            </Button>
+            <Button onClick={() => exportSessionReport('json')} variant="outline" className="border-teal-800 text-teal-400 min-h-[44px] px-2" title="Export JSON" data-testid="export-json-btn">
+              <Download className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
