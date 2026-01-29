@@ -39,8 +39,10 @@ Preferred communication style: Simple, everyday language.
 - **Admin Dashboard**: Content management for clues, quests, messages, mystical elements, and a UX Playground for real-time visual effect tweaking (backgrounds, mouse tracking, glitches, event probabilities).
 - **Global Attack Map**: Animated real-time threat visualization on the homepage, simulating cybersecurity dashboards.
 - **Report Builder System**: Aids in structuring bug bounty findings with sections for analysis, vulnerability tracking, bounty estimation, and export.
-- **Prompt Builder System**: A 4-step process to optimize AI agent interaction by selecting capabilities, compressing history, defining tasks, and generating prompts.
+- **AI Lab (Battleground)**: Comprehensive prompt engineering playground with live preview, token-to-dollar cost tracking, model comparison battleground (free vs paid tiers), performance evaluations (task completion, coherence, context awareness), exportable session summaries, bug reporting system, and AI-driven improvement recommendations.
+- **API Playground**: Educational quest-based system for learning API requests through real-world CTF exercises (QR security, crypto-auth, hardened SSH), modular and extensible architecture.
 - **Interactive Campaign System**: Adaptive investigation flows that respond to user discoveries, offering perspective shifts, tool guidance (e.g., Shodan, Censys), and pivot strategies.
+- **Mobile Responsiveness**: Touch-friendly terminal with autocomplete chips (no tab key needed), responsive layouts (50vh-80vh terminal), 44px+ touch targets, repositioned floating buttons.
 
 ## External Dependencies
 

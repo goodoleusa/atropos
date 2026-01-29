@@ -82,28 +82,28 @@ export const MysticalPopups = () => {
           initial={{ opacity: 0, scale: 0.8, y: 50 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 50 }}
-          className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[80] w-[calc(100%-2rem)] max-w-xs mx-4 md:mx-0"
-          onClick={dismissCard}
+          className="fixed bottom-16 sm:bottom-4 right-2 sm:right-4 md:bottom-8 md:right-8 z-[80] w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] max-w-xs"
         >
           <div className={`
-            relative p-6 rounded-lg backdrop-blur-md border shadow-2xl
+            relative p-4 sm:p-6 rounded-lg backdrop-blur-md border shadow-2xl
             ${activeCard.type === 'tarot' 
               ? 'bg-gradient-to-br from-[#1a0f05] to-[#0a0500] border-amber-700/50 shadow-amber-900/30' 
               : 'bg-gradient-to-br from-[#0a0510] to-[#050008] border-purple-900/50 shadow-purple-900/30'
             }
           `}>
-            {/* Close button - tap anywhere or use X */}
+            {/* Close button - larger touch target for mobile */}
             <button 
-              onClick={(e) => { e.stopPropagation(); dismissCard(); }}
-              className="absolute top-2 right-2 text-stone-600 hover:text-stone-400 transition-colors p-2 -m-2"
+              onClick={dismissCard}
+              onTouchEnd={(e) => { e.preventDefault(); dismissCard(); }}
+              className="absolute -top-2 -right-2 sm:top-2 sm:right-2 bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-stone-200 transition-colors p-2 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation active:scale-95 shadow-lg border border-stone-600"
               data-testid="mystical-close"
             >
               <X className="w-5 h-5" />
             </button>
             
             {/* Tap to dismiss hint */}
-            <div className="absolute -bottom-6 left-0 right-0 text-center text-[10px] text-stone-600 md:hidden">
-              tap to dismiss
+            <div className="absolute -bottom-5 left-0 right-0 text-center text-[10px] text-stone-500 sm:hidden">
+              tap X to close
             </div>
 
             {activeCard.type === 'tarot' ? (
