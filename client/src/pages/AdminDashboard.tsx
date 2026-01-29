@@ -46,6 +46,10 @@ import {
 import { CHAOS_MESSAGES, MYSTICAL_CARDS, TOAST_MESSAGES, UI_TEXT, TERMINAL_MESSAGES } from "@/config/messages";
 import { AGENT_CAMPAIGNS, CAMPAIGN_CATEGORIES, getDifficultyColor, type Campaign } from "@/config/agentCampaigns";
 import { useGame } from "@/hooks/useGameSession";
+import { ContentSearch, type SearchableItem, type ContentType } from "@/components/ContentSearch";
+import { WikiLinkInput, extractLinkIds } from "@/components/WikiLinkInput";
+import { ClueGraph } from "@/components/ClueGraph";
+import { ClueBreadcrumbs } from "@/components/ClueBreadcrumbs";
 
 interface Clue {
   id: string;
@@ -76,6 +80,9 @@ export default function AdminDashboard() {
   const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({ 'root': true });
+  const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
+  const [clueTrail, setClueTrail] = useState<string[]>([]);
+  const [showGraphView, setShowGraphView] = useState(false);
 
   const toggleNode = (id: string) => {
     setExpandedNodes(prev => ({ ...prev, [id]: !prev[id] }));
@@ -510,6 +517,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="campaigns" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
               <Rocket className="w-4 h-4 mr-2" /> Campaigns
+            </TabsTrigger>
+            <TabsTrigger value="graph" className="data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-500">
+              <Map className="w-4 h-4 mr-2" /> Knowledge Graph
             </TabsTrigger>
           </TabsList>
 
@@ -1189,6 +1199,254 @@ export default function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </TabsContent>
+
+          {/* Knowledge Graph Tab */}
+          <TabsContent value="graph">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-orbitron text-blue-400 flex items-center gap-2">
+                  <Map className="w-5 h-5" /> Clue Knowledge Graph
+                </h3>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant={showGraphView ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowGraphView(true)}
+                    className={showGraphView ? "bg-blue-600 text-white" : "border-blue-900/50 text-blue-400"}
+                  >
+                    Graph View
+                  </Button>
+                  <Button 
+                    variant={!showGraphView ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowGraphView(false)}
+                    className={!showGraphView ? "bg-blue-600 text-white" : "border-blue-900/50 text-blue-400"}
+                  >
+                    List View
+                  </Button>
+                </div>
+              </div>
+
+              {/* Search Bar */}
+              <ContentSearch
+                items={[
+                  ...clues.map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    type: 'clue' as ContentType,
+                    description: c.description,
+                    content: c.content,
+                    location: c.location
+                  })),
+                  ...quests.map(q => ({
+                    id: q.id,
+                    name: q.name,
+                    type: 'quest' as ContentType,
+                    description: q.description,
+                    tags: q.requiredClues
+                  })),
+                  ...MYSTICAL_CARDS.tarot.map(t => ({
+                    id: `tarot-${t.symbol}`,
+                    name: t.name,
+                    type: 'mystical' as ContentType,
+                    description: t.hint
+                  })),
+                  ...MYSTICAL_CARDS.zodiac.map(z => ({
+                    id: `zodiac-${z.name.toLowerCase()}`,
+                    name: z.name,
+                    type: 'mystical' as ContentType,
+                    description: z.hint
+                  }))
+                ]}
+                onSelect={(item) => {
+                  if (item.type === 'clue') {
+                    setSelectedClueId(item.id);
+                    setClueTrail(prev => prev.includes(item.id) ? prev : [...prev, item.id]);
+                  }
+                }}
+                placeholder="Search clues, quests, locations... (type [[ for wikilinks)"
+              />
+
+              <div className="grid lg:grid-cols-3 gap-6">
+                {/* Graph or List */}
+                <div className="lg:col-span-2">
+                  {showGraphView ? (
+                    <ClueGraph
+                      clues={clues.map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        linkedTo: extractLinkIds(c.content || ''),
+                        linkedFrom: clues
+                          .filter(other => extractLinkIds(other.content || '').includes(c.id))
+                          .map(other => other.id),
+                        rarity: c.difficulty <= 1 ? 'common' : c.difficulty <= 2 ? 'uncommon' : c.difficulty <= 3 ? 'rare' : 'legendary',
+                        collected: gameState.inventory?.some(clue => clue.id === c.id) || false
+                      }))}
+                      selectedClueId={selectedClueId || undefined}
+                      onSelectClue={(id) => {
+                        setSelectedClueId(id);
+                        setClueTrail(prev => prev.includes(id) ? prev : [...prev, id]);
+                      }}
+                    />
+                  ) : (
+                    <Card className="bg-[#0a0500] border-amber-900/30">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-amber-500 font-mono text-sm">All Clues ({clues.length})</CardTitle>
+                      </CardHeader>
+                      <CardContent className="max-h-[400px] overflow-y-auto space-y-2">
+                        {clues.map(clue => {
+                          const linkedTo = extractLinkIds(clue.content || '');
+                          const linkedFrom = clues
+                            .filter(other => extractLinkIds(other.content || '').includes(clue.id))
+                            .map(other => other.id);
+                          
+                          return (
+                            <button
+                              key={clue.id}
+                              onClick={() => {
+                                setSelectedClueId(clue.id);
+                                setClueTrail(prev => prev.includes(clue.id) ? prev : [...prev, clue.id]);
+                              }}
+                              className={`w-full text-left p-3 rounded border transition-all ${
+                                selectedClueId === clue.id
+                                  ? 'border-blue-500 bg-blue-950/30'
+                                  : 'border-amber-900/30 hover:border-amber-600/50'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-amber-500 font-bold text-sm">{clue.name}</span>
+                                <div className="flex items-center gap-2">
+                                  {linkedTo.length > 0 && (
+                                    <Badge variant="outline" className="text-[9px] border-teal-700 text-teal-400">
+                                      {linkedTo.length} outlinks
+                                    </Badge>
+                                  )}
+                                  {linkedFrom.length > 0 && (
+                                    <Badge variant="outline" className="text-[9px] border-purple-700 text-purple-400">
+                                      {linkedFrom.length} backlinks
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="text-xs text-stone-500 truncate">{clue.description}</p>
+                              <p className="text-[10px] text-stone-700 mt-1">{clue.id} · {clue.location}</p>
+                            </button>
+                          );
+                        })}
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* Details Panel */}
+                <div className="space-y-4">
+                  {/* Breadcrumb Trail */}
+                  {clueTrail.length > 0 && (
+                    <Card className="bg-[#0a0500] border-blue-900/30">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-blue-400 font-mono text-sm">Navigation Trail</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ClueBreadcrumbs
+                          currentClue={{
+                            id: selectedClueId || '',
+                            name: clues.find(c => c.id === selectedClueId)?.name || '',
+                            linkedTo: extractLinkIds(clues.find(c => c.id === selectedClueId)?.content || ''),
+                            linkedFrom: clues
+                              .filter(other => extractLinkIds(other.content || '').includes(selectedClueId || ''))
+                              .map(other => other.id)
+                          }}
+                          allClues={clues.map(c => ({
+                            id: c.id,
+                            name: c.name,
+                            linkedTo: extractLinkIds(c.content || ''),
+                            linkedFrom: clues
+                              .filter(other => extractLinkIds(other.content || '').includes(c.id))
+                              .map(other => other.id)
+                          }))}
+                          onNavigate={(id) => setSelectedClueId(id)}
+                          trail={clueTrail}
+                          onTrailChange={setClueTrail}
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Selected Clue Details */}
+                  {selectedClueId && (
+                    <Card className="bg-[#0a0500] border-amber-900/30">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-amber-500 font-mono text-sm flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          {clues.find(c => c.id === selectedClueId)?.name}
+                        </CardTitle>
+                        <CardDescription className="text-stone-600 text-[10px]">
+                          {selectedClueId}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <Label className="text-amber-700 text-[10px] uppercase">Description</Label>
+                          <p className="text-xs text-stone-400">
+                            {clues.find(c => c.id === selectedClueId)?.description}
+                          </p>
+                        </div>
+                        <div>
+                          <Label className="text-amber-700 text-[10px] uppercase">Content</Label>
+                          <p className="text-xs text-stone-400 bg-black/30 p-2 rounded border border-amber-900/20">
+                            {clues.find(c => c.id === selectedClueId)?.content}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4 text-[10px]">
+                          <span className="text-stone-600">
+                            Location: <span className="text-amber-500">{clues.find(c => c.id === selectedClueId)?.location}</span>
+                          </span>
+                          <span className="text-stone-600">
+                            Difficulty: <span className="text-amber-500">{clues.find(c => c.id === selectedClueId)?.difficulty}</span>
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Stats */}
+                  <Card className="bg-[#0a0500] border-amber-900/30">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-amber-500 font-mono text-sm">Graph Stats</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-stone-500">Total Nodes</span>
+                        <span className="text-amber-500">{clues.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-500">Total Connections</span>
+                        <span className="text-teal-500">
+                          {clues.reduce((acc, c) => acc + extractLinkIds(c.content || '').length, 0)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-500">Orphan Nodes</span>
+                        <span className="text-red-500">
+                          {clues.filter(c => {
+                            const hasOutLinks = extractLinkIds(c.content || '').length > 0;
+                            const hasInLinks = clues.some(other => 
+                              extractLinkIds(other.content || '').includes(c.id)
+                            );
+                            return !hasOutLinks && !hasInLinks;
+                          }).length}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-500">Collected</span>
+                        <span className="text-purple-500">{gameState.inventory?.length || 0}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>

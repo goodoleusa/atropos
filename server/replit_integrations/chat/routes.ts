@@ -102,6 +102,96 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
+  // Compress conversation context (non-streaming)
+  // Rate limited: 10/min - expensive operation
+  app.post("/api/chat/compress", chatRateLimit(10, 60000), async (req: Request, res: Response) => {
+    try {
+      const { messages, model = "meta-llama/llama-3.3-70b-instruct" } = req.body;
+
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ error: "Messages array required" });
+      }
+
+      const response = await openrouter.chat.completions.create({
+        model,
+        messages: messages.map((m: any) => ({
+          role: m.role || 'user',
+          content: m.content
+        })),
+        max_tokens: 500,
+        temperature: 0.3,
+      });
+
+      const content = response.choices[0]?.message?.content || '';
+      res.json({ content, compressed: content });
+    } catch (error) {
+      console.error("Error compressing context:", error);
+      res.status(500).json({ error: "Compression failed" });
+    }
+  });
+
+  // Model Battleground - compare same prompt across multiple models
+  // Rate limited: 5/min - very expensive operation
+  app.post("/api/chat/battleground", chatRateLimit(5, 60000), async (req: Request, res: Response) => {
+    try {
+      const { prompt, systemPrompt, models } = req.body;
+
+      if (!prompt || !models || !Array.isArray(models) || models.length < 2) {
+        return res.status(400).json({ error: "Prompt and at least 2 models required" });
+      }
+
+      // Limit to 4 models max
+      const targetModels = models.slice(0, 4);
+      
+      // Run all model requests in parallel
+      const startTimes: Record<string, number> = {};
+      const promises = targetModels.map(async (model: string) => {
+        startTimes[model] = Date.now();
+        try {
+          const messages: Array<{role: string; content: string}> = [];
+          if (systemPrompt) {
+            messages.push({ role: 'system', content: systemPrompt });
+          }
+          messages.push({ role: 'user', content: prompt });
+
+          const response = await openrouter.chat.completions.create({
+            model,
+            messages: messages as any,
+            max_tokens: 1024,
+            temperature: 0.7,
+          });
+
+          return {
+            model,
+            response: response.choices[0]?.message?.content || '',
+            latency: Date.now() - startTimes[model],
+            success: true
+          };
+        } catch (error: any) {
+          return {
+            model,
+            response: `Error: ${error.message || 'Request failed'}`,
+            latency: Date.now() - startTimes[model],
+            success: false
+          };
+        }
+      });
+
+      const results = await Promise.all(promises);
+      
+      // Convert to record format
+      const resultsMap: Record<string, { response: string; latency: number }> = {};
+      results.forEach(r => {
+        resultsMap[r.model] = { response: r.response, latency: r.latency };
+      });
+
+      res.json({ results: resultsMap });
+    } catch (error) {
+      console.error("Error in battleground:", error);
+      res.status(500).json({ error: "Battleground comparison failed" });
+    }
+  });
+
   // Send message and get AI response (streaming)
   // Rate limited: 20 messages per minute per IP
   app.post("/api/conversations/:id/messages", chatRateLimit(20, 60000), async (req: Request, res: Response) => {

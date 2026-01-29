@@ -1,13 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from '@/hooks/useGameSession';
-import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target, Copy, Download, Save, ExternalLink as ExternalLinkIcon } from 'lucide-react';
+import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target, Copy, Download, Save, ExternalLink as ExternalLinkIcon, Settings2 } from 'lucide-react';
 import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign } from '@/config/agentCampaigns';
 import { toast } from "@/hooks/use-toast";
+import { PromptStudio, type PromptConfig } from './PromptStudio';
+import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
 
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
@@ -97,6 +99,16 @@ interface AgentChatProps {
   initialPayload?: string;
 }
 
+type ModuleKey = keyof typeof CAPABILITY_MODULES;
+
+const DEFAULT_PROMPT_CONFIG: PromptConfig = {
+  modules: ['terminal_cmds', 'clue_system'] as ModuleKey[],
+  compressedContext: '',
+  taskFocus: '',
+  maxTokens: 8000,
+  temperature: 0.7
+};
+
 export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps) => {
   const { gameState } = useGame();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -107,6 +119,9 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [showCampaigns, setShowCampaigns] = useState(true);
   const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
+  const [promptConfig, setPromptConfig] = useState<PromptConfig>(DEFAULT_PROMPT_CONFIG);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [showPromptStudio, setShowPromptStudio] = useState(false);
 
   // Initialize with payload if provided
   useEffect(() => {
@@ -185,9 +200,15 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         return;
       }
 
-      // Build context with system prompt
+      // Build dynamic system prompt based on config
+      const dynamicSystemPrompt = buildSystemPrompt({
+        modules: promptConfig.modules,
+        compressed_context: promptConfig.compressedContext,
+        task_focus: promptConfig.taskFocus
+      });
+      
       const contextMessages = [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: dynamicSystemPrompt },
         { role: 'system', content: `Current session token: ${gameState.sessionToken.substring(0, 8)}... | Clues: ${gameState.inventory?.length || 0}` },
         ...messages,
         { role: 'user', content: userMessage }
@@ -332,7 +353,51 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setActiveCampaign(null);
     setShowCampaigns(true);
     setInput('');
+    setPromptConfig(DEFAULT_PROMPT_CONFIG);
   };
+
+  // Compress conversation context using AI
+  const compressContext = useCallback(async () => {
+    if (messages.length < 3) return;
+    
+    setIsCompressing(true);
+    try {
+      const compressionRequest = generateCompressionRequest(messages);
+      
+      const response = await fetch('/api/chat/compress', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
+        body: JSON.stringify({
+          messages: [compressionRequest],
+          model: selectedModel
+        })
+      });
+
+      if (!response.ok) throw new Error('Compression failed');
+      
+      const data = await response.json();
+      const compressed = data.content || data.compressed || '';
+      
+      setPromptConfig(prev => ({ ...prev, compressedContext: compressed }));
+      
+      toast({
+        title: "Context Compressed",
+        description: `Reduced ${messages.length} messages to a compact summary.`,
+      });
+    } catch (error) {
+      console.error('Compression error:', error);
+      toast({
+        title: "Compression Failed",
+        description: "Could not compress context. Try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCompressing(false);
+    }
+  }, [messages, selectedModel]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -417,7 +482,30 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
             <span className="text-[9px] md:text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
               /kimi /nemo /gpt4o
             </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowPromptStudio(!showPromptStudio)}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-400' : 'text-stone-500'}`}
+              data-testid="toggle-prompt-studio"
+            >
+              <Settings2 className="w-3 h-3 mr-1" />
+              Studio
+            </Button>
           </div>
+          
+          {/* Prompt Studio Panel */}
+          {showPromptStudio && (
+            <div className="mt-2">
+              <PromptStudio
+                messages={messages.map(m => ({ role: m.role, content: m.content }))}
+                currentConfig={promptConfig}
+                onConfigChange={setPromptConfig}
+                onCompress={compressContext}
+                isCompressing={isCompressing}
+              />
+            </div>
+          )}
         </DialogHeader>
 
         {/* Messages Area */}
