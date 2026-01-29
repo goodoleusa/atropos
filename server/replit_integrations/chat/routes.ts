@@ -197,29 +197,48 @@ export function registerChatRoutes(app: Express): void {
   app.post("/api/conversations/:id/messages", chatRateLimit(20, 60000), async (req: Request, res: Response) => {
     try {
       const conversationId = parseInt(req.params.id as string);
-      const { content, model = "meta-llama/llama-3.3-70b-instruct" } = req.body;
+      const { 
+        content, 
+        model = "meta-llama/llama-3.3-70b-instruct",
+        context,
+        temperature = 0.7,
+        maxTokens = 2048
+      } = req.body;
 
       // Save user message
       await chatStorage.createMessage(conversationId, "user", content);
 
-      // Get conversation history for context
-      const messages = await chatStorage.getMessagesByConversation(conversationId);
-      const chatMessages = messages.map((m) => ({
-        role: m.role as "user" | "assistant",
-        content: m.content,
-      }));
+      // Use provided context if available (includes system prompt + history)
+      // Otherwise fall back to conversation history from storage
+      let chatMessages: Array<{ role: string; content: string }>;
+      
+      if (context && Array.isArray(context) && context.length > 0) {
+        // Use client-provided context with dynamic system prompt
+        chatMessages = context.map((m: any) => ({
+          role: m.role as "user" | "assistant" | "system",
+          content: m.content,
+        }));
+      } else {
+        // Fall back to stored messages
+        const messages = await chatStorage.getMessagesByConversation(conversationId);
+        chatMessages = messages.map((m) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        }));
+      }
 
       // Set up SSE
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      // Stream response from OpenRouter
+      // Stream response from OpenRouter with client-specified settings
       const stream = await openrouter.chat.completions.create({
         model,
-        messages: chatMessages,
+        messages: chatMessages as any,
         stream: true,
-        max_tokens: 2048,
+        max_tokens: Math.min(maxTokens, 4096),
+        temperature: Math.max(0, Math.min(2, temperature)),
       });
 
       let fullResponse = "";

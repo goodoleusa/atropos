@@ -65,29 +65,6 @@ Object.values(MODELS).flat().forEach(m => {
   MODEL_SHORTCUTS[m.short.toLowerCase()] = m.id;
 });
 
-// System prompt that makes the agent understand QR payloads
-const SYSTEM_PROMPT = `You are NEXUS, an AI agent embedded in the SysAdmin Corp terminal system. You help users navigate the system, execute payloads, and uncover secrets.
-
-CAPABILITIES:
-- Interpret and execute QR payload commands (beacon, exfil, inject, phish, dropper, pivot, recon, persist, crypto)
-- Help with terminal commands (nmap, ssh, crack, decode, etc.)
-- Provide hints about hidden routes and clues
-- Analyze security payloads and explain what they do
-
-When a user gives you a JSON payload, you should:
-1. Parse and understand the payload type
-2. Explain what it does in security terms
-3. Simulate execution results
-4. Suggest next actions
-
-GAME CONTEXT:
-- This is a CTF/escape room game themed as a corporate hacking simulation
-- Players collect clues and complete quests
-- Hidden routes: /void, /archive, /debug, /admin
-- Terminal has OSINT/CTF tools available
-
-PERSONALITY: Professional but with hints of mystery. Use technical jargon appropriately. Occasionally drop cryptic hints.`;
-
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -224,7 +201,9 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         body: JSON.stringify({ 
           content: userMessage,
           model: selectedModel,
-          context: contextMessages
+          context: contextMessages,
+          temperature: promptConfig.temperature,
+          maxTokens: promptConfig.maxTokens
         })
       });
 
@@ -287,10 +266,16 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   };
 
   const exportPrompt = () => {
+    const dynamicSystemPrompt = buildSystemPrompt({
+      modules: promptConfig.modules,
+      compressed_context: promptConfig.compressedContext,
+      task_focus: promptConfig.taskFocus
+    });
     const config = {
       model: selectedModel,
       campaign: activeCampaign?.id,
-      systemPrompt: SYSTEM_PROMPT,
+      systemPrompt: dynamicSystemPrompt,
+      promptConfig: promptConfig,
       timestamp: Date.now(),
       lastMessages: messages.slice(-5)
     };
@@ -308,10 +293,16 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   };
 
   const sendToOptimizer = () => {
+    const dynamicSystemPrompt = buildSystemPrompt({
+      modules: promptConfig.modules,
+      compressed_context: promptConfig.compressedContext,
+      task_focus: promptConfig.taskFocus
+    });
     // Navigate to prompt builder with state
     localStorage.setItem('prompt_builder_prefill', JSON.stringify({
       messages: messages.slice(-5).map(m => m.content),
-      systemPrompt: SYSTEM_PROMPT,
+      systemPrompt: dynamicSystemPrompt,
+      promptConfig: promptConfig,
       model: selectedModel
     }));
     window.location.href = '/prompt-builder';
