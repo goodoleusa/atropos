@@ -5,8 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from '@/hooks/useGameSession';
-import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target } from 'lucide-react';
+import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target, Copy, Download, Save, ExternalLink as ExternalLinkIcon } from 'lucide-react';
 import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign } from '@/config/agentCampaigns';
+import { toast } from "@/hooks/use-toast";
 
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
@@ -254,6 +255,47 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setLoading(false);
   };
 
+  const copySession = () => {
+    const transcript = messages.map(m => `[${m.role.toUpperCase()}]\n${m.content}`).join('\n\n');
+    const header = `NEXUS AGENT SESSION LOG\nDate: ${new Date().toLocaleString()}\nModel: ${selectedModel}\nCampaign: ${activeCampaign?.name || 'None'}\n\n`;
+    navigator.clipboard.writeText(header + transcript);
+    toast({
+      title: "Transcript Copied",
+      description: "Session history saved to clipboard.",
+    });
+  };
+
+  const exportPrompt = () => {
+    const config = {
+      model: selectedModel,
+      campaign: activeCampaign?.id,
+      systemPrompt: SYSTEM_PROMPT,
+      timestamp: Date.now(),
+      lastMessages: messages.slice(-5)
+    };
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `nexus-config-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({
+      title: "Config Exported",
+      description: "Agent configuration downloaded.",
+    });
+  };
+
+  const sendToOptimizer = () => {
+    // Navigate to prompt builder with state
+    localStorage.setItem('prompt_builder_prefill', JSON.stringify({
+      messages: messages.slice(-5).map(m => m.content),
+      systemPrompt: SYSTEM_PROMPT,
+      model: selectedModel
+    }));
+    window.location.href = '/prompt-builder';
+  };
+
   const executePayload = async (payload: string) => {
     try {
       const response = await fetch('/api/agent/execute', {
@@ -307,14 +349,44 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
               )}
             </DialogTitle>
             {messages.length > 0 && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={resetChat}
-                className="text-stone-500 hover:text-amber-500 h-7 text-xs"
-              >
-                <ArrowLeft className="w-3 h-3 mr-1" /> New Session
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={copySession}
+                  title="Copy Transcript"
+                  className="text-stone-500 hover:text-amber-500 h-7 w-7 p-0"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={exportPrompt}
+                  title="Export Config"
+                  className="text-stone-500 hover:text-amber-500 h-7 w-7 p-0"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={sendToOptimizer}
+                  title="Send to Prompt Optimizer"
+                  className="text-stone-500 hover:text-teal-500 h-7 w-7 p-0"
+                >
+                  <Rocket className="w-3.5 h-3.5 text-teal-600" />
+                </Button>
+                <div className="w-px h-4 bg-amber-900/20 mx-1" />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={resetChat}
+                  className="text-stone-500 hover:text-amber-500 h-7 text-xs"
+                >
+                  <ArrowLeft className="w-3 h-3 mr-1" /> New Session
+                </Button>
+              </div>
             )}
           </div>
           

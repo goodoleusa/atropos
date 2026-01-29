@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, 
   Zap, 
@@ -42,6 +43,28 @@ export default function PromptBuilder() {
   const [generatedHandoff, setGeneratedHandoff] = useState('');
   const [copied, setCopied] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
+
+  // Check for prefilled data from AgentChat
+  useEffect(() => {
+    const prefill = localStorage.getItem('prompt_builder_prefill');
+    if (prefill) {
+      try {
+        const data = JSON.parse(prefill);
+        if (data.messages && data.messages.length > 0) {
+          setConversationHistory(data.messages.join('\n\n'));
+          setActiveStep(2); // Jump to compression step
+        }
+        // Clear it so it doesn't persist forever
+        localStorage.removeItem('prompt_builder_prefill');
+        toast({
+          title: "Session Data Loaded",
+          description: "NEXUS interaction history imported for optimization.",
+        });
+      } catch (e) {
+        console.error("Failed to parse prefill data", e);
+      }
+    }
+  }, []);
 
   const toggleModule = (mod: ModuleKey) => {
     setEnabledModules(prev => 
