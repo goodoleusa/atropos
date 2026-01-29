@@ -6,7 +6,7 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 export const appAccessGate = (req: Request, res: Response, next: NextFunction) => {
   const accessToken = process.env.APP_ACCESS_TOKEN;
   
-  if (!accessToken) {
+  if (!accessToken || process.env.NODE_ENV === 'development') {
     return next();
   }
   
