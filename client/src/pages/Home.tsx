@@ -288,8 +288,12 @@ export default function Home() {
       <footer className="w-full border-t border-amber-900/10 py-8 mt-12 bg-[#050200]">
         <div className="container mx-auto px-4 text-center text-stone-700 text-sm">
           <p>&copy; 2026 SysAdmin Corp. All rights reserved.</p>
-          <div className="mt-4 opacity-30 hover:opacity-100 transition-opacity">
-            <Link href="/terminal" className="text-xs font-mono cursor-pointer hover:text-amber-500 transition-colors">
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <Link href="/wiki" className="text-xs font-mono cursor-pointer text-stone-500 hover:text-amber-500 transition-colors" data-testid="link-wiki">
+              [DOCS]
+            </Link>
+            <span className="text-stone-800">|</span>
+            <Link href="/terminal" className="text-xs font-mono cursor-pointer text-stone-600 opacity-50 hover:opacity-100 hover:text-amber-500 transition-all">
                 sys_v4.0.2-copper
             </Link>
           </div>
