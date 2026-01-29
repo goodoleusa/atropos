@@ -10,6 +10,7 @@ import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign } from '@/config/age
 import { toast } from "@/hooks/use-toast";
 import { PromptStudio, type PromptConfig } from './PromptStudio';
 import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
+import { exportAgentSessionToReport } from '@/lib/reportExporter';
 
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
@@ -308,6 +309,30 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     window.location.href = '/prompt-builder';
   };
 
+  const exportToReport = () => {
+    if (messages.length < 2) {
+      toast({
+        title: "Not Enough Data",
+        description: "Have a conversation first before exporting a report.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    exportAgentSessionToReport(
+      messages,
+      selectedModel,
+      activeCampaign ? { id: activeCampaign.id, name: activeCampaign.name } : undefined,
+      promptConfig,
+      gameState.sessionToken
+    );
+    
+    toast({
+      title: "Report Generated",
+      description: "Investigation report exported with ~70% auto-filled. Check your downloads.",
+    });
+  };
+
   const executePayload = async (payload: string) => {
     try {
       const response = await fetch('/api/agent/execute', {
@@ -432,6 +457,17 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                   className="text-stone-500 hover:text-teal-500 h-7 w-7 p-0"
                 >
                   <Rocket className="w-3.5 h-3.5 text-teal-600" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={exportToReport}
+                  title="Export Investigation Report (70% auto-filled)"
+                  className="text-stone-500 hover:text-purple-500 h-7 px-1"
+                  data-testid="export-report"
+                >
+                  <Save className="w-3.5 h-3.5 text-purple-500" />
+                  <span className="text-[9px] ml-0.5 hidden md:inline">Report</span>
                 </Button>
                 <div className="w-px h-4 bg-amber-900/20 mx-1" />
                 <Button 
