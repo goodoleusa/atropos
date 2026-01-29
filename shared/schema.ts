@@ -197,6 +197,74 @@ export const insertBehavioralProfileSchema = createInsertSchema(behavioralProfil
 export type BehavioralProfile = typeof behavioralProfiles.$inferSelect;
 export type InsertBehavioralProfile = z.infer<typeof insertBehavioralProfileSchema>;
 
+// Admin System Prompts - global AI configuration
+export const adminPrompts = pgTable("admin_prompts", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(), // 'master_system', 'campaign_osint', etc.
+  name: text("name").notNull(),
+  content: text("content").notNull(),
+  category: text("category").notNull().default("system"), // 'system', 'campaign', 'persona'
+  isActive: boolean("is_active").notNull().default(true),
+  version: integer("version").notNull().default(1),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertAdminPromptSchema = createInsertSchema(adminPrompts).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type AdminPrompt = typeof adminPrompts.$inferSelect;
+export type InsertAdminPrompt = z.infer<typeof insertAdminPromptSchema>;
+
+// Campaign Templates - reusable investigation flows
+export const campaignTemplates = pgTable("campaign_templates", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // 'osint', 'bgp', 'malware', 'social_engineering'
+  phases: jsonb("phases").$type<{id: string; name: string; prompts: string[]; triggers: string[]}[]>().notNull().default([]),
+  variables: jsonb("variables").$type<{key: string; label: string; default: string}[]>().notNull().default([]),
+  rewards: jsonb("rewards").$type<{clueId?: string; questId?: string; route?: string}[]>().notNull().default([]),
+  estimatedTime: text("estimated_time"),
+  difficulty: text("difficulty").notNull().default("intermediate"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertCampaignTemplateSchema = createInsertSchema(campaignTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type CampaignTemplate = typeof campaignTemplates.$inferSelect;
+export type InsertCampaignTemplate = z.infer<typeof insertCampaignTemplateSchema>;
+
+// Content Flow Nodes - visual editor nodes
+export const flowNodes = pgTable("flow_nodes", {
+  id: serial("id").primaryKey(),
+  nodeId: text("node_id").notNull().unique(),
+  campaignKey: text("campaign_key"), // links to campaign template
+  type: text("type").notNull(), // 'clue', 'quest', 'message', 'trigger', 'branch'
+  title: text("title").notNull(),
+  content: jsonb("content").$type<Record<string, any>>().notNull().default({}),
+  position: jsonb("position").$type<{x: number; y: number}>().notNull().default({x: 0, y: 0}),
+  connections: jsonb("connections").$type<string[]>().notNull().default([]),
+  metadata: jsonb("metadata").$type<Record<string, any>>().notNull().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertFlowNodeSchema = createInsertSchema(flowNodes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type FlowNode = typeof flowNodes.$inferSelect;
+export type InsertFlowNode = z.infer<typeof insertFlowNodeSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
