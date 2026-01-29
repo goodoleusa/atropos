@@ -178,6 +178,25 @@ export type InsertDossier = z.infer<typeof insertDossierSchema>;
 export type LearningPath = typeof learningPaths.$inferSelect;
 export type InsertLearningPath = z.infer<typeof insertLearningPathSchema>;
 
+// Behavioral Profiles - tracks user patterns and trends
+export const behavioralProfiles = pgTable("behavioral_profiles", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  actionType: text("action_type").notNull(), // 'command', 'navigation', 'clue_discovery', 'agent_interaction'
+  category: text("category").notNull(), // 'aggressive', 'cautious', 'curious', 'analytical'
+  intensity: integer("intensity").notNull().default(1),
+  metadata: jsonb("metadata").$type<Record<string, any>>().notNull().default({}),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+export const insertBehavioralProfileSchema = createInsertSchema(behavioralProfiles).omit({
+  id: true,
+  timestamp: true,
+});
+
+export type BehavioralProfile = typeof behavioralProfiles.$inferSelect;
+export type InsertBehavioralProfile = z.infer<typeof insertBehavioralProfileSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
