@@ -78,12 +78,21 @@ export const MysticalPopups = () => {
   return (
     <AnimatePresence>
       {activeCard && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 50 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 50 }}
-          className="fixed bottom-16 sm:bottom-4 right-2 sm:right-4 md:bottom-8 md:right-8 z-[80] w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] max-w-xs"
-        >
+        <>
+          {/* Backdrop - click to dismiss */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={dismissCard}
+            className="fixed inset-0 z-[79] bg-black/20"
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 50 }}
+            className="fixed bottom-16 sm:bottom-4 right-2 sm:right-4 md:bottom-8 md:right-8 z-[80] w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] max-w-xs"
+          >
           <div className={`
             relative p-4 sm:p-6 rounded-lg backdrop-blur-md border shadow-2xl
             ${activeCard.type === 'tarot' 
@@ -93,12 +102,14 @@ export const MysticalPopups = () => {
           `}>
             {/* Close button - larger touch target for mobile */}
             <button 
-              onClick={dismissCard}
-              onTouchEnd={(e) => { e.preventDefault(); dismissCard(); }}
-              className="absolute -top-2 -right-2 sm:top-2 sm:right-2 bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-stone-200 transition-colors p-2 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation active:scale-95 shadow-lg border border-stone-600"
+              onClick={(e) => { e.stopPropagation(); dismissCard(); }}
+              onPointerDown={(e) => { e.stopPropagation(); dismissCard(); }}
+              className="absolute -top-3 -right-3 sm:top-2 sm:right-2 bg-stone-900 hover:bg-red-900 text-stone-300 hover:text-white transition-colors rounded-full w-[48px] h-[48px] flex items-center justify-center cursor-pointer shadow-xl border-2 border-stone-500 z-[100]"
+              style={{ touchAction: 'manipulation' }}
               data-testid="mystical-close"
+              type="button"
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             </button>
             
             {/* Tap to dismiss hint */}
@@ -159,6 +170,7 @@ export const MysticalPopups = () => {
             <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-amber-600/30 rounded-br"></div>
           </div>
         </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
