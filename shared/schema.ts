@@ -354,6 +354,78 @@ export type InsertDevBriefing = z.infer<typeof insertDevBriefingSchema>;
 export type DmMessage = typeof dmMessages.$inferSelect;
 export type InsertDmMessage = z.infer<typeof insertDmMessageSchema>;
 
+// Designer Campaigns - full user-created investigation campaigns (modular/branching)
+export const designerCampaigns = pgTable("designer_campaigns", {
+  id: serial("id").primaryKey(),
+  campaignId: text("campaign_id").notNull().unique(), // Client-generated UUID
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  nodes: jsonb("nodes").$type<any[]>().notNull().default([]),
+  links: jsonb("links").$type<any[]>().notNull().default([]),
+  rootNodes: jsonb("root_nodes").$type<string[]>().notNull().default([]),
+  isChunk: boolean("is_chunk").notNull().default(false), // Modular chunk that can be embedded
+  entryPoints: jsonb("entry_points").$type<string[]>().notNull().default([]), // Entry node IDs
+  exitPoints: jsonb("exit_points").$type<string[]>().notNull().default([]), // Exit node IDs
+  clueRefs: jsonb("clue_refs").$type<string[]>().notNull().default([]), // Shared clue IDs
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  sessionToken: text("session_token"), // Owner's session (null for admin campaigns)
+  isPublished: boolean("is_published").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Shared Clues Library - cross-campaign clue references
+export const sharedClues = pgTable("shared_clues", {
+  id: serial("id").primaryKey(),
+  clueId: text("clue_id").notNull().unique(), // Client-generated UUID
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  content: text("content").notNull().default(""),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  usedInCampaigns: jsonb("used_in_campaigns").$type<string[]>().notNull().default([]),
+  linkedClues: jsonb("linked_clues").$type<string[]>().notNull().default([]), // Related clue IDs
+  difficulty: integer("difficulty").notNull().default(1),
+  category: text("category").notNull().default("general"), // 'osint', 'crypto', 'network', 'social'
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Campaign Links - cross-campaign connections
+export const campaignLinks = pgTable("campaign_links", {
+  id: serial("id").primaryKey(),
+  sourceCampaignId: text("source_campaign_id").notNull(),
+  sourceNodeId: text("source_node_id").notNull(),
+  targetCampaignId: text("target_campaign_id").notNull(),
+  targetNodeId: text("target_node_id").notNull(),
+  linkType: text("link_type").notNull().default("continues"), // 'continues', 'branches', 'references'
+  condition: text("condition"), // Optional condition for branching
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertDesignerCampaignSchema = createInsertSchema(designerCampaigns).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSharedClueSchema = createInsertSchema(sharedClues).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCampaignLinkSchema = createInsertSchema(campaignLinks).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type DesignerCampaign = typeof designerCampaigns.$inferSelect;
+export type InsertDesignerCampaign = z.infer<typeof insertDesignerCampaignSchema>;
+export type SharedClue = typeof sharedClues.$inferSelect;
+export type InsertSharedClue = z.infer<typeof insertSharedClueSchema>;
+export type CampaignLink = typeof campaignLinks.$inferSelect;
+export type InsertCampaignLink = z.infer<typeof insertCampaignLinkSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";

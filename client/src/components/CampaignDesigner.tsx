@@ -46,6 +46,14 @@ interface CampaignLink {
   relation?: RelationType;
 }
 
+interface SharedClue {
+  id: string;
+  name: string;
+  description: string;
+  tags: string[];
+  usedIn: string[]; // Campaign IDs where this clue is referenced
+}
+
 interface Campaign {
   id: string;
   name: string;
@@ -53,6 +61,10 @@ interface Campaign {
   nodes: CampaignNode[];
   links: CampaignLink[];
   rootNodes: string[];
+  isChunk?: boolean; // Modular chunk that can be embedded in other campaigns
+  entryPoints?: string[]; // Node IDs that can be entered from other campaigns
+  exitPoints?: string[]; // Node IDs that can link to other campaigns
+  clueRefs?: string[]; // Shared clue IDs referenced in this campaign
 }
 
 const NODE_TYPES = [
@@ -107,6 +119,266 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   const [testHistory, setTestHistory] = useState<string[]>([]);
   const [linkQuery, setLinkQuery] = useState('');
   const [showLinkSuggestions, setShowLinkSuggestions] = useState(false);
+  const [showFileTree, setShowFileTree] = useState(true);
+  const [savedCampaigns, setSavedCampaigns] = useState<Campaign[]>([]);
+  const [isUnsaved, setIsUnsaved] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [sharedClues, setSharedClues] = useState<SharedClue[]>([]);
+  const [zoom, setZoom] = useState(1);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+
+  // Load saved campaigns from database on mount
+  useEffect(() => {
+    const loadFromDB = async () => {
+      try {
+        const response = await fetch('/api/designer/campaigns');
+        if (response.ok) {
+          const dbCampaigns = await response.json();
+          const converted = dbCampaigns.map((c: any) => ({
+            id: c.campaignId,
+            name: c.name,
+            description: c.description,
+            nodes: c.nodes || [],
+            links: c.links || [],
+            rootNodes: c.rootNodes || [],
+            isChunk: c.isChunk,
+            entryPoints: c.entryPoints,
+            exitPoints: c.exitPoints,
+            clueRefs: c.clueRefs
+          }));
+          setSavedCampaigns(converted);
+        }
+      } catch (error) {
+        // Fallback to localStorage
+        const saved = localStorage.getItem('nexus_campaigns');
+        if (saved) {
+          try { setSavedCampaigns(JSON.parse(saved)); } catch {}
+        }
+      }
+    };
+    loadFromDB();
+    
+    // Load shared clues
+    fetch('/api/designer/clues')
+      .then(r => r.ok ? r.json() : [])
+      .then(clues => setSharedClues(clues))
+      .catch(() => {});
+  }, [open]);
+
+  // Track unsaved changes
+  useEffect(() => {
+    const savedVersion = savedCampaigns.find(c => c.id === campaign.id);
+    if (savedVersion) {
+      setIsUnsaved(JSON.stringify(savedVersion) !== JSON.stringify(campaign));
+    } else if (campaign.nodes.length > 0) {
+      setIsUnsaved(true);
+    }
+  }, [campaign, savedCampaigns]);
+
+  // Save campaign to database
+  const saveCampaign = useCallback(async () => {
+    setIsSyncing(true);
+    try {
+      const payload = {
+        name: campaign.name,
+        description: campaign.description,
+        nodes: campaign.nodes,
+        links: campaign.links,
+        rootNodes: campaign.rootNodes,
+        isChunk: campaign.isChunk || false,
+        entryPoints: campaign.entryPoints || [],
+        exitPoints: campaign.exitPoints || [],
+        clueRefs: campaign.clueRefs || []
+      };
+      
+      const response = await fetch(`/api/designer/campaigns/${campaign.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        // Update local cache
+        const existing = savedCampaigns.findIndex(c => c.id === campaign.id);
+        const updated = [...savedCampaigns];
+        if (existing >= 0) {
+          updated[existing] = campaign;
+        } else {
+          updated.push(campaign);
+        }
+        setSavedCampaigns(updated);
+        localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
+        setIsUnsaved(false);
+        toast({ title: 'Campaign Saved', description: `"${campaign.name}" synced to database` });
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (error) {
+      // Fallback to localStorage only
+      const existing = savedCampaigns.findIndex(c => c.id === campaign.id);
+      const updated = [...savedCampaigns];
+      if (existing >= 0) updated[existing] = campaign;
+      else updated.push(campaign);
+      localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
+      setSavedCampaigns(updated);
+      setIsUnsaved(false);
+      toast({ title: 'Saved Locally', description: 'Database sync failed, saved to local storage' });
+    }
+    setIsSyncing(false);
+  }, [campaign, savedCampaigns]);
+
+  const loadCampaign = useCallback((campaignId: string) => {
+    const toLoad = savedCampaigns.find(c => c.id === campaignId);
+    if (toLoad) {
+      setCampaign(toLoad);
+      setSelectedNode(null);
+      setEditingNode(null);
+      setIsUnsaved(false);
+      toast({ title: 'Campaign Loaded', description: `"${toLoad.name}" loaded` });
+    }
+  }, [savedCampaigns]);
+
+  const deleteCampaign = useCallback(async (campaignId: string) => {
+    try {
+      await fetch(`/api/designer/campaigns/${campaignId}`, { method: 'DELETE' });
+    } catch {}
+    
+    const updated = savedCampaigns.filter(c => c.id !== campaignId);
+    setSavedCampaigns(updated);
+    localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
+    
+    if (campaign.id === campaignId) {
+      setCampaign({
+        id: `campaign-${Date.now()}`,
+        name: 'New Campaign',
+        description: 'Investigation campaign',
+        nodes: [],
+        links: [],
+        rootNodes: []
+      });
+    }
+    toast({ title: 'Campaign Deleted' });
+  }, [campaign.id, savedCampaigns]);
+
+  const duplicateCampaign = useCallback(async (campaignId: string) => {
+    const original = savedCampaigns.find(c => c.id === campaignId);
+    if (original) {
+      const duplicate: Campaign = {
+        ...original,
+        id: `campaign-${Date.now()}`,
+        name: `${original.name} (Copy)`
+      };
+      
+      try {
+        await fetch(`/api/designer/campaigns/${duplicate.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: duplicate.name,
+            description: duplicate.description,
+            nodes: duplicate.nodes,
+            links: duplicate.links,
+            rootNodes: duplicate.rootNodes
+          })
+        });
+      } catch {}
+      
+      const updated = [...savedCampaigns, duplicate];
+      setSavedCampaigns(updated);
+      localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
+      toast({ title: 'Campaign Duplicated', description: `Created "${duplicate.name}"` });
+    }
+  }, [savedCampaigns]);
+
+  const newCampaign = useCallback(() => {
+    setCampaign({
+      id: `campaign-${Date.now()}`,
+      name: 'New Campaign',
+      description: 'Investigation campaign',
+      nodes: [],
+      links: [],
+      rootNodes: []
+    });
+    setSelectedNode(null);
+    setEditingNode(null);
+    setIsUnsaved(false);
+  }, []);
+
+  // Auto-organize nodes in a tree/grid layout
+  const autoOrganize = useCallback(() => {
+    if (campaign.nodes.length === 0) return;
+    
+    const nodeWidth = 220;
+    const nodeHeight = 130;
+    const horizontalGap = 60;
+    const verticalGap = 80;
+    const startX = 100;
+    const startY = 100;
+    
+    // Build adjacency list from links
+    const children: Record<string, string[]> = {};
+    const parents: Record<string, string[]> = {};
+    campaign.nodes.forEach(n => { children[n.id] = []; parents[n.id] = []; });
+    campaign.links.forEach(l => {
+      children[l.source]?.push(l.target);
+      parents[l.target]?.push(l.source);
+    });
+    
+    // Find root nodes (no parents or in rootNodes list)
+    const roots = campaign.nodes.filter(n => 
+      parents[n.id]?.length === 0 || campaign.rootNodes.includes(n.id)
+    );
+    
+    // BFS to assign levels
+    const levels: Record<string, number> = {};
+    const visited = new Set<string>();
+    const queue: { id: string; level: number }[] = roots.map(r => ({ id: r.id, level: 0 }));
+    
+    while (queue.length > 0) {
+      const { id, level } = queue.shift()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      levels[id] = level;
+      children[id]?.forEach(childId => {
+        if (!visited.has(childId)) {
+          queue.push({ id: childId, level: level + 1 });
+        }
+      });
+    }
+    
+    // Place unvisited nodes at level 0
+    campaign.nodes.forEach(n => {
+      if (!visited.has(n.id)) {
+        levels[n.id] = 0;
+        visited.add(n.id);
+      }
+    });
+    
+    // Group nodes by level
+    const levelGroups: Record<number, string[]> = {};
+    Object.entries(levels).forEach(([id, level]) => {
+      if (!levelGroups[level]) levelGroups[level] = [];
+      levelGroups[level].push(id);
+    });
+    
+    // Position nodes
+    const updatedNodes = campaign.nodes.map(node => {
+      const level = levels[node.id] || 0;
+      const nodesAtLevel = levelGroups[level] || [];
+      const indexInLevel = nodesAtLevel.indexOf(node.id);
+      
+      return {
+        ...node,
+        x: startX + level * (nodeWidth + horizontalGap),
+        y: startY + indexInLevel * (nodeHeight + verticalGap)
+      };
+    });
+    
+    setCampaign(prev => ({ ...prev, nodes: updatedNodes }));
+    setZoom(1);
+    toast({ title: 'Auto-Organized', description: `Arranged ${campaign.nodes.length} nodes` });
+  }, [campaign]);
+
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Obsidian-style link query parser - supports [[name]], @type:value, #property:value
@@ -726,7 +998,27 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
           <p className="text-[10px] text-stone-400 line-clamp-3">{node.content || 'Double-click to edit'}</p>
         )}
         
-        {/* Link connector - bigger touch target */}
+        {/* Left input connector - for receiving links */}
+        <div className="absolute -left-3 top-1/2 transform -translate-y-1/2">
+          <button
+            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+              isLinkTarget
+                ? 'bg-teal-500 border-teal-400 scale-125 animate-pulse' 
+                : 'bg-stone-900 border-stone-600 hover:border-teal-400 hover:bg-teal-900/50'
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (linkingFrom && linkingFrom !== node.id) {
+                createLink(linkingFrom, node.id);
+              }
+            }}
+            title="Drop link here"
+          >
+            <ChevronRight className="w-3 h-3 text-stone-400" />
+          </button>
+        </div>
+        
+        {/* Right output connector - bigger touch target for creating links */}
         <div className="absolute -right-4 top-1/2 transform -translate-y-1/2">
           <button
             className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all text-sm font-bold ${
@@ -915,8 +1207,100 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
           </DialogHeader>
 
           <div className="flex flex-col sm:flex-row flex-1 overflow-hidden min-h-0">
+            {/* Campaign File Tree Sidebar - Always visible on desktop */}
+            <div className={`border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0 sm:w-[200px] bg-stone-950/50 ${showFileTree ? '' : 'hidden sm:block'}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] text-amber-500 uppercase tracking-wider font-bold flex items-center gap-1">
+                    <FolderTree className="w-3 h-3" /> Campaigns
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={newCampaign}
+                    className="p-0 h-6 w-6 text-amber-400 hover:text-amber-300"
+                    title="New Campaign"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </div>
+                <ScrollArea className="h-[120px] sm:h-[200px]">
+                  <div className="space-y-1">
+                    {savedCampaigns.length === 0 ? (
+                      <p className="text-stone-600 text-xs text-center py-4">No saved campaigns</p>
+                    ) : (
+                      savedCampaigns.map(c => (
+                        <div 
+                          key={c.id}
+                          className={`group flex items-center gap-1 p-1.5 rounded cursor-pointer text-xs transition-all ${
+                            c.id === campaign.id 
+                              ? 'bg-amber-900/40 text-amber-300' 
+                              : 'hover:bg-stone-800 text-stone-400'
+                          }`}
+                          onClick={() => loadCampaign(c.id)}
+                          data-testid={`campaign-file-${c.id}`}
+                        >
+                          <FileText className="w-3 h-3 shrink-0" />
+                          <span className="truncate flex-1">{c.name}</span>
+                          <div className="hidden group-hover:flex gap-0.5">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); duplicateCampaign(c.id); }}
+                              className="p-0.5 hover:text-teal-400"
+                              title="Duplicate"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); deleteCampaign(c.id); }}
+                              className="p-0.5 hover:text-red-400"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </ScrollArea>
+                <div className="border-t border-stone-800 mt-2 pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={saveCampaign}
+                    disabled={isSyncing}
+                    className={`w-full justify-start text-xs min-h-[36px] ${
+                      isSyncing
+                        ? 'border-teal-600 text-teal-400'
+                        : isUnsaved 
+                          ? 'border-amber-600 text-amber-400 animate-pulse' 
+                          : 'border-stone-700 text-stone-400'
+                    }`}
+                    data-testid="save-campaign-btn"
+                  >
+                    {isSyncing ? (
+                      <div className="w-3 h-3 mr-1.5 border-2 border-teal-400 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Save className="w-3 h-3 mr-1.5" />
+                    )}
+                    {isSyncing ? 'Syncing...' : isUnsaved ? 'Save*' : 'Saved'}
+                  </Button>
+                </div>
+              </div>
+
+            {/* Node Types Sidebar */}
             <div className="border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0">
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider mb-1.5 sm:mb-2">Add Node</p>
+              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                <p className="text-[10px] text-stone-500 uppercase tracking-wider">Add Node</p>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowFileTree(!showFileTree)}
+                  className="p-0 h-5 w-5 text-stone-500 hover:text-amber-400 sm:hidden"
+                  title="Toggle File Tree"
+                >
+                  <FolderTree className="w-3 h-3" />
+                </Button>
+              </div>
               <div className="flex sm:flex-col gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
               {NODE_TYPES.map(nt => {
                   const buttonStyles: Record<string, string> = {
@@ -1212,7 +1596,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                     </div>
                   )}
                   
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ minWidth: 2000, minHeight: 1500 }}>
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ minWidth: 4000, minHeight: 3000 }}>
                     {renderLinks()}
                     {renderLinkPreview()}
                   </svg>
