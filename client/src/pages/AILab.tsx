@@ -87,21 +87,26 @@ const MODELS: ModelInfo[] = [
   { id: 'openai/gpt-4o', name: 'GPT-4o', tier: 'paid', category: 'reasoning', strengths: ['Multimodal', 'Complex tasks', 'Tool use'] },
   { id: 'google/gemini-2.0-flash-thinking-exp:free', name: 'Gemini 2.0 Thinking', tier: 'free', category: 'reasoning', strengths: ['Chain of thought', 'Math', 'Logic'] },
   { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1', tier: 'free', category: 'reasoning', strengths: ['Math reasoning', 'Step-by-step', 'Open weights'] },
+  { id: 'microsoft/phi-3-medium-128k-instruct:free', name: 'Phi-3 Medium', tier: 'free', category: 'reasoning', strengths: ['Efficient', 'Long context', 'Microsoft'] },
   
   // Creative & Writing
   { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', tier: 'paid', category: 'creative', strengths: ['Creative writing', 'Nuance', 'Style'] },
   { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', tier: 'free', category: 'creative', strengths: ['Storytelling', 'Roleplay', 'Open source'] },
   { id: 'mistralai/mistral-large-2411', name: 'Mistral Large', tier: 'paid', category: 'creative', strengths: ['Multilingual', 'Nuanced', 'European'] },
+  { id: 'mistralai/mistral-7b-instruct:free', name: 'Mistral 7B', tier: 'free', category: 'creative', strengths: ['Fast', 'Compact', 'Open source'] },
   
   // General Purpose
   { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', tier: 'paid', category: 'general', strengths: ['Balanced', 'Cost-effective', 'Reliable'] },
   { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash', tier: 'free', category: 'general', strengths: ['Multimodal', 'Fast', 'Free'] },
   { id: 'meta-llama/llama-3.1-8b-instruct:free', name: 'Llama 3.1 8B', tier: 'free', category: 'general', strengths: ['Lightweight', 'Quick', 'Efficient'] },
+  { id: 'google/gemma-2-9b-it:free', name: 'Gemma 2 9B', tier: 'free', category: 'general', strengths: ['Google', 'Balanced', 'Open weights'] },
+  { id: 'huggingfaceh4/zephyr-7b-beta:free', name: 'Zephyr 7B', tier: 'free', category: 'general', strengths: ['HuggingFace', 'Chat-tuned', 'Fast'] },
   
   // Fast & Efficient
   { id: 'groq/llama-3.3-70b-versatile', name: 'Groq Llama 70B', tier: 'paid', category: 'fast', strengths: ['Ultra-fast', 'Low latency', 'Groq chip'] },
   { id: 'google/gemini-flash-1.5-8b', name: 'Gemini Flash 1.5 8B', tier: 'free', category: 'fast', strengths: ['Instant', 'Cheap', 'Streaming'] },
   { id: 'mistralai/ministral-8b', name: 'Ministral 8B', tier: 'paid', category: 'fast', strengths: ['Edge-ready', 'Compact', 'Efficient'] },
+  { id: 'openchat/openchat-7b:free', name: 'OpenChat 7B', tier: 'free', category: 'fast', strengths: ['Fast', 'Open source', 'Good quality'] },
 ];
 
 const TEST_SCENARIOS = [
@@ -119,12 +124,24 @@ const moduleDescriptions: Record<ModuleKey, { name: string; desc: string; icon: 
   osint_recon: { name: 'OSINT Recon', desc: 'Reconnaissance', icon: '🎯' }
 };
 
+interface BattleResult {
+  id: string;
+  prompt: string;
+  modelA: { id: string; name: string; response: string; latency: number; tokens: number };
+  modelB: { id: string; name: string; response: string; latency: number; tokens: number };
+  winner: 'A' | 'B' | 'tie' | null;
+  timestamp: string;
+}
+
 export default function AILab() {
   const [enabledModules, setEnabledModules] = useState<ModuleKey[]>(['payload_exec', 'terminal_cmds', 'osint_recon']);
   const [selectedModel, setSelectedModel] = useState('meta-llama/llama-3.3-70b-instruct:free');
+  const [selectedModelB, setSelectedModelB] = useState('google/gemini-2.0-flash-exp:free');
   const [testPrompt, setTestPrompt] = useState('');
   const [response, setResponse] = useState('');
+  const [responseB, setResponseB] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingB, setLoadingB] = useState(false);
   const [runs, setRuns] = useState<ModelRun[]>([]);
   const [copied, setCopied] = useState(false);
   const [taskCompletionRating, setTaskCompletionRating] = useState(50);
@@ -132,6 +149,9 @@ export default function AILab() {
   const [contextRating, setContextRating] = useState(50);
   const [bugReport, setBugReport] = useState('');
   const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [battleMode, setBattleMode] = useState(false);
+  const [battleResults, setBattleResults] = useState<BattleResult[]>([]);
+  const [currentBattle, setCurrentBattle] = useState<Partial<BattleResult> | null>(null);
 
   const generatedPrompt = useMemo(() => {
     return buildSystemPrompt({ modules: enabledModules });
@@ -200,132 +220,280 @@ export default function AILab() {
     );
   };
 
+  const runSingleModel = async (model: string): Promise<{ response: string; latency: number; tokens: number }> => {
+    const startTime = Date.now();
+    const res = await fetch('/api/chat/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: testPrompt,
+        systemPrompt: generatedPrompt,
+        model
+      })
+    });
+    const data = await res.json();
+    const latency = data.latency || (Date.now() - startTime);
+    const responseText = data.content || data.error || JSON.stringify(data);
+    return { response: responseText, latency, tokens: Math.ceil(responseText.length / 4) };
+  };
+
   const runTest = async () => {
     if (!testPrompt.trim()) {
       toast({ title: 'Enter a test prompt', variant: 'destructive' });
       return;
     }
 
-    setLoading(true);
-    const startTime = Date.now();
+    if (battleMode) {
+      // Battle mode: run both models
+      setLoading(true);
+      setLoadingB(true);
+      setResponse('');
+      setResponseB('');
+      setCurrentBattle({ prompt: testPrompt });
 
-    try {
-      const res = await fetch('/api/chat/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      try {
+        const [resultA, resultB] = await Promise.all([
+          runSingleModel(selectedModel),
+          runSingleModel(selectedModelB)
+        ]);
+
+        setResponse(resultA.response);
+        setResponseB(resultB.response);
+
+        const modelAInfo = MODELS.find(m => m.id === selectedModel);
+        const modelBInfo = MODELS.find(m => m.id === selectedModelB);
+
+        setCurrentBattle({
+          id: `battle-${Date.now()}`,
           prompt: testPrompt,
-          systemPrompt: generatedPrompt,
-          model: selectedModel
-        })
-      });
+          modelA: { id: selectedModel, name: modelAInfo?.name || selectedModel, ...resultA },
+          modelB: { id: selectedModelB, name: modelBInfo?.name || selectedModelB, ...resultB },
+          winner: null,
+          timestamp: new Date().toISOString()
+        });
 
-      const data = await res.json();
-      const latencyMs = data.latency || (Date.now() - startTime);
-      const responseText = data.content || data.error || JSON.stringify(data);
-      setResponse(responseText);
+        toast({ title: 'Battle complete!', description: 'Vote for the winner below' });
+      } catch (err) {
+        toast({ title: 'Battle failed', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+        setLoadingB(false);
+      }
+    } else {
+      // Single model mode
+      setLoading(true);
+      try {
+        const result = await runSingleModel(selectedModel);
+        setResponse(result.response);
 
-      const inputTokens = estimatedTokens.total;
-      const outputTokens = Math.ceil(responseText.length / 4);
-      const costUsd = calculateCost(inputTokens, outputTokens, selectedModel);
+        const inputTokens = estimatedTokens.total;
+        const costUsd = calculateCost(inputTokens, result.tokens, selectedModel);
 
-      const newRun: ModelRun = {
-        id: `run-${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        model: selectedModel,
-        prompt: testPrompt,
-        response: responseText,
-        inputTokens,
-        outputTokens,
-        totalTokens: inputTokens + outputTokens,
-        costUsd,
-        latencyMs,
-        taskCompletion: taskCompletionRating,
-        coherence: coherenceRating,
-        contextAwareness: contextRating,
-        modules: [...enabledModules]
-      };
+        const newRun: ModelRun = {
+          id: `run-${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          model: selectedModel,
+          prompt: testPrompt,
+          response: result.response,
+          inputTokens,
+          outputTokens: result.tokens,
+          totalTokens: inputTokens + result.tokens,
+          costUsd,
+          latencyMs: result.latency,
+          taskCompletion: taskCompletionRating,
+          coherence: coherenceRating,
+          contextAwareness: contextRating,
+          modules: [...enabledModules]
+        };
 
-      setRuns(prev => [...prev, newRun]);
-      toast({ title: 'Test completed', description: `Cost: $${costUsd.toFixed(4)} | Latency: ${newRun.latencyMs}ms` });
-    } catch (err) {
-      setResponse(`Error: ${err}`);
-      toast({ title: 'Test failed', variant: 'destructive' });
-    } finally {
-      setLoading(false);
+        setRuns(prev => [...prev, newRun]);
+        toast({ title: 'Test completed', description: `Cost: $${costUsd.toFixed(4)} | Latency: ${result.latency}ms` });
+      } catch (err) {
+        setResponse(`Error: ${err}`);
+        toast({ title: 'Test failed', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
     }
+  };
+
+  const voteWinner = (winner: 'A' | 'B' | 'tie') => {
+    if (!currentBattle?.modelA || !currentBattle?.modelB) return;
+    
+    const battle: BattleResult = {
+      ...(currentBattle as BattleResult),
+      winner
+    };
+    setBattleResults(prev => [...prev, battle]);
+    setCurrentBattle(null);
+    setResponse('');
+    setResponseB('');
+    
+    const winnerName = winner === 'A' ? currentBattle.modelA.name : 
+                       winner === 'B' ? currentBattle.modelB.name : 'Tie';
+    toast({ title: `Winner: ${winnerName}`, description: 'Result saved to battle history' });
   };
 
   const exportSessionReport = (format: 'json' | 'markdown' = 'json') => {
     const now = new Date();
     
+    // Calculate benchmarking metrics
+    const modelStats: Record<string, { wins: number; losses: number; ties: number; avgLatency: number; runs: number }> = {};
+    runs.forEach(r => {
+      if (!modelStats[r.model]) modelStats[r.model] = { wins: 0, losses: 0, ties: 0, avgLatency: 0, runs: 0 };
+      modelStats[r.model].avgLatency = ((modelStats[r.model].avgLatency * modelStats[r.model].runs) + r.latencyMs) / (modelStats[r.model].runs + 1);
+      modelStats[r.model].runs++;
+    });
+    battleResults.forEach(b => {
+      if (!modelStats[b.modelA.id]) modelStats[b.modelA.id] = { wins: 0, losses: 0, ties: 0, avgLatency: 0, runs: 0 };
+      if (!modelStats[b.modelB.id]) modelStats[b.modelB.id] = { wins: 0, losses: 0, ties: 0, avgLatency: 0, runs: 0 };
+      if (b.winner === 'A') { modelStats[b.modelA.id].wins++; modelStats[b.modelB.id].losses++; }
+      else if (b.winner === 'B') { modelStats[b.modelB.id].wins++; modelStats[b.modelA.id].losses++; }
+      else { modelStats[b.modelA.id].ties++; modelStats[b.modelB.id].ties++; }
+    });
+
+    // Calculate win rates and Elo-like scores
+    const modelRankings = Object.entries(modelStats).map(([id, stats]) => {
+      const totalBattles = stats.wins + stats.losses + stats.ties;
+      const winRate = totalBattles > 0 ? ((stats.wins + stats.ties * 0.5) / totalBattles * 100) : 0;
+      return { id, name: MODELS.find(m => m.id === id)?.name || id, ...stats, winRate };
+    }).sort((a, b) => b.winRate - a.winRate);
+
+    // Sanity checks
+    const sanityChecks: { check: string; status: 'pass' | 'warn' | 'fail'; detail: string }[] = [];
+    
+    if (runs.length < 3) sanityChecks.push({ check: 'Sample Size', status: 'warn', detail: `Only ${runs.length} runs - need 3+ for reliable results` });
+    else sanityChecks.push({ check: 'Sample Size', status: 'pass', detail: `${runs.length} runs provides reasonable sample` });
+    
+    if (battleResults.length < 5) sanityChecks.push({ check: 'Battle Count', status: 'warn', detail: `Only ${battleResults.length} battles - need 5+ for rankings` });
+    else sanityChecks.push({ check: 'Battle Count', status: 'pass', detail: `${battleResults.length} battles provides comparison data` });
+    
+    const uniqueModels = new Set([...runs.map(r => r.model), ...battleResults.flatMap(b => [b.modelA.id, b.modelB.id])]).size;
+    if (uniqueModels < 2) sanityChecks.push({ check: 'Model Diversity', status: 'fail', detail: 'Test more models for meaningful comparison' });
+    else sanityChecks.push({ check: 'Model Diversity', status: 'pass', detail: `${uniqueModels} models tested` });
+
+    const avgScore = (sessionSummary.avgTaskCompletion + sessionSummary.avgCoherence + sessionSummary.avgContextAwareness) / 3;
+    if (avgScore < 30) sanityChecks.push({ check: 'Overall Quality', status: 'fail', detail: 'Very low scores - review prompts or model choice' });
+    else if (avgScore < 60) sanityChecks.push({ check: 'Overall Quality', status: 'warn', detail: 'Moderate scores - room for improvement' });
+    else sanityChecks.push({ check: 'Overall Quality', status: 'pass', detail: 'Good overall performance' });
+
+    // Actionable recommendations
+    const actionableRecs: string[] = [];
+    if (sessionSummary.avgTaskCompletion < 50) actionableRecs.push('⚡ ACTION: Enable more capability modules (payload_exec, osint_recon) to improve task completion');
+    if (sessionSummary.avgLatency > 5000) actionableRecs.push('⚡ ACTION: Switch to faster models (Gemini Flash, Groq) for latency-sensitive tasks');
+    if (sessionSummary.avgCoherence < 50) actionableRecs.push('⚡ ACTION: Try reasoning models (Claude, GPT-4o) for more coherent responses');
+    if (modelRankings.length > 0 && modelRankings[0].winRate > 70) actionableRecs.push(`⚡ ACTION: Consider ${modelRankings[0].name} as your primary model (${modelRankings[0].winRate.toFixed(0)}% win rate)`);
+    if (sessionSummary.totalCost > 0.50) actionableRecs.push('⚡ ACTION: Use free tier models for testing, save paid for production');
+    
     if (format === 'markdown') {
-      const md = `# AI Lab Evaluation Report
+      const md = `# AI Lab Benchmark Report
 
 **Generated:** ${now.toISOString()}
 **Session ID:** LAB-${now.getTime()}
 
 ---
 
-## Summary
+## 📊 Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Runs | ${sessionSummary.totalRuns} |
-| Total Tokens | ${sessionSummary.totalTokens.toLocaleString()} |
-| Total Cost | $${sessionSummary.totalCost.toFixed(4)} |
-| Avg Latency | ${sessionSummary.avgLatency.toFixed(0)}ms |
-| Avg Task Completion | ${sessionSummary.avgTaskCompletion.toFixed(1)}% |
-| Avg Coherence | ${sessionSummary.avgCoherence.toFixed(1)}% |
-| Avg Context Awareness | ${sessionSummary.avgContextAwareness.toFixed(1)}% |
+| Metric | Value | Assessment |
+|--------|-------|------------|
+| Total Runs | ${sessionSummary.totalRuns} | ${sessionSummary.totalRuns >= 5 ? '✅ Good sample' : '⚠️ Need more runs'} |
+| Total Battles | ${battleResults.length} | ${battleResults.length >= 5 ? '✅ Good comparison' : '⚠️ Need more battles'} |
+| Total Cost | $${sessionSummary.totalCost.toFixed(4)} | ${sessionSummary.totalCost < 0.10 ? '✅ Efficient' : '⚠️ Consider free models'} |
+| Avg Latency | ${sessionSummary.avgLatency.toFixed(0)}ms | ${sessionSummary.avgLatency < 3000 ? '✅ Fast' : '⚠️ Slow'} |
 
-**Best Model:** ${sessionSummary.bestModel}
-**Worst Model:** ${sessionSummary.worstModel}
+### Quality Scores (0-100%)
+- **Task Completion:** ${sessionSummary.avgTaskCompletion.toFixed(1)}% ${sessionSummary.avgTaskCompletion > 70 ? '✅' : sessionSummary.avgTaskCompletion > 40 ? '⚠️' : '❌'}
+- **Coherence:** ${sessionSummary.avgCoherence.toFixed(1)}% ${sessionSummary.avgCoherence > 70 ? '✅' : sessionSummary.avgCoherence > 40 ? '⚠️' : '❌'}
+- **Context Awareness:** ${sessionSummary.avgContextAwareness.toFixed(1)}% ${sessionSummary.avgContextAwareness > 70 ? '✅' : sessionSummary.avgContextAwareness > 40 ? '⚠️' : '❌'}
 
 ---
 
-## Runs
+## 🏆 Model Rankings (by Battle Win Rate)
+
+${modelRankings.length > 0 ? `
+| Rank | Model | Win Rate | W/L/T | Avg Latency |
+|------|-------|----------|-------|-------------|
+${modelRankings.map((m, i) => `| ${i + 1} | ${m.name} | ${m.winRate.toFixed(1)}% | ${m.wins}/${m.losses}/${m.ties} | ${m.avgLatency.toFixed(0)}ms |`).join('\n')}
+` : '*No battle data yet - run battles to generate rankings*'}
+
+---
+
+## ✅ Sanity Checks
+
+${sanityChecks.map(c => `- ${c.status === 'pass' ? '✅' : c.status === 'warn' ? '⚠️' : '❌'} **${c.check}:** ${c.detail}`).join('\n')}
+
+---
+
+## ⚡ Actionable Recommendations
+
+${actionableRecs.length > 0 ? actionableRecs.map(r => `${r}`).join('\n\n') : '✅ No immediate actions needed - benchmarks look good!'}
+
+---
+
+## 📈 Detailed Run History
 
 ${runs.map((r, i) => `
-### Run ${i + 1}: ${r.model}
+### Run ${i + 1}: ${MODELS.find(m => m.id === r.model)?.name || r.model}
 
-- **Prompt:** ${r.prompt.substring(0, 200)}${r.prompt.length > 200 ? '...' : ''}
-- **Tokens:** ${r.totalTokens} (${r.inputTokens} in / ${r.outputTokens} out)
-- **Cost:** $${r.costUsd.toFixed(4)}
-- **Latency:** ${r.latencyMs}ms
-- **Scores:** Task ${r.taskCompletion}% | Coherence ${r.coherence}% | Context ${r.contextAwareness}%
-${r.notes ? `- **Notes:** ${r.notes}` : ''}
+| Metric | Value |
+|--------|-------|
+| Prompt | ${r.prompt.substring(0, 100)}${r.prompt.length > 100 ? '...' : ''} |
+| Tokens | ${r.totalTokens} (${r.inputTokens} in / ${r.outputTokens} out) |
+| Cost | $${r.costUsd.toFixed(4)} |
+| Latency | ${r.latencyMs}ms |
+| Task Completion | ${r.taskCompletion}% |
+| Coherence | ${r.coherence}% |
+| Context Awareness | ${r.contextAwareness}% |
 `).join('\n')}
 
 ---
 
-## Recommendations
+## ⚔️ Battle History
 
-${sessionSummary.recommendations.length > 0 
-  ? sessionSummary.recommendations.map(r => `- ${r}`).join('\n') 
-  : '*No recommendations generated yet*'}
+${battleResults.length > 0 ? `
+| Battle | Model A | Model B | Winner | 
+|--------|---------|---------|--------|
+${battleResults.map((b, i) => `| ${i + 1} | ${b.modelA.name} | ${b.modelB.name} | ${b.winner === 'A' ? b.modelA.name : b.winner === 'B' ? b.modelB.name : 'TIE'} |`).join('\n')}
+` : '*No battles recorded*'}
 
 ---
 
-## Bug Reports
+## 🔧 Use Case Fit Assessment
 
-${sessionSummary.bugReports.length > 0 
-  ? sessionSummary.bugReports.map((b, i) => `${i + 1}. ${b}`).join('\n') 
-  : '*No bug reports submitted*'}
+Based on your testing, here's how these models fit common use cases:
+
+${modelRankings.slice(0, 3).map(m => {
+  const modelInfo = MODELS.find(mod => mod.id === m.id);
+  return `### ${m.name}
+- **Best for:** ${modelInfo?.strengths.join(', ') || 'General tasks'}
+- **Win Rate:** ${m.winRate.toFixed(1)}%
+- **Latency:** ${m.avgLatency.toFixed(0)}ms (${m.avgLatency < 2000 ? 'fast' : m.avgLatency < 5000 ? 'moderate' : 'slow'})
+- **Recommendation:** ${m.winRate > 60 ? '✅ Good choice for production' : '⚠️ Consider alternatives'}`;
+}).join('\n\n')}
+
+---
+
+*Report generated by SysAdmin Corp AI Lab*
 `;
       const blob = new Blob([md], { type: 'text/markdown' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ai-lab-report-${Date.now()}.md`;
+      a.download = `ai-lab-benchmark-${Date.now()}.md`;
       a.click();
       URL.revokeObjectURL(url);
-      toast({ title: 'Markdown report exported' });
+      toast({ title: 'Benchmark report exported' });
     } else {
       const report = {
         generatedAt: now.toISOString(),
+        sessionId: `LAB-${now.getTime()}`,
         summary: sessionSummary,
-        runs: runs,
+        modelRankings,
+        sanityChecks,
+        actionableRecommendations: actionableRecs,
+        runs,
+        battleResults,
         recommendations: sessionSummary.recommendations,
         bugReports: sessionSummary.bugReports
       };
@@ -334,7 +502,7 @@ ${sessionSummary.bugReports.length > 0
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ai-lab-session-${Date.now()}.json`;
+      a.download = `ai-lab-benchmark-${Date.now()}.json`;
       a.click();
       URL.revokeObjectURL(url);
       toast({ title: 'JSON report exported' });
@@ -464,61 +632,103 @@ ${sessionSummary.bugReports.length > 0
 
         <Card className="bg-black/50 border-amber-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-500 text-base flex items-center gap-2">
-              <Play className="w-5 h-5" /> Test Arena
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+                <Play className="w-5 h-5" /> {battleMode ? 'Model Battle' : 'Test Arena'}
+              </CardTitle>
+              <Button
+                size="sm"
+                variant={battleMode ? 'default' : 'outline'}
+                onClick={() => setBattleMode(!battleMode)}
+                className={`min-h-[40px] ${battleMode ? 'bg-purple-700 text-white' : 'border-purple-700 text-purple-400'}`}
+                data-testid="toggle-battle-mode"
+              >
+                ⚔️ Battle Mode
+              </Button>
+            </div>
+            {battleMode && (
+              <p className="text-xs text-stone-500 mt-2">Compare two models side-by-side and vote for the winner</p>
+            )}
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <label className="text-sm text-stone-400 block">Select Model</label>
-              {(Object.keys(MODEL_CATEGORIES) as Array<keyof typeof MODEL_CATEGORIES>).map(cat => {
-                const catInfo = MODEL_CATEGORIES[cat];
-                const catModels = MODELS.filter(m => m.category === cat);
-                return (
-                  <div key={cat} className="space-y-2">
-                    <p className="text-xs text-stone-500 flex items-center gap-1">
-                      <span>{catInfo.icon}</span> {catInfo.label}
-                    </p>
-                    <div className="grid grid-cols-1 gap-2">
-                      {catModels.map(m => {
-                        const isSelected = selectedModel === m.id;
-                        return (
-                          <button
-                            key={m.id}
-                            onClick={() => setSelectedModel(m.id)}
-                            className={`p-3 rounded-lg border-2 text-left transition-all min-h-[56px] active:scale-[0.98] ${
-                              isSelected 
-                                ? `border-${catInfo.color}-600 bg-${catInfo.color}-900/20` 
-                                : 'border-stone-800 bg-stone-900/20 hover:border-stone-600'
-                            }`}
-                            data-testid={`model-${m.id}`}
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <span className={`font-medium text-sm ${isSelected ? `text-${catInfo.color}-400` : 'text-stone-300'}`}>
-                                    {m.name}
-                                  </span>
-                                  <Badge variant="outline" className={`text-[9px] shrink-0 ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
-                                    {m.tier.toUpperCase()}
-                                  </Badge>
-                                </div>
-                                <p className="text-[10px] text-stone-500 truncate mt-0.5">
-                                  {m.strengths.join(' • ')}
-                                </p>
-                              </div>
-                              {isSelected && (
-                                <div className={`w-3 h-3 rounded-full bg-${catInfo.color}-500 shrink-0`} />
-                              )}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+            {/* Model A selector */}
+            <div>
+              <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                {battleMode && <Badge className="bg-amber-700 text-black text-[10px]">A</Badge>}
+                Model {battleMode ? 'A' : ''}
+              </label>
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <SelectTrigger className="bg-black/50 border-stone-700 min-h-[48px]" data-testid="model-a-select">
+                  <SelectValue>
+                    {MODELS.find(m => m.id === selectedModel)?.name || 'Select model'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
+                  {(Object.keys(MODEL_CATEGORIES) as Array<keyof typeof MODEL_CATEGORIES>).map(cat => {
+                    const catInfo = MODEL_CATEGORIES[cat];
+                    const catModels = MODELS.filter(m => m.category === cat);
+                    return (
+                      <div key={cat}>
+                        <div className="px-2 py-1 text-[10px] text-stone-500 uppercase flex items-center gap-1">
+                          <span>{catInfo.icon}</span> {catInfo.label}
+                        </div>
+                        {catModels.map(m => (
+                          <SelectItem key={m.id} value={m.id} className="min-h-[40px]">
+                            <span className="flex items-center gap-2">
+                              {m.name}
+                              <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
+                                {m.tier.toUpperCase()}
+                              </Badge>
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
             </div>
+
+            {/* Model B selector (battle mode only) */}
+            {battleMode && (
+              <div>
+                <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                  <Badge className="bg-teal-700 text-black text-[10px]">B</Badge>
+                  Model B
+                </label>
+                <Select value={selectedModelB} onValueChange={setSelectedModelB}>
+                  <SelectTrigger className="bg-black/50 border-stone-700 min-h-[48px]" data-testid="model-b-select">
+                    <SelectValue>
+                      {MODELS.find(m => m.id === selectedModelB)?.name || 'Select model'}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
+                    {(Object.keys(MODEL_CATEGORIES) as Array<keyof typeof MODEL_CATEGORIES>).map(cat => {
+                      const catInfo = MODEL_CATEGORIES[cat];
+                      const catModels = MODELS.filter(m => m.category === cat);
+                      return (
+                        <div key={cat}>
+                          <div className="px-2 py-1 text-[10px] text-stone-500 uppercase flex items-center gap-1">
+                            <span>{catInfo.icon}</span> {catInfo.label}
+                          </div>
+                          {catModels.map(m => (
+                            <SelectItem key={m.id} value={m.id} className="min-h-[40px]" disabled={m.id === selectedModel}>
+                              <span className="flex items-center gap-2">
+                                {m.name}
+                                <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
+                                  {m.tier.toUpperCase()}
+                                </Badge>
+                                {m.id === selectedModel && <span className="text-stone-500">(Model A)</span>}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div>
               <label className="text-sm text-stone-400 mb-2 block">Quick Scenarios</label>
@@ -552,67 +762,172 @@ ${sessionSummary.bugReports.length > 0
 
             <Button
               onClick={runTest}
-              disabled={loading}
-              className="w-full min-h-[52px] bg-amber-700 hover:bg-amber-600 text-black text-base font-bold"
+              disabled={loading || loadingB}
+              className={`w-full min-h-[52px] text-base font-bold ${battleMode ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-amber-700 hover:bg-amber-600 text-black'}`}
               data-testid="run-test"
             >
-              {loading ? (
-                <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Running...</>
+              {loading || loadingB ? (
+                <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> {battleMode ? 'Battling...' : 'Running...'}</>
               ) : (
-                <><Send className="w-5 h-5 mr-2" /> Run Test</>
+                <>{battleMode ? '⚔️' : <Send className="w-5 h-5 mr-2" />} {battleMode ? 'Start Battle' : 'Run Test'}</>
               )}
             </Button>
           </CardContent>
         </Card>
 
-        {response && (
+        {(response || responseB) && (
           <Card className="bg-black/50 border-teal-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-teal-500 text-base">Response</CardTitle>
+              <CardTitle className="text-teal-500 text-base">
+                {battleMode && currentBattle ? 'Battle Results' : 'Response'}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono bg-black/50 p-4 rounded border border-stone-800 max-h-64 overflow-y-auto">
-                {response}
-              </pre>
+              {/* Unified chat view for battle mode */}
+              {battleMode && currentBattle?.modelA && currentBattle?.modelB ? (
+                <div className="space-y-4">
+                  {/* Model A Response */}
+                  <div className="rounded-lg border-2 border-amber-700 bg-amber-950/20 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-amber-700 text-black">A</Badge>
+                        <span className="text-sm font-bold text-amber-400">{currentBattle.modelA.name}</span>
+                      </div>
+                      <span className="text-xs text-stone-500">{currentBattle.modelA.latency}ms • {currentBattle.modelA.tokens} tok</span>
+                    </div>
+                    <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
+                      {currentBattle.modelA.response}
+                    </pre>
+                  </div>
 
-              <div className="space-y-4 pt-4 border-t border-stone-800">
-                <p className="text-sm text-stone-400 font-bold">Rate this response:</p>
-                <div>
-                  <div className="flex justify-between text-sm text-stone-400 mb-2">
-                    <span>Task Completion</span>
-                    <span className="text-amber-400">{taskCompletionRating}%</span>
+                  {/* Model B Response */}
+                  <div className="rounded-lg border-2 border-teal-700 bg-teal-950/20 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-teal-700 text-black">B</Badge>
+                        <span className="text-sm font-bold text-teal-400">{currentBattle.modelB.name}</span>
+                      </div>
+                      <span className="text-xs text-stone-500">{currentBattle.modelB.latency}ms • {currentBattle.modelB.tokens} tok</span>
+                    </div>
+                    <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
+                      {currentBattle.modelB.response}
+                    </pre>
                   </div>
-                  <Slider
-                    value={[taskCompletionRating]}
-                    onValueChange={v => setTaskCompletionRating(v[0])}
-                    max={100}
-                    className="[&_[role=slider]]:bg-amber-500 [&_[role=slider]]:w-6 [&_[role=slider]]:h-6"
-                  />
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm text-stone-400 mb-2">
-                    <span>Coherence</span>
-                    <span className="text-teal-400">{coherenceRating}%</span>
+
+                  {/* Vote buttons */}
+                  <div className="pt-4 border-t border-stone-800">
+                    <p className="text-sm text-stone-400 font-bold mb-3 text-center">🏆 Which response is better?</p>
+                    <div className="grid grid-cols-3 gap-3">
+                      <Button
+                        onClick={() => voteWinner('A')}
+                        className="min-h-[52px] bg-amber-700 hover:bg-amber-600 text-black font-bold"
+                        data-testid="vote-a"
+                      >
+                        A Wins
+                      </Button>
+                      <Button
+                        onClick={() => voteWinner('tie')}
+                        variant="outline"
+                        className="min-h-[52px] border-stone-600 text-stone-400"
+                        data-testid="vote-tie"
+                      >
+                        Tie
+                      </Button>
+                      <Button
+                        onClick={() => voteWinner('B')}
+                        className="min-h-[52px] bg-teal-700 hover:bg-teal-600 text-black font-bold"
+                        data-testid="vote-b"
+                      >
+                        B Wins
+                      </Button>
+                    </div>
                   </div>
-                  <Slider
-                    value={[coherenceRating]}
-                    onValueChange={v => setCoherenceRating(v[0])}
-                    max={100}
-                    className="[&_[role=slider]]:bg-teal-500 [&_[role=slider]]:w-6 [&_[role=slider]]:h-6"
-                  />
                 </div>
-                <div>
-                  <div className="flex justify-between text-sm text-stone-400 mb-2">
-                    <span>Context Awareness</span>
-                    <span className="text-purple-400">{contextRating}%</span>
+              ) : (
+                <>
+                  <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono bg-black/50 p-4 rounded border border-stone-800 max-h-64 overflow-y-auto">
+                    {response}
+                  </pre>
+
+                  <div className="space-y-4 pt-4 border-t border-stone-800">
+                    <p className="text-sm text-stone-400 font-bold">Rate this response:</p>
+                    <div>
+                      <div className="flex justify-between text-sm text-stone-400 mb-2">
+                        <span>Task Completion</span>
+                        <span className="text-amber-400">{taskCompletionRating}%</span>
+                      </div>
+                      <Slider
+                        value={[taskCompletionRating]}
+                        onValueChange={v => setTaskCompletionRating(v[0])}
+                        max={100}
+                        className="[&_[role=slider]]:bg-amber-500 [&_[role=slider]]:w-6 [&_[role=slider]]:h-6"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm text-stone-400 mb-2">
+                        <span>Coherence</span>
+                        <span className="text-teal-400">{coherenceRating}%</span>
+                      </div>
+                      <Slider
+                        value={[coherenceRating]}
+                        onValueChange={v => setCoherenceRating(v[0])}
+                        max={100}
+                        className="[&_[role=slider]]:bg-teal-500 [&_[role=slider]]:w-6 [&_[role=slider]]:h-6"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm text-stone-400 mb-2">
+                        <span>Context Awareness</span>
+                        <span className="text-purple-400">{contextRating}%</span>
+                      </div>
+                      <Slider
+                        value={[contextRating]}
+                        onValueChange={v => setContextRating(v[0])}
+                        max={100}
+                        className="[&_[role=slider]]:bg-purple-500 [&_[role=slider]]:w-6 [&_[role=slider]]:h-6"
+                      />
+                    </div>
                   </div>
-                  <Slider
-                    value={[contextRating]}
-                    onValueChange={v => setContextRating(v[0])}
-                    max={100}
-                    className="[&_[role=slider]]:bg-purple-500 [&_[role=slider]]:w-6 [&_[role=slider]]:h-6"
-                  />
-                </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Battle History */}
+        {battleResults.length > 0 && (
+          <Card className="bg-black/50 border-purple-900/30">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-purple-500 text-base flex items-center gap-2">
+                  ⚔️ Battle History ({battleResults.length})
+                </CardTitle>
+                <Button size="sm" variant="ghost" onClick={() => setBattleResults([])} className="text-red-400 min-h-[44px]">
+                  Clear
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {battleResults.slice(-5).reverse().map((battle, i) => (
+                  <div key={battle.id} className="p-3 bg-stone-900/30 rounded-lg border border-stone-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className={battle.winner === 'A' ? 'text-amber-400 font-bold' : 'text-stone-500'}>{battle.modelA.name}</span>
+                        <span className="text-stone-600">vs</span>
+                        <span className={battle.winner === 'B' ? 'text-teal-400 font-bold' : 'text-stone-500'}>{battle.modelB.name}</span>
+                      </div>
+                      <Badge className={
+                        battle.winner === 'A' ? 'bg-amber-700 text-black' :
+                        battle.winner === 'B' ? 'bg-teal-700 text-black' :
+                        'bg-stone-700 text-stone-300'
+                      }>
+                        {battle.winner === 'tie' ? 'TIE' : `${battle.winner} WINS`}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-stone-500 line-clamp-1">{battle.prompt}</p>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
