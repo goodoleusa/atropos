@@ -58,6 +58,10 @@ Preferred communication style: Simple, everyday language.
 - **API Playground**: Educational quest-based system for learning API requests through real-world CTF exercises (QR security, crypto-auth, hardened SSH), modular and extensible architecture.
 - **Interactive Campaign System**: Adaptive investigation flows that respond to user discoveries, offering perspective shifts, tool guidance (e.g., Shodan, Censys), and pivot strategies.
 - **Mobile Responsiveness**: Touch-friendly terminal with autocomplete chips (no tab key needed), responsive layouts (50vh-80vh terminal), 44px+ touch targets, repositioned floating buttons.
+- **Investigation Workspace** (`/investigate`): Unified hub combining Agent Chat, AI Lab quick testing, and Learning Profile configuration in one tabbed interface. Features embedded model testing with learning profile integration.
+- **Unified Learning Store** (`useLearningStore.ts`): Zustand-based centralized state management for learning preferences (style, goals, skill level, pace). Persists to localStorage and provides prompt modifiers for AI interactions. Used by PromptBuilder, Campaign Designer, and Investigation Workspace.
+- **Campaign Designer Learning Integration**: Nodes support learning goals, skill levels, and teaching notes metadata for educational campaign development.
+- **Mobile Node Ordering**: Campaign Designer includes 3x3 button grid for node hierarchy management (up/down/indent/outdent) with visual depth indicators, plus keyboard navigation support (arrow keys, Tab for indentation).
 
 ## External Dependencies
 

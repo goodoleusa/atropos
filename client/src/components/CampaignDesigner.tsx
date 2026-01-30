@@ -13,8 +13,10 @@ import {
   FolderTree, FileText, Plus, Trash2, Edit3, Link2, Eye, Save, Download,
   Play, Pause, ChevronRight, ChevronDown, ChevronUp, ChevronLeft, Zap, Target, Shield, Search, Settings,
   Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical, SkipBack, SkipForward, RotateCcw,
-  ZoomIn, ZoomOut, Wand2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight
+  ZoomIn, ZoomOut, Wand2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, GraduationCap
 } from 'lucide-react';
+import { useLearningStore } from '@/stores/useLearningStore';
+import { LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS, type LearningGoal } from '@/config/learningConfig';
 
 interface CampaignNode {
   id: string;
@@ -32,6 +34,9 @@ interface CampaignNode {
     questions?: string[];
     successIndicators?: string[];
     redFlags?: string[];
+    learningGoals?: string[];
+    skillLevel?: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+    teachingNotes?: string;
   };
 }
 
@@ -2210,6 +2215,81 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                           className="bg-black/50 border-stone-700 text-xs"
                         />
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Learning Goals Section */}
+                  <div className="space-y-3 border-t border-purple-900/30 pt-4">
+                    <div className="flex items-center gap-2 text-purple-400">
+                      <GraduationCap className="w-4 h-4" />
+                      <span className="text-xs font-bold">Learning Goals</span>
+                    </div>
+                    
+                    <div>
+                      <label className="text-[10px] text-stone-500">Skill Level for this Step</label>
+                      <Select
+                        value={editingNode.metadata?.skillLevel || 'intermediate'}
+                        onValueChange={(level: 'beginner' | 'intermediate' | 'advanced' | 'expert') => {
+                          const newMetadata = { ...editingNode.metadata, skillLevel: level };
+                          setEditingNode(prev => prev ? { ...prev, metadata: newMetadata } : null);
+                          updateNode(editingNode.id, { metadata: newMetadata });
+                        }}
+                      >
+                        <SelectTrigger className="bg-black/50 border-stone-700 text-xs min-h-[44px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-stone-900 border-stone-700">
+                          {SKILL_LEVELS.map(level => (
+                            <SelectItem key={level.id} value={level.id} className="text-xs">
+                              {level.name} - {level.description}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] text-stone-500">Learning Goals Covered</label>
+                      <div className="flex flex-wrap gap-1 mt-1 max-h-32 overflow-y-auto">
+                        {LEARNING_GOALS.map(goal => {
+                          const isSelected = editingNode.metadata?.learningGoals?.includes(goal.id);
+                          return (
+                            <button
+                              key={goal.id}
+                              onClick={() => {
+                                const currentGoals = editingNode.metadata?.learningGoals || [];
+                                const newGoals = isSelected 
+                                  ? currentGoals.filter(g => g !== goal.id)
+                                  : [...currentGoals, goal.id];
+                                const newMetadata = { ...editingNode.metadata, learningGoals: newGoals };
+                                setEditingNode(prev => prev ? { ...prev, metadata: newMetadata } : null);
+                                updateNode(editingNode.id, { metadata: newMetadata });
+                              }}
+                              className={`px-2 py-1 text-[10px] rounded border min-h-[32px] transition-colors ${
+                                isSelected
+                                  ? CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-400 border-purple-700'
+                                  : 'bg-stone-900/50 text-stone-500 border-stone-700 hover:border-purple-700'
+                              }`}
+                            >
+                              {goal.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] text-stone-500">Teaching Notes</label>
+                      <Textarea
+                        value={editingNode.metadata?.teachingNotes || ''}
+                        onChange={(e) => {
+                          const newMetadata = { ...editingNode.metadata, teachingNotes: e.target.value };
+                          setEditingNode(prev => prev ? { ...prev, metadata: newMetadata } : null);
+                          updateNode(editingNode.id, { metadata: newMetadata });
+                        }}
+                        placeholder="Notes for teaching this step (explanations, tips, common mistakes...)"
+                        className="bg-black/50 border-stone-700 text-xs min-h-[60px]"
+                      />
                     </div>
                   </div>
 
