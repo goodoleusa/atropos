@@ -199,7 +199,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       
       const contextMessages = [
         { role: 'system', content: dynamicSystemPrompt },
-        { role: 'system', content: `Current session token: ${gameState.sessionToken.substring(0, 8)}... | Clues: ${gameState.inventory?.length || 0} | Username: ${gameState.username}` },
+        { role: 'system', content: `Current session token: ${gameState?.sessionToken?.substring(0, 8) || 'unknown'}... | Clues: ${gameState?.inventory?.length || 0} | Username: ${gameState?.username || 'Guest'}` },
         ...messages,
         { role: 'user', content: userMessage }
       ];
@@ -351,7 +351,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       selectedModel,
       activeCampaign ? { id: activeCampaign.id, name: activeCampaign.name } : undefined,
       promptConfig,
-      gameState.sessionToken
+      gameState?.sessionToken || 'unknown'
     );
     
     toast({
@@ -367,7 +367,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payload,
-          sessionToken: gameState.sessionToken,
+          sessionToken: gameState?.sessionToken || 'unknown',
           agentId: 'NEXUS-CHAT'
         })
       });
