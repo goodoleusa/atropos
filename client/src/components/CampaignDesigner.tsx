@@ -11,13 +11,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { 
-  FolderTree, FileText, Plus, Trash2, Edit3, Link2, Eye, Save, Download,
+  FolderTree, FileText, Plus, Trash2, Edit3, Link2, Eye, Save, Download, Key, Link, ExternalLink,
   Play, Pause, ChevronRight, ChevronDown, ChevronUp, ChevronLeft, Zap, Target, Shield, Search, Settings,
   Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical, SkipBack, SkipForward, RotateCcw,
   ZoomIn, ZoomOut, Wand2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, GraduationCap
 } from 'lucide-react';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS, type LearningGoal } from '@/config/learningConfig';
+
+// Feature types available in the game
+const FEATURE_TYPES = ['terminal', 'api', 'qr', 'crypto', 'agent', 'web', 'osint', 'steganography'] as const;
+const CAMPAIGN_TYPES = ['recon', 'exploit', 'defense', 'osint', 'forensics', 'social', 'crypto', 'puzzle'] as const;
+const SKILL_CATEGORIES = {
+  'network': ['dns', 'tcp/ip', 'routing', 'firewall', 'vpn', 'bgp'],
+  'web': ['http', 'cookies', 'xss', 'sqli', 'csrf', 'auth'],
+  'crypto': ['encoding', 'hashing', 'encryption', 'pki', 'steganography'],
+  'osint': ['dorking', 'social', 'metadata', 'geolocation', 'archives'],
+  'system': ['linux', 'windows', 'permissions', 'processes', 'logs'],
+  'programming': ['scripting', 'regex', 'api', 'parsing', 'automation']
+} as const;
 
 interface CampaignNode {
   id: string;
@@ -38,6 +50,12 @@ interface CampaignNode {
     learningGoals?: string[];
     skillLevel?: 'beginner' | 'intermediate' | 'advanced' | 'expert';
     teachingNotes?: string;
+    featureType?: typeof FEATURE_TYPES[number];
+    campaignType?: typeof CAMPAIGN_TYPES[number];
+    skills?: string[];
+    linkedClues?: string[];
+    condition?: string;
+    parentOutcome?: string;
   };
 }
 
@@ -133,6 +151,83 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   const [sharedClues, setSharedClues] = useState<SharedClue[]>([]);
   const [zoom, setZoom] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [viewMode, setViewMode] = useState<'canvas' | 'tree' | 'clues' | 'overview'>('canvas');
+  const [breadcrumbTrail, setBreadcrumbTrail] = useState<string[]>([]);
+
+  // Wikilink parsing - extract [[Node Title]] links from content
+  const parseWikilinks = useCallback((content: string): string[] => {
+    const matches = content.match(/\[\[([^\]]+)\]\]/g) || [];
+    return matches.map(m => m.slice(2, -2));
+  }, []);
+
+  // Find node by title (for wikilink resolution)
+  const findNodeByTitle = useCallback((title: string) => {
+    return campaign.nodes.find(n => n.title.toLowerCase() === title.toLowerCase());
+  }, [campaign.nodes]);
+
+  // Get all backlinks for a node (what links TO this node)
+  const getBacklinks = useCallback((nodeId: string) => {
+    const node = campaign.nodes.find(n => n.id === nodeId);
+    if (!node) return [];
+    return campaign.nodes.filter(n => {
+      const links = parseWikilinks(n.content);
+      return links.some(l => l.toLowerCase() === node.title.toLowerCase());
+    });
+  }, [campaign.nodes, parseWikilinks]);
+
+  // Get forward links from a node (wikilinks in content)
+  const getForwardLinks = useCallback((nodeId: string) => {
+    const node = campaign.nodes.find(n => n.id === nodeId);
+    if (!node) return [];
+    const linkTitles = parseWikilinks(node.content);
+    return linkTitles.map(t => findNodeByTitle(t)).filter(Boolean) as CampaignNode[];
+  }, [campaign.nodes, parseWikilinks, findNodeByTitle]);
+
+  // Build breadcrumb trail from root to selected node
+  const computeBreadcrumbs = useCallback((targetId: string) => {
+    const parents: Record<string, string> = {};
+    campaign.links.forEach(l => { parents[l.target] = l.source; });
+    const trail: string[] = [];
+    let current = targetId;
+    while (current) {
+      trail.unshift(current);
+      current = parents[current];
+    }
+    return trail;
+  }, [campaign.links]);
+
+  // Update breadcrumbs when selection changes
+  useEffect(() => {
+    if (selectedNode) {
+      setBreadcrumbTrail(computeBreadcrumbs(selectedNode));
+    } else {
+      setBreadcrumbTrail([]);
+    }
+  }, [selectedNode, computeBreadcrumbs]);
+
+  // Auto-create links from wikilinks in content
+  const syncWikilinks = useCallback((nodeId: string, content: string) => {
+    const linkTitles = parseWikilinks(content);
+    const newLinks: CampaignLink[] = [];
+    linkTitles.forEach(title => {
+      const target = findNodeByTitle(title);
+      if (target && target.id !== nodeId) {
+        const existingLink = campaign.links.find(l => l.source === nodeId && l.target === target.id);
+        if (!existingLink) {
+          newLinks.push({
+            id: `link-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            source: nodeId,
+            target: target.id,
+            color: 'stone',
+            label: 'wikilink'
+          });
+        }
+      }
+    });
+    if (newLinks.length > 0) {
+      setCampaign(prev => ({ ...prev, links: [...prev.links, ...newLinks] }));
+    }
+  }, [campaign.links, parseWikilinks, findNodeByTitle]);
 
   // Load saved campaigns from database on mount
   useEffect(() => {
@@ -1445,7 +1540,41 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   {testRunMode ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                   <span className="ml-1 hidden sm:inline">{testRunMode ? 'Stop' : 'Test'}</span>
                 </Button>
+                <div className="border-l border-stone-700 h-6 mx-1" />
+                {/* View Mode Selector */}
+                {(['canvas', 'clues', 'overview'] as const).map(v => (
+                  <Button
+                    key={v}
+                    size="sm"
+                    variant={viewMode === v ? 'default' : 'ghost'}
+                    onClick={() => setViewMode(v)}
+                    className={`min-h-[44px] px-2 capitalize ${viewMode === v ? 'bg-cyan-800 text-white' : 'text-stone-500'}`}
+                  >
+                    {v === 'canvas' ? <Layers className="w-4 h-4" /> : v === 'clues' ? <Key className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    <span className="ml-1 hidden sm:inline text-xs">{v}</span>
+                  </Button>
+                ))}
               </div>
+              {/* Breadcrumb Trail */}
+              {breadcrumbTrail.length > 0 && viewMode === 'canvas' && (
+                <div className="flex items-center gap-1 text-xs mt-2 flex-wrap">
+                  <span className="text-stone-600">Path:</span>
+                  {breadcrumbTrail.map((nodeId, i) => {
+                    const node = campaign.nodes.find(n => n.id === nodeId);
+                    return (
+                      <span key={nodeId} className="flex items-center">
+                        {i > 0 && <ChevronRight className="w-3 h-3 text-stone-600 mx-0.5" />}
+                        <button
+                          onClick={() => setSelectedNode(nodeId)}
+                          className={`px-1.5 py-0.5 rounded ${nodeId === selectedNode ? 'bg-amber-900/50 text-amber-400' : 'bg-stone-800/50 text-stone-400 hover:bg-stone-700'}`}
+                        >
+                          {node?.title || nodeId.slice(0, 8)}
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </DialogHeader>
 
@@ -1795,7 +1924,163 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   </Button>
                 </div>
               )}
-              {mode === 'tree' ? (
+              {/* Clues View - All clues with campaign connections */}
+              {viewMode === 'clues' ? (
+                <ScrollArea className="h-full p-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-amber-500 font-bold flex items-center gap-2">
+                        <Key className="w-4 h-4" /> All Clues & Campaign Links
+                      </h3>
+                      <Badge variant="outline" className="border-amber-700 text-amber-400">
+                        {sharedClues.length} clues
+                      </Badge>
+                    </div>
+                    {sharedClues.length === 0 ? (
+                      <p className="text-stone-500 text-center py-8">No clues defined yet. Add clues in Admin → Clues tab.</p>
+                    ) : (
+                      <div className="grid gap-2">
+                        {sharedClues.map(clue => {
+                          const linkedNodes = campaign.nodes.filter(n => n.metadata?.linkedClues?.includes(clue.id));
+                          return (
+                            <Card key={clue.id} className="bg-stone-900/30 border-stone-800">
+                              <CardContent className="p-3">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div>
+                                    <p className="text-amber-400 font-medium text-sm">{clue.name}</p>
+                                    <p className="text-stone-500 text-xs">{clue.description}</p>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {clue.tags?.map(t => <Badge key={t} variant="outline" className="text-[8px] border-stone-700 text-stone-500">{t}</Badge>)}
+                                    </div>
+                                  </div>
+                                  <div className="text-right shrink-0">
+                                    <p className="text-[10px] text-stone-600">Used in {linkedNodes.length} nodes</p>
+                                    {linkedNodes.slice(0, 3).map(n => (
+                                      <button key={n.id} onClick={() => { setViewMode('canvas'); setSelectedNode(n.id); }} className="text-[9px] text-teal-400 hover:underline block">
+                                        → {n.title}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {/* Nodes with Clues */}
+                    <div className="mt-6">
+                      <h4 className="text-teal-400 text-sm font-bold mb-2">Nodes with Linked Clues</h4>
+                      <div className="space-y-1">
+                        {campaign.nodes.filter(n => n.metadata?.linkedClues?.length).map(node => (
+                          <div key={node.id} className="flex items-center justify-between p-2 bg-stone-900/30 rounded border border-stone-800">
+                            <button onClick={() => { setViewMode('canvas'); setSelectedNode(node.id); }} className="text-sm text-stone-300 hover:text-amber-400">
+                              {node.title}
+                            </button>
+                            <div className="flex gap-1">
+                              {node.metadata?.linkedClues?.map(c => (
+                                <Badge key={c} variant="outline" className="text-[8px] border-purple-700 text-purple-400">🔗 {c}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                        {campaign.nodes.filter(n => n.metadata?.linkedClues?.length).length === 0 && (
+                          <p className="text-stone-600 text-xs">No nodes have linked clues yet. Edit a node and add clue IDs.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </ScrollArea>
+              ) : viewMode === 'overview' ? (
+                <ScrollArea className="h-full p-4">
+                  <div className="space-y-4">
+                    <h3 className="text-cyan-400 font-bold flex items-center gap-2">
+                      <Eye className="w-4 h-4" /> Campaign Overview
+                    </h3>
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <Card className="bg-amber-950/20 border-amber-900/30"><CardContent className="p-3 text-center">
+                        <p className="text-xl font-bold text-amber-400">{campaign.nodes.length}</p>
+                        <p className="text-[10px] text-stone-500">Nodes</p>
+                      </CardContent></Card>
+                      <Card className="bg-teal-950/20 border-teal-900/30"><CardContent className="p-3 text-center">
+                        <p className="text-xl font-bold text-teal-400">{campaign.links.length}</p>
+                        <p className="text-[10px] text-stone-500">Links</p>
+                      </CardContent></Card>
+                      <Card className="bg-purple-950/20 border-purple-900/30"><CardContent className="p-3 text-center">
+                        <p className="text-xl font-bold text-purple-400">{campaign.nodes.filter(n => n.type === 'decision').length}</p>
+                        <p className="text-[10px] text-stone-500">Decisions</p>
+                      </CardContent></Card>
+                      <Card className="bg-stone-800/30 border-stone-700"><CardContent className="p-3 text-center">
+                        <p className="text-xl font-bold text-stone-400">{savedCampaigns.length}</p>
+                        <p className="text-[10px] text-stone-500">Campaigns</p>
+                      </CardContent></Card>
+                    </div>
+                    {/* Feature/Skill breakdown */}
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <Card className="bg-stone-900/30 border-stone-800">
+                        <CardHeader className="pb-2"><CardTitle className="text-sm text-amber-400">Features Used</CardTitle></CardHeader>
+                        <CardContent className="flex flex-wrap gap-1">
+                          {[...new Set(campaign.nodes.map(n => n.metadata?.featureType).filter(Boolean))].map(f => (
+                            <Badge key={f} variant="outline" className="border-amber-700 text-amber-400 capitalize">{f}</Badge>
+                          ))}
+                          {campaign.nodes.every(n => !n.metadata?.featureType) && <span className="text-stone-600 text-xs">None set</span>}
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-stone-900/30 border-stone-800">
+                        <CardHeader className="pb-2"><CardTitle className="text-sm text-teal-400">Skills Covered</CardTitle></CardHeader>
+                        <CardContent className="flex flex-wrap gap-1">
+                          {[...new Set(campaign.nodes.flatMap(n => n.metadata?.skills || []))].slice(0, 10).map(s => (
+                            <Badge key={s} variant="outline" className="border-teal-700 text-teal-400 text-[9px]">{s}</Badge>
+                          ))}
+                          {campaign.nodes.every(n => !n.metadata?.skills?.length) && <span className="text-stone-600 text-xs">None set</span>}
+                        </CardContent>
+                      </Card>
+                    </div>
+                    {/* All Campaigns List */}
+                    <Card className="bg-stone-900/30 border-stone-800">
+                      <CardHeader className="pb-2"><CardTitle className="text-sm text-purple-400">All Campaigns</CardTitle></CardHeader>
+                      <CardContent className="space-y-1">
+                        {savedCampaigns.map(c => (
+                          <div key={c.id} className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
+                            <button onClick={() => loadCampaign(c.id)} className={`text-sm ${c.id === campaign.id ? 'text-amber-400' : 'text-stone-400 hover:text-stone-300'}`}>
+                              {c.name}
+                            </button>
+                            <span className="text-[10px] text-stone-600">{c.nodes.length} nodes</span>
+                          </div>
+                        ))}
+                        {savedCampaigns.length === 0 && <p className="text-stone-600 text-xs">No saved campaigns yet</p>}
+                      </CardContent>
+                    </Card>
+                    {/* Decision Tree Summary */}
+                    <Card className="bg-stone-900/30 border-stone-800">
+                      <CardHeader className="pb-2"><CardTitle className="text-sm text-cyan-400">Decision Tree Paths</CardTitle></CardHeader>
+                      <CardContent className="space-y-1 max-h-[200px] overflow-y-auto">
+                        {campaign.nodes.filter(n => n.type === 'decision').map(node => {
+                          const children = campaign.links.filter(l => l.source === node.id);
+                          return (
+                            <div key={node.id} className="text-xs p-2 bg-purple-950/20 rounded border border-purple-900/30">
+                              <p className="text-purple-400 font-medium">{node.title}</p>
+                              <p className="text-stone-600 text-[10px]">{node.metadata?.condition || node.content}</p>
+                              <div className="mt-1 flex gap-1 flex-wrap">
+                                {children.map(l => {
+                                  const target = campaign.nodes.find(n => n.id === l.target);
+                                  return target ? (
+                                    <button key={l.id} onClick={() => { setViewMode('canvas'); setSelectedNode(target.id); }} className="text-[9px] px-1.5 py-0.5 bg-teal-900/30 text-teal-400 rounded hover:bg-teal-800/50">
+                                      → {target.title} {l.label ? `(${l.label})` : ''}
+                                    </button>
+                                  ) : null;
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {campaign.nodes.filter(n => n.type === 'decision').length === 0 && <p className="text-stone-600 text-xs">No decision nodes yet</p>}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </ScrollArea>
+              ) : mode === 'tree' ? (
                 <ScrollArea className="h-full p-4">
                   <div className="space-y-1">
                     {campaign.rootNodes.length === 0 ? (
@@ -2160,7 +2445,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-stone-500 uppercase">Content</label>
+                    <label className="text-[10px] text-stone-500 uppercase">Content <span className="text-stone-600">(use [[Node Title]] for wikilinks)</span></label>
                     <Textarea
                       value={editingNode.content}
                       onChange={(e) => {
@@ -2168,9 +2453,57 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         setEditingNode(prev => prev ? { ...prev, content: newContent } : null);
                         updateNode(editingNode.id, { content: newContent });
                       }}
-                      className="bg-black/50 border-stone-700 text-base min-h-[120px]"
+                      onBlur={(e) => {
+                        syncWikilinks(editingNode.id, e.target.value);
+                      }}
+                      className="bg-black/50 border-stone-700 text-base min-h-[120px] font-mono"
+                      placeholder="Describe this step... Use [[Other Node]] to link"
                     />
+                    {/* Wikilinks detected */}
+                    {parseWikilinks(editingNode.content).length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        <span className="text-[9px] text-stone-600">Links:</span>
+                        {parseWikilinks(editingNode.content).map((link, i) => {
+                          const target = findNodeByTitle(link);
+                          return (
+                            <Badge key={i} variant="outline" className={`text-[9px] ${target ? 'border-teal-700 text-teal-400' : 'border-red-700 text-red-400'}`}>
+                              {target ? <Link className="w-2 h-2 mr-1" /> : '⚠'} {link}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
+
+                  {/* Backlinks Panel - Obsidian-style */}
+                  {(() => {
+                    const backlinks = getBacklinks(editingNode.id);
+                    const forwardLinks = getForwardLinks(editingNode.id);
+                    if (backlinks.length === 0 && forwardLinks.length === 0) return null;
+                    return (
+                      <div className="bg-stone-900/50 rounded p-2 border border-stone-800">
+                        <p className="text-[10px] text-stone-500 uppercase mb-1">Links Graph</p>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <p className="text-purple-400 text-[9px] mb-1">← Backlinks ({backlinks.length})</p>
+                            {backlinks.slice(0, 5).map(n => (
+                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-stone-400 hover:text-purple-400 text-[10px] truncate w-full text-left">
+                                {n.title}
+                              </button>
+                            ))}
+                          </div>
+                          <div>
+                            <p className="text-teal-400 text-[9px] mb-1">→ Forward ({forwardLinks.length})</p>
+                            {forwardLinks.slice(0, 5).map(n => (
+                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-stone-400 hover:text-teal-400 text-[10px] truncate w-full text-left">
+                                {n.title}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Color</label>
@@ -2201,6 +2534,140 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Feature & Campaign Type Selection */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] text-stone-500 uppercase">Feature</label>
+                      <Select
+                        value={editingNode.metadata?.featureType || ''}
+                        onValueChange={(featureType) => {
+                          const newMeta = { ...editingNode.metadata, featureType };
+                          setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                          updateNode(editingNode.id, { metadata: newMeta });
+                        }}
+                      >
+                        <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
+                          <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-stone-900 border-stone-700">
+                          {FEATURE_TYPES.map(f => (
+                            <SelectItem key={f} value={f} className="text-stone-300 capitalize">{f}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-stone-500 uppercase">Campaign Type</label>
+                      <Select
+                        value={editingNode.metadata?.campaignType || ''}
+                        onValueChange={(campaignType) => {
+                          const newMeta = { ...editingNode.metadata, campaignType };
+                          setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                          updateNode(editingNode.id, { metadata: newMeta });
+                        }}
+                      >
+                        <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
+                          <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-stone-900 border-stone-700">
+                          {CAMPAIGN_TYPES.map(c => (
+                            <SelectItem key={c} value={c} className="text-stone-300 capitalize">{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Skills Selection */}
+                  <div>
+                    <label className="text-[10px] text-stone-500 uppercase">Skills Required</label>
+                    <div className="grid grid-cols-2 gap-1 mt-1 max-h-[120px] overflow-y-auto">
+                      {Object.entries(SKILL_CATEGORIES).map(([cat, subskills]) => (
+                        <div key={cat} className="space-y-0.5">
+                          <p className="text-[9px] text-amber-600 uppercase">{cat}</p>
+                          {subskills.map(skill => {
+                            const skillId = `${cat}:${skill}`;
+                            const isSelected = editingNode.metadata?.skills?.includes(skillId);
+                            return (
+                              <button
+                                key={skill}
+                                onClick={() => {
+                                  const current = editingNode.metadata?.skills || [];
+                                  const newSkills = isSelected ? current.filter(s => s !== skillId) : [...current, skillId];
+                                  const newMeta = { ...editingNode.metadata, skills: newSkills };
+                                  setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                                  updateNode(editingNode.id, { metadata: newMeta });
+                                }}
+                                className={`text-[9px] px-1.5 py-0.5 rounded block w-full text-left touch-manipulation ${
+                                  isSelected ? 'bg-teal-900/50 text-teal-300' : 'bg-stone-800/50 text-stone-500 hover:bg-stone-800'
+                                }`}
+                              >
+                                {skill}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Linked Clues */}
+                  <div>
+                    <label className="text-[10px] text-stone-500 uppercase">Linked Clues (IDs)</label>
+                    <Input
+                      placeholder="Enter clue ID and press Enter..."
+                      className="bg-black/50 border-stone-700 text-sm min-h-[44px]"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (val) {
+                            const current = editingNode.metadata?.linkedClues || [];
+                            if (!current.includes(val)) {
+                              const newMeta = { ...editingNode.metadata, linkedClues: [...current, val] };
+                              setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                              updateNode(editingNode.id, { metadata: newMeta });
+                            }
+                            (e.target as HTMLInputElement).value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {editingNode.metadata?.linkedClues?.map((clueId, i) => (
+                        <Badge 
+                          key={i} 
+                          variant="outline" 
+                          className="text-[8px] border-purple-600 text-purple-400 cursor-pointer hover:bg-red-900/30"
+                          onClick={() => {
+                            const newClues = editingNode.metadata?.linkedClues?.filter(c => c !== clueId) || [];
+                            const newMeta = { ...editingNode.metadata, linkedClues: newClues };
+                            setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                            updateNode(editingNode.id, { metadata: newMeta });
+                          }}
+                        >
+                          🔗 {clueId} ×
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Decision Condition (for decision nodes) */}
+                  {editingNode.type === 'decision' && (
+                    <div>
+                      <label className="text-[10px] text-stone-500 uppercase">Branch Condition</label>
+                      <Textarea
+                        value={editingNode.metadata?.condition || ''}
+                        onChange={(e) => {
+                          const newMeta = { ...editingNode.metadata, condition: e.target.value };
+                          setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                          updateNode(editingNode.id, { metadata: newMeta });
+                        }}
+                        placeholder="e.g., if user finds vulnerability..."
+                        className="bg-black/50 border-stone-700 text-xs min-h-[60px]"
+                      />
+                    </div>
+                  )}
 
                   {editingNode.type === 'step' && editingNode.metadata && (
                     <>
