@@ -54,10 +54,13 @@ const MODEL_PRICING: Record<string, { input: number; output: number }> = {
   'openai/gpt-4o-mini': { input: 0.00015, output: 0.0006 },
   'anthropic/claude-sonnet-4': { input: 0.003, output: 0.015 },
   'moonshotai/kimi-k2.5': { input: 0.0, output: 0.0 },
-  'nvidia/nemotron-3-nano-30b-a3b:free': { input: 0.0, output: 0.0 },
+  'nvidia/nemotron-4-340b-instruct:free': { input: 0.0, output: 0.0 },
+  'nvidia/llama-3.1-nemotron-70b-instruct:free': { input: 0.0, output: 0.0 },
   'meta-llama/llama-3.3-70b-instruct:free': { input: 0.0, output: 0.0 },
   'google/gemini-2.0-flash-exp:free': { input: 0.0, output: 0.0 },
-  'mistralai/codestral:free': { input: 0.0, output: 0.0 },
+  'deepseek/deepseek-r1:free': { input: 0.0, output: 0.0 },
+  'mistralai/codestral-2405:free': { input: 0.0, output: 0.0 },
+  'qwen/qwen-2.5-coder-32b-instruct:free': { input: 0.0, output: 0.0 },
 };
 
 interface ModelInfo {
@@ -78,8 +81,8 @@ const MODEL_CATEGORIES = {
 
 const MODELS: ModelInfo[] = [
   // Coding & Technical
-  { id: 'mistralai/codestral-latest', name: 'Codestral', tier: 'paid', category: 'coding', strengths: ['Code generation', 'Debugging', '80+ languages'] },
-  { id: 'deepseek/deepseek-coder', name: 'DeepSeek Coder', tier: 'free', category: 'coding', strengths: ['Code completion', 'Algorithms', 'Open source'] },
+  { id: 'mistralai/codestral-2405:free', name: 'Codestral', tier: 'free', category: 'coding', strengths: ['Code generation', 'Debugging', '80+ languages'] },
+  { id: 'deepseek/deepseek-coder:free', name: 'DeepSeek Coder', tier: 'free', category: 'coding', strengths: ['Code completion', 'Algorithms', 'Open source'] },
   { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'Qwen 2.5 Coder 32B', tier: 'free', category: 'coding', strengths: ['Code review', 'Refactoring', 'Fast'] },
   
   // Reasoning & Analysis
@@ -87,26 +90,17 @@ const MODELS: ModelInfo[] = [
   { id: 'openai/gpt-4o', name: 'GPT-4o', tier: 'paid', category: 'reasoning', strengths: ['Multimodal', 'Complex tasks', 'Tool use'] },
   { id: 'google/gemini-2.0-flash-thinking-exp:free', name: 'Gemini 2.0 Thinking', tier: 'free', category: 'reasoning', strengths: ['Chain of thought', 'Math', 'Logic'] },
   { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1', tier: 'free', category: 'reasoning', strengths: ['Math reasoning', 'Step-by-step', 'Open weights'] },
-  { id: 'microsoft/phi-3-medium-128k-instruct:free', name: 'Phi-3 Medium', tier: 'free', category: 'reasoning', strengths: ['Efficient', 'Long context', 'Microsoft'] },
+  { id: 'nvidia/nemotron-4-340b-instruct:free', name: 'Nemotron-4 340B', tier: 'free', category: 'reasoning', strengths: ['NVIDIA powerhouse', 'Synthetic data', 'Large scale'] },
   
   // Creative & Writing
   { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', tier: 'paid', category: 'creative', strengths: ['Creative writing', 'Nuance', 'Style'] },
   { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B', tier: 'free', category: 'creative', strengths: ['Storytelling', 'Roleplay', 'Open source'] },
-  { id: 'mistralai/mistral-large-2411', name: 'Mistral Large', tier: 'paid', category: 'creative', strengths: ['Multilingual', 'Nuanced', 'European'] },
-  { id: 'mistralai/mistral-7b-instruct:free', name: 'Mistral 7B', tier: 'free', category: 'creative', strengths: ['Fast', 'Compact', 'Open source'] },
+  { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', name: 'Llama Nemotron 70B', tier: 'free', category: 'creative', strengths: ['Optimized 70B', 'Helpful', 'NVIDIA'] },
   
   // General Purpose
   { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', tier: 'paid', category: 'general', strengths: ['Balanced', 'Cost-effective', 'Reliable'] },
   { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash', tier: 'free', category: 'general', strengths: ['Multimodal', 'Fast', 'Free'] },
-  { id: 'meta-llama/llama-3.1-8b-instruct:free', name: 'Llama 3.1 8B', tier: 'free', category: 'general', strengths: ['Lightweight', 'Quick', 'Efficient'] },
-  { id: 'google/gemma-2-9b-it:free', name: 'Gemma 2 9B', tier: 'free', category: 'general', strengths: ['Google', 'Balanced', 'Open weights'] },
-  { id: 'huggingfaceh4/zephyr-7b-beta:free', name: 'Zephyr 7B', tier: 'free', category: 'general', strengths: ['HuggingFace', 'Chat-tuned', 'Fast'] },
-  
-  // Fast & Efficient
-  { id: 'groq/llama-3.3-70b-versatile', name: 'Groq Llama 70B', tier: 'paid', category: 'fast', strengths: ['Ultra-fast', 'Low latency', 'Groq chip'] },
-  { id: 'google/gemini-flash-1.5-8b', name: 'Gemini Flash 1.5 8B', tier: 'free', category: 'fast', strengths: ['Instant', 'Cheap', 'Streaming'] },
-  { id: 'mistralai/ministral-8b', name: 'Ministral 8B', tier: 'paid', category: 'fast', strengths: ['Edge-ready', 'Compact', 'Efficient'] },
-  { id: 'openchat/openchat-7b:free', name: 'OpenChat 7B', tier: 'free', category: 'fast', strengths: ['Fast', 'Open source', 'Good quality'] },
+  { id: 'moonshotai/kimi-k2.5', name: 'Kimi K2.5', tier: 'free', category: 'general', strengths: ['Long context', 'Helpful', 'Moonshot'] },
 ];
 
 const TEST_SCENARIOS = [
