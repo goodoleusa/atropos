@@ -68,7 +68,7 @@ export default function Home() {
             poster="/videos/probability-poster.png"
             data-testid="hero-video"
           >
-            <source src="/videos/hero-probability-v1.mp4" type="video/mp4" />
+            <source src="/videos/hero-quantum-wave.mp4" type="video/mp4" />
           </video>
           
           {/* Probability Overlay Text */}
