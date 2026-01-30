@@ -107,6 +107,100 @@
 }
 
 @layer utilities {
+  /* Torch-Cut Border Effect - Molten Bronze */
+  .torch-border {
+    position: relative;
+    border: 2px solid transparent;
+    background: linear-gradient(#0a0500, #0a0500) padding-box,
+                linear-gradient(135deg, #CD7F32, #8B4513, #DAA520, #B87333, #CD7F32) border-box;
+    border-radius: 4px;
+  }
+  
+  .torch-border::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    background: linear-gradient(135deg, 
+      rgba(205, 127, 50, 0.6) 0%, 
+      rgba(218, 165, 32, 0.3) 25%, 
+      rgba(139, 69, 19, 0.5) 50%, 
+      rgba(184, 115, 51, 0.4) 75%, 
+      rgba(205, 127, 50, 0.6) 100%);
+    border-radius: 6px;
+    z-index: -1;
+    filter: blur(6px);
+    opacity: 0.7;
+    animation: torch-glow 4s ease-in-out infinite alternate;
+  }
+  
+  @keyframes torch-glow {
+    0% { opacity: 0.5; filter: blur(6px); }
+    50% { opacity: 0.8; filter: blur(8px); }
+    100% { opacity: 0.6; filter: blur(5px); }
+  }
+  
+  /* Torch cut with rough edges - uses clip-path for jagged look */
+  .torch-cut {
+    position: relative;
+    clip-path: polygon(
+      0% 2%, 2% 0%, 5% 1%, 8% 0%, 12% 2%, 15% 0%, 
+      20% 1%, 25% 0%, 30% 2%, 35% 0%, 40% 1%, 45% 0%,
+      50% 2%, 55% 0%, 60% 1%, 65% 0%, 70% 2%, 75% 0%,
+      80% 1%, 85% 0%, 90% 2%, 95% 0%, 98% 1%, 100% 2%,
+      100% 98%, 98% 100%, 95% 99%, 90% 100%, 85% 98%,
+      80% 100%, 75% 99%, 70% 100%, 65% 98%, 60% 100%,
+      55% 99%, 50% 100%, 45% 98%, 40% 100%, 35% 99%,
+      30% 100%, 25% 98%, 20% 100%, 15% 99%, 10% 100%,
+      5% 98%, 2% 100%, 0% 98%
+    );
+  }
+  
+  .torch-cut::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, 
+      rgba(205, 127, 50, 0.15) 0%, 
+      transparent 5%, 
+      transparent 95%, 
+      rgba(205, 127, 50, 0.15) 100%);
+    pointer-events: none;
+  }
+  
+  /* Molten edge glow for borders */
+  .molten-edge {
+    box-shadow: 
+      0 0 20px rgba(205, 127, 50, 0.3),
+      0 0 40px rgba(218, 165, 32, 0.15),
+      inset 0 1px 0 rgba(255, 215, 0, 0.1);
+  }
+  
+  /* Retro vaporwave teal accent */
+  .vapor-teal {
+    color: #14b8a6;
+    text-shadow: 0 0 10px rgba(20, 184, 166, 0.5);
+  }
+  
+  /* Mobile touch optimization */
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Scroll fade in animation */
+  .fade-in-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  
+  .fade-in-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
   .text-glitch {
     position: relative;
     /* Reduced glitch frequency for less matrix-y feel */
