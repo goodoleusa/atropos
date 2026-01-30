@@ -29,20 +29,20 @@ const MODELS = {
   ],
   // Nemotron models (user favorite)  
   nemotron: [
-    { id: 'nvidia/nemotron-3-nano-30b-a3b:free', short: 'nemo', name: 'Nemotron 30B', desc: 'NVIDIA 1M ctx' },
-    { id: 'nvidia/nemotron-nano-12b-v2-vl:free', short: 'nemoV', name: 'Nemotron 12B VL', desc: 'Vision model' },
+    { id: 'nvidia/nemotron-4-340b-instruct:free', short: 'nemo', name: 'Nemotron-4 340B', desc: 'NVIDIA powerhouse' },
+    { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', short: 'nemo70', name: 'Llama Nemotron 70B', desc: 'Optimized 70B' },
   ],
   // Coding specialists
   code: [
-    { id: 'mistralai/codestral:free', short: 'code', name: 'Codestral', desc: 'Mistral 123B coder' },
-    { id: 'qwen/qwen3-coder:free', short: 'qwen', name: 'Qwen3 Coder', desc: '480B MoE' },
-    { id: 'deepseek/deepseek-v3.2', short: 'ds', name: 'DeepSeek V3.2', desc: 'Latest DS' },
+    { id: 'mistralai/codestral-2405:free', short: 'code', name: 'Codestral', desc: 'Mistral coder' },
+    { id: 'qwen/qwen-2.5-coder-32b-instruct:free', short: 'qwen', name: 'Qwen 2.5 Coder', desc: 'State of the art coder' },
+    { id: 'deepseek/deepseek-coder:free', short: 'ds', name: 'DeepSeek Coder', desc: 'Powerful open coder' },
   ],
   // General purpose free
   general: [
     { id: 'meta-llama/llama-3.3-70b-instruct:free', short: 'llama', name: 'Llama 3.3 70B', desc: 'Meta flagship' },
     { id: 'google/gemini-2.0-flash-exp:free', short: 'gem', name: 'Gemini 2.0 Flash', desc: '1M context' },
-    { id: 'mistralai/mistral-small-3.1-24b-instruct:free', short: 'mis', name: 'Mistral Small', desc: 'Fast' },
+    { id: 'deepseek/deepseek-r1:free', short: 'dsr1', name: 'DeepSeek R1', desc: 'Reasoning specialist' },
   ],
 };
 
