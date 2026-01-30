@@ -197,6 +197,184 @@ export const insertBehavioralProfileSchema = createInsertSchema(behavioralProfil
 export type BehavioralProfile = typeof behavioralProfiles.$inferSelect;
 export type InsertBehavioralProfile = z.infer<typeof insertBehavioralProfileSchema>;
 
+// User Analytical Summaries - periodic AI-generated user profiles
+export const userAnalyses = pgTable("user_analyses", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  analysisType: text("analysis_type").notNull().default("periodic"), // 'periodic', 'threshold', 'manual'
+  interactionCount: integer("interaction_count").notNull().default(0),
+  timeSpentMinutes: integer("time_spent_minutes").notNull().default(0),
+  
+  // Personality insights
+  personalityTraits: jsonb("personality_traits").$type<{
+    curiosity: number; // 0-100
+    patience: number;
+    technicalAptitude: number;
+    riskTolerance: number;
+    persistence: number;
+    creativity: number;
+  }>().notNull().default({
+    curiosity: 50, patience: 50, technicalAptitude: 50,
+    riskTolerance: 50, persistence: 50, creativity: 50
+  }),
+  
+  // Behavioral patterns
+  behaviorPatterns: jsonb("behavior_patterns").$type<{
+    preferredFeatures: string[];
+    avoidedFeatures: string[];
+    peakActivityTimes: string[];
+    averageSessionLength: number;
+    commandPatterns: string[];
+    learningStyle: string;
+  }>().notNull().default({
+    preferredFeatures: [], avoidedFeatures: [],
+    peakActivityTimes: [], averageSessionLength: 0,
+    commandPatterns: [], learningStyle: 'unknown'
+  }),
+  
+  // Risk assessment
+  riskAssessment: jsonb("risk_assessment").$type<{
+    maliciousLikelihood: number; // 0-100
+    riskFactors: string[];
+    suspiciousPatterns: string[];
+    trustScore: number; // 0-100
+    flaggedBehaviors: { behavior: string; timestamp: string; severity: string }[];
+  }>().notNull().default({
+    maliciousLikelihood: 0, riskFactors: [],
+    suspiciousPatterns: [], trustScore: 100, flaggedBehaviors: []
+  }),
+  
+  // Pain points and friction
+  painPoints: jsonb("pain_points").$type<{
+    frustrationIndicators: string[];
+    abandonedFeatures: string[];
+    repeatedErrors: string[];
+    helpSeekingBehavior: string[];
+    suggestedImprovements: string[];
+  }>().notNull().default({
+    frustrationIndicators: [], abandonedFeatures: [],
+    repeatedErrors: [], helpSeekingBehavior: [], suggestedImprovements: []
+  }),
+  
+  // Engagement metrics
+  engagementMetrics: jsonb("engagement_metrics").$type<{
+    overallEngagement: number; // 0-100
+    featureAdoption: Record<string, number>;
+    progressionSpeed: string; // 'fast', 'moderate', 'slow', 'stalled'
+    returnRate: number;
+    completionRate: number;
+  }>().notNull().default({
+    overallEngagement: 50, featureAdoption: {},
+    progressionSpeed: 'moderate', returnRate: 0, completionRate: 0
+  }),
+  
+  // AI-generated summary
+  narrativeSummary: text("narrative_summary"),
+  keyInsights: jsonb("key_insights").$type<string[]>().notNull().default([]),
+  recommendedActions: jsonb("recommended_actions").$type<string[]>().notNull().default([]),
+  
+  // Meta
+  analyzedAt: timestamp("analyzed_at").notNull().defaultNow(),
+  dataWindowStart: timestamp("data_window_start"),
+  dataWindowEnd: timestamp("data_window_end"),
+});
+
+export const insertUserAnalysisSchema = createInsertSchema(userAnalyses).omit({
+  id: true,
+  analyzedAt: true,
+});
+
+export type UserAnalysis = typeof userAnalyses.$inferSelect;
+export type InsertUserAnalysis = z.infer<typeof insertUserAnalysisSchema>;
+
+// User Feedback - direct feedback on features, quests, campaigns
+export const userFeedback = pgTable("user_feedback", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  feedbackType: text("feedback_type").notNull(), // 'feature', 'quest', 'campaign', 'bug', 'suggestion', 'pain_point'
+  targetId: text("target_id"), // ID of the feature/quest/campaign being rated
+  targetName: text("target_name"),
+  
+  // Ratings
+  rating: integer("rating"), // 1-5 stars
+  difficulty: integer("difficulty"), // 1-5 (too easy to too hard)
+  usefulness: integer("usefulness"), // 1-5
+  clarity: integer("clarity"), // 1-5 (how clear were instructions)
+  
+  // Open feedback
+  comment: text("comment"),
+  suggestions: text("suggestions"),
+  
+  // Context at time of feedback
+  context: jsonb("context").$type<{
+    currentPhase?: string;
+    toolsUsed?: string[];
+    timeSpentMinutes?: number;
+    completionStatus?: string;
+    errorEncountered?: string;
+  }>().notNull().default({}),
+  
+  // Agent handoff data
+  agentHandoffSummary: text("agent_handoff_summary"), // Compressed context for next agent
+  
+  // Admin processing
+  status: text("status").notNull().default("new"), // 'new', 'reviewed', 'actioned', 'deferred'
+  adminNotes: text("admin_notes"),
+  actionTaken: text("action_taken"),
+  priority: text("priority").default("normal"), // 'low', 'normal', 'high', 'critical'
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+});
+
+// Improvement Queue - aggregated improvements from user data
+export const improvementQueue = pgTable("improvement_queue", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(), // 'ui', 'ux', 'content', 'feature', 'bug', 'performance'
+  source: text("source").notNull(), // 'feedback', 'behavior_analysis', 'agent_insight', 'manual'
+  
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  
+  // Evidence
+  evidence: jsonb("evidence").$type<{
+    feedbackIds?: number[];
+    analysisIds?: number[];
+    sessionTokens?: string[];
+    occurrenceCount?: number;
+    impactScore?: number;
+  }>().notNull().default({}),
+  
+  // Prioritization
+  priority: integer("priority").notNull().default(50), // 0-100
+  effort: text("effort").default("medium"), // 'low', 'medium', 'high'
+  impact: text("impact").default("medium"), // 'low', 'medium', 'high'
+  
+  // Tracking
+  status: text("status").notNull().default("proposed"), // 'proposed', 'approved', 'in_progress', 'completed', 'rejected'
+  assignedTo: text("assigned_to"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertUserFeedbackSchema = createInsertSchema(userFeedback).omit({
+  id: true,
+  createdAt: true,
+  reviewedAt: true,
+});
+
+export const insertImprovementQueueSchema = createInsertSchema(improvementQueue).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type UserFeedback = typeof userFeedback.$inferSelect;
+export type InsertUserFeedback = z.infer<typeof insertUserFeedbackSchema>;
+export type ImprovementQueue = typeof improvementQueue.$inferSelect;
+export type InsertImprovementQueue = z.infer<typeof insertImprovementQueueSchema>;
+
 // Admin System Prompts - global AI configuration
 export const adminPrompts = pgTable("admin_prompts", {
   id: serial("id").primaryKey(),
@@ -425,6 +603,175 @@ export type SharedClue = typeof sharedClues.$inferSelect;
 export type InsertSharedClue = z.infer<typeof insertSharedClueSchema>;
 export type CampaignLink = typeof campaignLinks.$inferSelect;
 export type InsertCampaignLink = z.infer<typeof insertCampaignLinkSchema>;
+
+// OSINT Tool Registry - configurable external tools
+export const osintTools = pgTable("osint_tools", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(), // 'urlscan', 'virustotal', 'whois', etc.
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // 'domain', 'ip', 'hash', 'url', 'email', 'general'
+  baseUrl: text("base_url").notNull(),
+  apiKeyEnvVar: text("api_key_env_var"), // Environment variable name for API key
+  requiresAuth: boolean("requires_auth").notNull().default(false),
+  rateLimit: integer("rate_limit").notNull().default(60), // Requests per minute
+  rateLimitWindow: integer("rate_limit_window").notNull().default(60000), // Window in ms
+  requestSchema: jsonb("request_schema").$type<{
+    method: 'GET' | 'POST';
+    headers?: Record<string, string>;
+    queryParams?: Record<string, string>;
+    bodyTemplate?: string;
+    pathTemplate?: string; // URL path template with {{target}} placeholder
+  }>().notNull(),
+  responseMapping: jsonb("response_mapping").$type<{
+    dataPath?: string; // JSONPath to data in response
+    fields: { key: string; path: string; label: string }[];
+  }>().notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// OSINT Tool Calls - log all tool executions
+export const osintToolCalls = pgTable("osint_tool_calls", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token"),
+  toolKey: text("tool_key").notNull(),
+  targetType: text("target_type").notNull(), // 'domain', 'ip', 'hash', 'url', 'email'
+  targetValue: text("target_value").notNull(),
+  request: jsonb("request").$type<Record<string, any>>().notNull(),
+  response: jsonb("response").$type<Record<string, any>>(),
+  status: text("status").notNull().default("pending"), // 'pending', 'success', 'error', 'rate_limited'
+  errorMessage: text("error_message"),
+  latencyMs: integer("latency_ms"),
+  source: text("source").notNull().default("manual"), // 'manual', 'terminal', 'chat', 'campaign', 'report'
+  investigationId: text("investigation_id"), // Link to active investigation
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+// Investigation Context - shared state across features
+export const investigationContexts = pgTable("investigation_contexts", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  investigationId: text("investigation_id").notNull().unique(),
+  name: text("name").notNull(),
+  targetType: text("target_type").notNull(), // 'domain', 'ip', 'organization', 'person', 'infrastructure'
+  targetValue: text("target_value").notNull(),
+  phase: text("phase").notNull().default("reconnaissance"), // 'reconnaissance', 'enumeration', 'analysis', 'reporting'
+  findings: jsonb("findings").$type<{
+    id: string;
+    toolKey: string;
+    category: string;
+    severity: 'info' | 'low' | 'medium' | 'high' | 'critical';
+    title: string;
+    data: any;
+    timestamp: string;
+  }[]>().notNull().default([]),
+  hypotheses: jsonb("hypotheses").$type<{
+    id: string;
+    text: string;
+    status: 'active' | 'confirmed' | 'rejected';
+    evidence: string[];
+  }[]>().notNull().default([]),
+  toolsUsed: jsonb("tools_used").$type<string[]>().notNull().default([]),
+  campaignId: text("campaign_id"), // Active campaign if running
+  campaignNodeId: text("campaign_node_id"), // Current position in campaign
+  learningProfile: jsonb("learning_profile").$type<{
+    style: string;
+    goals: string[];
+    skillLevel: string;
+    pace: string;
+  }>(),
+  compressedHistory: text("compressed_history"), // Summarized conversation history
+  status: text("status").notNull().default("active"), // 'active', 'paused', 'completed', 'archived'
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Interaction Logs - comprehensive user action tracking for model evaluation
+export const interactionLogs = pgTable("interaction_logs", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token"),
+  investigationId: text("investigation_id"),
+  actionType: text("action_type").notNull(), // 'chat', 'tool_call', 'navigation', 'campaign_action', 'report_edit'
+  source: text("source").notNull(), // 'terminal', 'agent_chat', 'campaign', 'report', 'ai_lab'
+  input: jsonb("input").$type<{
+    prompt?: string;
+    command?: string;
+    action?: string;
+    context?: Record<string, any>;
+  }>().notNull(),
+  output: jsonb("output").$type<{
+    response?: string;
+    result?: any;
+    toolCalls?: string[];
+    tokensUsed?: number;
+    model?: string;
+  }>(),
+  metadata: jsonb("metadata").$type<{
+    latencyMs?: number;
+    learningStyle?: string;
+    skillLevel?: string;
+    campaignId?: string;
+    nodeId?: string;
+    userRating?: number; // 1-5 rating if user provides feedback
+    adminFlag?: 'good' | 'bad' | 'review'; // Admin flagging for training
+  }>().notNull().default({}),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+// State Capsules - compressed handoff states for agent chaining
+export const stateCapsules = pgTable("state_capsules", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  investigationId: text("investigation_id"),
+  capsuleType: text("capsule_type").notNull(), // 'handoff', 'checkpoint', 'milestone'
+  content: text("content").notNull(), // The compressed prompt/state
+  metadata: jsonb("metadata").$type<{
+    phase: string;
+    findingsCount: number;
+    toolsUsed: string[];
+    tokensEstimate: number;
+    createdBy: 'auto' | 'manual';
+  }>().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Insert schemas
+export const insertOsintToolSchema = createInsertSchema(osintTools).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertOsintToolCallSchema = createInsertSchema(osintToolCalls).omit({
+  id: true,
+  timestamp: true,
+});
+export const insertInvestigationContextSchema = createInsertSchema(investigationContexts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertInteractionLogSchema = createInsertSchema(interactionLogs).omit({
+  id: true,
+  timestamp: true,
+});
+export const insertStateCapsuleSchema = createInsertSchema(stateCapsules).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type OsintTool = typeof osintTools.$inferSelect;
+export type InsertOsintTool = z.infer<typeof insertOsintToolSchema>;
+export type OsintToolCall = typeof osintToolCalls.$inferSelect;
+export type InsertOsintToolCall = z.infer<typeof insertOsintToolCallSchema>;
+export type InvestigationContext = typeof investigationContexts.$inferSelect;
+export type InsertInvestigationContext = z.infer<typeof insertInvestigationContextSchema>;
+export type InteractionLog = typeof interactionLogs.$inferSelect;
+export type InsertInteractionLog = z.infer<typeof insertInteractionLogSchema>;
+export type StateCapsule = typeof stateCapsules.$inferSelect;
+export type InsertStateCapsule = z.infer<typeof insertStateCapsuleSchema>;
 
 // Export auth and chat models
 export * from "./models/auth";

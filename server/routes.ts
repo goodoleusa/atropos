@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { insertGameSessionSchema, insertCommandLogSchema } from "../shared/schema";
 import { generateSessionExportCode, generateSecretCode, decodeQRPayload } from "./qrcode";
 import { registerChatRoutes } from "./replit_integrations/chat";
+import osintRoutes from "./routes/osint";
+import behaviorRoutes from "./routes/behavior";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -35,6 +37,12 @@ export async function registerRoutes(
   
   // Register chat routes for AI agent
   registerChatRoutes(app);
+  
+  // Register OSINT routes
+  app.use("/api/osint", osintRoutes);
+  
+  // Register Behavior Analysis routes
+  app.use("/api/behavior", behaviorRoutes);
   
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {

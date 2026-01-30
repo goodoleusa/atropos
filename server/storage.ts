@@ -12,6 +12,11 @@ import {
   sharedClues,
   campaignLinks,
   learningPaths,
+  osintTools,
+  osintToolCalls,
+  investigationContexts,
+  interactionLogs,
+  stateCapsules,
   type GameSession, 
   type InsertGameSession,
   type Clue,
@@ -35,9 +40,19 @@ import {
   type CampaignLink,
   type InsertCampaignLink,
   type LearningPath,
-  type InsertLearningPath
+  type InsertLearningPath,
+  type OsintTool,
+  type InsertOsintTool,
+  type OsintToolCall,
+  type InsertOsintToolCall,
+  type InvestigationContext,
+  type InsertInvestigationContext,
+  type InteractionLog,
+  type InsertInteractionLog,
+  type StateCapsule,
+  type InsertStateCapsule
 } from "@shared/schema";
-import { eq, desc, sql, count, gte } from "drizzle-orm";
+import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
 export interface IStorage {
   // Game Sessions
@@ -111,6 +126,47 @@ export interface IStorage {
   createLearningPath(path: InsertLearningPath): Promise<LearningPath>;
   updateLearningPath(id: number, updates: Partial<LearningPath>): Promise<LearningPath | undefined>;
   deleteLearningPath(id: number): Promise<boolean>;
+  
+  // OSINT Tools
+  getAllOsintTools(): Promise<OsintTool[]>;
+  getOsintToolByKey(key: string): Promise<OsintTool | undefined>;
+  getActiveOsintTools(): Promise<OsintTool[]>;
+  upsertOsintTool(key: string, data: Partial<InsertOsintTool>): Promise<OsintTool>;
+  deleteOsintTool(key: string): Promise<boolean>;
+  
+  // OSINT Tool Calls
+  logToolCall(call: InsertOsintToolCall): Promise<OsintToolCall>;
+  getToolCallsBySession(sessionToken: string, limit?: number): Promise<OsintToolCall[]>;
+  getToolCallsByInvestigation(investigationId: string): Promise<OsintToolCall[]>;
+  updateToolCallStatus(id: number, status: string, response?: any, errorMessage?: string, latencyMs?: number): Promise<OsintToolCall | undefined>;
+  
+  // Investigation Context
+  createInvestigation(context: InsertInvestigationContext): Promise<InvestigationContext>;
+  getInvestigationById(investigationId: string): Promise<InvestigationContext | undefined>;
+  getInvestigationsBySession(sessionToken: string): Promise<InvestigationContext[]>;
+  updateInvestigation(investigationId: string, updates: Partial<InvestigationContext>): Promise<InvestigationContext | undefined>;
+  getActiveInvestigation(sessionToken: string): Promise<InvestigationContext | undefined>;
+  
+  // Interaction Logs
+  logInteraction(log: InsertInteractionLog): Promise<InteractionLog>;
+  getInteractionsBySession(sessionToken: string, limit?: number): Promise<InteractionLog[]>;
+  getInteractionsForEvaluation(filters?: { source?: string; actionType?: string; adminFlag?: string }): Promise<InteractionLog[]>;
+  flagInteraction(id: number, flag: 'good' | 'bad' | 'review'): Promise<InteractionLog | undefined>;
+  
+  // State Capsules
+  createStateCapsule(capsule: InsertStateCapsule): Promise<StateCapsule>;
+  getStateCapsulesBySession(sessionToken: string): Promise<StateCapsule[]>;
+  getLatestCapsule(sessionToken: string, investigationId?: string): Promise<StateCapsule | undefined>;
+  
+  // Abuse Detection
+  detectAbuseCluster(timeWindowMinutes?: number, threshold?: number): Promise<{
+    clusterId: string;
+    sessionTokens: string[];
+    actionCount: number;
+    timeRange: { start: Date; end: Date };
+    suspiciousPatterns: string[];
+  }[]>;
+  getSessionsByIpPattern(ipPrefix: string): Promise<string[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -531,6 +587,314 @@ export class DatabaseStorage implements IStorage {
   async deleteLearningPath(id: number): Promise<boolean> {
     await db.delete(learningPaths).where(eq(learningPaths.id, id));
     return true;
+  }
+
+  // OSINT Tools
+  async getAllOsintTools(): Promise<OsintTool[]> {
+    return await db.select().from(osintTools).orderBy(osintTools.name);
+  }
+
+  async getOsintToolByKey(key: string): Promise<OsintTool | undefined> {
+    const [tool] = await db.select().from(osintTools).where(eq(osintTools.key, key)).limit(1);
+    return tool;
+  }
+
+  async getActiveOsintTools(): Promise<OsintTool[]> {
+    return await db.select().from(osintTools).where(eq(osintTools.isActive, true)).orderBy(osintTools.name);
+  }
+
+  async upsertOsintTool(key: string, data: Partial<InsertOsintTool>): Promise<OsintTool> {
+    const existing = await this.getOsintToolByKey(key);
+    if (existing) {
+      const [updated] = await db
+        .update(osintTools)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(osintTools.key, key))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(osintTools).values({ key, ...data } as any).returning();
+    return created;
+  }
+
+  async deleteOsintTool(key: string): Promise<boolean> {
+    await db.delete(osintTools).where(eq(osintTools.key, key));
+    return true;
+  }
+
+  // OSINT Tool Calls
+  async logToolCall(call: InsertOsintToolCall): Promise<OsintToolCall> {
+    const [created] = await db.insert(osintToolCalls).values(call).returning();
+    return created;
+  }
+
+  async getToolCallsBySession(sessionToken: string, limit = 50): Promise<OsintToolCall[]> {
+    return await db
+      .select()
+      .from(osintToolCalls)
+      .where(eq(osintToolCalls.sessionToken, sessionToken))
+      .orderBy(desc(osintToolCalls.timestamp))
+      .limit(limit);
+  }
+
+  async getToolCallsByInvestigation(investigationId: string): Promise<OsintToolCall[]> {
+    return await db
+      .select()
+      .from(osintToolCalls)
+      .where(eq(osintToolCalls.investigationId, investigationId))
+      .orderBy(desc(osintToolCalls.timestamp));
+  }
+
+  async updateToolCallStatus(
+    id: number, 
+    status: string, 
+    response?: any, 
+    errorMessage?: string, 
+    latencyMs?: number
+  ): Promise<OsintToolCall | undefined> {
+    const [updated] = await db
+      .update(osintToolCalls)
+      .set({ status, response, errorMessage, latencyMs })
+      .where(eq(osintToolCalls.id, id))
+      .returning();
+    return updated;
+  }
+
+  // Investigation Context
+  async createInvestigation(context: InsertInvestigationContext): Promise<InvestigationContext> {
+    const [created] = await db.insert(investigationContexts).values(context).returning();
+    return created;
+  }
+
+  async getInvestigationById(investigationId: string): Promise<InvestigationContext | undefined> {
+    const [investigation] = await db
+      .select()
+      .from(investigationContexts)
+      .where(eq(investigationContexts.investigationId, investigationId))
+      .limit(1);
+    return investigation;
+  }
+
+  async getInvestigationsBySession(sessionToken: string): Promise<InvestigationContext[]> {
+    return await db
+      .select()
+      .from(investigationContexts)
+      .where(eq(investigationContexts.sessionToken, sessionToken))
+      .orderBy(desc(investigationContexts.updatedAt));
+  }
+
+  async updateInvestigation(
+    investigationId: string, 
+    updates: Partial<InvestigationContext>
+  ): Promise<InvestigationContext | undefined> {
+    const [updated] = await db
+      .update(investigationContexts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(investigationContexts.investigationId, investigationId))
+      .returning();
+    return updated;
+  }
+
+  async getActiveInvestigation(sessionToken: string): Promise<InvestigationContext | undefined> {
+    const [active] = await db
+      .select()
+      .from(investigationContexts)
+      .where(and(
+        eq(investigationContexts.sessionToken, sessionToken),
+        eq(investigationContexts.status, 'active')
+      ))
+      .orderBy(desc(investigationContexts.updatedAt))
+      .limit(1);
+    return active;
+  }
+
+  // Interaction Logs
+  async logInteraction(log: InsertInteractionLog): Promise<InteractionLog> {
+    const [created] = await db.insert(interactionLogs).values(log).returning();
+    return created;
+  }
+
+  async getInteractionsBySession(sessionToken: string, limit = 100): Promise<InteractionLog[]> {
+    return await db
+      .select()
+      .from(interactionLogs)
+      .where(eq(interactionLogs.sessionToken, sessionToken))
+      .orderBy(desc(interactionLogs.timestamp))
+      .limit(limit);
+  }
+
+  async getInteractionsForEvaluation(filters?: { 
+    source?: string; 
+    actionType?: string; 
+    adminFlag?: string 
+  }): Promise<InteractionLog[]> {
+    let query = db.select().from(interactionLogs);
+    
+    const conditions = [];
+    if (filters?.source) {
+      conditions.push(eq(interactionLogs.source, filters.source));
+    }
+    if (filters?.actionType) {
+      conditions.push(eq(interactionLogs.actionType, filters.actionType));
+    }
+    if (filters?.adminFlag) {
+      conditions.push(sql`${interactionLogs.metadata}->>'adminFlag' = ${filters.adminFlag}`);
+    }
+    
+    if (conditions.length > 0) {
+      return await db
+        .select()
+        .from(interactionLogs)
+        .where(and(...conditions))
+        .orderBy(desc(interactionLogs.timestamp))
+        .limit(500);
+    }
+    
+    return await db
+      .select()
+      .from(interactionLogs)
+      .orderBy(desc(interactionLogs.timestamp))
+      .limit(500);
+  }
+
+  async flagInteraction(id: number, flag: 'good' | 'bad' | 'review'): Promise<InteractionLog | undefined> {
+    const [existing] = await db.select().from(interactionLogs).where(eq(interactionLogs.id, id)).limit(1);
+    if (!existing) return undefined;
+    
+    const updatedMetadata = { ...existing.metadata, adminFlag: flag };
+    const [updated] = await db
+      .update(interactionLogs)
+      .set({ metadata: updatedMetadata })
+      .where(eq(interactionLogs.id, id))
+      .returning();
+    return updated;
+  }
+
+  // State Capsules
+  async createStateCapsule(capsule: InsertStateCapsule): Promise<StateCapsule> {
+    const [created] = await db.insert(stateCapsules).values(capsule).returning();
+    return created;
+  }
+
+  async getStateCapsulesBySession(sessionToken: string): Promise<StateCapsule[]> {
+    return await db
+      .select()
+      .from(stateCapsules)
+      .where(eq(stateCapsules.sessionToken, sessionToken))
+      .orderBy(desc(stateCapsules.createdAt));
+  }
+
+  async getLatestCapsule(sessionToken: string, investigationId?: string): Promise<StateCapsule | undefined> {
+    const conditions = [eq(stateCapsules.sessionToken, sessionToken)];
+    if (investigationId) {
+      conditions.push(eq(stateCapsules.investigationId, investigationId));
+    }
+    
+    const [latest] = await db
+      .select()
+      .from(stateCapsules)
+      .where(and(...conditions))
+      .orderBy(desc(stateCapsules.createdAt))
+      .limit(1);
+    return latest;
+  }
+
+  // Abuse Detection - clusters suspicious activity across sessions
+  async detectAbuseCluster(timeWindowMinutes = 5, threshold = 50): Promise<{
+    clusterId: string;
+    sessionTokens: string[];
+    actionCount: number;
+    timeRange: { start: Date; end: Date };
+    suspiciousPatterns: string[];
+  }[]> {
+    const windowStart = new Date(Date.now() - timeWindowMinutes * 60 * 1000);
+    
+    // Get high-frequency sessions in time window
+    const sessionActivity = await db
+      .select({
+        sessionToken: interactionLogs.sessionToken,
+        actionCount: count(interactionLogs.id),
+        firstAction: sql<Date>`MIN(${interactionLogs.timestamp})`,
+        lastAction: sql<Date>`MAX(${interactionLogs.timestamp})`,
+      })
+      .from(interactionLogs)
+      .where(gte(interactionLogs.timestamp, windowStart))
+      .groupBy(interactionLogs.sessionToken);
+
+    // Find sessions exceeding threshold
+    const suspiciousSessions = sessionActivity.filter(s => 
+      s.actionCount && Number(s.actionCount) >= threshold
+    );
+
+    if (suspiciousSessions.length === 0) return [];
+
+    // Cluster sessions by overlapping time ranges
+    const clusters: {
+      clusterId: string;
+      sessionTokens: string[];
+      actionCount: number;
+      timeRange: { start: Date; end: Date };
+      suspiciousPatterns: string[];
+    }[] = [];
+
+    // Simple clustering: group sessions with overlapping activity windows
+    let clusterIndex = 0;
+    const processed = new Set<string>();
+
+    for (const session of suspiciousSessions) {
+      if (processed.has(session.sessionToken || '')) continue;
+      
+      const cluster = {
+        clusterId: `abuse_cluster_${Date.now()}_${clusterIndex++}`,
+        sessionTokens: [session.sessionToken || ''],
+        actionCount: Number(session.actionCount) || 0,
+        timeRange: {
+          start: session.firstAction || new Date(),
+          end: session.lastAction || new Date()
+        },
+        suspiciousPatterns: [] as string[]
+      };
+      
+      processed.add(session.sessionToken || '');
+
+      // Find overlapping sessions
+      for (const other of suspiciousSessions) {
+        if (processed.has(other.sessionToken || '')) continue;
+        
+        const otherStart = other.firstAction || new Date();
+        const otherEnd = other.lastAction || new Date();
+        
+        // Check overlap
+        if (otherStart <= cluster.timeRange.end && otherEnd >= cluster.timeRange.start) {
+          cluster.sessionTokens.push(other.sessionToken || '');
+          cluster.actionCount += Number(other.actionCount) || 0;
+          cluster.timeRange.start = new Date(Math.min(cluster.timeRange.start.getTime(), otherStart.getTime()));
+          cluster.timeRange.end = new Date(Math.max(cluster.timeRange.end.getTime(), otherEnd.getTime()));
+          processed.add(other.sessionToken || '');
+        }
+      }
+
+      // Detect patterns
+      if (cluster.sessionTokens.length > 1) {
+        cluster.suspiciousPatterns.push('multiple_sessions_same_timeframe');
+      }
+      if (cluster.actionCount > threshold * 2) {
+        cluster.suspiciousPatterns.push('excessive_request_volume');
+      }
+      
+      // Only report clusters with multiple sessions or very high volume
+      if (cluster.sessionTokens.length > 1 || cluster.actionCount > threshold * 3) {
+        clusters.push(cluster);
+      }
+    }
+
+    return clusters;
+  }
+
+  async getSessionsByIpPattern(ipPrefix: string): Promise<string[]> {
+    // This would require storing IP in session data - return placeholder for now
+    // In real implementation, would query sessions with matching IP patterns
+    return [];
   }
 }
 
