@@ -19,6 +19,7 @@ import PromptBuilder from "@/pages/PromptBuilder";
 import ReportBuilder from "@/pages/ReportBuilder";
 import Wiki from "@/pages/Wiki";
 import AILab from "@/pages/AILab";
+import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 
 function Router() {
   return (
@@ -30,8 +31,9 @@ function Router() {
       <Route path="/void" component={TheVoid} />
       <Route path="/archive" component={Archive} />
       <Route path="/debug" component={Debug} />
-      <Route path="/prompt-builder" component={AILab} />
+      <Route path="/prompt-builder" component={PromptBuilder} />
       <Route path="/ai-lab" component={AILab} />
+      <Route path="/investigate" component={InvestigationWorkspace} />
       <Route path="/report" component={ReportBuilder} />
       <Route path="/wiki" component={Wiki} />
       <Route component={NotFound} />

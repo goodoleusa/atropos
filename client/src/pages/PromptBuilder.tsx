@@ -32,13 +32,12 @@ import {
   buildSystemPrompt 
 } from '@/config/agentPrompts';
 import { 
-  LearningStyle, 
-  LearningGoal, 
   LEARNING_STYLES, 
   LEARNING_GOALS,
   SKILL_LEVELS,
   CATEGORY_COLORS 
 } from '@/config/learningConfig';
+import { useLearningStore } from '@/stores/useLearningStore';
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
@@ -51,9 +50,18 @@ export default function PromptBuilder() {
   const [generatedHandoff, setGeneratedHandoff] = useState('');
   const [copied, setCopied] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
-  const [learningStyle, setLearningStyle] = useState<LearningStyle>('experiential');
-  const [selectedGoals, setSelectedGoals] = useState<LearningGoal[]>(['penetration_testing']);
-  const [skillLevel, setSkillLevel] = useState<'beginner' | 'intermediate' | 'advanced' | 'expert'>('intermediate');
+  
+  // Use unified learning store instead of local state
+  const { 
+    style: learningStyle, 
+    goals: selectedGoals, 
+    skillLevel,
+    setStyle: setLearningStyle,
+    toggleGoal,
+    setSkillLevel,
+    getFullPromptModifier,
+    getRecommendedTools
+  } = useLearningStore();
 
   // Check for prefilled data from AgentChat
   useEffect(() => {
@@ -85,39 +93,23 @@ export default function PromptBuilder() {
     );
   };
 
-  const toggleGoal = (goal: LearningGoal) => {
-    setSelectedGoals(prev =>
-      prev.includes(goal)
-        ? prev.filter(g => g !== goal)
-        : [...prev, goal]
-    );
-  };
-
-  // Generate learning style prompt modifier
+  // Use the unified store's prompt modifier
   const getLearningStylePrompt = () => {
+    if (selectedGoals.length === 0) return '';
+    
     const style = LEARNING_STYLES.find(s => s.id === learningStyle);
-    const goals = selectedGoals.map(g => LEARNING_GOALS.find(lg => lg.id === g)).filter(Boolean);
-    const level = SKILL_LEVELS.find(l => l.id === skillLevel);
-    
-    if (!style || goals.length === 0) return '';
-    
-    const toolsList = goals.flatMap(g => g?.tools || []).filter((t, i, arr) => arr.indexOf(t) === i);
+    const goalNames = selectedGoals.map(g => LEARNING_GOALS.find(lg => lg.id === g)?.name).filter(Boolean);
+    const tools = getRecommendedTools();
     
     return `
 ## LEARNER ADAPTATION
 Adapt your teaching approach for this learner:
-- **Learning Style**: ${style.name} - ${style.description}
-- **Skill Level**: ${level?.name} - ${level?.description}
-- **Learning Goals**: ${goals.map(g => g?.name).join(', ')}
-- **Relevant Tools**: ${toolsList.slice(0, 8).join(', ')}
+- **Learning Style**: ${style?.name} - ${style?.description}
+- **Skill Level**: ${SKILL_LEVELS.find(l => l.id === skillLevel)?.name}
+- **Learning Goals**: ${goalNames.join(', ')}
+- **Relevant Tools**: ${tools.slice(0, 8).join(', ')}
 
-${learningStyle === 'experiential' ? `Provide hands-on exercises, practical labs, and real-world scenarios. Lead with "Try this:" prompts.` : ''}
-${learningStyle === 'visual' ? `Include ASCII diagrams, flowcharts, and visual representations whenever possible. Structure output visually.` : ''}
-${learningStyle === 'analytical' ? `Provide in-depth technical details, reference documentation, RFCs, and theoretical foundations.` : ''}
-${learningStyle === 'social' ? `Reference community resources, forums, discussion threads, and collaborative approaches.` : ''}
-${learningStyle === 'pragmatic' ? `Focus on quick wins, automation scripts, and efficient shortcuts. Prioritize actionable steps.` : ''}
-
-Adjust complexity for ${skillLevel} level. ${skillLevel === 'beginner' ? 'Explain fundamentals and avoid jargon.' : skillLevel === 'expert' ? 'Assume advanced knowledge and explore edge cases.' : 'Balance theory with practice.'}
+${getFullPromptModifier()}
 `;
   };
 

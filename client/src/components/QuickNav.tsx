@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search } from 'lucide-react';
 
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
@@ -21,6 +21,7 @@ export default function QuickNav() {
   const navItems = [
     { path: '/', icon: Home, label: 'Home', color: 'amber' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
+    { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
   ];
