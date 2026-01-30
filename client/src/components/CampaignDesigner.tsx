@@ -11,9 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { 
   FolderTree, FileText, Plus, Trash2, Edit3, Link2, Eye, Save, Download,
-  Play, Pause, ChevronRight, ChevronDown, Zap, Target, Shield, Search, Settings,
+  Play, Pause, ChevronRight, ChevronDown, ChevronUp, ChevronLeft, Zap, Target, Shield, Search, Settings,
   Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical, SkipBack, SkipForward, RotateCcw,
-  ZoomIn, ZoomOut, Wand2
+  ZoomIn, ZoomOut, Wand2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight
 } from 'lucide-react';
 
 interface CampaignNode {
@@ -419,6 +419,131 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     lastTouchDistance.current = null;
     lastTouchCenter.current = null;
   }, []);
+
+  // Keyboard navigation for node ordering
+  const handleKeyboardNavigation = useCallback((e: React.KeyboardEvent) => {
+    if (!selectedNode || editingNode || inlineEditNode) return;
+    
+    const nodeIndex = campaign.nodes.findIndex(n => n.id === selectedNode);
+    if (nodeIndex === -1) return;
+    
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault();
+        // Move selection up
+        if (nodeIndex > 0) {
+          setSelectedNode(campaign.nodes[nodeIndex - 1].id);
+        }
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        // Move selection down
+        if (nodeIndex < campaign.nodes.length - 1) {
+          setSelectedNode(campaign.nodes[nodeIndex + 1].id);
+        }
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        // Outdent - remove from parent, make sibling
+        outdentNode(selectedNode);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        // Indent - make child of previous sibling
+        indentNode(selectedNode);
+        break;
+      case 'Tab':
+        e.preventDefault();
+        if (e.shiftKey) {
+          outdentNode(selectedNode);
+        } else {
+          indentNode(selectedNode);
+        }
+        break;
+      case 'Delete':
+      case 'Backspace':
+        if (!inlineEditNode && !editingNode) {
+          e.preventDefault();
+          deleteNode(selectedNode);
+        }
+        break;
+    }
+  }, [selectedNode, campaign.nodes, editingNode, inlineEditNode]);
+
+  // Indent node - make it a child of the previous sibling
+  const indentNode = useCallback((nodeId: string) => {
+    const nodeIndex = campaign.nodes.findIndex(n => n.id === nodeId);
+    if (nodeIndex <= 0) return; // Can't indent first node
+    
+    const prevNode = campaign.nodes[nodeIndex - 1];
+    
+    // Add link from previous node to this one
+    const existingLink = campaign.links.find(l => l.source === prevNode.id && l.target === nodeId);
+    if (!existingLink) {
+      const newLink: CampaignLink = {
+        id: `link-${Date.now()}`,
+        source: prevNode.id,
+        target: nodeId,
+        color: 'teal',
+        relation: 'child'
+      };
+      setCampaign(prev => ({
+        ...prev,
+        links: [...prev.links, newLink],
+        rootNodes: prev.rootNodes.filter(id => id !== nodeId) // Remove from roots if present
+      }));
+      setIsUnsaved(true);
+      toast({ title: 'Node Indented', description: `Now child of "${prevNode.title}"` });
+    }
+  }, [campaign]);
+
+  // Outdent node - remove parent relationship
+  const outdentNode = useCallback((nodeId: string) => {
+    // Find incoming links (where this node is target)
+    const parentLinks = campaign.links.filter(l => l.target === nodeId);
+    if (parentLinks.length === 0) return; // Already at root level
+    
+    // Remove the parent link
+    setCampaign(prev => ({
+      ...prev,
+      links: prev.links.filter(l => l.target !== nodeId),
+      rootNodes: prev.rootNodes.includes(nodeId) ? prev.rootNodes : [...prev.rootNodes, nodeId]
+    }));
+    setIsUnsaved(true);
+    toast({ title: 'Node Outdented', description: 'Moved to root level' });
+  }, [campaign]);
+
+  // Move node up in order
+  const moveNodeUp = useCallback((nodeId: string) => {
+    const nodeIndex = campaign.nodes.findIndex(n => n.id === nodeId);
+    if (nodeIndex <= 0) return;
+    
+    const newNodes = [...campaign.nodes];
+    [newNodes[nodeIndex - 1], newNodes[nodeIndex]] = [newNodes[nodeIndex], newNodes[nodeIndex - 1]];
+    setCampaign(prev => ({ ...prev, nodes: newNodes }));
+    setIsUnsaved(true);
+  }, [campaign.nodes]);
+
+  // Move node down in order
+  const moveNodeDown = useCallback((nodeId: string) => {
+    const nodeIndex = campaign.nodes.findIndex(n => n.id === nodeId);
+    if (nodeIndex >= campaign.nodes.length - 1) return;
+    
+    const newNodes = [...campaign.nodes];
+    [newNodes[nodeIndex], newNodes[nodeIndex + 1]] = [newNodes[nodeIndex + 1], newNodes[nodeIndex]];
+    setCampaign(prev => ({ ...prev, nodes: newNodes }));
+    setIsUnsaved(true);
+  }, [campaign.nodes]);
+
+  // Get node hierarchy depth (for indentation display)
+  const getNodeDepth = useCallback((nodeId: string, visited = new Set<string>()): number => {
+    if (visited.has(nodeId)) return 0;
+    visited.add(nodeId);
+    
+    const parentLink = campaign.links.find(l => l.target === nodeId);
+    if (!parentLink) return 0;
+    return 1 + getNodeDepth(parentLink.source, visited);
+  }, [campaign.links]);
 
   // Obsidian-style link query parser - supports [[name]], @type:value, #property:value
   const parseLinkQuery = useCallback((query: string): CampaignNode[] => {
@@ -1599,7 +1724,8 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
               ) : (
                 <div
                   ref={canvasRef}
-                  className="absolute inset-0 overflow-auto bg-[#050200]"
+                  tabIndex={0}
+                  className="absolute inset-0 overflow-auto bg-[#050200] outline-none"
                   style={{ 
                     touchAction: draggedNode ? 'none' : 'manipulation',
                     backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)',
@@ -1656,6 +1782,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       }
                     }
                   }}
+                  onKeyDown={handleKeyboardNavigation}
                 >
                   {/* Zoom Controls - Fixed Position */}
                   <div className="fixed bottom-20 right-4 sm:absolute sm:bottom-4 sm:right-4 z-50 flex flex-col gap-2 bg-stone-900/90 backdrop-blur rounded-lg p-2 border border-stone-700">
@@ -1702,6 +1829,71 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Mobile Node Ordering Controls - Shows when node selected */}
+                  {selectedNode && !editingNode && (
+                    <div className="fixed bottom-20 left-4 sm:absolute sm:bottom-4 sm:left-4 z-50 bg-stone-900/90 backdrop-blur rounded-lg p-2 border border-amber-700/50">
+                      <p className="text-[10px] text-amber-500 uppercase mb-2 text-center font-bold">Order</p>
+                      <div className="grid grid-cols-3 gap-1">
+                        {/* Top row - Move Up */}
+                        <div />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => moveNodeUp(selectedNode)}
+                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                          title="Move node up (↑)"
+                          data-testid="move-up-btn"
+                        >
+                          <ArrowUp className="w-5 h-5" />
+                        </Button>
+                        <div />
+                        
+                        {/* Middle row - Outdent, label, Indent */}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => outdentNode(selectedNode)}
+                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-purple-400"
+                          title="Outdent (←)"
+                          data-testid="outdent-btn"
+                        >
+                          <ArrowLeft className="w-5 h-5" />
+                        </Button>
+                        <div className="flex items-center justify-center text-[10px] text-stone-500">
+                          {getNodeDepth(selectedNode) > 0 && (
+                            <span className="bg-purple-900/50 px-1.5 py-0.5 rounded text-purple-400">
+                              L{getNodeDepth(selectedNode)}
+                            </span>
+                          )}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => indentNode(selectedNode)}
+                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-teal-400"
+                          title="Indent (→)"
+                          data-testid="indent-btn"
+                        >
+                          <ArrowRight className="w-5 h-5" />
+                        </Button>
+                        
+                        {/* Bottom row - Move Down */}
+                        <div />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => moveNodeDown(selectedNode)}
+                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                          title="Move node down (↓)"
+                          data-testid="move-down-btn"
+                        >
+                          <ArrowDown className="w-5 h-5" />
+                        </Button>
+                        <div />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Linking mode indicator */}
                   {linkingFrom && (
