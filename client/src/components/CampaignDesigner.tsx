@@ -12,7 +12,8 @@ import { toast } from '@/hooks/use-toast';
 import { 
   FolderTree, FileText, Plus, Trash2, Edit3, Link2, Eye, Save, Download,
   Play, Pause, ChevronRight, ChevronDown, Zap, Target, Shield, Search, Settings,
-  Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical, SkipBack, SkipForward, RotateCcw
+  Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical, SkipBack, SkipForward, RotateCcw,
+  ZoomIn, ZoomOut, Wand2
 } from 'lucide-react';
 
 interface CampaignNode {
@@ -380,6 +381,44 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   }, [campaign]);
 
   const canvasRef = useRef<HTMLDivElement>(null);
+  const lastTouchDistance = useRef<number | null>(null);
+  const lastTouchCenter = useRef<{ x: number; y: number } | null>(null);
+
+  // Pinch-to-zoom gesture handler
+  const handleTouchStartZoom = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+      lastTouchDistance.current = distance;
+      lastTouchCenter.current = {
+        x: (touch1.clientX + touch2.clientX) / 2,
+        y: (touch1.clientY + touch2.clientY) / 2
+      };
+    }
+  }, []);
+
+  const handleTouchMoveZoom = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastTouchDistance.current !== null) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+      const scale = distance / lastTouchDistance.current;
+      
+      setZoom(prevZoom => {
+        const newZoom = prevZoom * scale;
+        return Math.min(2, Math.max(0.25, newZoom));
+      });
+      
+      lastTouchDistance.current = distance;
+    }
+  }, []);
+
+  const handleTouchEndZoom = useCallback(() => {
+    lastTouchDistance.current = null;
+    lastTouchCenter.current = null;
+  }, []);
 
   // Obsidian-style link query parser - supports [[name]], @type:value, #property:value
   const parseLinkQuery = useCallback((query: string): CampaignNode[] => {
@@ -1207,8 +1246,21 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
           </DialogHeader>
 
           <div className="flex flex-col sm:flex-row flex-1 overflow-hidden min-h-0">
-            {/* Campaign File Tree Sidebar - Always visible on desktop */}
-            <div className={`border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0 sm:w-[200px] bg-stone-950/50 ${showFileTree ? '' : 'hidden sm:block'}`}>
+            {/* Mobile File Tree Toggle */}
+            <button
+              onClick={() => setShowFileTree(!showFileTree)}
+              className="sm:hidden flex items-center justify-between w-full p-3 bg-stone-950/80 border-b border-amber-900/30 text-amber-500"
+              data-testid="mobile-file-tree-toggle"
+            >
+              <span className="flex items-center gap-2 text-sm font-bold">
+                <FolderTree className="w-4 h-4" />
+                {campaign.name || 'Select Campaign'}
+              </span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${showFileTree ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Campaign File Tree Sidebar - Collapsible on mobile */}
+            <div className={`border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0 sm:w-[200px] bg-stone-950/50 transition-all ${showFileTree ? 'max-h-[200px] sm:max-h-none' : 'max-h-0 sm:max-h-none overflow-hidden sm:overflow-visible'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] text-amber-500 uppercase tracking-wider font-bold flex items-center gap-1">
                     <FolderTree className="w-3 h-3" /> Campaigns
@@ -1549,17 +1601,17 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   ref={canvasRef}
                   className="absolute inset-0 overflow-auto bg-[#050200]"
                   style={{ 
-                    touchAction: draggedNode ? 'none' : 'pan-x pan-y',
+                    touchAction: draggedNode ? 'none' : 'manipulation',
                     backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)',
-                    backgroundSize: '20px 20px'
+                    backgroundSize: `${20 * zoom}px ${20 * zoom}px`
                   }}
                   onMouseMove={(e) => {
                     handleCanvasMouseMove(e);
                     if (linkingFrom && canvasRef.current) {
                       const rect = canvasRef.current.getBoundingClientRect();
                       setLinkMousePos({
-                        x: e.clientX - rect.left + canvasRef.current.scrollLeft,
-                        y: e.clientY - rect.top + canvasRef.current.scrollTop
+                        x: (e.clientX - rect.left + canvasRef.current.scrollLeft) / zoom,
+                        y: (e.clientY - rect.top + canvasRef.current.scrollTop) / zoom
                       });
                     }
                   }}
@@ -1574,9 +1626,26 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                     handleCanvasMouseUp();
                     setLinkMousePos(null);
                   }}
-                  onTouchMove={handleCanvasMouseMove}
-                  onTouchEnd={handleCanvasMouseUp}
-                  onTouchCancel={handleCanvasMouseUp}
+                  onWheel={(e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                      e.preventDefault();
+                      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                      setZoom(z => Math.min(2, Math.max(0.25, z + delta)));
+                    }
+                  }}
+                  onTouchStart={handleTouchStartZoom}
+                  onTouchMove={(e) => {
+                    handleTouchMoveZoom(e);
+                    if (e.touches.length === 1) handleCanvasMouseMove(e);
+                  }}
+                  onTouchEnd={(e) => {
+                    handleTouchEndZoom();
+                    handleCanvasMouseUp();
+                  }}
+                  onTouchCancel={(e) => {
+                    handleTouchEndZoom();
+                    handleCanvasMouseUp();
+                  }}
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       setSelectedNode(null);
@@ -1588,6 +1657,52 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                     }
                   }}
                 >
+                  {/* Zoom Controls - Fixed Position */}
+                  <div className="fixed bottom-20 right-4 sm:absolute sm:bottom-4 sm:right-4 z-50 flex flex-col gap-2 bg-stone-900/90 backdrop-blur rounded-lg p-2 border border-stone-700">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setZoom(z => Math.min(2, z + 0.25))}
+                      className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                      data-testid="zoom-in-btn"
+                    >
+                      <ZoomIn className="w-5 h-5" />
+                    </Button>
+                    <span className="text-center text-xs text-stone-500 font-mono">{Math.round(zoom * 100)}%</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setZoom(z => Math.max(0.25, z - 0.25))}
+                      className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                      data-testid="zoom-out-btn"
+                    >
+                      <ZoomOut className="w-5 h-5" />
+                    </Button>
+                    <div className="border-t border-stone-700 pt-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setZoom(1)}
+                        className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-teal-400 text-xs"
+                        data-testid="zoom-reset-btn"
+                      >
+                        Reset
+                      </Button>
+                    </div>
+                    <div className="border-t border-stone-700 pt-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={autoOrganize}
+                        className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-purple-400"
+                        title="Auto-organize nodes"
+                        data-testid="auto-organize-btn"
+                      >
+                        <Wand2 className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  </div>
+
                   {/* Linking mode indicator */}
                   {linkingFrom && (
                     <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-50 bg-teal-900/90 text-teal-300 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
@@ -1596,11 +1711,21 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                     </div>
                   )}
                   
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ minWidth: 4000, minHeight: 3000 }}>
-                    {renderLinks()}
-                    {renderLinkPreview()}
-                  </svg>
-                  {campaign.nodes.map(renderGraphNode)}
+                  {/* Zoomable Canvas Content */}
+                  <div 
+                    style={{ 
+                      transform: `scale(${zoom})`,
+                      transformOrigin: 'top left',
+                      minWidth: 4000, 
+                      minHeight: 3000 
+                    }}
+                  >
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ minWidth: 4000, minHeight: 3000 }}>
+                      {renderLinks()}
+                      {renderLinkPreview()}
+                    </svg>
+                    {campaign.nodes.map(renderGraphNode)}
+                  </div>
                 </div>
               )}
             </div>
@@ -1705,9 +1830,13 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
             )}
 
             {editingNode && !testRunMode && (
-              <div className="fixed inset-0 sm:relative sm:inset-auto z-50 sm:z-0 bg-[#0a0500] sm:bg-transparent sm:w-72 sm:border-l border-amber-900/30 p-4 overflow-y-auto">
+              <div className="fixed inset-x-0 bottom-0 max-h-[70vh] sm:relative sm:inset-auto sm:max-h-none z-50 sm:z-0 bg-[#0a0500] sm:bg-transparent sm:w-72 sm:border-l border-amber-900/30 border-t sm:border-t-0 rounded-t-2xl sm:rounded-none p-4 overflow-y-auto shadow-2xl sm:shadow-none">
+                {/* Mobile drag handle */}
+                <div className="sm:hidden w-12 h-1 bg-stone-600 rounded-full mx-auto mb-3" />
                 <div className="flex items-center justify-between mb-4 sticky top-0 bg-[#0a0500] py-2 z-10">
-                  <h3 className="text-sm font-bold text-amber-500">Edit Node</h3>
+                  <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2">
+                    <Edit3 className="w-4 h-4" /> Edit Node
+                  </h3>
                   <Button size="sm" variant="ghost" onClick={() => setEditingNode(null)} className="min-h-[44px] min-w-[44px]">
                     <span className="text-stone-500 text-xl">×</span>
                   </Button>
