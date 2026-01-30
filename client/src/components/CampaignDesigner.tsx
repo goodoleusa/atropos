@@ -325,6 +325,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
         }}
         onDoubleClick={() => setInlineEditNode(node.id)}
         onMouseDown={(e) => !isInlineEditing && handleNodeDragStart(e, node.id)}
+        onTouchStart={(e) => !isInlineEditing && handleNodeDragStart(e, node.id)}
         data-testid={`graph-node-${node.id}`}
       >
         {/* Selection indicator */}
@@ -368,12 +369,12 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
         )}
         
         {/* Link connector - bigger touch target */}
-        <div className="absolute -right-3 top-1/2 transform -translate-y-1/2">
+        <div className="absolute -right-4 top-1/2 transform -translate-y-1/2">
           <button
-            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+            className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all text-sm font-bold ${
               isLinking 
-                ? 'bg-teal-500 border-teal-400 scale-125' 
-                : 'bg-stone-800 border-stone-600 hover:border-amber-500 hover:bg-amber-900/50'
+                ? 'bg-teal-500 border-teal-400 scale-110 text-black' 
+                : 'bg-stone-800 border-stone-600 hover:border-amber-500 hover:bg-amber-900/50 text-stone-300'
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -386,7 +387,20 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 setLinkingFrom(node.id);
               }
             }}
-            title={linkingFrom ? (linkingFrom === node.id ? 'Cancel linking' : 'Connect here') : 'Drag to link'}
+            onTouchEnd={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (linkingFrom && linkingFrom !== node.id) {
+                createLink(linkingFrom, node.id);
+              } else if (linkingFrom === node.id) {
+                setLinkingFrom(null);
+                setLinkMousePos(null);
+              } else {
+                setLinkingFrom(node.id);
+              }
+            }}
+            title={linkingFrom ? (linkingFrom === node.id ? 'Cancel linking' : 'Connect here') : 'Tap to link'}
+            data-testid={`link-connector-${node.id}`}
           >
             {isLinking ? '✕' : '→'}
           </button>
@@ -394,8 +408,8 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
 
         {/* Left connector for incoming links */}
         {isLinkTarget && (
-          <div className="absolute -left-3 top-1/2 transform -translate-y-1/2">
-            <div className="w-6 h-6 rounded-full border-2 border-teal-400 bg-teal-500/50 flex items-center justify-center animate-pulse">
+          <div className="absolute -left-4 top-1/2 transform -translate-y-1/2">
+            <div className="w-10 h-10 rounded-full border-2 border-teal-400 bg-teal-500/50 flex items-center justify-center animate-pulse text-sm font-bold text-black">
               ←
             </div>
           </div>
@@ -655,7 +669,12 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
               ) : (
                 <div
                   ref={canvasRef}
-                  className="absolute inset-0 overflow-auto bg-[#050200] touch-none"
+                  className="absolute inset-0 overflow-auto bg-[#050200]"
+                  style={{ 
+                    touchAction: draggedNode ? 'none' : 'pan-x pan-y',
+                    backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)',
+                    backgroundSize: '20px 20px'
+                  }}
                   onMouseMove={(e) => {
                     handleCanvasMouseMove(e);
                     if (linkingFrom && canvasRef.current) {
@@ -689,10 +708,6 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         setLinkMousePos(null);
                       }
                     }
-                  }}
-                  style={{
-                    backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)',
-                    backgroundSize: '20px 20px'
                   }}
                 >
                   {/* Linking mode indicator */}
@@ -885,11 +900,16 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-stone-900 border-stone-700">
-                        {['amber', 'teal', 'purple', 'blue', 'red', 'green'].map(color => (
-                          <SelectItem key={color} value={color} className="text-stone-300">
+                        {[
+                          { value: 'amber', label: 'Amber', bg: 'bg-amber-500' },
+                          { value: 'teal', label: 'Teal', bg: 'bg-teal-500' },
+                          { value: 'purple', label: 'Purple', bg: 'bg-purple-500' },
+                          { value: 'stone', label: 'Stone', bg: 'bg-stone-500' }
+                        ].map(color => (
+                          <SelectItem key={color.value} value={color.value} className="text-stone-300">
                             <span className="flex items-center gap-2">
-                              <span className={`w-4 h-4 rounded bg-${color}-500`} />
-                              {color.charAt(0).toUpperCase() + color.slice(1)}
+                              <span className={`w-4 h-4 rounded ${color.bg}`} />
+                              {color.label}
                             </span>
                           </SelectItem>
                         ))}
