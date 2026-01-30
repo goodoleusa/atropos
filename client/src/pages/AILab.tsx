@@ -11,9 +11,10 @@ import { toast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Zap, Cpu, Copy, Check, Brain, Target,
   Play, DollarSign, BarChart3, Clock, TrendingUp, Download, RefreshCw,
-  AlertTriangle, Lightbulb, Eye, Send, Loader2, Shield, Bug, ChevronDown, FileText
+  AlertTriangle, Lightbulb, Eye, Send, Loader2, Shield, Bug, ChevronDown, FileText, Bot
 } from 'lucide-react';
 import { CAPABILITY_MODULES, buildSystemPrompt } from '@/config/agentPrompts';
+import { CrewAIExporter } from '@/components/CrewAIExporter';
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
@@ -253,6 +254,7 @@ export default function AILab() {
   const [showPentestLab, setShowPentestLab] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<typeof AI_PENTEST_CHALLENGES[0] | null>(null);
   const [challengeFilter, setChallengeFilter] = useState<string>('all');
+  const [showCrewAIExporter, setShowCrewAIExporter] = useState(false);
 
   const generatedPrompt = useMemo(() => {
     return buildSystemPrompt({ modules: enabledModules });
@@ -630,6 +632,9 @@ ${modelRankings.slice(0, 3).map(m => {
             AI Lab
           </h1>
           <div className="flex gap-1">
+            <Button onClick={() => setShowCrewAIExporter(true)} variant="outline" className="border-purple-800 text-purple-400 min-h-[44px] px-2" title="Export to CrewAI" data-testid="export-crewai-btn">
+              <Bot className="w-4 h-4" />
+            </Button>
             <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-400 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
               <FileText className="w-4 h-4" />
             </Button>
@@ -1224,6 +1229,13 @@ ${modelRankings.slice(0, 3).map(m => {
         </Card>
 
       </div>
+
+      <CrewAIExporter 
+        open={showCrewAIExporter} 
+        onOpenChange={setShowCrewAIExporter}
+        initialPrompt={testPrompt}
+        initialModel={selectedModel}
+      />
     </div>
   );
 }
