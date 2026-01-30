@@ -68,22 +68,9 @@ export default function Home() {
             poster="/videos/probability-poster.png"
             data-testid="hero-video"
           >
-            <source src="/videos/hero-cardistry-flourish.mp4" type="video/mp4" />
+            <source src="/videos/hero-pure-cards.mp4" type="video/mp4" />
           </video>
           
-          {/* Probability Overlay Text */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.3, 0.7, 0.3] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="font-mono text-6xl md:text-8xl font-bold text-stone-800/10"
-              >
-                P(x) = ?
-              </motion.div>
-            </div>
-          </div>
         </motion.div>
         
         {/* Minimal Logo on Video */}
