@@ -190,11 +190,21 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         return;
       }
 
-      // Build dynamic system prompt based on config
+      // Load admin config for system prompt customization
+      const adminConfig = (() => {
+        try {
+          const saved = localStorage.getItem('nexus_agent_config');
+          return saved ? JSON.parse(saved) : null;
+        } catch { return null; }
+      })();
+      
+      // Build dynamic system prompt based on config + admin overrides
       const dynamicSystemPrompt = buildSystemPrompt({
-        modules: promptConfig.modules,
+        modules: adminConfig?.enabledModules || promptConfig.modules,
         compressed_context: promptConfig.compressedContext,
-        task_focus: promptConfig.taskFocus
+        task_focus: promptConfig.taskFocus,
+        coreOverride: adminConfig?.corePrompt,
+        customInstructions: adminConfig?.customInstructions
       });
       
       const contextMessages = [

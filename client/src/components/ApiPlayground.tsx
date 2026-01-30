@@ -757,31 +757,42 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                           </ul>
                         </div>
                         <details className="text-stone-600">
-                          <summary className="cursor-pointer text-[10px] text-amber-700 hover:text-amber-500">
-                            <Lightbulb className="w-3 h-3 inline mr-1" /> Show Hints
+                          <summary 
+                            className="cursor-pointer text-sm py-2 text-amber-700 hover:text-amber-500 touch-manipulation"
+                            onTouchEnd={(e) => e.stopPropagation()}
+                          >
+                            <Lightbulb className="w-4 h-4 inline mr-2" /> Show Hints
                           </summary>
-                          <ul className="mt-2 space-y-1 pl-4">
+                          <ul className="mt-2 space-y-2 pl-4">
                             {quest.hints.map((hint, i) => (
-                              <li key={i} className="text-[10px]">• {hint}</li>
+                              <li key={i} className="text-xs">• {hint}</li>
                             ))}
                           </ul>
                         </details>
                         <Button
-                          size="sm"
+                          size="lg"
                           variant="outline"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             if (!completedQuests.includes(quest.id)) {
                               setCompletedQuests([...completedQuests, quest.id]);
                               toast({ title: 'Quest Completed!', description: `+${quest.xp} XP earned` });
                             }
                           }}
-                          className={`w-full mt-2 ${completedQuests.includes(quest.id) ? 'border-teal-600 text-teal-400' : 'border-amber-800 text-amber-400'}`}
+                          onTouchEnd={(e) => {
+                            e.stopPropagation();
+                            if (!completedQuests.includes(quest.id)) {
+                              setCompletedQuests([...completedQuests, quest.id]);
+                              toast({ title: 'Quest Completed!', description: `+${quest.xp} XP earned` });
+                            }
+                          }}
+                          className={`w-full mt-2 min-h-[48px] touch-manipulation ${completedQuests.includes(quest.id) ? 'border-teal-600 text-teal-400' : 'border-amber-800 text-amber-400'}`}
                           data-testid={`complete-quest-${quest.id}`}
                         >
                           {completedQuests.includes(quest.id) ? (
-                            <><Check className="w-3 h-3 mr-1" /> Completed</>
+                            <><Check className="w-4 h-4 mr-2" /> Completed</>
                           ) : (
-                            <><Award className="w-3 h-3 mr-1" /> Mark Complete</>
+                            <><Award className="w-4 h-4 mr-2" /> Mark Complete</>
                           )}
                         </Button>
                       </CardContent>

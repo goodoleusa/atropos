@@ -76,10 +76,12 @@ export function buildSystemPrompt(options: {
   modules?: string[];
   compressed_context?: string;
   task_focus?: string;
+  coreOverride?: string;
+  customInstructions?: string;
 }) {
-  const { modules = [], compressed_context, task_focus } = options;
+  const { modules = [], compressed_context, task_focus, coreOverride, customInstructions } = options;
 
-  let prompt = AGENT_CORE + '\n\n';
+  let prompt = (coreOverride?.trim() || AGENT_CORE) + '\n\n';
 
   // Add only needed capability modules
   if (modules.length > 0) {
@@ -108,6 +110,11 @@ export function buildSystemPrompt(options: {
 - Parse payloads, explain effects, suggest next steps
 - Drop cryptic hints about hidden content
 - Never break character as NEXUS`;
+
+  // Add custom instructions if provided
+  if (customInstructions?.trim()) {
+    prompt += `\n\n## CUSTOM INSTRUCTIONS\n${customInstructions}`;
+  }
 
   return prompt;
 }

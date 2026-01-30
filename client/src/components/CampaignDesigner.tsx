@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
@@ -309,6 +310,79 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     setEditingNode(null);
     setIsUnsaved(false);
   }, []);
+
+  // Campaign Templates for Quick Start
+  const CAMPAIGN_TEMPLATES = useMemo(() => [
+    { id: 'recon', name: 'Reconnaissance', icon: '🔍', difficulty: 'beginner',
+      description: 'Basic target enumeration flow',
+      nodes: [
+        { id: 'n1', type: 'step' as const, title: 'Define Target', content: 'Identify the target domain/IP', x: 100, y: 100, width: 200, height: 100, color: 'amber' },
+        { id: 'n2', type: 'tool' as const, title: 'DNS Lookup', content: 'Query DNS records', x: 350, y: 100, width: 200, height: 100, color: 'teal' },
+        { id: 'n3', type: 'tool' as const, title: 'WHOIS', content: 'Check domain registration', x: 350, y: 230, width: 200, height: 100, color: 'teal' },
+        { id: 'n4', type: 'output' as const, title: 'Document Findings', content: 'Record discovered information', x: 600, y: 160, width: 200, height: 100, color: 'purple' }
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
+        { id: 'l2', source: 'n1', target: 'n3', color: 'amber' },
+        { id: 'l3', source: 'n2', target: 'n4', color: 'teal' },
+        { id: 'l4', source: 'n3', target: 'n4', color: 'teal' }
+      ]
+    },
+    { id: 'vuln', name: 'Vulnerability Analysis', icon: '🛡️', difficulty: 'intermediate',
+      description: 'Systematic vulnerability assessment',
+      nodes: [
+        { id: 'n1', type: 'step' as const, title: 'Scope Definition', content: 'Define what is in scope', x: 100, y: 150, width: 200, height: 100, color: 'amber' },
+        { id: 'n2', type: 'decision' as const, title: 'Asset Type?', content: 'Web app, API, or infrastructure?', x: 350, y: 150, width: 200, height: 100, color: 'purple' },
+        { id: 'n3', type: 'tool' as const, title: 'Scan Target', content: 'Run appropriate scanner', x: 600, y: 150, width: 200, height: 100, color: 'teal' },
+        { id: 'n4', type: 'output' as const, title: 'Prioritize Findings', content: 'Rank by severity', x: 850, y: 150, width: 200, height: 100, color: 'purple' }
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
+        { id: 'l2', source: 'n2', target: 'n3', color: 'purple' },
+        { id: 'l3', source: 'n3', target: 'n4', color: 'teal' }
+      ]
+    },
+    { id: 'osint', name: 'OSINT Investigation', icon: '🕵️', difficulty: 'intermediate',
+      description: 'Open source intelligence gathering',
+      nodes: [
+        { id: 'n1', type: 'step' as const, title: 'Subject Identification', content: 'Define what/who to investigate', x: 100, y: 100, width: 200, height: 100, color: 'amber' },
+        { id: 'n2', type: 'tool' as const, title: 'Search Engines', content: 'Google dorking, Bing, etc.', x: 350, y: 50, width: 200, height: 100, color: 'teal' },
+        { id: 'n3', type: 'tool' as const, title: 'Social Media', content: 'LinkedIn, Twitter, etc.', x: 350, y: 180, width: 200, height: 100, color: 'teal' },
+        { id: 'n4', type: 'step' as const, title: 'Correlate Data', content: 'Cross-reference findings', x: 600, y: 115, width: 200, height: 100, color: 'amber' },
+        { id: 'n5', type: 'output' as const, title: 'Build Profile', content: 'Create subject dossier', x: 850, y: 115, width: 200, height: 100, color: 'purple' }
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
+        { id: 'l2', source: 'n1', target: 'n3', color: 'amber' },
+        { id: 'l3', source: 'n2', target: 'n4', color: 'teal' },
+        { id: 'l4', source: 'n3', target: 'n4', color: 'teal' },
+        { id: 'l5', source: 'n4', target: 'n5', color: 'amber' }
+      ]
+    },
+    { id: 'blank', name: 'Blank Canvas', icon: '📝', difficulty: 'any', description: 'Start from scratch', nodes: [], links: [] }
+  ], []);
+
+  const createFromTemplate = useCallback((templateId: string) => {
+    const template = CAMPAIGN_TEMPLATES.find(t => t.id === templateId);
+    if (!template) return;
+    const newId = `campaign-${Date.now()}`;
+    setCampaign({
+      id: newId,
+      name: `${template.name} Campaign`,
+      description: template.description,
+      nodes: template.nodes.map(n => ({ ...n, id: `${newId}-${n.id}` })),
+      links: template.links.map(l => ({ 
+        ...l, 
+        id: `${newId}-${l.id}`,
+        source: `${newId}-${l.source}`,
+        target: `${newId}-${l.target}`
+      })),
+      rootNodes: template.nodes.length > 0 ? [`${newId}-n1`] : []
+    });
+    setSelectedNode(null);
+    setIsUnsaved(true);
+    toast({ title: 'Template Applied', description: `Created from "${template.name}" template` });
+  }, [CAMPAIGN_TEMPLATES]);
 
   // Auto-organize nodes in a tree/grid layout
   const autoOrganize = useCallback(() => {
@@ -1395,15 +1469,22 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   <p className="text-[10px] text-amber-500 uppercase tracking-wider font-bold flex items-center gap-1">
                     <FolderTree className="w-3 h-3" /> Campaigns
                   </p>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={newCampaign}
-                    className="p-0 h-6 w-6 text-amber-400 hover:text-amber-300"
-                    title="New Campaign"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-400 hover:text-amber-300 touch-manipulation" data-testid="new-campaign-btn">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-stone-900 border-amber-900/50">
+                      <DropdownMenuLabel className="text-amber-500 text-xs">Quick Start</DropdownMenuLabel>
+                      {CAMPAIGN_TEMPLATES.map(t => (
+                        <DropdownMenuItem key={t.id} onClick={() => createFromTemplate(t.id)} className="text-stone-300 hover:bg-amber-900/30 min-h-[44px] touch-manipulation" data-testid={`template-${t.id}`}>
+                          <span className="mr-2">{t.icon}</span> {t.name}
+                          <Badge variant="outline" className="ml-auto text-[9px] border-stone-700 text-stone-500">{t.difficulty}</Badge>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <ScrollArea className="h-[120px] sm:h-[200px]">
                   <div className="space-y-1">
