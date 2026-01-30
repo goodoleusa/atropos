@@ -31,6 +31,14 @@ import {
   MEMORY_TRIGGERS,
   buildSystemPrompt 
 } from '@/config/agentPrompts';
+import { 
+  LearningStyle, 
+  LearningGoal, 
+  LEARNING_STYLES, 
+  LEARNING_GOALS,
+  SKILL_LEVELS,
+  CATEGORY_COLORS 
+} from '@/config/learningConfig';
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
@@ -43,6 +51,9 @@ export default function PromptBuilder() {
   const [generatedHandoff, setGeneratedHandoff] = useState('');
   const [copied, setCopied] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
+  const [learningStyle, setLearningStyle] = useState<LearningStyle>('experiential');
+  const [selectedGoals, setSelectedGoals] = useState<LearningGoal[]>(['penetration_testing']);
+  const [skillLevel, setSkillLevel] = useState<'beginner' | 'intermediate' | 'advanced' | 'expert'>('intermediate');
 
   // Check for prefilled data from AgentChat
   useEffect(() => {
@@ -74,13 +85,50 @@ export default function PromptBuilder() {
     );
   };
 
+  const toggleGoal = (goal: LearningGoal) => {
+    setSelectedGoals(prev =>
+      prev.includes(goal)
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
+    );
+  };
+
+  // Generate learning style prompt modifier
+  const getLearningStylePrompt = () => {
+    const style = LEARNING_STYLES.find(s => s.id === learningStyle);
+    const goals = selectedGoals.map(g => LEARNING_GOALS.find(lg => lg.id === g)).filter(Boolean);
+    const level = SKILL_LEVELS.find(l => l.id === skillLevel);
+    
+    if (!style || goals.length === 0) return '';
+    
+    const toolsList = goals.flatMap(g => g?.tools || []).filter((t, i, arr) => arr.indexOf(t) === i);
+    
+    return `
+## LEARNER ADAPTATION
+Adapt your teaching approach for this learner:
+- **Learning Style**: ${style.name} - ${style.description}
+- **Skill Level**: ${level?.name} - ${level?.description}
+- **Learning Goals**: ${goals.map(g => g?.name).join(', ')}
+- **Relevant Tools**: ${toolsList.slice(0, 8).join(', ')}
+
+${learningStyle === 'experiential' ? `Provide hands-on exercises, practical labs, and real-world scenarios. Lead with "Try this:" prompts.` : ''}
+${learningStyle === 'visual' ? `Include ASCII diagrams, flowcharts, and visual representations whenever possible. Structure output visually.` : ''}
+${learningStyle === 'analytical' ? `Provide in-depth technical details, reference documentation, RFCs, and theoretical foundations.` : ''}
+${learningStyle === 'social' ? `Reference community resources, forums, discussion threads, and collaborative approaches.` : ''}
+${learningStyle === 'pragmatic' ? `Focus on quick wins, automation scripts, and efficient shortcuts. Prioritize actionable steps.` : ''}
+
+Adjust complexity for ${skillLevel} level. ${skillLevel === 'beginner' ? 'Explain fundamentals and avoid jargon.' : skillLevel === 'expert' ? 'Assume advanced knowledge and explore edge cases.' : 'Balance theory with practice.'}
+`;
+  };
+
   const generatePrompt = () => {
-    const prompt = buildSystemPrompt({
+    const basePrompt = buildSystemPrompt({
       modules: enabledModules,
       compressed_context: compressedContext || undefined,
       task_focus: taskFocus || undefined
     });
-    setGeneratedPrompt(prompt);
+    const learningPrompt = getLearningStylePrompt();
+    setGeneratedPrompt(basePrompt + '\n' + learningPrompt);
   };
 
   const generateHandoff = () => {
@@ -273,6 +321,90 @@ export default function PromptBuilder() {
                 <div className="bg-black/50 border border-amber-900/20 rounded-lg p-3">
                   <p className="text-amber-600 text-xs font-bold mb-2">CORE PROMPT (Always Included):</p>
                   <pre className="text-[10px] text-stone-400 font-mono whitespace-pre-wrap">{AGENT_CORE}</pre>
+                </div>
+
+                {/* Learning Style & Goals Section */}
+                <div className="border-t border-amber-900/30 pt-4">
+                  <p className="text-purple-400 font-bold text-sm mb-3 flex items-center gap-2">
+                    🎓 Learning Adaptation
+                  </p>
+                  
+                  <div className="grid md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <Label className="text-stone-400 text-xs mb-2 block">Learning Style</Label>
+                      <div className="space-y-2">
+                        {LEARNING_STYLES.map(style => (
+                          <button
+                            key={style.id}
+                            onClick={() => setLearningStyle(style.id)}
+                            data-testid={`style-${style.id}`}
+                            className={`w-full p-2 rounded-lg border text-left transition-all text-xs ${
+                              learningStyle === style.id
+                                ? 'border-purple-500 bg-purple-900/20 text-purple-300'
+                                : 'border-stone-700 bg-black/30 text-stone-500 hover:border-purple-700'
+                            }`}
+                          >
+                            <span className="mr-2">{style.icon}</span>
+                            <span className="font-bold">{style.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-stone-400 text-xs mb-2 block">Skill Level</Label>
+                      <div className="space-y-2">
+                        {SKILL_LEVELS.map(level => (
+                          <button
+                            key={level.id}
+                            onClick={() => setSkillLevel(level.id as any)}
+                            data-testid={`level-${level.id}`}
+                            className={`w-full p-2 rounded-lg border text-left transition-all text-xs ${
+                              skillLevel === level.id
+                                ? 'border-teal-500 bg-teal-900/20 text-teal-300'
+                                : 'border-stone-700 bg-black/30 text-stone-500 hover:border-teal-700'
+                            }`}
+                          >
+                            <span className="font-bold">{level.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-stone-400 text-xs mb-2 block">Learning Goals</Label>
+                      <ScrollArea className="h-[200px]">
+                        <div className="space-y-1 pr-2">
+                          {LEARNING_GOALS.map(goal => (
+                            <button
+                              key={goal.id}
+                              onClick={() => toggleGoal(goal.id)}
+                              data-testid={`goal-${goal.id}`}
+                              className={`w-full p-2 rounded-lg border text-left transition-all text-xs ${
+                                selectedGoals.includes(goal.id)
+                                  ? 'border-amber-500 bg-amber-900/20 text-amber-300'
+                                  : 'border-stone-700 bg-black/30 text-stone-500 hover:border-amber-700'
+                              }`}
+                            >
+                              <span className="font-bold">{goal.name}</span>
+                              <span className={`ml-2 text-[10px] px-1 py-0.5 rounded ${CATEGORY_COLORS[goal.category] || 'bg-stone-800 text-stone-400'}`}>
+                                {goal.category}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-purple-900/10 border border-purple-900/30 rounded-lg p-3 text-xs">
+                    <p className="text-purple-400 font-bold mb-1">📚 Selected Learning Profile:</p>
+                    <p className="text-stone-400">
+                      <span className="text-purple-300">{LEARNING_STYLES.find(s => s.id === learningStyle)?.name}</span> • 
+                      <span className="text-teal-300 ml-1">{skillLevel}</span> • 
+                      <span className="text-amber-300 ml-1">{selectedGoals.length} goal{selectedGoals.length !== 1 ? 's' : ''}</span>
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
