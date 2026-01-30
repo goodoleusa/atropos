@@ -41,7 +41,19 @@ Preferred communication style: Simple, everyday language.
 - **Global Attack Map**: Animated real-time threat visualization on the homepage, simulating cybersecurity dashboards.
 - **Report Builder System**: Aids in structuring bug bounty findings with sections for analysis, vulnerability tracking, bounty estimation, and export. Includes AI benchmarking best practices (model rankings, win rates, sanity checks, recommendations) and shared investigation context with Agent Chat.
 - **Shared Investigation Context**: Cross-feature state management via useReportContext hook enabling data flow between Agent Chat, AI Lab, and Report Builder with localStorage persistence.
-- **AI Lab (Battleground)**: Comprehensive prompt engineering playground with live preview, token-to-dollar cost tracking, model comparison battleground (free vs paid tiers), performance evaluations (task completion, coherence, context awareness), exportable session summaries, bug reporting system, and AI-driven improvement recommendations. Features unified chat battleground for dual-model comparison with winner voting and battle history tracking.
+- **AI Lab (Battleground)**: Comprehensive prompt engineering playground with live preview, token-to-dollar cost tracking, model comparison battleground (free vs paid tiers), performance evaluations (task completion, coherence, context awareness), exportable session summaries, bug reporting system, and AI-driven improvement recommendations. Features unified chat battleground for dual-model comparison with winner voting and battle history tracking. Now includes **AI Pentesting Challenges** based on 2025 arxiv research.
+- **AI Pentesting Challenges**: 10 research-based challenges covering cutting-edge LLM attacks:
+  - **GCG (Greedy Coordinate Gradient)** - Bishop Fox Broken Hill adversarial suffix generation
+  - **SequentialBreak** (arXiv 2411.06426) - Embedding harmful prompts in sequential chains
+  - **RoleBreaker** (MDPI Dec 2025) - 87% success adaptive role-play with representation analysis
+  - **Model Collapse** (Nature 2025) - Training data poisoning via synthetic content (74% of web is AI-generated)
+  - **Context Collapse** (arXiv Nov 2025) - LLMs lose persona diversity under cognitive load
+  - **RAG Embedding Attack** (OWASP LLM08:2025) - Adversarial embeddings that bypass text-based inspection
+  - **Guardrail Evasion** (arXiv 2504.11168) - 100% bypass of Azure Prompt Shield/Meta Prompt Guard
+  - **Many-Shot Jailbreak** (NeurIPS 2024) - Flooding context windows with harmful demonstrations
+  - **Decoherence Induction** (Barton 2025) - Thermodynamic failure from semantic pollution
+  - **Agents Rule of Two** (OpenAI/Anthropic Oct 2025) - Exploiting private data + untrusted content + state changes
+- **Prompt Optimizer**: Quick tips for Chain of Thought, Role Assignment, Few-Shot Examples, Output Constraints, Negative Prompting, Temperature Control.
 - **QuickNav Component**: Floating navigation button providing quick access to Terminal, AI Lab, and Report Builder with session status display, pending findings badge, and progress indicator.
 - **API Playground**: Educational quest-based system for learning API requests through real-world CTF exercises (QR security, crypto-auth, hardened SSH), modular and extensible architecture.
 - **Interactive Campaign System**: Adaptive investigation flows that respond to user discoveries, offering perspective shifts, tool guidance (e.g., Shodan, Censys), and pivot strategies.
