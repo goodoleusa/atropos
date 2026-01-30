@@ -617,6 +617,147 @@ BEHAVIOR:
     }
   });
 
+  // ==================== Designer Campaigns API ====================
+  
+  // Get all designer campaigns
+  app.get("/api/designer/campaigns", async (req, res) => {
+    try {
+      const campaigns = await storage.getAllDesignerCampaigns();
+      res.json(campaigns);
+    } catch (error) {
+      console.error("Get designer campaigns error:", error);
+      res.status(500).json({ error: "Failed to fetch designer campaigns" });
+    }
+  });
+
+  // Get single designer campaign
+  app.get("/api/designer/campaigns/:campaignId", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      const campaign = await storage.getDesignerCampaignById(campaignId);
+      if (!campaign) {
+        return res.status(404).json({ error: "Campaign not found" });
+      }
+      res.json(campaign);
+    } catch (error) {
+      console.error("Get designer campaign error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign" });
+    }
+  });
+
+  // Save/update designer campaign
+  app.put("/api/designer/campaigns/:campaignId", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      const campaign = await storage.upsertDesignerCampaign(campaignId, req.body);
+      res.json(campaign);
+    } catch (error) {
+      console.error("Save designer campaign error:", error);
+      res.status(500).json({ error: "Failed to save campaign" });
+    }
+  });
+
+  // Delete designer campaign
+  app.delete("/api/designer/campaigns/:campaignId", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      await storage.deleteDesignerCampaign(campaignId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete designer campaign error:", error);
+      res.status(500).json({ error: "Failed to delete campaign" });
+    }
+  });
+
+  // ==================== Shared Clues API ====================
+
+  // Get all shared clues
+  app.get("/api/designer/clues", async (req, res) => {
+    try {
+      const clues = await storage.getAllSharedClues();
+      res.json(clues);
+    } catch (error) {
+      console.error("Get shared clues error:", error);
+      res.status(500).json({ error: "Failed to fetch shared clues" });
+    }
+  });
+
+  // Get single shared clue
+  app.get("/api/designer/clues/:clueId", async (req, res) => {
+    try {
+      const { clueId } = req.params;
+      const clue = await storage.getSharedClueById(clueId);
+      if (!clue) {
+        return res.status(404).json({ error: "Clue not found" });
+      }
+      res.json(clue);
+    } catch (error) {
+      console.error("Get shared clue error:", error);
+      res.status(500).json({ error: "Failed to fetch clue" });
+    }
+  });
+
+  // Save/update shared clue
+  app.put("/api/designer/clues/:clueId", async (req, res) => {
+    try {
+      const { clueId } = req.params;
+      const clue = await storage.upsertSharedClue(clueId, req.body);
+      res.json(clue);
+    } catch (error) {
+      console.error("Save shared clue error:", error);
+      res.status(500).json({ error: "Failed to save clue" });
+    }
+  });
+
+  // Delete shared clue
+  app.delete("/api/designer/clues/:clueId", async (req, res) => {
+    try {
+      const { clueId } = req.params;
+      await storage.deleteSharedClue(clueId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete shared clue error:", error);
+      res.status(500).json({ error: "Failed to delete clue" });
+    }
+  });
+
+  // ==================== Campaign Links API ====================
+
+  // Get links for a campaign
+  app.get("/api/designer/links/:campaignId", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      const links = await storage.getCampaignLinks(campaignId);
+      res.json(links);
+    } catch (error) {
+      console.error("Get campaign links error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign links" });
+    }
+  });
+
+  // Create campaign link
+  app.post("/api/designer/links", async (req, res) => {
+    try {
+      const link = await storage.createCampaignLink(req.body);
+      res.json(link);
+    } catch (error) {
+      console.error("Create campaign link error:", error);
+      res.status(500).json({ error: "Failed to create link" });
+    }
+  });
+
+  // Delete campaign link
+  app.delete("/api/designer/links/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCampaignLink(parseInt(id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete campaign link error:", error);
+      res.status(500).json({ error: "Failed to delete link" });
+    }
+  });
+
   // Generate QR code for session export (rate limited: 10/min)
   app.post("/api/qr/export", rateLimit(10, 60000), async (req, res) => {
     try {

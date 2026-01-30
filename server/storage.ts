@@ -8,6 +8,10 @@ import {
   adminPrompts,
   campaignTemplates,
   flowNodes,
+  designerCampaigns,
+  sharedClues,
+  campaignLinks,
+  learningPaths,
   type GameSession, 
   type InsertGameSession,
   type Clue,
@@ -23,7 +27,15 @@ import {
   type CampaignTemplate,
   type InsertCampaignTemplate,
   type FlowNode,
-  type InsertFlowNode
+  type InsertFlowNode,
+  type DesignerCampaign,
+  type InsertDesignerCampaign,
+  type SharedClue,
+  type InsertSharedClue,
+  type CampaignLink,
+  type InsertCampaignLink,
+  type LearningPath,
+  type InsertLearningPath
 } from "@shared/schema";
 import { eq, desc, sql, count, gte } from "drizzle-orm";
 
@@ -75,6 +87,30 @@ export interface IStorage {
   getAllFlowNodes(): Promise<FlowNode[]>;
   upsertFlowNode(nodeId: string, data: Partial<InsertFlowNode>): Promise<FlowNode>;
   deleteFlowNode(nodeId: string): Promise<boolean>;
+  
+  // Designer Campaigns
+  getAllDesignerCampaigns(): Promise<DesignerCampaign[]>;
+  getDesignerCampaignById(campaignId: string): Promise<DesignerCampaign | undefined>;
+  upsertDesignerCampaign(campaignId: string, data: Partial<InsertDesignerCampaign>): Promise<DesignerCampaign>;
+  deleteDesignerCampaign(campaignId: string): Promise<boolean>;
+  
+  // Shared Clues
+  getAllSharedClues(): Promise<SharedClue[]>;
+  getSharedClueById(clueId: string): Promise<SharedClue | undefined>;
+  upsertSharedClue(clueId: string, data: Partial<InsertSharedClue>): Promise<SharedClue>;
+  deleteSharedClue(clueId: string): Promise<boolean>;
+  
+  // Campaign Links
+  getCampaignLinks(campaignId: string): Promise<CampaignLink[]>;
+  createCampaignLink(link: InsertCampaignLink): Promise<CampaignLink>;
+  deleteCampaignLink(id: number): Promise<boolean>;
+  
+  // Learning Paths
+  getAllLearningPaths(): Promise<LearningPath[]>;
+  getLearningPathsByCategory(category: string): Promise<LearningPath[]>;
+  createLearningPath(path: InsertLearningPath): Promise<LearningPath>;
+  updateLearningPath(id: number, updates: Partial<LearningPath>): Promise<LearningPath | undefined>;
+  deleteLearningPath(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -361,6 +397,139 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFlowNode(nodeId: string): Promise<boolean> {
     await db.delete(flowNodes).where(eq(flowNodes.nodeId, nodeId));
+    return true;
+  }
+
+  // Designer Campaigns
+  async getAllDesignerCampaigns(): Promise<DesignerCampaign[]> {
+    return await db.select().from(designerCampaigns).orderBy(desc(designerCampaigns.updatedAt));
+  }
+
+  async getDesignerCampaignById(campaignId: string): Promise<DesignerCampaign | undefined> {
+    const [campaign] = await db
+      .select()
+      .from(designerCampaigns)
+      .where(eq(designerCampaigns.campaignId, campaignId))
+      .limit(1);
+    return campaign;
+  }
+
+  async upsertDesignerCampaign(campaignId: string, data: Partial<InsertDesignerCampaign>): Promise<DesignerCampaign> {
+    const [existing] = await db
+      .select()
+      .from(designerCampaigns)
+      .where(eq(designerCampaigns.campaignId, campaignId))
+      .limit(1);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(designerCampaigns)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(designerCampaigns.campaignId, campaignId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(designerCampaigns)
+        .values({ campaignId, name: data.name || 'Untitled Campaign', ...data })
+        .returning();
+      return created;
+    }
+  }
+
+  async deleteDesignerCampaign(campaignId: string): Promise<boolean> {
+    await db.delete(designerCampaigns).where(eq(designerCampaigns.campaignId, campaignId));
+    return true;
+  }
+
+  // Shared Clues
+  async getAllSharedClues(): Promise<SharedClue[]> {
+    return await db.select().from(sharedClues).orderBy(desc(sharedClues.updatedAt));
+  }
+
+  async getSharedClueById(clueId: string): Promise<SharedClue | undefined> {
+    const [clue] = await db
+      .select()
+      .from(sharedClues)
+      .where(eq(sharedClues.clueId, clueId))
+      .limit(1);
+    return clue;
+  }
+
+  async upsertSharedClue(clueId: string, data: Partial<InsertSharedClue>): Promise<SharedClue> {
+    const [existing] = await db
+      .select()
+      .from(sharedClues)
+      .where(eq(sharedClues.clueId, clueId))
+      .limit(1);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(sharedClues)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(sharedClues.clueId, clueId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(sharedClues)
+        .values({ clueId, name: data.name || 'Untitled Clue', description: data.description || '', ...data })
+        .returning();
+      return created;
+    }
+  }
+
+  async deleteSharedClue(clueId: string): Promise<boolean> {
+    await db.delete(sharedClues).where(eq(sharedClues.clueId, clueId));
+    return true;
+  }
+
+  // Campaign Links
+  async getCampaignLinks(campaignId: string): Promise<CampaignLink[]> {
+    return await db
+      .select()
+      .from(campaignLinks)
+      .where(eq(campaignLinks.sourceCampaignId, campaignId));
+  }
+
+  async createCampaignLink(link: InsertCampaignLink): Promise<CampaignLink> {
+    const [created] = await db.insert(campaignLinks).values(link).returning();
+    return created;
+  }
+
+  async deleteCampaignLink(id: number): Promise<boolean> {
+    await db.delete(campaignLinks).where(eq(campaignLinks.id, id));
+    return true;
+  }
+
+  // Learning Paths
+  async getAllLearningPaths(): Promise<LearningPath[]> {
+    return await db.select().from(learningPaths).where(eq(learningPaths.isActive, true));
+  }
+
+  async getLearningPathsByCategory(category: string): Promise<LearningPath[]> {
+    return await db
+      .select()
+      .from(learningPaths)
+      .where(eq(learningPaths.category, category));
+  }
+
+  async createLearningPath(path: InsertLearningPath): Promise<LearningPath> {
+    const [created] = await db.insert(learningPaths).values(path).returning();
+    return created;
+  }
+
+  async updateLearningPath(id: number, updates: Partial<LearningPath>): Promise<LearningPath | undefined> {
+    const [updated] = await db
+      .update(learningPaths)
+      .set(updates)
+      .where(eq(learningPaths.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteLearningPath(id: number): Promise<boolean> {
+    await db.delete(learningPaths).where(eq(learningPaths.id, id));
     return true;
   }
 }
