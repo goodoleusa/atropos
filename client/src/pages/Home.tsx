@@ -1,342 +1,442 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { GlitchText } from "@/components/GlitchText";
-import { ChaosOverlay } from "@/components/ChaosOverlay";
-import { ClueItem } from "@/components/ClueItem";
 import { QRCodeModal } from "@/components/QRCodeModal";
 import { AgentChat } from "@/components/AgentChat";
-import { MysticalPopups } from "@/components/MysticalPopups";
-import { QuantumField } from "@/components/QuantumField";
-import { GlobalAttackMap } from "@/components/GlobalAttackMap";
 import { useGame } from "@/hooks/useGameSession";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShieldAlert, Network, Server, Eye, QrCode, Bot, Shield, Zap, Lock, Globe, Activity } from "lucide-react";
-import { motion, useMotionValue } from "framer-motion";
+import { 
+  Shield, Zap, Eye, Server, QrCode, Bot, 
+  ChevronDown, Crosshair, Clock, AlertTriangle,
+  Target, Radio, FileSearch
+} from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const { gameState } = useGame();
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
+  const [scrolledPastVideo, setScrolledPastVideo] = useState(false);
   
-  // Mouse tracking for "Focus/Hump" effect
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const darkSectionRef = useRef<HTMLDivElement>(null);
+  const paragraph1Ref = useRef<HTMLDivElement>(null);
+  const paragraph2Ref = useRef<HTMLDivElement>(null);
   
+  const { scrollY } = useScroll();
+  const videoOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const scrollIndicatorOpacity = useTransform(scrollY, [0, 100], [1, 0]);
+
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const videoHeight = window.innerHeight;
+      setScrolledPastVideo(scrollPosition > videoHeight * 0.7);
       
-      // Update CSS variables for the global mask effect
-      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+      // Fade in paragraphs on scroll
+      [paragraph1Ref, paragraph2Ref].forEach((ref) => {
+        if (ref.current) {
+          const rect = ref.current.getBoundingClientRect();
+          const isVisible = rect.top < window.innerHeight * 0.8;
+          if (isVisible) {
+            ref.current.classList.add('visible');
+          }
+        }
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className="min-h-screen relative font-sans text-stone-300 selection:bg-amber-600 selection:text-black">
-      {/* The Molten Overlay Effect */}
-      <div 
-        className="fixed inset-0 pointer-events-none z-50 transition-opacity duration-500"
-        style={{
-          background: `radial-gradient(circle 200px at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 0%, rgba(10, 5, 0, 0.4) 100%)`,
-          backdropFilter: 'sepia(20%)'
-        }}
-      />
-      
-      {/* Subtle Lens Distortion at cursor */}
-      <div 
-        className="fixed w-64 h-64 rounded-full pointer-events-none z-40 mix-blend-overlay opacity-30"
-        style={{
-          left: 'var(--mouse-x)',
-          top: 'var(--mouse-y)',
-          transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(205, 127, 50, 0.4) 0%, transparent 70%)',
-          boxShadow: 'inset 0 0 40px rgba(184, 115, 51, 0.2)'
-        }}
-      />
-
-      <ChaosOverlay />
-      
-      {/* Navigation */}
-      <nav className="w-full border-b border-amber-900/20 bg-[#0a0500]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="min-h-screen relative">
+      {/* Video Lander Section - White Background */}
+      <section className="h-screen w-full bg-white relative overflow-hidden">
+        {/* Video Background */}
+        <motion.div 
+          style={{ opacity: videoOpacity }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            poster="/videos/probability-poster.png"
+            data-testid="hero-video"
+          >
+            <source src="/videos/hero-probability-v1.mp4" type="video/mp4" />
+          </video>
+          
+          {/* Probability Overlay Text */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.3, 0.7, 0.3] }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="font-mono text-6xl md:text-8xl font-bold text-stone-800/10"
+              >
+                P(x) = ?
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Minimal Logo on Video */}
+        <div className="absolute top-6 left-6 z-20">
           <div className="flex items-center gap-2">
-            <Server className="text-amber-600 w-6 h-6" />
-            <span className="font-orbitron font-bold text-xl tracking-wider text-stone-200">
-              SYS<span className="text-amber-600">ADMIN</span> CORP
+            <Server className="text-stone-800 w-6 h-6" />
+            <span className="font-orbitron font-bold text-xl tracking-wider text-stone-800">
+              NEXUS
             </span>
           </div>
-          <div className="hidden md:flex gap-6 text-sm font-medium text-stone-500 items-center">
-            <a href="#" className="hover:text-amber-500 transition-colors">Services</a>
-            <a href="#" className="hover:text-amber-500 transition-colors">About Us</a>
-            <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-amber-800/50">
-                    ID: {gameState.sessionToken.substring(0, 8)}...
-                </span>
-                <span className="text-xs font-mono text-amber-600">
-                   DATA: {gameState.inventory.length}/5
-                </span>
-            </div>
-            
-            {/* QR Code Tool Button - More Prominent */}
-            <Button 
-              variant="outline"
-              size="sm"
-              onClick={() => setQrModalOpen(true)}
-              className="border-amber-700/50 text-amber-600 hover:text-amber-400 hover:bg-amber-950/30 hover:border-amber-500 gap-2"
-              data-testid="qr-tool-button"
-            >
-              <QrCode className="w-4 h-4" />
-              <span className="hidden lg:inline">QR Tools</span>
-            </Button>
-            
-            {/* Hidden clickable area in nav */}
-            <div 
-               className="w-4 h-4 cursor-pointer opacity-0 hover:opacity-50 transition-opacity bg-amber-600/50 rounded-full"
-               onClick={() => setLocation("/admin")}
-               data-testid="hidden-nav-trigger"
-               title="Staff Entrance"
-            ></div>
-            
-            <Link href="/login">
-                <Button variant="outline" className="border-amber-700/30 text-amber-600 hover:bg-amber-950/30 hover:border-amber-600/50 h-8">
-                  Client Portal
-                </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 md:py-24 relative">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-left"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-xs font-mono border rounded-full bg-gradient-to-r from-teal-950/50 to-amber-950/50 border-teal-800/30">
-              <Activity className="w-3 h-3 text-teal-500" />
-              <span className="text-teal-400">LIVE THREAT INTELLIGENCE</span>
-              <span className="text-amber-500">|</span>
-              <span className="text-amber-400">GLOBAL NETWORK</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold font-orbitron mb-6">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600">
-                Cyber Defense
-              </span>
-              <br/>
-              <span className="text-stone-200">For The </span>
-              <GlitchText text="Modern Era" className="text-teal-500" />
-            </h1>
-            <p className="max-w-xl text-stone-400 text-lg mb-8 leading-relaxed">
-              Real-time threat detection across 15+ global nodes. We neutralize attacks before they reach your infrastructure.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-black font-bold border-none shadow-lg shadow-amber-900/30">
-                <Shield className="w-4 h-4 mr-2" />
-                Request Security Audit
-              </Button>
-              <Button size="lg" variant="outline" className="border-teal-800/50 text-teal-400 hover:border-teal-600 hover:text-teal-300 bg-teal-950/20">
-                <Globe className="w-4 h-4 mr-2" />
-                View Global Status
-              </Button>
-            </div>
-            
-            {/* Quick stats */}
-            <div className="flex gap-8 mt-10 pt-8 border-t border-stone-800/50">
-              <div>
-                <div className="text-2xl font-orbitron font-bold text-amber-500">99.99%</div>
-                <div className="text-xs text-stone-500 font-mono">UPTIME SLA</div>
-              </div>
-              <div>
-                <div className="text-2xl font-orbitron font-bold text-teal-500">&lt;3ms</div>
-                <div className="text-xs text-stone-500 font-mono">RESPONSE TIME</div>
-              </div>
-              <div>
-                <div className="text-2xl font-orbitron font-bold text-orange-500">24/7</div>
-                <div className="text-xs text-stone-500 font-mono">SOC COVERAGE</div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Attack Map */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative"
-          >
-            <GlobalAttackMap />
-            
-            {/* Hidden Clue 1: In plain sight but needs hover */}
-            <div className="absolute -bottom-4 right-4 opacity-30 hover:opacity-100 transition-opacity duration-1000">
-              <ClueItem 
-                id="clue-01" 
-                name="Obsolete Protocol" 
-                description="A reference to an old port number." 
-                content="Port 8080 is open on the legacy mainframe." 
-                triggerText="Inspect Anomaly"
-              />
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-orbitron font-bold text-stone-200 mb-4">
-            Enterprise <span className="text-teal-500">Security</span> Solutions
-          </h2>
-          <p className="text-stone-500 max-w-2xl mx-auto">
-            Comprehensive protection powered by machine learning and 24/7 human oversight
-          </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-[#0f0a05]/90 to-[#050a0f]/80 border-amber-900/20 backdrop-blur-sm group hover:border-teal-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(20,184,166,0.1)]">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-amber-900/30 to-amber-950/50 flex items-center justify-center mb-3 group-hover:from-amber-800/40 group-hover:to-amber-900/60 transition-all">
-                <ShieldAlert className="w-6 h-6 text-amber-500" />
-              </div>
-              <CardTitle className="text-xl font-orbitron text-stone-200">Threat Mitigation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-stone-500">
-                AI-powered threat detection neutralizes attacks in milliseconds. Zero-day protection included.
-              </CardDescription>
-              <div className="mt-4 flex gap-2">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">ML-POWERED</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">REAL-TIME</span>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Scroll Indicator */}
+        <motion.div 
+          style={{ opacity: scrollIndicatorOpacity }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
+          data-testid="scroll-indicator"
+        >
+          <span className="text-stone-500 text-sm font-mono tracking-widest">EXPLORE</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <ChevronDown className="w-6 h-6 text-stone-400" />
+          </motion.div>
+        </motion.div>
+      </section>
 
-          <Card className="bg-gradient-to-br from-[#0f0a05]/90 to-[#050a0f]/80 border-teal-900/20 backdrop-blur-sm group hover:border-teal-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(20,184,166,0.1)]">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-teal-900/30 to-teal-950/50 flex items-center justify-center mb-3 group-hover:from-teal-800/40 group-hover:to-teal-900/60 transition-all">
-                <Network className="w-6 h-6 text-teal-500" />
-              </div>
-              <CardTitle className="text-xl font-orbitron text-stone-200">Mesh Connectivity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-stone-500">
-                Encrypted node-to-node communication across 15 global data centers. Zero trust architecture.
-              </CardDescription>
-              <div className="mt-4 flex gap-2">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">ZERO-TRUST</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">E2E ENCRYPTED</span>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Dark Section - Torch-Cut Paragraphs */}
+      <section 
+        ref={darkSectionRef}
+        className="min-h-screen bg-[#0a0500] relative py-24 px-4"
+        style={{
+          backgroundImage: `
+            radial-gradient(ellipse at 30% 20%, rgba(205, 127, 50, 0.08), transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(20, 184, 166, 0.05), transparent 50%),
+            linear-gradient(to bottom, #0a0500 0%, #050208 100%)
+          `
+        }}
+      >
+        {/* Navigation - Appears after scroll */}
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolledPastVideo 
+            ? 'bg-[#0a0500]/95 backdrop-blur-md border-b border-amber-900/20 translate-y-0' 
+            : '-translate-y-full'
+        }`}>
+          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Server className="text-amber-600 w-6 h-6" />
+              <span className="font-orbitron font-bold text-xl tracking-wider text-stone-200">
+                NEXUS
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link href="/terminal">
+                <Button 
+                  variant="ghost" 
+                  className="text-stone-400 hover:text-amber-500 touch-target hidden md:flex"
+                  data-testid="nav-terminal"
+                >
+                  Terminal
+                </Button>
+              </Link>
+              <Button 
+                variant="outline"
+                onClick={() => setQrModalOpen(true)}
+                className="border-amber-700/50 text-amber-600 hover:bg-amber-950/30 touch-target"
+                data-testid="nav-qr-button"
+              >
+                <QrCode className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Tools</span>
+              </Button>
+              <Link href="/login">
+                <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-black font-bold touch-target" data-testid="nav-access-button">
+                  Access
+                </Button>
+              </Link>
+              {/* Hidden admin trigger */}
+              <div 
+                className="w-4 h-4 cursor-pointer opacity-0 hover:opacity-30 transition-opacity"
+                onClick={() => setLocation("/admin")}
+                data-testid="hidden-nav-trigger"
+              />
+            </div>
+          </div>
+        </nav>
 
-          <Card className="bg-gradient-to-br from-[#0f0a05]/90 to-[#050a0f]/80 border-amber-900/20 backdrop-blur-sm group hover:border-amber-600/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(249,115,22,0.1)]">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-900/30 to-orange-950/50 flex items-center justify-center mb-3 group-hover:from-orange-800/40 group-hover:to-orange-900/60 transition-all">
-                <Eye className="w-6 h-6 text-orange-500" />
-              </div>
-              <CardTitle className="text-xl font-orbitron text-stone-200">Deep Oversight</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-stone-500 relative">
-                Full packet inspection and forensic logging. Nothing escapes the archive.
-                <div className="absolute top-0 right-0">
-                    <ClueItem 
-                        id="clue-02" 
-                        name="Archive Index" 
-                        description="A path to a hidden directory." 
-                        content="/var/log/sys_core_dump.log" 
-                        triggerText="Extract"
-                    />
+        <div className="container mx-auto max-w-4xl pt-16">
+          {/* Torch-Cut Paragraph 1 */}
+          <div 
+            ref={paragraph1Ref}
+            className="fade-in-scroll mb-16"
+          >
+            <div className="torch-border p-8 md:p-12 bg-[#0a0500]/90" data-testid="torch-paragraph-1">
+              <h2 className="font-orbitron text-2xl md:text-3xl text-stone-200 mb-4">
+                In Security, <span className="text-amber-500">Probability</span> Is Everything
+              </h2>
+              <p className="text-stone-400 text-lg leading-relaxed">
+                Every system has vulnerabilities. Every network has entry points. The question isn't 
+                <em className="text-teal-400"> if</em> an attack will come—it's <em className="text-teal-400">when</em>, 
+                and whether you've shifted the odds in your favor. We don't play defense. 
+                We reshape the battlefield.
+              </p>
+            </div>
+          </div>
+
+          {/* Torch-Cut Paragraph 2 */}
+          <div 
+            ref={paragraph2Ref}
+            className="fade-in-scroll"
+            style={{ transitionDelay: '0.2s' }}
+          >
+            <div className="torch-border p-8 md:p-12 bg-[#0a0500]/90" data-testid="torch-paragraph-2">
+              <h2 className="font-orbitron text-2xl md:text-3xl text-stone-200 mb-4">
+                Offensive Security. <span className="text-teal-400">Adaptive Response.</span>
+              </h2>
+              <p className="text-stone-400 text-lg leading-relaxed">
+                Our team operates at the intersection of threat intelligence and proactive defense. 
+                We simulate adversarial thinking, stress-test your infrastructure, and build 
+                resilience before the cards are dealt. When uncertainty is your enemy, 
+                <span className="text-amber-400"> we become your edge</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Selling Points Section */}
+      <section className="bg-[#050208] py-24 px-4 relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-600/5 rounded-full blur-3xl" />
+        
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="font-orbitron text-3xl md:text-4xl text-stone-200 mb-4">
+              Why <span className="text-amber-500">NEXUS</span>
+            </h2>
+            <p className="text-stone-500 max-w-2xl mx-auto">
+              Three pillars of comprehensive security coverage
+            </p>
+          </div>
+
+          {/* Three Selling Points - Cards */}
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            {/* Offensive Security */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="group"
+            >
+              <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#0f0a05] to-[#0a0500] border border-amber-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-amber-600/50" data-testid="card-offensive-security">
+                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-900/40 to-amber-950/60 flex items-center justify-center mb-6 group-hover:from-amber-800/50 group-hover:to-amber-900/70 transition-all">
+                  <Crosshair className="w-7 h-7 text-amber-500" />
                 </div>
-              </CardDescription>
-              <div className="mt-4 flex gap-2">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">FORENSIC</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">90-DAY RETENTION</span>
+                <h3 className="font-orbitron text-xl text-stone-200 mb-3">
+                  Battle-Hardened Offensive Security
+                </h3>
+                <p className="text-stone-500 leading-relaxed mb-4">
+                  Red team operations, penetration testing, and adversarial simulation. 
+                  We find your weaknesses before attackers do.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                    PENTEST
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                    RED TEAM
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                    BUG BOUNTY
+                  </span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </motion.div>
+
+            {/* 24/7 Monitoring */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="group"
+            >
+              <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#050a0f] to-[#0a0500] border border-teal-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-teal-600/50" data-testid="card-monitoring">
+                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-teal-900/40 to-teal-950/60 flex items-center justify-center mb-6 group-hover:from-teal-800/50 group-hover:to-teal-900/70 transition-all">
+                  <Radio className="w-7 h-7 text-teal-500" />
+                </div>
+                <h3 className="font-orbitron text-xl text-stone-200 mb-3">
+                  24/7 Live Monitoring
+                </h3>
+                <p className="text-stone-500 leading-relaxed mb-4">
+                  Real-time threat detection across your entire attack surface. 
+                  AI-powered analysis with human oversight, around the clock.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                    SIEM/SOAR
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                    THREAT INTEL
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                    ML-POWERED
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Incident Response */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="group"
+            >
+              <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#0f0505] to-[#0a0500] border border-orange-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-orange-600/50" data-testid="card-incident-response">
+                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-orange-900/40 to-orange-950/60 flex items-center justify-center mb-6 group-hover:from-orange-800/50 group-hover:to-orange-900/70 transition-all">
+                  <AlertTriangle className="w-7 h-7 text-orange-500" />
+                </div>
+                <h3 className="font-orbitron text-xl text-stone-200 mb-3">
+                  Rapid Incident Response
+                </h3>
+                <p className="text-stone-500 leading-relaxed mb-4">
+                  When breaches occur, every second counts. Our response teams 
+                  contain, investigate, and remediate with surgical precision.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-[10px] px-2 py-1 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">
+                    FORENSICS
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">
+                    CONTAINMENT
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                    RECOVERY
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Stats Row */}
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-stone-800/50">
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-orbitron font-bold text-amber-500">99.99%</div>
+              <div className="text-xs text-stone-500 font-mono mt-1">UPTIME SLA</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-orbitron font-bold text-teal-500">&lt;3ms</div>
+              <div className="text-xs text-stone-500 font-mono mt-1">RESPONSE TIME</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-orbitron font-bold text-orange-500">24/7</div>
+              <div className="text-xs text-stone-500 font-mono mt-1">SOC COVERAGE</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-orbitron font-bold text-stone-300">15+</div>
+              <div className="text-xs text-stone-500 font-mono mt-1">GLOBAL NODES</div>
+            </div>
+          </div>
         </div>
       </section>
-      
-      {/* Certifications / Trust badges */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="flex flex-wrap justify-center items-center gap-8 opacity-50">
-          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
-            <Lock className="w-4 h-4" /> SOC 2 TYPE II
-          </div>
-          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
-            <Shield className="w-4 h-4" /> ISO 27001
-          </div>
-          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
-            <Zap className="w-4 h-4" /> GDPR COMPLIANT
-          </div>
-          <div className="flex items-center gap-2 text-stone-600 font-mono text-sm">
-            <Globe className="w-4 h-4" /> FEDRAMP AUTHORIZED
+
+      {/* CTA Section */}
+      <section className="bg-[#0a0500] py-20 px-4 border-t border-amber-900/20">
+        <div className="container mx-auto max-w-4xl text-center">
+          <h2 className="font-orbitron text-2xl md:text-3xl text-stone-200 mb-6">
+            Ready to Shift the Odds?
+          </h2>
+          <p className="text-stone-500 mb-8 max-w-xl mx-auto">
+            Request a security assessment and discover your true attack surface.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-black font-bold shadow-lg shadow-amber-900/30 touch-target"
+              data-testid="cta-security-audit"
+            >
+              <Shield className="w-5 h-5 mr-2" />
+              Request Security Audit
+            </Button>
+            <Link href="/terminal">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-teal-800/50 text-teal-400 hover:border-teal-600 hover:bg-teal-950/20 touch-target w-full sm:w-auto"
+                data-testid="cta-explore-platform"
+              >
+                <Target className="w-5 h-5 mr-2" />
+                Explore Platform
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
-      
-      <footer className="w-full border-t border-amber-900/10 py-8 mt-12 bg-[#050200]">
-        <div className="container mx-auto px-4 text-center text-stone-700 text-sm">
-          <p>&copy; 2026 SysAdmin Corp. All rights reserved.</p>
-          <div className="mt-4 flex items-center justify-center gap-4">
-            <Link href="/wiki" className="text-xs font-mono cursor-pointer text-stone-500 hover:text-amber-500 transition-colors" data-testid="link-wiki">
-              [DOCS]
-            </Link>
-            <span className="text-stone-800">|</span>
-            <Link href="/terminal" className="text-xs font-mono cursor-pointer text-stone-600 opacity-50 hover:opacity-100 hover:text-amber-500 transition-all">
-                sys_v4.0.2-copper
-            </Link>
+
+      {/* Footer */}
+      <footer className="w-full border-t border-amber-900/10 py-8 bg-[#050200]">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Server className="text-amber-600 w-5 h-5" />
+              <span className="font-orbitron text-sm text-stone-400">NEXUS Security</span>
+            </div>
+            <div className="flex items-center gap-6 text-xs text-stone-600">
+              <Link href="/wiki" className="hover:text-amber-500 transition-colors touch-target flex items-center" data-testid="link-wiki">
+                <FileSearch className="w-4 h-4 mr-1" />
+                Docs
+              </Link>
+              <Link href="/terminal" className="hover:text-amber-500 transition-colors touch-target flex items-center" data-testid="link-terminal">
+                <Server className="w-4 h-4 mr-1" />
+                Terminal
+              </Link>
+              <span className="text-stone-700">|</span>
+              <span className="font-mono text-stone-700">v4.0.2</span>
+            </div>
+            <p className="text-stone-700 text-xs">&copy; 2026 NEXUS. All rights reserved.</p>
           </div>
         </div>
       </footer>
-      
-      {/* QR Code Modal */}
-      <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
-      
-      {/* Mystical & Quantum Systems */}
-      <MysticalPopups />
-      <QuantumField />
-      
-      {/* Floating Buttons - QR Code & Agent */}
+
+      {/* Floating Action Buttons - Mobile Optimized */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.3 }}
-        className="fixed bottom-6 right-6 z-50 flex flex-col gap-3"
+        className={`fixed bottom-6 right-6 z-50 flex flex-col gap-3 transition-opacity duration-500 ${
+          scrolledPastVideo ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
       >
-        {/* Agent Chat Button */}
         <Button
           onClick={() => setAgentChatOpen(true)}
-          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50"
+          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50 touch-target"
           data-testid="floating-agent-button"
         >
           <Bot className="w-6 h-6" />
         </Button>
         
-        {/* QR Code Button */}
         <Button
           onClick={() => setQrModalOpen(true)}
-          className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30"
+          className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30 touch-target"
           data-testid="floating-qr-button"
         >
           <QrCode className="w-6 h-6" />
         </Button>
-        <span className="absolute -bottom-6 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
-          QR | Agent
-        </span>
       </motion.div>
-      
-      {/* Agent Chat Modal */}
+
+      {/* Modals */}
+      <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
       <AgentChat open={agentChatOpen} onOpenChange={setAgentChatOpen} />
     </div>
   );
