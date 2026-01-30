@@ -265,6 +265,95 @@ export const insertFlowNodeSchema = createInsertSchema(flowNodes).omit({
 export type FlowNode = typeof flowNodes.$inferSelect;
 export type InsertFlowNode = z.infer<typeof insertFlowNodeSchema>;
 
+// Player Feedback - captures user experience, pain points, and suggestions
+export const playerFeedback = pgTable("player_feedback", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token"),
+  username: text("username"),
+  feedbackType: text("feedback_type").notNull(), // 'bug', 'suggestion', 'pain_point', 'praise', 'question'
+  category: text("category"), // 'gameplay', 'ui', 'difficulty', 'content', 'feature_request', 'learning'
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  context: jsonb("context").$type<{
+    currentRoute?: string;
+    lastCommand?: string;
+    sessionDuration?: number;
+    completedQuests?: string[];
+    collectedClues?: string[];
+  }>().notNull().default({}),
+  priority: text("priority").default('medium'), // 'low', 'medium', 'high', 'critical'
+  status: text("status").notNull().default('new'), // 'new', 'reviewed', 'in_progress', 'resolved', 'wont_fix'
+  devNotes: text("dev_notes"), // Your notes on the feedback
+  learningStyle: text("learning_style"), // 'visual', 'reading', 'hands_on', 'guided'
+  rating: integer("rating"), // 1-5 satisfaction score
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+});
+
+// Dev Briefings - aggregated insights for the developer
+export const devBriefings = pgTable("dev_briefings", {
+  id: serial("id").primaryKey(),
+  briefingDate: timestamp("briefing_date").notNull().defaultNow(),
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  summary: text("summary").notNull(),
+  keyInsights: jsonb("key_insights").$type<string[]>().notNull().default([]),
+  painPoints: jsonb("pain_points").$type<{issue: string; count: number; severity: string}[]>().notNull().default([]),
+  topSuggestions: jsonb("top_suggestions").$type<{suggestion: string; votes: number}[]>().notNull().default([]),
+  userMetrics: jsonb("user_metrics").$type<{
+    activePlayers: number;
+    newPlayers: number;
+    avgSessionTime: number;
+    completionRate: number;
+    feedbackCount: number;
+  }>(),
+  aiAnalysis: text("ai_analysis"), // AI-generated insights
+  actionItems: jsonb("action_items").$type<{item: string; priority: string; status: string}[]>().notNull().default([]),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Dungeon Master Messages - admin/mod communication with players
+export const dmMessages = pgTable("dm_messages", {
+  id: serial("id").primaryKey(),
+  fromAdmin: boolean("from_admin").notNull().default(true),
+  adminUsername: text("admin_username"),
+  targetSession: text("target_session"), // null = broadcast to all
+  targetUsername: text("target_username"),
+  messageType: text("message_type").notNull(), // 'hint', 'announcement', 'story', 'challenge', 'reward', 'guidance'
+  title: text("title"),
+  content: text("content").notNull(),
+  metadata: jsonb("metadata").$type<{
+    expiresAt?: string;
+    triggerCondition?: string;
+    unlockReward?: string;
+  }>().notNull().default({}),
+  isRead: boolean("is_read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertPlayerFeedbackSchema = createInsertSchema(playerFeedback).omit({
+  id: true,
+  createdAt: true,
+  reviewedAt: true,
+});
+
+export const insertDevBriefingSchema = createInsertSchema(devBriefings).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDmMessageSchema = createInsertSchema(dmMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type PlayerFeedback = typeof playerFeedback.$inferSelect;
+export type InsertPlayerFeedback = z.infer<typeof insertPlayerFeedbackSchema>;
+export type DevBriefing = typeof devBriefings.$inferSelect;
+export type InsertDevBriefing = z.infer<typeof insertDevBriefingSchema>;
+export type DmMessage = typeof dmMessages.$inferSelect;
+export type InsertDmMessage = z.infer<typeof insertDmMessageSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
