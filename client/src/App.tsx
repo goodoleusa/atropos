@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { GameProvider } from "@/hooks/useGameSession";
 import { ReportProvider } from "@/hooks/useReportContext";
 import DevModePanel from "@/components/DevModePanel";
+import QuickNav from "@/components/QuickNav";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
@@ -47,6 +48,7 @@ function App() {
             <Toaster />
             <Router />
             <DevModePanel />
+            <QuickNav />
           </ReportProvider>
         </GameProvider>
       </TooltipProvider>

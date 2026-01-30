@@ -110,6 +110,32 @@ export async function registerRoutes(
     }
   });
 
+  // Get all sessions (admin only)
+  app.get("/api/sessions", async (req, res) => {
+    try {
+      const accessToken = req.headers['x-access-token'] as string;
+      if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      
+      const allSessions = await storage.getAllSessions();
+      const sessionsWithStats = allSessions.map(s => ({
+        id: s.id,
+        token: s.sessionToken,
+        username: s.username,
+        cluesCollected: s.collectedClues?.length || 0,
+        questsCompleted: s.completedQuests?.length || 0,
+        lastActiveAt: s.lastActive,
+        createdAt: s.createdAt
+      }));
+      
+      res.json(sessionsWithStats);
+    } catch (error) {
+      console.error("Get sessions error:", error);
+      res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+  });
+
   // Get all available clues
   app.get("/api/clues", async (_req, res) => {
     try {

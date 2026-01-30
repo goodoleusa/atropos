@@ -90,6 +90,7 @@ const DEFAULT_PROMPT_CONFIG: PromptConfig = {
 
 export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps) => {
   const { gameState } = useGame();
+  const { addAgentMessage, addToolOutput, currentSession, startSession, setCampaign: setContextCampaign } = useReportContext();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -101,6 +102,13 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const [promptConfig, setPromptConfig] = useState<PromptConfig>(DEFAULT_PROMPT_CONFIG);
   const [isCompressing, setIsCompressing] = useState(false);
   const [showPromptStudio, setShowPromptStudio] = useState(false);
+
+  // Auto-start session when first message is sent
+  useEffect(() => {
+    if (messages.length === 1 && !currentSession) {
+      startSession(`Agent Session - ${new Date().toLocaleDateString()}`);
+    }
+  }, [messages.length, currentSession, startSession]);
 
   // Initialize with payload if provided
   useEffect(() => {
@@ -161,6 +169,9 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setLoading(true);
+    
+    // Track in shared context
+    addAgentMessage({ role: 'user', content: userMessage, model: selectedModel, campaign: activeCampaign?.id });
 
     try {
       // Ensure we have a conversation
@@ -244,6 +255,21 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
               }
             } catch {}
           }
+        }
+      }
+      // Track assistant response in shared context
+      if (assistantMessage) {
+        addAgentMessage({ role: 'assistant', content: assistantMessage, model: selectedModel, campaign: activeCampaign?.id });
+        
+        // Detect and track any findings
+        const findingResult = detectFindingFromMessage(assistantMessage);
+        if (findingResult?.detected) {
+          addToolOutput({
+            type: findingResult.type as any,
+            source: 'agent',
+            content: assistantMessage,
+            metadata: { severity: findingResult.severity, model: selectedModel }
+          });
         }
       }
     } catch (error) {
@@ -362,6 +388,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setActiveCampaign(campaign);
     setShowCampaigns(false);
     setInput(campaign.starterPrompt);
+    setContextCampaign(campaign.id);
   };
 
   const resetChat = () => {

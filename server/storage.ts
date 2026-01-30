@@ -30,6 +30,7 @@ import { eq, desc, sql, count, gte } from "drizzle-orm";
 export interface IStorage {
   // Game Sessions
   getSessionByToken(token: string): Promise<GameSession | undefined>;
+  getAllSessions(): Promise<GameSession[]>;
   createSession(session: InsertGameSession): Promise<GameSession>;
   updateSession(token: string, updates: Partial<GameSession>): Promise<GameSession | undefined>;
   
@@ -85,6 +86,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(gameSessions.sessionToken, token))
       .limit(1);
     return session;
+  }
+
+  async getAllSessions(): Promise<GameSession[]> {
+    return await db.select().from(gameSessions).orderBy(desc(gameSessions.lastActive)).limit(100);
   }
 
   async createSession(session: InsertGameSession): Promise<GameSession> {

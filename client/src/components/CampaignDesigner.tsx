@@ -11,8 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { 
   FolderTree, FileText, Plus, Trash2, Edit3, Link2, Eye, Save, Download,
-  Play, ChevronRight, ChevronDown, Zap, Target, Shield, Search, Settings,
-  Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical
+  Play, Pause, ChevronRight, ChevronDown, Zap, Target, Shield, Search, Settings,
+  Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical, SkipBack, SkipForward, RotateCcw
 } from 'lucide-react';
 
 interface CampaignNode {
@@ -56,7 +56,7 @@ const NODE_TYPES = [
   { type: 'step', label: 'Step', icon: <Play className="w-3 h-3" />, color: 'amber' },
   { type: 'decision', label: 'Decision', icon: <GitBranch className="w-3 h-3" />, color: 'purple' },
   { type: 'tool', label: 'Tool', icon: <Zap className="w-3 h-3" />, color: 'teal' },
-  { type: 'output', label: 'Output', icon: <FileText className="w-3 h-3" />, color: 'blue' },
+  { type: 'output', label: 'Output', icon: <FileText className="w-3 h-3" />, color: 'purple' },
   { type: 'folder', label: 'Folder', icon: <FolderTree className="w-3 h-3" />, color: 'stone' }
 ];
 
@@ -64,10 +64,7 @@ const COLOR_MAP: Record<string, string> = {
   amber: 'border-amber-600 bg-amber-950/30',
   purple: 'border-purple-600 bg-purple-950/30',
   teal: 'border-teal-600 bg-teal-950/30',
-  blue: 'border-blue-600 bg-blue-950/30',
   stone: 'border-stone-600 bg-stone-900/30',
-  red: 'border-red-600 bg-red-950/30',
-  green: 'border-green-600 bg-green-950/30'
 };
 
 interface Props {
@@ -91,6 +88,11 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [draggedNode, setDraggedNode] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [inlineEditNode, setInlineEditNode] = useState<string | null>(null);
+  const [linkMousePos, setLinkMousePos] = useState<{ x: number; y: number } | null>(null);
+  const [testRunMode, setTestRunMode] = useState(false);
+  const [testCurrentNode, setTestCurrentNode] = useState<string | null>(null);
+  const [testHistory, setTestHistory] = useState<string[]>([]);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const addNode = useCallback((type: string, parentId?: string) => {
@@ -295,36 +297,83 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     const nodeType = NODE_TYPES.find(t => t.type === node.type);
     const isSelected = selectedNode === node.id;
     const isLinking = linkingFrom === node.id;
+    const isLinkTarget = linkingFrom && linkingFrom !== node.id;
+    const isInlineEditing = inlineEditNode === node.id;
 
     return (
       <div
         key={node.id}
-        className={`absolute p-3 rounded border-2 cursor-move transition-all ${COLOR_MAP[node.color]} ${
-          isSelected ? 'ring-2 ring-amber-500' : ''
-        } ${isLinking ? 'ring-2 ring-teal-500' : ''}`}
+        className={`absolute p-3 rounded-lg transition-all duration-200 ${COLOR_MAP[node.color]} ${
+          isSelected ? 'ring-4 ring-amber-500 ring-opacity-80 shadow-lg shadow-amber-500/30 border-amber-400' : 'border-2'
+        } ${isLinking ? 'ring-4 ring-teal-500 ring-opacity-80 shadow-lg shadow-teal-500/30' : ''} ${
+          isLinkTarget ? 'border-teal-400 border-dashed animate-pulse cursor-crosshair' : 'cursor-move'
+        }`}
         style={{
           left: node.x,
           top: node.y,
           width: node.width,
-          minHeight: node.height
+          minHeight: node.height,
+          zIndex: isSelected || isLinking ? 50 : 10
         }}
-        onClick={() => setSelectedNode(node.id)}
-        onMouseDown={(e) => handleNodeDragStart(e, node.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (isLinkTarget) {
+            createLink(linkingFrom!, node.id);
+          } else {
+            setSelectedNode(node.id);
+          }
+        }}
+        onDoubleClick={() => setInlineEditNode(node.id)}
+        onMouseDown={(e) => !isInlineEditing && handleNodeDragStart(e, node.id)}
         data-testid={`graph-node-${node.id}`}
       >
+        {/* Selection indicator */}
+        {isSelected && (
+          <div className="absolute -top-2 -left-2 bg-amber-500 text-black text-[10px] px-1.5 py-0.5 rounded font-bold">
+            SELECTED
+          </div>
+        )}
+        
         <div className="flex items-center gap-2 mb-2">
           <span className={`text-${node.color}-400`}>{nodeType?.icon}</span>
-          <span className="text-xs font-bold text-stone-200 truncate flex-1">{node.title}</span>
+          {isInlineEditing ? (
+            <Input
+              autoFocus
+              value={node.title}
+              onChange={(e) => updateNode(node.id, { title: e.target.value })}
+              onBlur={() => setInlineEditNode(null)}
+              onKeyDown={(e) => e.key === 'Enter' && setInlineEditNode(null)}
+              className="text-xs bg-transparent border-amber-600 h-6 p-1 text-stone-200"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <span className="text-xs font-bold text-stone-200 truncate flex-1">{node.title}</span>
+          )}
           <Badge variant="outline" className={`text-[8px] border-${node.color}-600 text-${node.color}-400`}>
             {nodeType?.label}
           </Badge>
         </div>
-        <p className="text-[10px] text-stone-400 line-clamp-3">{node.content || 'No content'}</p>
         
-        <div className="absolute -right-2 top-1/2 transform -translate-y-1/2">
+        {isInlineEditing ? (
+          <textarea
+            value={node.content}
+            onChange={(e) => updateNode(node.id, { content: e.target.value })}
+            className="w-full text-[10px] bg-transparent border border-amber-600 rounded p-1 text-stone-300 resize-none"
+            rows={3}
+            onClick={(e) => e.stopPropagation()}
+            placeholder="Enter node content..."
+          />
+        ) : (
+          <p className="text-[10px] text-stone-400 line-clamp-3">{node.content || 'Double-click to edit'}</p>
+        )}
+        
+        {/* Link connector - bigger touch target */}
+        <div className="absolute -right-3 top-1/2 transform -translate-y-1/2">
           <button
-            className={`w-4 h-4 rounded-full border-2 ${
-              isLinking ? 'bg-teal-500 border-teal-400' : 'bg-stone-800 border-stone-600 hover:border-amber-500'
+            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+              isLinking 
+                ? 'bg-teal-500 border-teal-400 scale-125' 
+                : 'bg-stone-800 border-stone-600 hover:border-amber-500 hover:bg-amber-900/50'
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -332,13 +381,25 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 createLink(linkingFrom, node.id);
               } else if (linkingFrom === node.id) {
                 setLinkingFrom(null);
+                setLinkMousePos(null);
               } else {
                 setLinkingFrom(node.id);
               }
             }}
-            title={linkingFrom ? (linkingFrom === node.id ? 'Cancel linking' : 'Connect here') : 'Start linking'}
-          />
+            title={linkingFrom ? (linkingFrom === node.id ? 'Cancel linking' : 'Connect here') : 'Drag to link'}
+          >
+            {isLinking ? '✕' : '→'}
+          </button>
         </div>
+
+        {/* Left connector for incoming links */}
+        {isLinkTarget && (
+          <div className="absolute -left-3 top-1/2 transform -translate-y-1/2">
+            <div className="w-6 h-6 rounded-full border-2 border-teal-400 bg-teal-500/50 flex items-center justify-center animate-pulse">
+              ←
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -362,19 +423,44 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
             d={`M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`}
             fill="none"
             stroke={`var(--${link.color}-500, #f59e0b)`}
-            strokeWidth="2"
-            className="cursor-pointer hover:stroke-red-500"
+            strokeWidth="3"
+            className="cursor-pointer hover:stroke-red-500 transition-colors"
             onClick={() => deleteLink(link.id)}
           />
-          <circle cx={x2} cy={y2} r="4" fill={`var(--${link.color}-500, #f59e0b)`} />
+          <circle cx={x2} cy={y2} r="6" fill={`var(--${link.color}-500, #f59e0b)`} className="animate-pulse" />
+          <circle cx={x1} cy={y1} r="4" fill={`var(--${link.color}-500, #f59e0b)`} />
           {link.label && (
-            <text x={midX} y={(y1 + y2) / 2 - 5} className="text-[10px] fill-stone-400" textAnchor="middle">
+            <text x={midX} y={(y1 + y2) / 2 - 8} className="text-[11px] fill-stone-300 font-bold" textAnchor="middle">
               {link.label}
             </text>
           )}
         </g>
       );
     });
+  };
+
+  const renderLinkPreview = () => {
+    if (!linkingFrom || !linkMousePos) return null;
+    
+    const source = campaign.nodes.find(n => n.id === linkingFrom);
+    if (!source) return null;
+
+    const x1 = source.x + source.width;
+    const y1 = source.y + source.height / 2;
+    const x2 = linkMousePos.x;
+    const y2 = linkMousePos.y;
+    const midX = (x1 + x2) / 2;
+
+    return (
+      <path
+        d={`M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`}
+        fill="none"
+        stroke="#14b8a6"
+        strokeWidth="3"
+        strokeDasharray="8 4"
+        className="pointer-events-none animate-pulse"
+      />
+    );
   };
 
   return (
@@ -413,6 +499,27 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 <Button size="sm" variant="outline" onClick={exportCampaign} className="border-amber-800 text-amber-400 min-h-[44px]">
                   <Download className="w-4 h-4" />
                 </Button>
+                <Button 
+                  size="sm" 
+                  variant={testRunMode ? 'default' : 'outline'} 
+                  onClick={() => {
+                    if (!testRunMode && campaign.rootNodes.length > 0) {
+                      setTestRunMode(true);
+                      setTestCurrentNode(campaign.rootNodes[0]);
+                      setTestHistory([campaign.rootNodes[0]]);
+                    } else {
+                      setTestRunMode(false);
+                      setTestCurrentNode(null);
+                      setTestHistory([]);
+                    }
+                  }}
+                  className={`min-h-[44px] ${testRunMode ? 'bg-teal-700 text-white' : 'border-teal-800 text-teal-400'}`}
+                  disabled={campaign.rootNodes.length === 0}
+                  data-testid="test-run-btn"
+                >
+                  {testRunMode ? <Pause className="w-4 h-4 mr-1" /> : <Play className="w-4 h-4 mr-1" />}
+                  {testRunMode ? 'Stop' : 'Test'}
+                </Button>
               </div>
             </div>
           </DialogHeader>
@@ -421,18 +528,27 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
             <div className="border-b sm:border-b-0 sm:border-r border-amber-900/30 p-3 shrink-0">
               <p className="text-[10px] text-stone-500 uppercase tracking-wider mb-2">Add Node</p>
               <div className="flex sm:flex-col gap-2 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
-              {NODE_TYPES.map(nt => (
-                  <Button
-                    key={nt.type}
-                    size="sm"
-                    variant="outline"
-                    onClick={() => addNode(nt.type)}
-                    className={`justify-start min-h-[44px] min-w-[90px] text-xs border-${nt.color}-800 text-${nt.color}-400 hover:bg-${nt.color}-950/30`}
-                  >
-                    {nt.icon}
-                    <span className="ml-2 hidden sm:inline">{nt.label}</span>
-                  </Button>
-                ))}
+              {NODE_TYPES.map(nt => {
+                  const buttonStyles: Record<string, string> = {
+                    amber: 'border-amber-800 text-amber-400 hover:bg-amber-950/30',
+                    purple: 'border-purple-800 text-purple-400 hover:bg-purple-950/30',
+                    teal: 'border-teal-800 text-teal-400 hover:bg-teal-950/30',
+                    stone: 'border-stone-800 text-stone-400 hover:bg-stone-950/30'
+                  };
+                  return (
+                    <Button
+                      key={nt.type}
+                      size="sm"
+                      variant="outline"
+                      onClick={() => addNode(nt.type)}
+                      className={`justify-start min-h-[44px] min-w-[90px] text-xs ${buttonStyles[nt.color] || buttonStyles.stone}`}
+                      data-testid={`add-node-${nt.type}`}
+                    >
+                      {nt.icon}
+                      <span className="ml-2 hidden sm:inline">{nt.label}</span>
+                    </Button>
+                  );
+                })}
               </div>
 
               <div className="border-t border-stone-800 mt-2 pt-2 hidden sm:block">
@@ -540,26 +656,162 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 <div
                   ref={canvasRef}
                   className="absolute inset-0 overflow-auto bg-[#050200] touch-none"
-                  onMouseMove={handleCanvasMouseMove}
-                  onMouseUp={handleCanvasMouseUp}
-                  onMouseLeave={handleCanvasMouseUp}
+                  onMouseMove={(e) => {
+                    handleCanvasMouseMove(e);
+                    if (linkingFrom && canvasRef.current) {
+                      const rect = canvasRef.current.getBoundingClientRect();
+                      setLinkMousePos({
+                        x: e.clientX - rect.left + canvasRef.current.scrollLeft,
+                        y: e.clientY - rect.top + canvasRef.current.scrollTop
+                      });
+                    }
+                  }}
+                  onMouseUp={() => {
+                    handleCanvasMouseUp();
+                    if (linkingFrom) {
+                      setLinkingFrom(null);
+                      setLinkMousePos(null);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    handleCanvasMouseUp();
+                    setLinkMousePos(null);
+                  }}
                   onTouchMove={handleCanvasMouseMove}
                   onTouchEnd={handleCanvasMouseUp}
                   onTouchCancel={handleCanvasMouseUp}
+                  onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                      setSelectedNode(null);
+                      setInlineEditNode(null);
+                      if (linkingFrom) {
+                        setLinkingFrom(null);
+                        setLinkMousePos(null);
+                      }
+                    }
+                  }}
                   style={{
                     backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)',
                     backgroundSize: '20px 20px'
                   }}
                 >
+                  {/* Linking mode indicator */}
+                  {linkingFrom && (
+                    <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-50 bg-teal-900/90 text-teal-300 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
+                      <Link2 className="w-4 h-4" />
+                      Click target node or canvas to cancel
+                    </div>
+                  )}
+                  
                   <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ minWidth: 2000, minHeight: 1500 }}>
                     {renderLinks()}
+                    {renderLinkPreview()}
                   </svg>
                   {campaign.nodes.map(renderGraphNode)}
                 </div>
               )}
             </div>
 
-            {editingNode && (
+            {/* Test Run Panel */}
+            {testRunMode && testCurrentNode && (
+              <div className="fixed inset-x-0 bottom-0 sm:absolute sm:inset-auto sm:bottom-4 sm:left-4 sm:right-4 z-50 bg-teal-950/95 backdrop-blur border-t sm:border sm:rounded-lg border-teal-700 p-4" data-testid="test-run-panel">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-teal-400 flex items-center gap-2">
+                    <Play className="w-4 h-4" /> Test Run Mode
+                  </h3>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        if (testHistory.length > 1) {
+                          const newHistory = testHistory.slice(0, -1);
+                          setTestHistory(newHistory);
+                          setTestCurrentNode(newHistory[newHistory.length - 1]);
+                        }
+                      }}
+                      disabled={testHistory.length <= 1}
+                      className="min-h-[44px] min-w-[44px] text-teal-400"
+                      data-testid="test-back-btn"
+                    >
+                      <SkipBack className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setTestCurrentNode(campaign.rootNodes[0]);
+                        setTestHistory([campaign.rootNodes[0]]);
+                      }}
+                      className="min-h-[44px] min-w-[44px] text-teal-400"
+                      data-testid="test-restart-btn"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {(() => {
+                  const currentNode = campaign.nodes.find(n => n.id === testCurrentNode);
+                  const nodeType = NODE_TYPES.find(t => t.type === currentNode?.type);
+                  const outgoingLinks = campaign.links.filter(l => l.source === testCurrentNode);
+                  
+                  return currentNode ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Badge className={
+                          currentNode.color === 'amber' ? 'bg-amber-700 text-white' :
+                          currentNode.color === 'purple' ? 'bg-purple-700 text-white' :
+                          currentNode.color === 'teal' ? 'bg-teal-700 text-white' :
+                          'bg-stone-700 text-white'
+                        }>
+                          {nodeType?.icon} {nodeType?.label}
+                        </Badge>
+                        <span className="text-sm font-bold text-stone-200">{currentNode.title}</span>
+                      </div>
+                      <p className="text-sm text-stone-400">{currentNode.content || 'No content'}</p>
+                      
+                      {outgoingLinks.length > 0 ? (
+                        <div>
+                          <p className="text-xs text-stone-500 mb-2">Choose next step:</p>
+                          <Select
+                            value=""
+                            onValueChange={(nodeId) => {
+                              setTestCurrentNode(nodeId);
+                              setTestHistory(prev => [...prev, nodeId]);
+                            }}
+                          >
+                            <SelectTrigger className="bg-black/50 border-teal-700 text-stone-300 min-h-[44px]" data-testid="test-next-select">
+                              <SelectValue placeholder="Select next node..." />
+                            </SelectTrigger>
+                            <SelectContent className="bg-stone-900 border-teal-700">
+                              {outgoingLinks.map(link => {
+                                const targetNode = campaign.nodes.find(n => n.id === link.target);
+                                return targetNode ? (
+                                  <SelectItem key={link.id} value={link.target} className="text-stone-300">
+                                    {link.label ? `${link.label}: ` : ''}{targetNode.title}
+                                  </SelectItem>
+                                ) : null;
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : (
+                        <Badge className="bg-amber-900 text-amber-300">End of flow - no outgoing links</Badge>
+                      )}
+
+                      <div className="flex items-center gap-2 text-xs text-stone-500 pt-2 border-t border-teal-900">
+                        <span>Step {testHistory.length}</span>
+                        <span>•</span>
+                        <span>Path: {testHistory.map(id => campaign.nodes.find(n => n.id === id)?.title || 'Unknown').join(' → ')}</span>
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
+              </div>
+            )}
+
+            {editingNode && !testRunMode && (
               <div className="fixed inset-0 sm:relative sm:inset-auto z-50 sm:z-0 bg-[#0a0500] sm:bg-transparent sm:w-72 sm:border-l border-amber-900/30 p-4 overflow-y-auto">
                 <div className="flex items-center justify-between mb-4 sticky top-0 bg-[#0a0500] py-2 z-10">
                   <h3 className="text-sm font-bold text-amber-500">Edit Node</h3>
@@ -569,6 +821,31 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 </div>
 
                 <div className="space-y-6 pb-20 sm:pb-0">
+                  <div>
+                    <label className="text-[10px] text-stone-500 uppercase">Node Type</label>
+                    <Select
+                      value={editingNode.type}
+                      onValueChange={(type: CampaignNode['type']) => {
+                        const nodeType = NODE_TYPES.find(t => t.type === type);
+                        setEditingNode(prev => prev ? { ...prev, type, color: nodeType?.color || prev.color } : null);
+                        updateNode(editingNode.id, { type, color: nodeType?.color || editingNode.color });
+                      }}
+                    >
+                      <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]" data-testid="node-type-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-stone-900 border-stone-700">
+                        {NODE_TYPES.map(nt => (
+                          <SelectItem key={nt.type} value={nt.type} className="text-stone-300">
+                            <span className="flex items-center gap-2">
+                              {nt.icon} {nt.label}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Title</label>
                     <Input
@@ -597,20 +874,27 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
 
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Color</label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {['amber', 'teal', 'purple', 'blue', 'red', 'green'].map(color => (
-                        <button
-                          key={color}
-                          className={`w-10 h-10 rounded border-2 ${
-                            editingNode.color === color ? 'ring-2 ring-white border-white' : 'border-transparent'
-                          } bg-${color}-600`}
-                          onClick={() => {
-                            setEditingNode(prev => prev ? { ...prev, color } : null);
-                            updateNode(editingNode.id, { color });
-                          }}
-                        />
-                      ))}
-                    </div>
+                    <Select
+                      value={editingNode.color}
+                      onValueChange={(color) => {
+                        setEditingNode(prev => prev ? { ...prev, color } : null);
+                        updateNode(editingNode.id, { color });
+                      }}
+                    >
+                      <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]" data-testid="node-color-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-stone-900 border-stone-700">
+                        {['amber', 'teal', 'purple', 'blue', 'red', 'green'].map(color => (
+                          <SelectItem key={color} value={color} className="text-stone-300">
+                            <span className="flex items-center gap-2">
+                              <span className={`w-4 h-4 rounded bg-${color}-500`} />
+                              {color.charAt(0).toUpperCase() + color.slice(1)}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {editingNode.type === 'step' && editingNode.metadata && (
