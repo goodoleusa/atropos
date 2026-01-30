@@ -37,7 +37,14 @@ Preferred communication style: Simple, everyday language.
 - **Security Design (Intentionally Vulnerable)**: Designed as an "escape room" CTF; allows enumeration and simulated hacking, but prevents real attacks with input sanitization, rate limiting, CSP, and session validation.
 - **NEXUS Agent System**: Integrated AI assistant (`AgentChat.tsx`) for payload execution and game interaction, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns (e.g., OSINT, BGP tracing). Admin can configure system prompt via **Admin → Agent tab** (core identity, capability modules, custom instructions).
 - **Admin Dashboard**: Content management for clues, quests, messages, mystical elements, Player Sessions tab with live session data, and a UX Playground for real-time visual effect tweaking (backgrounds, mouse tracking, glitches, event probabilities).
-- **Campaign Designer**: Visual flow editor with drag-to-link connections, inline node editing (double-click), and Test Run mode for simulating investigation flows. Uses amber/teal/purple color palette only. Features quick-start templates (Reconnaissance, Vulnerability Analysis, OSINT, Blank Canvas) accessible via dropdown menu.
+- **Campaign Designer**: Twine-inspired visual flow editor with Obsidian-style wikilinks and breadcrumb metadata for conditional decision trees.
+  - **Wikilinks**: Use `[[Node Title]]` in content to auto-create links between nodes
+  - **Backlinks Panel**: Shows what nodes link TO the current node (Obsidian-style)
+  - **Breadcrumb Trail**: Visual path from root to selected node
+  - **View Modes**: Canvas (visual editor), Clues (all clues with campaign connections), Overview (stats, features, decision tree summary)
+  - **Node Metadata**: Feature type (terminal, api, qr, crypto, agent, web, osint, steganography), Campaign type (recon, exploit, defense, forensics), Skills (network, web, crypto, osint, system, programming with sub-skills), Linked clues, Branch conditions
+  - **Quick-start Templates**: Reconnaissance, Vulnerability Analysis, OSINT, Blank Canvas via dropdown menu
+  - **Decision Tree Paths**: Overview shows all decision nodes with their branch conditions and targets
 - **Global Attack Map**: Animated real-time threat visualization on the homepage, simulating cybersecurity dashboards.
 - **Report Builder System**: Aids in structuring bug bounty findings with sections for analysis, vulnerability tracking, bounty estimation, and export. Includes AI benchmarking best practices (model rankings, win rates, sanity checks, recommendations) and shared investigation context with Agent Chat.
 - **Shared Investigation Context**: Cross-feature state management via useReportContext hook enabling data flow between Agent Chat, AI Lab, and Report Builder with localStorage persistence.
