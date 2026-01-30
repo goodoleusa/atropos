@@ -34,6 +34,8 @@ interface CampaignNode {
   };
 }
 
+type RelationType = 'parent' | 'child' | 'sibling' | 'related' | 'next' | 'prev';
+
 interface CampaignLink {
   id: string;
   source: string;
@@ -41,6 +43,7 @@ interface CampaignLink {
   label?: string;
   condition?: string;
   color: string;
+  relation?: RelationType;
 }
 
 interface Campaign {
@@ -66,6 +69,15 @@ const COLOR_MAP: Record<string, string> = {
   teal: 'border-teal-600 bg-teal-950/30',
   stone: 'border-stone-600 bg-stone-900/30',
 };
+
+const RELATION_TYPES: { type: RelationType; label: string; icon: string; color: string }[] = [
+  { type: 'parent', label: 'Parent', icon: '↑', color: 'text-purple-400' },
+  { type: 'child', label: 'Child', icon: '↓', color: 'text-teal-400' },
+  { type: 'sibling', label: 'Sibling', icon: '↔', color: 'text-amber-400' },
+  { type: 'next', label: 'Next', icon: '→', color: 'text-teal-400' },
+  { type: 'prev', label: 'Previous', icon: '←', color: 'text-purple-400' },
+  { type: 'related', label: 'Related', icon: '◇', color: 'text-stone-400' },
+];
 
 interface Props {
   open: boolean;
@@ -93,7 +105,160 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   const [testRunMode, setTestRunMode] = useState(false);
   const [testCurrentNode, setTestCurrentNode] = useState<string | null>(null);
   const [testHistory, setTestHistory] = useState<string[]>([]);
+  const [linkQuery, setLinkQuery] = useState('');
+  const [showLinkSuggestions, setShowLinkSuggestions] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Obsidian-style link query parser - supports [[name]], @type:value, #property:value
+  const parseLinkQuery = useCallback((query: string): CampaignNode[] => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase().trim();
+    
+    // [[node-name]] - exact or partial title match
+    const wikiLinkMatch = q.match(/^\[\[(.+?)\]\]$/);
+    if (wikiLinkMatch) {
+      const searchTerm = wikiLinkMatch[1].toLowerCase();
+      return campaign.nodes.filter(n => 
+        n.title.toLowerCase().includes(searchTerm) ||
+        n.id.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    // @type:value - filter by node type
+    const typeMatch = q.match(/^@type:(\w+)$/);
+    if (typeMatch) {
+      const typeFilter = typeMatch[1];
+      return campaign.nodes.filter(n => n.type.toLowerCase() === typeFilter);
+    }
+    
+    // @color:value - filter by color
+    const colorMatch = q.match(/^@color:(\w+)$/);
+    if (colorMatch) {
+      const colorFilter = colorMatch[1];
+      return campaign.nodes.filter(n => n.color.toLowerCase() === colorFilter);
+    }
+    
+    // #tool:value - filter by tools in metadata
+    const toolMatch = q.match(/^#tool:(.+)$/);
+    if (toolMatch) {
+      const toolFilter = toolMatch[1].toLowerCase();
+      return campaign.nodes.filter(n => 
+        n.metadata?.toolsForStep?.some(t => t.toLowerCase().includes(toolFilter))
+      );
+    }
+    
+    // #question:value - filter by questions in metadata
+    const questionMatch = q.match(/^#question:(.+)$/);
+    if (questionMatch) {
+      const questionFilter = questionMatch[1].toLowerCase();
+      return campaign.nodes.filter(n => 
+        n.metadata?.questions?.some(q => q.toLowerCase().includes(questionFilter))
+      );
+    }
+    
+    // #flag:value - filter by red flags
+    const flagMatch = q.match(/^#flag:(.+)$/);
+    if (flagMatch) {
+      const flagFilter = flagMatch[1].toLowerCase();
+      return campaign.nodes.filter(n => 
+        n.metadata?.redFlags?.some(f => f.toLowerCase().includes(flagFilter))
+      );
+    }
+    
+    // Default: fuzzy search on title and content
+    return campaign.nodes.filter(n => 
+      n.title.toLowerCase().includes(q) ||
+      n.content.toLowerCase().includes(q)
+    );
+  }, [campaign.nodes]);
+
+  // Compute matching nodes from link query
+  const linkQueryResults = useMemo(() => {
+    return parseLinkQuery(linkQuery);
+  }, [linkQuery, parseLinkQuery]);
+
+  // Compute breadcrumbs - path from root to selected node
+  const getBreadcrumbs = useCallback((nodeId: string | null): CampaignNode[] => {
+    if (!nodeId) return [];
+    const path: CampaignNode[] = [];
+    const visited = new Set<string>();
+    
+    const findPath = (targetId: string): boolean => {
+      const node = campaign.nodes.find(n => n.id === targetId);
+      if (!node || visited.has(targetId)) return false;
+      visited.add(targetId);
+      
+      // Find parent links (links where this node is the target)
+      const parentLinks = campaign.links.filter(l => l.target === targetId);
+      
+      if (parentLinks.length === 0) {
+        // This is a root node
+        path.unshift(node);
+        return true;
+      }
+      
+      // Try to find path through any parent
+      for (const link of parentLinks) {
+        if (findPath(link.source)) {
+          path.push(node);
+          return true;
+        }
+      }
+      
+      // If no path through parents, treat as root
+      path.unshift(node);
+      return true;
+    };
+    
+    findPath(nodeId);
+    return path;
+  }, [campaign.nodes, campaign.links]);
+
+  // Get node relations (Excalibrain-style)
+  const getNodeRelations = useCallback((nodeId: string | null) => {
+    if (!nodeId) return { parents: [], children: [], siblings: [], related: [] };
+    
+    const parents: { node: CampaignNode; relation: RelationType }[] = [];
+    const children: { node: CampaignNode; relation: RelationType }[] = [];
+    const siblings: { node: CampaignNode; relation: RelationType }[] = [];
+    const related: { node: CampaignNode; relation: RelationType }[] = [];
+    
+    // Find direct connections
+    campaign.links.forEach(link => {
+      if (link.source === nodeId) {
+        const targetNode = campaign.nodes.find(n => n.id === link.target);
+        if (targetNode) {
+          const rel = link.relation || 'next';
+          if (rel === 'child' || rel === 'next') {
+            children.push({ node: targetNode, relation: rel });
+          } else if (rel === 'sibling') {
+            siblings.push({ node: targetNode, relation: rel });
+          } else {
+            related.push({ node: targetNode, relation: rel });
+          }
+        }
+      }
+      if (link.target === nodeId) {
+        const sourceNode = campaign.nodes.find(n => n.id === link.source);
+        if (sourceNode) {
+          const rel = link.relation || 'prev';
+          if (rel === 'parent' || rel === 'prev' || rel === 'next') {
+            parents.push({ node: sourceNode, relation: rel === 'next' ? 'prev' : rel });
+          } else if (rel === 'sibling') {
+            siblings.push({ node: sourceNode, relation: rel });
+          } else {
+            related.push({ node: sourceNode, relation: rel });
+          }
+        }
+      }
+    });
+    
+    return { parents, children, siblings, related };
+  }, [campaign.nodes, campaign.links]);
+
+  // Selected node breadcrumbs and relations
+  const breadcrumbs = useMemo(() => getBreadcrumbs(selectedNode), [selectedNode, getBreadcrumbs]);
+  const nodeRelations = useMemo(() => getNodeRelations(selectedNode), [selectedNode, getNodeRelations]);
 
   const addNode = useCallback((type: string, parentId?: string) => {
     const nodeType = NODE_TYPES.find(t => t.type === type);
@@ -159,7 +324,9 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     setSelectedNode(null);
   }, []);
 
-  const createLink = useCallback((sourceId: string, targetId: string) => {
+  const [pendingLinkRelation, setPendingLinkRelation] = useState<RelationType>('next');
+
+  const createLink = useCallback((sourceId: string, targetId: string, relation: RelationType = 'next') => {
     if (sourceId === targetId) return;
     
     const existingLink = campaign.links.find(
@@ -174,7 +341,8 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
       id: `link-${Date.now()}`,
       source: sourceId,
       target: targetId,
-      color: 'amber'
+      color: 'amber',
+      relation: relation
     };
 
     setCampaign(prev => ({
@@ -183,8 +351,15 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     }));
 
     setLinkingFrom(null);
-    toast({ title: 'Link created' });
+    toast({ title: `Link created (${relation})` });
   }, [campaign.links]);
+
+  const updateLinkRelation = useCallback((linkId: string, relation: RelationType) => {
+    setCampaign(prev => ({
+      ...prev,
+      links: prev.links.map(l => l.id === linkId ? { ...l, relation } : l)
+    }));
+  }, []);
 
   const deleteLink = useCallback((linkId: string) => {
     setCampaign(prev => ({
@@ -242,15 +417,198 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     setDraggedNode(null);
   }, []);
 
-  const exportCampaign = useCallback(() => {
+  // Export as JSON
+  const exportCampaignJSON = useCallback(() => {
     const blob = new Blob([JSON.stringify(campaign, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `${campaign.name.replace(/\s+/g, '_')}.json`;
     a.click();
-    toast({ title: 'Campaign exported' });
+    toast({ title: 'Campaign exported as JSON' });
   }, [campaign]);
+
+  // Export as Obsidian-compatible Markdown (Dataview, Breadcrumbs, Excalibrain)
+  const exportCampaignObsidian = useCallback(() => {
+    const sanitizeFilename = (name: string) => name.replace(/[^a-zA-Z0-9_-]/g, '_');
+    
+    // Generate markdown for each node
+    const files: { name: string; content: string }[] = [];
+    
+    campaign.nodes.forEach(node => {
+      const nodeLinks = campaign.links.filter(l => l.source === node.id || l.target === node.id);
+      const outgoing = nodeLinks.filter(l => l.source === node.id);
+      const incoming = nodeLinks.filter(l => l.target === node.id);
+      
+      // Build YAML frontmatter (Dataview compatible)
+      const frontmatter: Record<string, unknown> = {
+        id: node.id,
+        type: node.type,
+        color: node.color,
+        tags: [`campaign/${campaign.name.replace(/\s+/g, '-')}`],
+        created: new Date().toISOString().split('T')[0],
+      };
+      
+      // Breadcrumbs plugin relations
+      if (incoming.length > 0) {
+        frontmatter['up'] = incoming.map(l => {
+          const sourceNode = campaign.nodes.find(n => n.id === l.source);
+          return `[[${sanitizeFilename(sourceNode?.title || l.source)}]]`;
+        });
+      }
+      if (outgoing.length > 0) {
+        frontmatter['down'] = outgoing.map(l => {
+          const targetNode = campaign.nodes.find(n => n.id === l.target);
+          return `[[${sanitizeFilename(targetNode?.title || l.target)}]]`;
+        });
+      }
+      
+      // Add metadata fields for Dataview
+      if (node.metadata?.toolsForStep?.length) {
+        frontmatter['tools'] = node.metadata.toolsForStep;
+      }
+      if (node.metadata?.questions?.length) {
+        frontmatter['questions'] = node.metadata.questions;
+      }
+      if (node.metadata?.successIndicators?.length) {
+        frontmatter['success-indicators'] = node.metadata.successIndicators;
+      }
+      if (node.metadata?.redFlags?.length) {
+        frontmatter['red-flags'] = node.metadata.redFlags;
+      }
+      
+      // Build markdown content
+      let md = '---\n';
+      Object.entries(frontmatter).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          md += `${key}:\n${value.map(v => `  - ${v}`).join('\n')}\n`;
+        } else {
+          md += `${key}: ${value}\n`;
+        }
+      });
+      md += '---\n\n';
+      
+      // Title
+      md += `# ${node.title}\n\n`;
+      
+      // Type badge
+      md += `> [!info] ${node.type.charAt(0).toUpperCase() + node.type.slice(1)} Node\n`;
+      md += `> Color: ${node.color}\n\n`;
+      
+      // Content
+      if (node.content) {
+        md += `## Content\n\n${node.content}\n\n`;
+      }
+      
+      // Excalibrain-style inline relations
+      md += `## Relations\n\n`;
+      
+      if (incoming.length > 0) {
+        md += `### Parents (up::)\n`;
+        incoming.forEach(l => {
+          const sourceNode = campaign.nodes.find(n => n.id === l.source);
+          const relType = l.relation || 'parent';
+          md += `- up:: [[${sanitizeFilename(sourceNode?.title || l.source)}]] (${relType})\n`;
+        });
+        md += '\n';
+      }
+      
+      if (outgoing.length > 0) {
+        md += `### Children (down::)\n`;
+        outgoing.forEach(l => {
+          const targetNode = campaign.nodes.find(n => n.id === l.target);
+          const relType = l.relation || 'child';
+          md += `- down:: [[${sanitizeFilename(targetNode?.title || l.target)}]] (${relType})\n`;
+        });
+        md += '\n';
+      }
+      
+      // Metadata sections
+      if (node.metadata?.toolsForStep?.length) {
+        md += `## Tools\n\n`;
+        node.metadata.toolsForStep.forEach(tool => {
+          md += `- \`${tool}\`\n`;
+        });
+        md += '\n';
+      }
+      
+      if (node.metadata?.questions?.length) {
+        md += `## Investigation Questions\n\n`;
+        node.metadata.questions.forEach(q => {
+          md += `- [ ] ${q}\n`;
+        });
+        md += '\n';
+      }
+      
+      if (node.metadata?.successIndicators?.length) {
+        md += `## Success Indicators\n\n`;
+        node.metadata.successIndicators.forEach(s => {
+          md += `- ✅ ${s}\n`;
+        });
+        md += '\n';
+      }
+      
+      if (node.metadata?.redFlags?.length) {
+        md += `## Red Flags\n\n`;
+        node.metadata.redFlags.forEach(f => {
+          md += `- 🚩 ${f}\n`;
+        });
+        md += '\n';
+      }
+      
+      // Dataview query example
+      md += `---\n\n`;
+      md += `## Dataview Queries\n\n`;
+      md += '```dataview\n';
+      md += `TABLE type, tools\n`;
+      md += `FROM #campaign/${campaign.name.replace(/\s+/g, '-')}\n`;
+      md += `WHERE type = "${node.type}"\n`;
+      md += '```\n';
+      
+      files.push({
+        name: `${sanitizeFilename(node.title)}.md`,
+        content: md
+      });
+    });
+    
+    // Create index file
+    let indexMd = '---\n';
+    indexMd += `title: ${campaign.name}\n`;
+    indexMd += `description: ${campaign.description}\n`;
+    indexMd += `type: campaign-index\n`;
+    indexMd += `nodes: ${campaign.nodes.length}\n`;
+    indexMd += `links: ${campaign.links.length}\n`;
+    indexMd += '---\n\n';
+    indexMd += `# ${campaign.name}\n\n`;
+    indexMd += `${campaign.description}\n\n`;
+    indexMd += `## Campaign Nodes\n\n`;
+    indexMd += '```dataview\n';
+    indexMd += `TABLE type, tools, up, down\n`;
+    indexMd += `FROM #campaign/${campaign.name.replace(/\s+/g, '-')}\n`;
+    indexMd += `SORT type ASC\n`;
+    indexMd += '```\n\n';
+    indexMd += `## Node List\n\n`;
+    campaign.nodes.forEach(node => {
+      indexMd += `- [[${sanitizeFilename(node.title)}]] (${node.type})\n`;
+    });
+    
+    files.push({
+      name: `_${sanitizeFilename(campaign.name)}_Index.md`,
+      content: indexMd
+    });
+    
+    // Create a zip-like concatenated file (or download individual)
+    const allContent = files.map(f => `<!-- FILE: ${f.name} -->\n${f.content}\n\n---\n\n`).join('');
+    const blob = new Blob([allContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${campaign.name.replace(/\s+/g, '_')}_obsidian.md`;
+    a.click();
+    toast({ title: 'Exported for Obsidian (Dataview/Breadcrumbs/Excalibrain)' });
+  }, [campaign]);
+
+  const exportCampaign = exportCampaignJSON;
 
   const renderTreeNode = (nodeId: string, depth: number = 0) => {
     const node = campaign.nodes.find(n => n.id === nodeId);
@@ -479,40 +837,58 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] bg-[#0a0500] border-amber-900/50 p-0 overflow-hidden">
-        <div className="flex flex-col h-full max-h-[90vh]">
-          <DialogHeader className="p-4 border-b border-amber-900/30 shrink-0">
-            <DialogTitle className="text-amber-500 font-orbitron flex items-center gap-2 text-base">
-              <Layers className="w-5 h-5" />
+      <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] bg-[#0a0500] border-amber-900/50 p-0 overflow-hidden rounded-none sm:rounded-lg">
+        <div className="flex flex-col h-full">
+          <DialogHeader className="p-3 sm:p-4 border-b border-amber-900/30 shrink-0">
+            <DialogTitle className="text-amber-500 font-orbitron flex items-center gap-2 text-sm sm:text-base">
+              <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
               Campaign Designer
             </DialogTitle>
-            <div className="flex flex-col sm:flex-row gap-2 mt-3">
+            <div className="flex flex-col gap-2 mt-2 sm:mt-3">
               <Input
                 value={campaign.name}
                 onChange={(e) => setCampaign(prev => ({ ...prev, name: e.target.value }))}
-                className="bg-transparent border-stone-700 text-stone-300 text-base min-h-[44px] flex-1"
+                className="bg-transparent border-stone-700 text-stone-300 text-sm min-h-[44px]"
                 placeholder="Campaign name..."
               />
-              <div className="flex gap-2">
+              <div className="flex gap-1.5 sm:gap-2 flex-wrap">
                 <Button
                   size="sm"
                   variant={mode === 'tree' ? 'default' : 'outline'}
                   onClick={() => setMode('tree')}
-                  className={`min-h-[44px] flex-1 sm:flex-none ${mode === 'tree' ? 'bg-amber-700 text-black' : 'border-stone-700 text-stone-400'}`}
+                  className={`min-h-[44px] min-w-[44px] px-3 ${mode === 'tree' ? 'bg-amber-700 text-black' : 'border-stone-700 text-stone-400'}`}
                 >
-                  <FolderTree className="w-4 h-4 mr-1" /> Tree
+                  <FolderTree className="w-4 h-4" />
+                  <span className="ml-1 hidden sm:inline">Tree</span>
                 </Button>
                 <Button
                   size="sm"
                   variant={mode === 'graph' ? 'default' : 'outline'}
                   onClick={() => setMode('graph')}
-                  className={`min-h-[44px] flex-1 sm:flex-none ${mode === 'graph' ? 'bg-purple-700 text-white' : 'border-stone-700 text-stone-400'}`}
+                  className={`min-h-[44px] min-w-[44px] px-3 ${mode === 'graph' ? 'bg-purple-700 text-white' : 'border-stone-700 text-stone-400'}`}
                 >
-                  <GitBranch className="w-4 h-4 mr-1" /> Graph
+                  <GitBranch className="w-4 h-4" />
+                  <span className="ml-1 hidden sm:inline">Graph</span>
                 </Button>
-                <Button size="sm" variant="outline" onClick={exportCampaign} className="border-amber-800 text-amber-400 min-h-[44px]">
-                  <Download className="w-4 h-4" />
-                </Button>
+                <Select
+                  value=""
+                  onValueChange={(format) => {
+                    if (format === 'json') exportCampaignJSON();
+                    else if (format === 'obsidian') exportCampaignObsidian();
+                  }}
+                >
+                  <SelectTrigger className="border-amber-800 text-amber-400 min-h-[44px] min-w-[44px] w-auto px-2 bg-transparent" data-testid="export-dropdown">
+                    <Download className="w-4 h-4" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-stone-900 border-stone-700">
+                    <SelectItem value="json" className="text-stone-300 min-h-[44px]">
+                      Export JSON
+                    </SelectItem>
+                    <SelectItem value="obsidian" className="text-stone-300 min-h-[44px]">
+                      Export Obsidian (Dataview/Breadcrumbs)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button 
                   size="sm" 
                   variant={testRunMode ? 'default' : 'outline'} 
@@ -527,21 +903,21 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       setTestHistory([]);
                     }
                   }}
-                  className={`min-h-[44px] ${testRunMode ? 'bg-teal-700 text-white' : 'border-teal-800 text-teal-400'}`}
+                  className={`min-h-[44px] min-w-[44px] px-3 ${testRunMode ? 'bg-teal-700 text-white' : 'border-teal-800 text-teal-400'}`}
                   disabled={campaign.rootNodes.length === 0}
                   data-testid="test-run-btn"
                 >
-                  {testRunMode ? <Pause className="w-4 h-4 mr-1" /> : <Play className="w-4 h-4 mr-1" />}
-                  {testRunMode ? 'Stop' : 'Test'}
+                  {testRunMode ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  <span className="ml-1 hidden sm:inline">{testRunMode ? 'Stop' : 'Test'}</span>
                 </Button>
               </div>
             </div>
           </DialogHeader>
 
-          <div className="flex flex-col sm:flex-row flex-1 overflow-hidden">
-            <div className="border-b sm:border-b-0 sm:border-r border-amber-900/30 p-3 shrink-0">
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider mb-2">Add Node</p>
-              <div className="flex sm:flex-col gap-2 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
+          <div className="flex flex-col sm:flex-row flex-1 overflow-hidden min-h-0">
+            <div className="border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0">
+              <p className="text-[10px] text-stone-500 uppercase tracking-wider mb-1.5 sm:mb-2">Add Node</p>
+              <div className="flex sm:flex-col gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
               {NODE_TYPES.map(nt => {
                   const buttonStyles: Record<string, string> = {
                     amber: 'border-amber-800 text-amber-400 hover:bg-amber-950/30',
@@ -555,11 +931,11 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       size="sm"
                       variant="outline"
                       onClick={() => addNode(nt.type)}
-                      className={`justify-start min-h-[44px] min-w-[90px] text-xs ${buttonStyles[nt.color] || buttonStyles.stone}`}
+                      className={`justify-center sm:justify-start min-h-[44px] min-w-[44px] sm:min-w-[90px] px-2 sm:px-3 text-xs ${buttonStyles[nt.color] || buttonStyles.stone}`}
                       data-testid={`add-node-${nt.type}`}
                     >
                       {nt.icon}
-                      <span className="ml-2 hidden sm:inline">{nt.label}</span>
+                      <span className="ml-1.5 hidden sm:inline">{nt.label}</span>
                     </Button>
                   );
                 })}
@@ -597,19 +973,137 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       size="sm"
                       variant="outline"
                       onClick={() => deleteNode(selectedNode)}
-                      className="w-full justify-start text-xs border-red-700 text-red-400"
+                      className="w-full justify-start text-xs border-purple-700 text-purple-400"
                     >
                       <Trash2 className="w-3 h-3 mr-2" /> Delete
                     </Button>
                   </>
                 )}
               </div>
+
+              {/* Obsidian-style Link Query */}
+              <div className="border-t border-stone-800 mt-2 pt-2 hidden sm:block">
+                <p className="text-[10px] text-stone-500 uppercase tracking-wider mb-2">Link by Query</p>
+                <div className="relative">
+                  <Input
+                    value={linkQuery}
+                    onChange={(e) => {
+                      setLinkQuery(e.target.value);
+                      setShowLinkSuggestions(e.target.value.length > 0);
+                    }}
+                    onFocus={() => linkQuery && setShowLinkSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowLinkSuggestions(false), 200)}
+                    placeholder="[[name]] @type: #tool:"
+                    className="bg-black/30 border-stone-700 text-stone-300 text-xs h-8"
+                    data-testid="link-query-input"
+                  />
+                  {showLinkSuggestions && linkQueryResults.length > 0 && (
+                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-stone-900 border border-stone-700 rounded-md shadow-lg max-h-32 overflow-auto">
+                      {linkQueryResults.slice(0, 5).map(node => (
+                        <button
+                          key={node.id}
+                          className="w-full text-left px-2 py-1.5 text-xs hover:bg-stone-800 flex items-center gap-2"
+                          onClick={() => {
+                            if (selectedNode && selectedNode !== node.id) {
+                              createLink(selectedNode, node.id);
+                              setLinkQuery('');
+                              setShowLinkSuggestions(false);
+                            } else {
+                              setSelectedNode(node.id);
+                              setLinkQuery('');
+                              setShowLinkSuggestions(false);
+                            }
+                          }}
+                        >
+                          <span className={`w-2 h-2 rounded-full bg-${node.color}-500`} />
+                          <span className="text-stone-300 truncate">{node.title}</span>
+                          <span className="text-stone-500 text-[10px]">@{node.type}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <p className="text-[9px] text-stone-600 mt-1">
+                  [[name]] @type:step #tool:nmap
+                </p>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-hidden relative">
+            <div className="flex-1 overflow-hidden relative flex flex-col">
+              {/* Breadcrumbs - path to selected node */}
+              {selectedNode && breadcrumbs.length > 0 && (
+                <div className="bg-stone-900/80 backdrop-blur border-b border-stone-800 px-3 py-1.5 flex items-center gap-1 overflow-x-auto shrink-0" data-testid="breadcrumbs">
+                  {breadcrumbs.map((node, idx) => (
+                    <div key={node.id} className="flex items-center gap-1 shrink-0">
+                      {idx > 0 && <ChevronRight className="w-3 h-3 text-stone-600" />}
+                      <button
+                        onClick={() => setSelectedNode(node.id)}
+                        className={`text-xs px-2 py-1 rounded transition-colors min-h-[32px] ${
+                          node.id === selectedNode 
+                            ? 'bg-amber-900/50 text-amber-400 font-medium' 
+                            : 'text-stone-400 hover:bg-stone-800 hover:text-stone-300'
+                        }`}
+                      >
+                        {node.title}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Relations Panel - Excalibrain style */}
+              {selectedNode && (nodeRelations.parents.length > 0 || nodeRelations.children.length > 0 || nodeRelations.siblings.length > 0) && (
+                <div className="bg-stone-900/60 border-b border-stone-800 px-3 py-2 shrink-0 overflow-x-auto" data-testid="relations-panel">
+                  <div className="flex items-center gap-4 text-[10px]">
+                    {nodeRelations.parents.length > 0 && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-purple-400 font-medium">↑ Parents:</span>
+                        {nodeRelations.parents.slice(0, 3).map(({ node }) => (
+                          <button
+                            key={node.id}
+                            onClick={() => setSelectedNode(node.id)}
+                            className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-300 hover:bg-purple-800/50 min-h-[24px]"
+                          >
+                            {node.title}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {nodeRelations.children.length > 0 && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-teal-400 font-medium">↓ Children:</span>
+                        {nodeRelations.children.slice(0, 3).map(({ node }) => (
+                          <button
+                            key={node.id}
+                            onClick={() => setSelectedNode(node.id)}
+                            className="px-1.5 py-0.5 rounded bg-teal-900/30 text-teal-300 hover:bg-teal-800/50 min-h-[24px]"
+                          >
+                            {node.title}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {nodeRelations.siblings.length > 0 && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-amber-400 font-medium">↔ Siblings:</span>
+                        {nodeRelations.siblings.slice(0, 3).map(({ node }) => (
+                          <button
+                            key={node.id}
+                            onClick={() => setSelectedNode(node.id)}
+                            className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-300 hover:bg-amber-800/50 min-h-[24px]"
+                          >
+                            {node.title}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Mobile action bar for selected node */}
               {selectedNode && (
-                <div className="sm:hidden sticky top-0 z-10 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30 p-2 flex items-center gap-2" data-testid="mobile-action-bar">
+                <div className="sm:hidden sticky top-0 z-10 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30 p-2 flex items-center gap-2 shrink-0" data-testid="mobile-action-bar">
                   <span className="text-xs text-stone-400 truncate flex-1" data-testid="selected-node-title">
                     {campaign.nodes.find(n => n.id === selectedNode)?.title}
                   </span>
@@ -620,34 +1114,34 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       const node = campaign.nodes.find(n => n.id === selectedNode);
                       if (node) setEditingNode(node);
                     }}
-                    className="min-h-[36px] min-w-[36px] p-0 border-amber-700 text-amber-400"
+                    className="min-h-[44px] min-w-[44px] p-0 border-amber-700 text-amber-400"
                     data-testid="mobile-edit-btn"
                   >
-                    <Edit3 className="w-4 h-4" />
+                    <Edit3 className="w-5 h-5" />
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setLinkingFrom(selectedNode)}
-                    className="min-h-[36px] min-w-[36px] p-0 border-teal-700 text-teal-400"
+                    className="min-h-[44px] min-w-[44px] p-0 border-teal-700 text-teal-400"
                     data-testid="mobile-link-btn"
                   >
-                    <Link2 className="w-4 h-4" />
+                    <Link2 className="w-5 h-5" />
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => deleteNode(selectedNode)}
-                    className="min-h-[36px] min-w-[36px] p-0 border-red-700 text-red-400"
+                    className="min-h-[44px] min-w-[44px] p-0 border-purple-700 text-purple-400"
                     data-testid="mobile-delete-btn"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5" />
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => setSelectedNode(null)}
-                    className="min-h-[36px] min-w-[36px] p-0 text-stone-400"
+                    className="min-h-[44px] min-w-[44px] p-0 text-stone-400 text-xl"
                     data-testid="mobile-close-btn"
                   >
                     ×
