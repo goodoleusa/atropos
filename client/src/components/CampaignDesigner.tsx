@@ -290,26 +290,98 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   // Auto-create links from wikilinks in content
   const syncWikilinks = useCallback((nodeId: string, content: string) => {
     const linkTitles = parseWikilinks(content);
-    const newLinks: CampaignLink[] = [];
-    linkTitles.forEach(title => {
-      const target = findNodeByTitle(title);
-      if (target && target.id !== nodeId) {
-        const existingLink = campaign.links.find(l => l.source === nodeId && l.target === target.id);
-        if (!existingLink) {
-          newLinks.push({
-            id: `link-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-            source: nodeId,
-            target: target.id,
-            color: 'stone',
-            label: 'wikilink'
-          });
+    if (linkTitles.length === 0) return;
+
+    let createdNodes = 0;
+    let createdLinks = 0;
+
+    setCampaign(prev => {
+      const sourceNode = prev.nodes.find(n => n.id === nodeId);
+      const newNodes: CampaignNode[] = [];
+      const newLinks: CampaignLink[] = [];
+      const createdTitleSet = new Set<string>();
+
+      linkTitles.forEach((rawTitle, index) => {
+        const title = rawTitle.trim();
+        if (!title) return;
+        const normalized = title.toLowerCase();
+
+        const existing =
+          prev.nodes.find(n => n.title.toLowerCase() === normalized) ||
+          newNodes.find(n => n.title.toLowerCase() === normalized);
+
+        let targetNode = existing;
+
+        if (!targetNode && !createdTitleSet.has(normalized)) {
+          const baseX = sourceNode ? sourceNode.x + 260 : 160;
+          const baseY = sourceNode ? sourceNode.y + 40 + index * 140 : 160 + index * 140;
+          const nodeType = NODE_TYPES.find(t => t.type === 'step');
+
+          targetNode = {
+            id: `node-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            type: 'step',
+            title,
+            content: '',
+            x: baseX,
+            y: baseY,
+            width: 200,
+            height: 100,
+            color: nodeType?.color || 'amber',
+            metadata: {
+              toolsForStep: [],
+              questions: [],
+              successIndicators: [],
+              redFlags: []
+            }
+          };
+
+          newNodes.push(targetNode);
+          createdTitleSet.add(normalized);
         }
+
+        if (targetNode && targetNode.id !== nodeId) {
+          const alreadyLinked =
+            prev.links.some(l => l.source === nodeId && l.target === targetNode?.id) ||
+            newLinks.some(l => l.source === nodeId && l.target === targetNode?.id);
+
+          if (!alreadyLinked) {
+            newLinks.push({
+              id: `link-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              source: nodeId,
+              target: targetNode.id,
+              color: 'stone',
+              label: 'wikilink',
+              relation: 'next'
+            });
+          }
+        }
+      });
+
+      createdNodes = newNodes.length;
+      createdLinks = newLinks.length;
+
+      if (newNodes.length === 0 && newLinks.length === 0) {
+        return prev;
       }
+
+      return {
+        ...prev,
+        nodes: [...prev.nodes, ...newNodes],
+        links: [...prev.links, ...newLinks],
+        rootNodes: prev.rootNodes.filter(id => !newNodes.some(n => n.id === id))
+      };
     });
-    if (newLinks.length > 0) {
-      setCampaign(prev => ({ ...prev, links: [...prev.links, ...newLinks] }));
+
+    if (createdNodes > 0) {
+      toast({ title: "Wikilinks created", description: `Added ${createdNodes} node${createdNodes === 1 ? "" : "s"} from links.` });
+    } else if (createdLinks > 0) {
+      toast({ title: "Wikilinks synced", description: `Linked ${createdLinks} node${createdLinks === 1 ? "" : "s"}.` });
     }
-  }, [campaign.links, parseWikilinks, findNodeByTitle]);
+
+    if (createdNodes > 0 || createdLinks > 0) {
+      setIsUnsaved(true);
+    }
+  }, [parseWikilinks]);
 
   // Load saved campaigns from database on mount
   useEffect(() => {
