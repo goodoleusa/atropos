@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { 
   gameSessions, 
+  campaignRuns,
   clues, 
   quests, 
   commandLogs,
@@ -19,6 +20,8 @@ import {
   stateCapsules,
   type GameSession, 
   type InsertGameSession,
+  type CampaignRun,
+  type InsertCampaignRun,
   type Clue,
   type InsertClue,
   type Quest,
@@ -60,6 +63,13 @@ export interface IStorage {
   getAllSessions(): Promise<GameSession[]>;
   createSession(session: InsertGameSession): Promise<GameSession>;
   updateSession(token: string, updates: Partial<GameSession>): Promise<GameSession | undefined>;
+
+  // Campaign Runs
+  createCampaignRun(run: InsertCampaignRun): Promise<CampaignRun>;
+  getCampaignRunById(runId: string): Promise<CampaignRun | undefined>;
+  getCampaignRunsBySession(sessionToken: string): Promise<CampaignRun[]>;
+  getActiveCampaignRun(sessionToken: string, campaignId?: string): Promise<CampaignRun | undefined>;
+  updateCampaignRun(runId: string, updates: Partial<CampaignRun>): Promise<CampaignRun | undefined>;
   
   // Clues
   getAllClues(): Promise<Clue[]>;
@@ -194,6 +204,57 @@ export class DatabaseStorage implements IStorage {
       .update(gameSessions)
       .set({ ...updates, lastActive: new Date() })
       .where(eq(gameSessions.sessionToken, token))
+      .returning();
+    return updated;
+  }
+
+  // Campaign Runs
+  async createCampaignRun(run: InsertCampaignRun): Promise<CampaignRun> {
+    const [newRun] = await db.insert(campaignRuns).values(run).returning();
+    return newRun;
+  }
+
+  async getCampaignRunById(runId: string): Promise<CampaignRun | undefined> {
+    const [run] = await db
+      .select()
+      .from(campaignRuns)
+      .where(eq(campaignRuns.runId, runId))
+      .limit(1);
+    return run;
+  }
+
+  async getCampaignRunsBySession(sessionToken: string): Promise<CampaignRun[]> {
+    return await db
+      .select()
+      .from(campaignRuns)
+      .where(eq(campaignRuns.sessionToken, sessionToken))
+      .orderBy(desc(campaignRuns.updatedAt));
+  }
+
+  async getActiveCampaignRun(sessionToken: string, campaignId?: string): Promise<CampaignRun | undefined> {
+    const filters = [
+      eq(campaignRuns.sessionToken, sessionToken),
+      eq(campaignRuns.status, "active")
+    ];
+
+    if (campaignId) {
+      filters.push(eq(campaignRuns.campaignId, campaignId));
+    }
+
+    const [run] = await db
+      .select()
+      .from(campaignRuns)
+      .where(and(...filters))
+      .orderBy(desc(campaignRuns.updatedAt))
+      .limit(1);
+    return run;
+  }
+
+  async updateCampaignRun(runId: string, updates: Partial<CampaignRun>): Promise<CampaignRun | undefined> {
+    const [updated] = await db
+      .update(campaignRuns)
+      .set({ ...updates, updatedAt: new Date(), lastActionAt: new Date() })
+      .where(eq(campaignRuns.runId, runId))
       .returning();
     return updated;
   }

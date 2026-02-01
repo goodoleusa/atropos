@@ -14,6 +14,24 @@ export const gameSessions = pgTable("game_sessions", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Campaign Runs - tracks session-based campaign progress (no signup required)
+export const campaignRuns = pgTable("campaign_runs", {
+  id: serial("id").primaryKey(),
+  runId: text("run_id").notNull().unique(),
+  sessionToken: text("session_token").notNull(),
+  campaignId: text("campaign_id").notNull(),
+  currentNodeId: text("current_node_id"),
+  nodeHistory: jsonb("node_history").$type<string[]>().notNull().default([]),
+  visitedNodes: jsonb("visited_nodes").$type<string[]>().notNull().default([]),
+  inventory: jsonb("inventory").$type<string[]>().notNull().default([]),
+  flags: jsonb("flags").$type<string[]>().notNull().default([]),
+  variables: jsonb("variables").$type<Record<string, any>>().notNull().default({}),
+  status: text("status").notNull().default("active"), // active, completed, abandoned
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  lastActionAt: timestamp("last_action_at").notNull().defaultNow(),
+});
+
 // Clues - available clues in the game
 export const clues = pgTable("clues", {
   id: text("id").primaryKey(),
@@ -51,6 +69,13 @@ export const insertGameSessionSchema = createInsertSchema(gameSessions).omit({
   lastActive: true,
 });
 
+export const insertCampaignRunSchema = createInsertSchema(campaignRuns).omit({
+  id: true,
+  startedAt: true,
+  updatedAt: true,
+  lastActionAt: true,
+});
+
 export const insertClueSchema = createInsertSchema(clues);
 export const insertQuestSchema = createInsertSchema(quests);
 export const insertCommandLogSchema = createInsertSchema(commandLogs).omit({
@@ -61,6 +86,8 @@ export const insertCommandLogSchema = createInsertSchema(commandLogs).omit({
 // Select Types
 export type GameSession = typeof gameSessions.$inferSelect;
 export type InsertGameSession = z.infer<typeof insertGameSessionSchema>;
+export type CampaignRun = typeof campaignRuns.$inferSelect;
+export type InsertCampaignRun = z.infer<typeof insertCampaignRunSchema>;
 export type Clue = typeof clues.$inferSelect;
 export type InsertClue = z.infer<typeof insertClueSchema>;
 export type Quest = typeof quests.$inferSelect;

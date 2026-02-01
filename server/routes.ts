@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertGameSessionSchema, insertCommandLogSchema } from "../shared/schema";
+import { insertGameSessionSchema, insertCommandLogSchema, insertCampaignRunSchema } from "../shared/schema";
 import { generateSessionExportCode, generateSecretCode, decodeQRPayload } from "./qrcode";
 import { registerChatRoutes } from "./replit_integrations/chat";
 import osintRoutes from "./routes/osint";
@@ -141,6 +141,127 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Get sessions error:", error);
       res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+  });
+
+  // ==================== Campaign Runs API ====================
+
+  // Create a new campaign run
+  app.post("/api/campaign-runs", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { sessionToken, campaignId, currentNodeId, runId } = req.body;
+
+      if (!validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+
+      if (!campaignId || typeof campaignId !== "string") {
+        return res.status(400).json({ error: "campaignId is required" });
+      }
+
+      const generatedRunId =
+        typeof runId === "string" && runId.trim().length > 0
+          ? runId
+          : `run_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+      const history = Array.isArray(req.body.nodeHistory)
+        ? req.body.nodeHistory
+        : currentNodeId
+          ? [currentNodeId]
+          : [];
+
+      const visited = Array.isArray(req.body.visitedNodes)
+        ? req.body.visitedNodes
+        : history;
+
+      const validatedRun = insertCampaignRunSchema.parse({
+        runId: generatedRunId,
+        sessionToken,
+        campaignId,
+        currentNodeId,
+        nodeHistory: history,
+        visitedNodes: visited,
+        inventory: Array.isArray(req.body.inventory) ? req.body.inventory : [],
+        flags: Array.isArray(req.body.flags) ? req.body.flags : [],
+        variables: typeof req.body.variables === "object" && req.body.variables ? req.body.variables : {},
+        status: req.body.status || "active"
+      });
+
+      const run = await storage.createCampaignRun(validatedRun);
+      res.json(run);
+    } catch (error) {
+      console.error("Create campaign run error:", error);
+      res.status(500).json({ error: "Failed to create campaign run" });
+    }
+  });
+
+  // Get active campaign run for a session
+  app.get("/api/campaign-runs/active/:sessionToken", async (req, res) => {
+    try {
+      const { sessionToken } = req.params;
+      if (!validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+
+      const campaignId = typeof req.query.campaignId === "string" ? req.query.campaignId : undefined;
+      const run = await storage.getActiveCampaignRun(sessionToken, campaignId);
+
+      if (!run) {
+        return res.status(404).json({ error: "No active run found" });
+      }
+
+      res.json(run);
+    } catch (error) {
+      console.error("Get active campaign run error:", error);
+      res.status(500).json({ error: "Failed to fetch active run" });
+    }
+  });
+
+  // Get all campaign runs for a session
+  app.get("/api/campaign-runs/session/:sessionToken", async (req, res) => {
+    try {
+      const { sessionToken } = req.params;
+      if (!validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+
+      const runs = await storage.getCampaignRunsBySession(sessionToken);
+      res.json(runs);
+    } catch (error) {
+      console.error("Get campaign runs by session error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign runs" });
+    }
+  });
+
+  // Get a campaign run by ID
+  app.get("/api/campaign-runs/:runId", async (req, res) => {
+    try {
+      const { runId } = req.params;
+      const run = await storage.getCampaignRunById(runId);
+      if (!run) {
+        return res.status(404).json({ error: "Run not found" });
+      }
+      res.json(run);
+    } catch (error) {
+      console.error("Get campaign run error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign run" });
+    }
+  });
+
+  // Update a campaign run
+  app.patch("/api/campaign-runs/:runId", rateLimit(60, 60000), async (req, res) => {
+    try {
+      const { runId } = req.params;
+      const updates = req.body || {};
+
+      const updated = await storage.updateCampaignRun(runId, updates);
+      if (!updated) {
+        return res.status(404).json({ error: "Run not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Update campaign run error:", error);
+      res.status(500).json({ error: "Failed to update campaign run" });
     }
   });
 
