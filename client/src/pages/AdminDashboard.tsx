@@ -313,7 +313,7 @@ export default function AdminDashboard() {
                 onClick={() => setCampaignDesignerOpen(true)}
                 data-testid="campaign-designer-button"
               >
-                <Layers className="w-3 h-3 mr-1" /> Campaign Designer
+                <Layers className="w-3 h-3 mr-1" /> Game Campaign Builder
               </Button>
               <Link href="/debug">
                 <Button size="sm" variant="outline" className="h-7 text-xs border-red-800 text-red-400 hover:bg-red-950/50">
@@ -457,7 +457,7 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4 mr-2" /> Config
             </TabsTrigger>
             <TabsTrigger value="campaigns" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
-              <Rocket className="w-4 h-4 mr-2" /> Campaigns
+              <Rocket className="w-4 h-4 mr-2" /> Agent Modules
             </TabsTrigger>
             <TabsTrigger value="graph" className="data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-500">
               <Map className="w-4 h-4 mr-2" /> Knowledge Graph
@@ -873,15 +873,15 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
-          {/* Campaigns Tab */}
+          {/* Agent Modules Tab */}
           <TabsContent value="campaigns">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-orbitron text-teal-400 flex items-center gap-2">
-                  <Rocket className="w-5 h-5" /> Investigation Campaigns
+                  <Rocket className="w-5 h-5" /> Agent Modules
                 </h3>
                 <Badge variant="outline" className="border-teal-600 text-teal-400">
-                  {AGENT_CAMPAIGNS.length} Campaigns
+                  {AGENT_CAMPAIGNS.length} Modules
                 </Badge>
               </div>
 
