@@ -68,7 +68,7 @@ export default function Home() {
             poster="/videos/probability-poster.png"
             data-testid="hero-video"
           >
-            <source src="/videos/hero-loop-pile.mp4" type="video/mp4" />
+            <source src="/videos/hero-rain-messy-pile.mp4" type="video/mp4" />
           </video>
           
         </motion.div>
