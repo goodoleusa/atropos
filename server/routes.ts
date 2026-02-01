@@ -850,6 +850,190 @@ BEHAVIOR:
     }
   });
 
+  // ==================== Collectibles API ====================
+
+  // Artifacts
+  app.get("/api/artifacts", async (_req, res) => {
+    try {
+      const artifacts = await storage.getAllArtifacts();
+      res.json(artifacts);
+    } catch (error) {
+      console.error("Get artifacts error:", error);
+      res.status(500).json({ error: "Failed to fetch artifacts" });
+    }
+  });
+
+  app.post("/api/artifacts", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const payload = {
+        id: sanitizeInput(req.body.id || ''),
+        name: sanitizeInput(req.body.name || ''),
+        description: sanitizeInput(req.body.description || ''),
+        content: sanitizeInput(req.body.content || ''),
+        category: sanitizeInput(req.body.category || 'general'),
+        tags: Array.isArray(req.body.tags) ? req.body.tags : []
+      };
+
+      if (!payload.id || !payload.name) {
+        return res.status(400).json({ error: "Artifact id and name are required" });
+      }
+
+      const artifact = await storage.createArtifact(payload);
+      res.json(artifact);
+    } catch (error) {
+      console.error("Create artifact error:", error);
+      res.status(500).json({ error: "Failed to create artifact" });
+    }
+  });
+
+  app.patch("/api/artifacts/:id", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      const updated = await storage.updateArtifact(id, updates as any);
+      if (!updated) {
+        return res.status(404).json({ error: "Artifact not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Update artifact error:", error);
+      res.status(500).json({ error: "Failed to update artifact" });
+    }
+  });
+
+  app.delete("/api/artifacts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteArtifact(id);
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete artifact error:", error);
+      res.status(500).json({ error: "Failed to delete artifact" });
+    }
+  });
+
+  // Mystical Cards
+  app.get("/api/mystical-cards", async (_req, res) => {
+    try {
+      const cards = await storage.getMysticalCards();
+      res.json(cards);
+    } catch (error) {
+      console.error("Get mystical cards error:", error);
+      res.status(500).json({ error: "Failed to fetch mystical cards" });
+    }
+  });
+
+  app.put("/api/mystical-cards/:cardId", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { cardId } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      const card = await storage.upsertMysticalCard(cardId, updates as any);
+      res.json(card);
+    } catch (error) {
+      console.error("Save mystical card error:", error);
+      res.status(500).json({ error: "Failed to save mystical card" });
+    }
+  });
+
+  app.delete("/api/mystical-cards/:cardId", async (req, res) => {
+    try {
+      const { cardId } = req.params;
+      const deleted = await storage.deleteMysticalCard(cardId);
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete mystical card error:", error);
+      res.status(500).json({ error: "Failed to delete mystical card" });
+    }
+  });
+
+  // Quantum Popups
+  app.get("/api/quantum/events", async (_req, res) => {
+    try {
+      const events = await storage.getQuantumEvents();
+      res.json(events);
+    } catch (error) {
+      console.error("Get quantum events error:", error);
+      res.status(500).json({ error: "Failed to fetch quantum events" });
+    }
+  });
+
+  app.put("/api/quantum/events/:eventId", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      if (updates.baseProb !== undefined) {
+        updates.baseProb = parseInt(String(updates.baseProb), 10);
+      }
+      const event = await storage.upsertQuantumEvent(eventId, updates as any);
+      res.json(event);
+    } catch (error) {
+      console.error("Save quantum event error:", error);
+      res.status(500).json({ error: "Failed to save quantum event" });
+    }
+  });
+
+  app.get("/api/quantum/messages", async (_req, res) => {
+    try {
+      const messages = await storage.getQuantumMessages();
+      res.json(messages);
+    } catch (error) {
+      console.error("Get quantum messages error:", error);
+      res.status(500).json({ error: "Failed to fetch quantum messages" });
+    }
+  });
+
+  app.post("/api/quantum/messages", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const message = sanitizeInput(req.body.message || '');
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+      const created = await storage.createQuantumMessage({ message, enabled: true });
+      res.json(created);
+    } catch (error) {
+      console.error("Create quantum message error:", error);
+      res.status(500).json({ error: "Failed to create quantum message" });
+    }
+  });
+
+  app.patch("/api/quantum/messages/:id", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      const updated = await storage.updateQuantumMessage(parseInt(id, 10), updates as any);
+      if (!updated) {
+        return res.status(404).json({ error: "Quantum message not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Update quantum message error:", error);
+      res.status(500).json({ error: "Failed to update quantum message" });
+    }
+  });
+
+  app.delete("/api/quantum/messages/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteQuantumMessage(parseInt(id, 10));
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete quantum message error:", error);
+      res.status(500).json({ error: "Failed to delete quantum message" });
+    }
+  });
+
   // ==================== Campaign Links API ====================
 
   // Get links for a campaign
