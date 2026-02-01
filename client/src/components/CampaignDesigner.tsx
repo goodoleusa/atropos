@@ -124,6 +124,12 @@ interface Props {
 }
 
 export default function CampaignDesigner({ open, onOpenChange, sessionToken }: Props) {
+  const learningProfile = useLearningStore(state => ({
+    goals: state.goals,
+    skillLevel: state.skillLevel,
+    style: state.style,
+    preferredPace: state.preferredPace
+  }));
   const [mode, setMode] = useState<'tree' | 'graph'>('tree');
   const [campaign, setCampaign] = useState<Campaign>({
     id: `campaign-${Date.now()}`,
@@ -658,11 +664,26 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
     const template = CAMPAIGN_TEMPLATES.find(t => t.id === templateId);
     if (!template) return;
     const newId = `campaign-${Date.now()}`;
+
+    const withLearningDefaults = (node: CampaignNode) => {
+      const meta = { ...(node.metadata || {}) };
+      if (!meta.learningGoals || meta.learningGoals.length === 0) {
+        meta.learningGoals = learningProfile.goals;
+      }
+      if (!meta.skillLevel) {
+        meta.skillLevel = learningProfile.skillLevel;
+      }
+      if (!meta.teachingNotes) {
+        meta.teachingNotes = `Style: ${learningProfile.style} • Pace: ${learningProfile.preferredPace}`;
+      }
+      return { ...node, metadata: meta };
+    };
+
     setCampaign({
       id: newId,
       name: `${template.name} Campaign`,
       description: template.description,
-      nodes: template.nodes.map(n => ({ ...n, id: `${newId}-${n.id}` })),
+      nodes: template.nodes.map(n => withLearningDefaults({ ...n, id: `${newId}-${n.id}` })),
       links: template.links.map(l => ({ 
         ...l, 
         id: `${newId}-${l.id}`,
@@ -674,7 +695,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
     setSelectedNode(null);
     setIsUnsaved(true);
     toast({ title: 'Template Applied', description: `Created from "${template.name}" template` });
-  }, [CAMPAIGN_TEMPLATES]);
+  }, [CAMPAIGN_TEMPLATES, learningProfile]);
 
   // Auto-organize nodes in a tree/grid layout
   const autoOrganize = useCallback(() => {
@@ -1069,6 +1090,15 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
   const addNode = useCallback((type: string, parentId?: string) => {
     const nodeType = NODE_TYPES.find(t => t.type === type);
+    const baseMetadata = type === 'step' ? {
+      toolsForStep: [],
+      questions: [],
+      successIndicators: [],
+      redFlags: [],
+      learningGoals: learningProfile.goals,
+      skillLevel: learningProfile.skillLevel,
+      teachingNotes: `Style: ${learningProfile.style} • Pace: ${learningProfile.preferredPace}`
+    } : undefined;
     const newNode: CampaignNode = {
       id: `node-${Date.now()}`,
       type: type as CampaignNode['type'],
@@ -1080,12 +1110,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       height: 100,
       color: nodeType?.color || 'stone',
       children: type === 'folder' ? [] : undefined,
-      metadata: type === 'step' ? {
-        toolsForStep: [],
-        questions: [],
-        successIndicators: [],
-        redFlags: []
-      } : undefined
+      metadata: baseMetadata
     };
 
     setCampaign(prev => {
@@ -1109,7 +1134,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
     setEditingNode(newNode);
     toast({ title: `${nodeType?.label} added` });
-  }, []);
+  }, [learningProfile]);
 
   const addStoryNodeAfter = useCallback((nodeId: string) => {
     const nodeType = NODE_TYPES.find(t => t.type === 'step');
@@ -1127,7 +1152,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         toolsForStep: [],
         questions: [],
         successIndicators: [],
-        redFlags: []
+        redFlags: [],
+        learningGoals: learningProfile.goals,
+        skillLevel: learningProfile.skillLevel,
+        teachingNotes: `Style: ${learningProfile.style} • Pace: ${learningProfile.preferredPace}`
       }
     };
 
@@ -1149,7 +1177,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
     setSelectedNode(newNode.id);
     setIsUnsaved(true);
     toast({ title: 'Story step added', description: 'Linked to previous step.' });
-  }, []);
+  }, [learningProfile]);
 
   const addClueToNode = useCallback((nodeId: string, clueId: string) => {
     if (!clueId) return;
