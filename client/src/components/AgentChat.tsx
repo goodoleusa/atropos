@@ -494,6 +494,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setInput('');
     setPromptConfig(DEFAULT_PROMPT_CONFIG);
     setCaptureEnabled(false);
+    setContextCampaign('');
   };
 
   // Compress conversation context using AI
@@ -711,6 +712,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                       setShowCampaigns(false);
                       setActiveCampaign(null);
                       setCaptureEnabled(false);
+                      setContextCampaign('');
                     }}
                     className="w-full p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg hover:bg-amber-900/30 transition-all text-center"
                     data-testid="freeform-session"
@@ -751,6 +753,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                     setShowCampaigns(true);
                     setActiveCampaign(null);
                     setCaptureEnabled(false);
+                    setContextCampaign('');
                   }}
                   className="mt-3 text-stone-500 hover:text-teal-400 text-[10px] md:text-xs"
                 >
