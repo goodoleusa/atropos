@@ -10,9 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Bot, Zap, BarChart3, FileText, Target, 
-  MessageSquare, Beaker, GraduationCap, Settings, Send, Loader2, ExternalLink, Copy
+  MessageSquare, Beaker, GraduationCap, Settings, Send, Loader2, ExternalLink, Copy, Radar
 } from 'lucide-react';
 import { AgentChat } from '@/components/AgentChat';
+import { AtroposScanner } from '@/components/AtroposScanner';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { useReportContext } from '@/hooks/useReportContext';
 import { LEARNING_STYLES, LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS } from '@/config/learningConfig';
@@ -28,6 +29,7 @@ const QUICK_MODELS = [
 export default function InvestigationWorkspace() {
   const [activeTab, setActiveTab] = useState('chat');
   const [agentChatOpen, setAgentChatOpen] = useState(false);
+  const [atroposPayload, setAtroposPayload] = useState<string | undefined>(undefined);
   
   // Quick Lab state
   const [quickModel, setQuickModel] = useState(QUICK_MODELS[0].id);
@@ -158,6 +160,14 @@ Be concise but thorough. Focus on practical, actionable information.`;
               <Beaker className="w-4 h-4" />
               <span className="hidden sm:inline">AI Lab</span>
               <span className="sm:hidden">Lab</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="atropos" 
+              className="data-[state=active]:bg-red-900/50 data-[state=active]:text-red-400 min-h-[44px] gap-2"
+            >
+              <Radar className="w-4 h-4" />
+              <span className="hidden sm:inline">Atropos Scanner</span>
+              <span className="sm:hidden">Scan</span>
             </TabsTrigger>
             <TabsTrigger 
               value="learning" 
@@ -404,6 +414,34 @@ Be concise but thorough. Focus on practical, actionable information.`;
             </Card>
           </TabsContent>
 
+          {/* Atropos Scanner Tab */}
+          <TabsContent value="atropos" className="space-y-4">
+            <Card className="bg-gradient-to-br from-stone-900/80 to-stone-950/80 border-red-900/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-red-400">
+                  <Radar className="w-5 h-5" />
+                  Atropos Scanner
+                </CardTitle>
+                <p className="text-sm text-stone-400">
+                  Run OSINT scans, import results, and hand off to NEXUS for analysis.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <AtroposScanner 
+                  onAnalyzeWithNexus={(prompt, data) => {
+                    setAtroposPayload(prompt);
+                    setActiveTab('chat');
+                    setAgentChatOpen(true);
+                    toast({ 
+                      title: "Scan Data Ready", 
+                      description: "Opening NEXUS Agent to analyze findings" 
+                    });
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Learning Profile Tab */}
           <TabsContent value="learning" className="space-y-4">
             <Card className="bg-gradient-to-br from-stone-900/80 to-stone-950/80 border-amber-900/30">
@@ -517,7 +555,11 @@ Be concise but thorough. Focus on practical, actionable information.`;
       {/* Agent Chat Dialog */}
       <AgentChat 
         open={agentChatOpen} 
-        onOpenChange={setAgentChatOpen} 
+        onOpenChange={(open) => {
+          setAgentChatOpen(open);
+          if (!open) setAtroposPayload(undefined);
+        }}
+        initialPayload={atroposPayload}
       />
     </div>
   );
