@@ -119,9 +119,10 @@ const RELATION_TYPES: { type: RelationType; label: string; icon: string; color: 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  sessionToken?: string;
 }
 
-export default function CampaignDesigner({ open, onOpenChange }: Props) {
+export default function CampaignDesigner({ open, onOpenChange, sessionToken }: Props) {
   const [mode, setMode] = useState<'tree' | 'graph'>('tree');
   const [campaign, setCampaign] = useState<Campaign>({
     id: `campaign-${Date.now()}`,
@@ -142,6 +143,8 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   const [testRunMode, setTestRunMode] = useState(false);
   const [testCurrentNode, setTestCurrentNode] = useState<string | null>(null);
   const [testHistory, setTestHistory] = useState<string[]>([]);
+  const [testRunId, setTestRunId] = useState<string | null>(null);
+  const [testStartNode, setTestStartNode] = useState<string | null>(null);
   const [linkQuery, setLinkQuery] = useState('');
   const [showLinkSuggestions, setShowLinkSuggestions] = useState(false);
   const [showFileTree, setShowFileTree] = useState(true);
@@ -204,6 +207,85 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
       setBreadcrumbTrail([]);
     }
   }, [selectedNode, computeBreadcrumbs]);
+
+  const startTestRun = useCallback(async (startNodeId: string) => {
+    if (!startNodeId) return;
+
+    setTestRunMode(true);
+    setTestCurrentNode(startNodeId);
+    setTestHistory([startNodeId]);
+    setTestStartNode(startNodeId);
+
+    if (!sessionToken) return;
+
+    try {
+      const response = await fetch("/api/campaign-runs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionToken,
+          campaignId: campaign.id,
+          currentNodeId: startNodeId,
+          nodeHistory: [startNodeId],
+          visitedNodes: [startNodeId],
+          status: "active"
+        })
+      });
+
+      if (response.ok) {
+        const run = await response.json();
+        if (run?.runId) {
+          setTestRunId(run.runId);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to create campaign run:", error);
+    }
+  }, [campaign.id, sessionToken]);
+
+  const stopTestRun = useCallback(async (status: "paused" | "completed" | "abandoned" = "paused") => {
+    if (testRunId) {
+      try {
+        await fetch(`/api/campaign-runs/${testRunId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status })
+        });
+      } catch (error) {
+        console.error("Failed to update campaign run status:", error);
+      }
+    }
+
+    setTestRunMode(false);
+    setTestCurrentNode(null);
+    setTestHistory([]);
+    setTestRunId(null);
+    setTestStartNode(null);
+  }, [testRunId]);
+
+  useEffect(() => {
+    if (!testRunId || !testRunMode || !testCurrentNode) return;
+
+    const visitedNodes = Array.from(new Set(testHistory));
+
+    const syncRun = async () => {
+      try {
+        await fetch(`/api/campaign-runs/${testRunId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentNodeId: testCurrentNode,
+            nodeHistory: testHistory,
+            visitedNodes
+          })
+        });
+      } catch (error) {
+        console.error("Failed to sync campaign run:", error);
+      }
+    };
+
+    syncRun();
+  }, [testRunId, testRunMode, testCurrentNode, testHistory]);
 
   // Auto-create links from wikilinks in content
   const syncWikilinks = useCallback((nodeId: string, content: string) => {
@@ -1523,18 +1605,25 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   size="sm" 
                   variant={testRunMode ? 'default' : 'outline'} 
                   onClick={() => {
-                    if (!testRunMode && campaign.rootNodes.length > 0) {
-                      setTestRunMode(true);
-                      setTestCurrentNode(campaign.rootNodes[0]);
-                      setTestHistory([campaign.rootNodes[0]]);
+                    if (!testRunMode) {
+                      const startNode =
+                        selectedNode ||
+                        testStartNode ||
+                        campaign.rootNodes[0] ||
+                        campaign.nodes[0]?.id;
+
+                      if (!startNode) {
+                        toast({ title: "No nodes to test", description: "Add a node before starting test mode." });
+                        return;
+                      }
+
+                      startTestRun(startNode);
                     } else {
-                      setTestRunMode(false);
-                      setTestCurrentNode(null);
-                      setTestHistory([]);
+                      stopTestRun();
                     }
                   }}
                   className={`min-h-[44px] min-w-[44px] px-3 ${testRunMode ? 'bg-teal-700 text-white' : 'border-teal-800 text-teal-400'}`}
-                  disabled={campaign.rootNodes.length === 0}
+                  disabled={campaign.nodes.length === 0}
                   data-testid="test-run-btn"
                 >
                   {testRunMode ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -2321,8 +2410,16 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       size="sm"
                       variant="ghost"
                       onClick={() => {
-                        setTestCurrentNode(campaign.rootNodes[0]);
-                        setTestHistory([campaign.rootNodes[0]]);
+                        const startNode =
+                          testStartNode ||
+                          campaign.rootNodes[0] ||
+                          campaign.nodes[0]?.id;
+
+                        if (startNode) {
+                          setTestCurrentNode(startNode);
+                          setTestHistory([startNode]);
+                          setTestStartNode(startNode);
+                        }
                       }}
                       className="min-h-[44px] min-w-[44px] text-teal-400"
                       data-testid="test-restart-btn"
@@ -2339,6 +2436,28 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   
                   return currentNode ? (
                     <div className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs text-stone-500">Start from</span>
+                        <Select
+                          value={testStartNode || currentNode.id}
+                          onValueChange={(nodeId) => {
+                            setTestStartNode(nodeId);
+                            setTestCurrentNode(nodeId);
+                            setTestHistory([nodeId]);
+                          }}
+                        >
+                          <SelectTrigger className="bg-black/50 border-teal-700 text-stone-300 min-h-[36px] w-[220px]">
+                            <SelectValue placeholder="Select start node..." />
+                          </SelectTrigger>
+                          <SelectContent className="bg-stone-900 border-teal-700">
+                            {campaign.nodes.map(node => (
+                              <SelectItem key={node.id} value={node.id} className="text-stone-300">
+                                {node.title || node.id.slice(0, 8)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <div className="flex items-center gap-2">
                         <Badge className={
                           currentNode.color === 'amber' ? 'bg-amber-700 text-white' :
@@ -2381,10 +2500,35 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         <Badge className="bg-amber-900 text-amber-300">End of flow - no outgoing links</Badge>
                       )}
 
-                      <div className="flex items-center gap-2 text-xs text-stone-500 pt-2 border-t border-teal-900">
-                        <span>Step {testHistory.length}</span>
-                        <span>•</span>
-                        <span>Path: {testHistory.map(id => campaign.nodes.find(n => n.id === id)?.title || 'Unknown').join(' → ')}</span>
+                      <div className="pt-2 border-t border-teal-900">
+                        <div className="flex items-center gap-2 text-xs text-stone-500">
+                          <span>Step {testHistory.length}</span>
+                          <span>•</span>
+                          <span>History</span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {testHistory.map((id, index) => {
+                            const title = campaign.nodes.find(n => n.id === id)?.title || 'Unknown';
+                            return (
+                              <button
+                                key={`${id}-${index}`}
+                                onClick={() => {
+                                  const newHistory = testHistory.slice(0, index + 1);
+                                  setTestHistory(newHistory);
+                                  setTestCurrentNode(id);
+                                }}
+                                className={`text-[10px] px-2 py-1 rounded border ${
+                                  index === testHistory.length - 1
+                                    ? 'border-teal-600 text-teal-300 bg-teal-900/30'
+                                    : 'border-stone-700 text-stone-400 hover:text-stone-200'
+                                }`}
+                                data-testid={`test-history-${index}`}
+                              >
+                                {index + 1}. {title}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   ) : null;
@@ -2406,6 +2550,15 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 </div>
 
                 <div className="space-y-6 pb-20 sm:pb-0">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => startTestRun(editingNode.id)}
+                    className="w-full border-teal-800 text-teal-300 hover:bg-teal-900/30 min-h-[44px]"
+                    data-testid="test-from-node-btn"
+                  >
+                    <Play className="w-4 h-4 mr-2" /> Playtest from this node
+                  </Button>
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Node Type</label>
                     <Select

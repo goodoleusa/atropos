@@ -1499,7 +1499,11 @@ export default function AdminDashboard() {
       
       {/* API Playground Modal */}
       <ApiPlayground open={apiPlaygroundOpen} onOpenChange={setApiPlaygroundOpen} />
-      <CampaignDesigner open={campaignDesignerOpen} onOpenChange={setCampaignDesignerOpen} />
+      <CampaignDesigner
+        open={campaignDesignerOpen}
+        onOpenChange={setCampaignDesignerOpen}
+        sessionToken={gameState?.sessionToken}
+      />
     </div>
   );
 }
