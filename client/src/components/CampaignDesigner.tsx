@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -119,9 +120,16 @@ const RELATION_TYPES: { type: RelationType; label: string; icon: string; color: 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  sessionToken?: string;
 }
 
-export default function CampaignDesigner({ open, onOpenChange }: Props) {
+export default function CampaignDesigner({ open, onOpenChange, sessionToken }: Props) {
+  const learningProfile = useLearningStore(state => ({
+    goals: state.goals,
+    skillLevel: state.skillLevel,
+    style: state.style,
+    preferredPace: state.preferredPace
+  }));
   const [mode, setMode] = useState<'tree' | 'graph'>('tree');
   const [campaign, setCampaign] = useState<Campaign>({
     id: `campaign-${Date.now()}`,
@@ -142,6 +150,8 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   const [testRunMode, setTestRunMode] = useState(false);
   const [testCurrentNode, setTestCurrentNode] = useState<string | null>(null);
   const [testHistory, setTestHistory] = useState<string[]>([]);
+  const [testRunId, setTestRunId] = useState<string | null>(null);
+  const [testStartNode, setTestStartNode] = useState<string | null>(null);
   const [linkQuery, setLinkQuery] = useState('');
   const [showLinkSuggestions, setShowLinkSuggestions] = useState(false);
   const [showFileTree, setShowFileTree] = useState(true);
@@ -151,7 +161,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
   const [sharedClues, setSharedClues] = useState<SharedClue[]>([]);
   const [zoom, setZoom] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [viewMode, setViewMode] = useState<'canvas' | 'tree' | 'clues' | 'overview'>('canvas');
+  const [viewMode, setViewMode] = useState<'canvas' | 'story' | 'tree' | 'clues' | 'overview'>('canvas');
   const [breadcrumbTrail, setBreadcrumbTrail] = useState<string[]>([]);
 
   // Wikilink parsing - extract [[Node Title]] links from content
@@ -205,29 +215,187 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     }
   }, [selectedNode, computeBreadcrumbs]);
 
+  // Default to story view on small screens
+  useEffect(() => {
+    if (open && window.innerWidth < 640) {
+      setViewMode('story');
+    }
+  }, [open]);
+
+  const startTestRun = useCallback(async (startNodeId: string) => {
+    if (!startNodeId) return;
+
+    setTestRunMode(true);
+    setTestCurrentNode(startNodeId);
+    setTestHistory([startNodeId]);
+    setTestStartNode(startNodeId);
+
+    if (!sessionToken) return;
+
+    try {
+      const response = await fetch("/api/campaign-runs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionToken,
+          campaignId: campaign.id,
+          currentNodeId: startNodeId,
+          nodeHistory: [startNodeId],
+          visitedNodes: [startNodeId],
+          status: "active"
+        })
+      });
+
+      if (response.ok) {
+        const run = await response.json();
+        if (run?.runId) {
+          setTestRunId(run.runId);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to create campaign run:", error);
+    }
+  }, [campaign.id, sessionToken]);
+
+  const stopTestRun = useCallback(async (status: "paused" | "completed" | "abandoned" = "paused") => {
+    if (testRunId) {
+      try {
+        await fetch(`/api/campaign-runs/${testRunId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status })
+        });
+      } catch (error) {
+        console.error("Failed to update campaign run status:", error);
+      }
+    }
+
+    setTestRunMode(false);
+    setTestCurrentNode(null);
+    setTestHistory([]);
+    setTestRunId(null);
+    setTestStartNode(null);
+  }, [testRunId]);
+
+  useEffect(() => {
+    if (!testRunId || !testRunMode || !testCurrentNode) return;
+
+    const visitedNodes = Array.from(new Set(testHistory));
+
+    const syncRun = async () => {
+      try {
+        await fetch(`/api/campaign-runs/${testRunId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentNodeId: testCurrentNode,
+            nodeHistory: testHistory,
+            visitedNodes
+          })
+        });
+      } catch (error) {
+        console.error("Failed to sync campaign run:", error);
+      }
+    };
+
+    syncRun();
+  }, [testRunId, testRunMode, testCurrentNode, testHistory]);
+
   // Auto-create links from wikilinks in content
   const syncWikilinks = useCallback((nodeId: string, content: string) => {
     const linkTitles = parseWikilinks(content);
-    const newLinks: CampaignLink[] = [];
-    linkTitles.forEach(title => {
-      const target = findNodeByTitle(title);
-      if (target && target.id !== nodeId) {
-        const existingLink = campaign.links.find(l => l.source === nodeId && l.target === target.id);
-        if (!existingLink) {
-          newLinks.push({
-            id: `link-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-            source: nodeId,
-            target: target.id,
-            color: 'stone',
-            label: 'wikilink'
-          });
+    if (linkTitles.length === 0) return;
+
+    let createdNodes = 0;
+    let createdLinks = 0;
+
+    setCampaign(prev => {
+      const sourceNode = prev.nodes.find(n => n.id === nodeId);
+      const newNodes: CampaignNode[] = [];
+      const newLinks: CampaignLink[] = [];
+      const createdTitleSet = new Set<string>();
+
+      linkTitles.forEach((rawTitle, index) => {
+        const title = rawTitle.trim();
+        if (!title) return;
+        const normalized = title.toLowerCase();
+
+        const existing =
+          prev.nodes.find(n => n.title.toLowerCase() === normalized) ||
+          newNodes.find(n => n.title.toLowerCase() === normalized);
+
+        let targetNode = existing;
+
+        if (!targetNode && !createdTitleSet.has(normalized)) {
+          const baseX = sourceNode ? sourceNode.x + 260 : 160;
+          const baseY = sourceNode ? sourceNode.y + 40 + index * 140 : 160 + index * 140;
+          const nodeType = NODE_TYPES.find(t => t.type === 'step');
+
+          targetNode = {
+            id: `node-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            type: 'step',
+            title,
+            content: '',
+            x: baseX,
+            y: baseY,
+            width: 200,
+            height: 100,
+            color: nodeType?.color || 'amber',
+            metadata: {
+              toolsForStep: [],
+              questions: [],
+              successIndicators: [],
+              redFlags: []
+            }
+          };
+
+          newNodes.push(targetNode);
+          createdTitleSet.add(normalized);
         }
+
+        if (targetNode && targetNode.id !== nodeId) {
+          const alreadyLinked =
+            prev.links.some(l => l.source === nodeId && l.target === targetNode?.id) ||
+            newLinks.some(l => l.source === nodeId && l.target === targetNode?.id);
+
+          if (!alreadyLinked) {
+            newLinks.push({
+              id: `link-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              source: nodeId,
+              target: targetNode.id,
+              color: 'stone',
+              label: 'wikilink',
+              relation: 'next'
+            });
+          }
+        }
+      });
+
+      createdNodes = newNodes.length;
+      createdLinks = newLinks.length;
+
+      if (newNodes.length === 0 && newLinks.length === 0) {
+        return prev;
       }
+
+      return {
+        ...prev,
+        nodes: [...prev.nodes, ...newNodes],
+        links: [...prev.links, ...newLinks],
+        rootNodes: prev.rootNodes.filter(id => !newNodes.some(n => n.id === id))
+      };
     });
-    if (newLinks.length > 0) {
-      setCampaign(prev => ({ ...prev, links: [...prev.links, ...newLinks] }));
+
+    if (createdNodes > 0) {
+      toast({ title: "Wikilinks created", description: `Added ${createdNodes} node${createdNodes === 1 ? "" : "s"} from links.` });
+    } else if (createdLinks > 0) {
+      toast({ title: "Wikilinks synced", description: `Linked ${createdLinks} node${createdLinks === 1 ? "" : "s"}.` });
     }
-  }, [campaign.links, parseWikilinks, findNodeByTitle]);
+
+    if (createdNodes > 0 || createdLinks > 0) {
+      setIsUnsaved(true);
+    }
+  }, [parseWikilinks]);
 
   // Load saved campaigns from database on mount
   useEffect(() => {
@@ -454,6 +622,41 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
         { id: 'l5', source: 'n4', target: 'n5', color: 'amber' }
       ]
     },
+    { id: 'story', name: 'Story Starter (Twine-Style)', icon: '🧭', difficulty: 'any',
+      description: 'Narrative flow with hooks, choices, and a twist',
+      nodes: [
+        { id: 'n1', type: 'step' as const, title: 'Opening Hook', content: 'Set the scene and tone. What is strange, urgent, or tempting?', x: 100, y: 150, width: 220, height: 110, color: 'amber',
+          metadata: { questions: ['What is the world like right now?', 'What is the promise to the player?'], successIndicators: ['Player is curious and wants to continue'] }
+        },
+        { id: 'n2', type: 'step' as const, title: 'Inciting Incident', content: 'The moment that breaks normal and forces action.', x: 380, y: 150, width: 220, height: 110, color: 'amber',
+          metadata: { questions: ['What changes? Who is threatened?'], successIndicators: ['Player has a clear goal'] }
+        },
+        { id: 'n3', type: 'decision' as const, title: 'First Choice', content: 'Two believable paths forward. Let the player choose.', x: 660, y: 150, width: 220, height: 110, color: 'purple',
+          metadata: { condition: 'Choice A = follow the lead. Choice B = take the risky detour.' }
+        },
+        { id: 'n4', type: 'step' as const, title: 'Branch A: Follow the Lead', content: 'Straightforward investigation. Reward with a hint.', x: 940, y: 60, width: 240, height: 110, color: 'amber',
+          metadata: { questions: ['What evidence is found?'], successIndicators: ['Player learns something concrete'] }
+        },
+        { id: 'n5', type: 'step' as const, title: 'Branch B: Risky Detour', content: 'Higher risk, bigger reward. Show a cost.', x: 940, y: 240, width: 240, height: 110, color: 'amber',
+          metadata: { questions: ['What is the setback or danger?'], successIndicators: ['Player feels the stakes'] }
+        },
+        { id: 'n6', type: 'output' as const, title: 'Reveal / Clue', content: 'Drop a clue that reframes the mystery.', x: 1240, y: 150, width: 220, height: 110, color: 'purple' },
+        { id: 'n7', type: 'decision' as const, title: 'Twist Decision', content: 'A new complication appears. Choose the next move.', x: 1500, y: 150, width: 220, height: 110, color: 'purple',
+          metadata: { condition: 'If clue points to insider, branch to social route. If external threat, branch to technical route.' }
+        },
+        { id: 'n8', type: 'output' as const, title: 'Resolution / Next Chapter', content: 'What changes now? Set up the next act.', x: 1760, y: 150, width: 240, height: 110, color: 'purple' }
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
+        { id: 'l2', source: 'n2', target: 'n3', color: 'amber' },
+        { id: 'l3', source: 'n3', target: 'n4', color: 'purple', label: 'Follow lead' },
+        { id: 'l4', source: 'n3', target: 'n5', color: 'purple', label: 'Risky detour' },
+        { id: 'l5', source: 'n4', target: 'n6', color: 'amber' },
+        { id: 'l6', source: 'n5', target: 'n6', color: 'amber' },
+        { id: 'l7', source: 'n6', target: 'n7', color: 'teal' },
+        { id: 'l8', source: 'n7', target: 'n8', color: 'teal' }
+      ]
+    },
     { id: 'blank', name: 'Blank Canvas', icon: '📝', difficulty: 'any', description: 'Start from scratch', nodes: [], links: [] }
   ], []);
 
@@ -461,11 +664,26 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     const template = CAMPAIGN_TEMPLATES.find(t => t.id === templateId);
     if (!template) return;
     const newId = `campaign-${Date.now()}`;
+
+    const withLearningDefaults = (node: CampaignNode) => {
+      const meta = { ...(node.metadata || {}) };
+      if (!meta.learningGoals || meta.learningGoals.length === 0) {
+        meta.learningGoals = learningProfile.goals;
+      }
+      if (!meta.skillLevel) {
+        meta.skillLevel = learningProfile.skillLevel;
+      }
+      if (!meta.teachingNotes) {
+        meta.teachingNotes = `Style: ${learningProfile.style} • Pace: ${learningProfile.preferredPace}`;
+      }
+      return { ...node, metadata: meta };
+    };
+
     setCampaign({
       id: newId,
       name: `${template.name} Campaign`,
       description: template.description,
-      nodes: template.nodes.map(n => ({ ...n, id: `${newId}-${n.id}` })),
+      nodes: template.nodes.map(n => withLearningDefaults({ ...n, id: `${newId}-${n.id}` })),
       links: template.links.map(l => ({ 
         ...l, 
         id: `${newId}-${l.id}`,
@@ -477,7 +695,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
     setSelectedNode(null);
     setIsUnsaved(true);
     toast({ title: 'Template Applied', description: `Created from "${template.name}" template` });
-  }, [CAMPAIGN_TEMPLATES]);
+  }, [CAMPAIGN_TEMPLATES, learningProfile]);
 
   // Auto-organize nodes in a tree/grid layout
   const autoOrganize = useCallback(() => {
@@ -872,6 +1090,15 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
 
   const addNode = useCallback((type: string, parentId?: string) => {
     const nodeType = NODE_TYPES.find(t => t.type === type);
+    const baseMetadata = type === 'step' ? {
+      toolsForStep: [],
+      questions: [],
+      successIndicators: [],
+      redFlags: [],
+      learningGoals: learningProfile.goals,
+      skillLevel: learningProfile.skillLevel,
+      teachingNotes: `Style: ${learningProfile.style} • Pace: ${learningProfile.preferredPace}`
+    } : undefined;
     const newNode: CampaignNode = {
       id: `node-${Date.now()}`,
       type: type as CampaignNode['type'],
@@ -883,12 +1110,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
       height: 100,
       color: nodeType?.color || 'stone',
       children: type === 'folder' ? [] : undefined,
-      metadata: type === 'step' ? {
-        toolsForStep: [],
-        questions: [],
-        successIndicators: [],
-        redFlags: []
-      } : undefined
+      metadata: baseMetadata
     };
 
     setCampaign(prev => {
@@ -912,7 +1134,126 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
 
     setEditingNode(newNode);
     toast({ title: `${nodeType?.label} added` });
+  }, [learningProfile]);
+
+  const addStoryNodeAfter = useCallback((nodeId: string) => {
+    const nodeType = NODE_TYPES.find(t => t.type === 'step');
+    const newNode: CampaignNode = {
+      id: `node-${Date.now()}`,
+      type: 'step',
+      title: 'New Story Step',
+      content: '',
+      x: 120 + Math.random() * 180,
+      y: 120 + Math.random() * 180,
+      width: 220,
+      height: 110,
+      color: nodeType?.color || 'amber',
+      metadata: {
+        toolsForStep: [],
+        questions: [],
+        successIndicators: [],
+        redFlags: [],
+        learningGoals: learningProfile.goals,
+        skillLevel: learningProfile.skillLevel,
+        teachingNotes: `Style: ${learningProfile.style} • Pace: ${learningProfile.preferredPace}`
+      }
+    };
+
+    setCampaign(prev => ({
+      ...prev,
+      nodes: [...prev.nodes, newNode],
+      links: [
+        ...prev.links,
+        {
+          id: `link-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          source: nodeId,
+          target: newNode.id,
+          color: 'amber',
+          relation: 'next'
+        }
+      ]
+    }));
+    setEditingNode(newNode);
+    setSelectedNode(newNode.id);
+    setIsUnsaved(true);
+    toast({ title: 'Story step added', description: 'Linked to previous step.' });
+  }, [learningProfile]);
+
+  const addClueToNode = useCallback((nodeId: string, clueId: string) => {
+    if (!clueId) return;
+    setCampaign(prev => ({
+      ...prev,
+      nodes: prev.nodes.map(n => {
+        if (n.id !== nodeId) return n;
+        const current = n.metadata?.linkedClues || [];
+        if (current.includes(clueId)) return n;
+        return {
+          ...n,
+          metadata: { ...n.metadata, linkedClues: [...current, clueId] }
+        };
+      })
+    }));
+    setIsUnsaved(true);
   }, []);
+
+  const removeClueFromNode = useCallback((nodeId: string, clueId: string) => {
+    setCampaign(prev => ({
+      ...prev,
+      nodes: prev.nodes.map(n => {
+        if (n.id !== nodeId) return n;
+        const current = n.metadata?.linkedClues || [];
+        return {
+          ...n,
+          metadata: { ...n.metadata, linkedClues: current.filter(c => c !== clueId) }
+        };
+      })
+    }));
+    setIsUnsaved(true);
+  }, []);
+
+  const storyOrder = useMemo(() => {
+    if (campaign.nodes.length === 0) return [];
+
+    const order: CampaignNode[] = [];
+    const visited = new Set<string>();
+    const linksBySource = new Map<string, string[]>();
+    const incoming = new Set<string>();
+
+    campaign.links.forEach(link => {
+      incoming.add(link.target);
+      if (!linksBySource.has(link.source)) {
+        linksBySource.set(link.source, []);
+      }
+      linksBySource.get(link.source)!.push(link.target);
+    });
+
+    const roots =
+      campaign.rootNodes.length > 0
+        ? campaign.rootNodes
+        : campaign.nodes.filter(n => !incoming.has(n.id)).map(n => n.id);
+
+    const walk = (rootId: string) => {
+      const queue = [rootId];
+      while (queue.length > 0) {
+        const currentId = queue.shift()!;
+        if (visited.has(currentId)) continue;
+        visited.add(currentId);
+        const node = campaign.nodes.find(n => n.id === currentId);
+        if (node) order.push(node);
+        const children = linksBySource.get(currentId) || [];
+        children.forEach(childId => {
+          if (!visited.has(childId)) queue.push(childId);
+        });
+      }
+    };
+
+    roots.forEach(walk);
+    campaign.nodes.forEach(node => {
+      if (!visited.has(node.id)) order.push(node);
+    });
+
+    return order;
+  }, [campaign.nodes, campaign.links, campaign.rootNodes]);
 
   const updateNode = useCallback((nodeId: string, updates: Partial<CampaignNode>) => {
     setCampaign(prev => ({
@@ -1523,18 +1864,25 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   size="sm" 
                   variant={testRunMode ? 'default' : 'outline'} 
                   onClick={() => {
-                    if (!testRunMode && campaign.rootNodes.length > 0) {
-                      setTestRunMode(true);
-                      setTestCurrentNode(campaign.rootNodes[0]);
-                      setTestHistory([campaign.rootNodes[0]]);
+                    if (!testRunMode) {
+                      const startNode =
+                        selectedNode ||
+                        testStartNode ||
+                        campaign.rootNodes[0] ||
+                        campaign.nodes[0]?.id;
+
+                      if (!startNode) {
+                        toast({ title: "No nodes to test", description: "Add a node before starting test mode." });
+                        return;
+                      }
+
+                      startTestRun(startNode);
                     } else {
-                      setTestRunMode(false);
-                      setTestCurrentNode(null);
-                      setTestHistory([]);
+                      stopTestRun();
                     }
                   }}
                   className={`min-h-[44px] min-w-[44px] px-3 ${testRunMode ? 'bg-teal-700 text-white' : 'border-teal-800 text-teal-400'}`}
-                  disabled={campaign.rootNodes.length === 0}
+                  disabled={campaign.nodes.length === 0}
                   data-testid="test-run-btn"
                 >
                   {testRunMode ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -1542,7 +1890,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 </Button>
                 <div className="border-l border-stone-700 h-6 mx-1" />
                 {/* View Mode Selector */}
-                {(['canvas', 'clues', 'overview'] as const).map(v => (
+                {(['story', 'canvas', 'clues', 'overview'] as const).map(v => (
                   <Button
                     key={v}
                     size="sm"
@@ -1550,7 +1898,7 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                     onClick={() => setViewMode(v)}
                     className={`min-h-[44px] px-2 capitalize ${viewMode === v ? 'bg-cyan-800 text-white' : 'text-stone-500'}`}
                   >
-                    {v === 'canvas' ? <Layers className="w-4 h-4" /> : v === 'clues' ? <Key className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {v === 'story' ? <FileText className="w-4 h-4" /> : v === 'canvas' ? <Layers className="w-4 h-4" /> : v === 'clues' ? <Key className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     <span className="ml-1 hidden sm:inline text-xs">{v}</span>
                   </Button>
                 ))}
@@ -1925,7 +2273,149 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 </div>
               )}
               {/* Clues View - All clues with campaign connections */}
-              {viewMode === 'clues' ? (
+              {viewMode === 'story' ? (
+                <ScrollArea className="h-full p-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-amber-500 font-bold flex items-center gap-2">
+                        <FileText className="w-4 h-4" /> Story Flow
+                      </h3>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => addNode('step')}
+                        className="border-amber-700 text-amber-400"
+                      >
+                        <Plus className="w-3 h-3 mr-1" /> Add Step
+                      </Button>
+                    </div>
+
+                    {storyOrder.length === 0 ? (
+                      <Card className="bg-stone-900/30 border-stone-800">
+                        <CardContent className="p-6 text-center text-stone-500 text-sm">
+                          Start your story with the first step.
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <div className="space-y-3">
+                        {storyOrder.map((node, index) => {
+                          const nextLinks = campaign.links.filter(l => l.source === node.id);
+                          const nextNodes = nextLinks.map(l => campaign.nodes.find(n => n.id === l.target)).filter(Boolean) as CampaignNode[];
+                          const prevNodes = campaign.links
+                            .filter(l => l.target === node.id)
+                            .map(l => campaign.nodes.find(n => n.id === l.source))
+                            .filter(Boolean) as CampaignNode[];
+                          const linkedClues = node.metadata?.linkedClues || [];
+                          const clueDatalistId = `clue-options-${node.id}`;
+
+                          return (
+                            <Card key={node.id} className="bg-stone-900/30 border-stone-800">
+                              <CardHeader className="pb-2">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-400">
+                                        Step {index + 1}
+                                      </Badge>
+                                      <Badge className={
+                                        node.color === 'amber' ? 'bg-amber-700 text-white' :
+                                        node.color === 'purple' ? 'bg-purple-700 text-white' :
+                                        node.color === 'teal' ? 'bg-teal-700 text-white' :
+                                        'bg-stone-700 text-white'
+                                      }>
+                                        {node.type}
+                                      </Badge>
+                                    </div>
+                                    <button
+                                      onClick={() => setEditingNode(node)}
+                                      className="text-amber-400 text-sm font-bold hover:text-amber-300 text-left"
+                                    >
+                                      {node.title}
+                                    </button>
+                                    <p className="text-stone-500 text-xs line-clamp-3">{node.content || 'No content yet.'}</p>
+                                  </div>
+                                  <div className="flex flex-col gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setEditingNode(node)}
+                                      className="border-amber-700 text-amber-400"
+                                    >
+                                      <Edit3 className="w-3 h-3 mr-1" /> Edit
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => addStoryNodeAfter(node.id)}
+                                      className="text-teal-400"
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" /> {node.type === 'decision' ? 'Add Branch' : 'Add Next'}
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardHeader>
+                              <CardContent className="space-y-3 text-xs">
+                                <div className="flex flex-wrap gap-2">
+                                  {prevNodes.length > 0 && (
+                                    <div className="text-stone-500">
+                                      From: {prevNodes.map(n => n.title).join(', ')}
+                                    </div>
+                                  )}
+                                  {nextNodes.length > 0 && (
+                                    <div className="text-stone-500">
+                                      Next: {nextNodes.map(n => n.title).join(', ')}
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div>
+                                  <Label className="text-[10px] text-stone-500 uppercase">Linked Clues</Label>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {linkedClues.length === 0 && (
+                                      <span className="text-[10px] text-stone-600">No clues linked</span>
+                                    )}
+                                    {linkedClues.map(clueId => (
+                                      <Badge
+                                        key={clueId}
+                                        variant="outline"
+                                        className="text-[9px] border-purple-700 text-purple-400 cursor-pointer hover:bg-red-900/30"
+                                        onClick={() => removeClueFromNode(node.id, clueId)}
+                                      >
+                                        🔗 {clueId} ×
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                  <div className="mt-2">
+                                    <Input
+                                      list={clueDatalistId}
+                                      placeholder="Link clue by ID..."
+                                      className="bg-black/50 border-stone-700 text-xs min-h-[36px]"
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          const val = (e.target as HTMLInputElement).value.trim();
+                                          if (val) {
+                                            addClueToNode(node.id, val);
+                                            (e.target as HTMLInputElement).value = '';
+                                          }
+                                        }
+                                      }}
+                                    />
+                                    <datalist id={clueDatalistId}>
+                                      {sharedClues.map(clue => (
+                                        <option key={clue.id} value={clue.id}>{clue.name}</option>
+                                      ))}
+                                    </datalist>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              ) : viewMode === 'clues' ? (
                 <ScrollArea className="h-full p-4">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -2321,8 +2811,16 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                       size="sm"
                       variant="ghost"
                       onClick={() => {
-                        setTestCurrentNode(campaign.rootNodes[0]);
-                        setTestHistory([campaign.rootNodes[0]]);
+                        const startNode =
+                          testStartNode ||
+                          campaign.rootNodes[0] ||
+                          campaign.nodes[0]?.id;
+
+                        if (startNode) {
+                          setTestCurrentNode(startNode);
+                          setTestHistory([startNode]);
+                          setTestStartNode(startNode);
+                        }
                       }}
                       className="min-h-[44px] min-w-[44px] text-teal-400"
                       data-testid="test-restart-btn"
@@ -2339,6 +2837,28 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                   
                   return currentNode ? (
                     <div className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs text-stone-500">Start from</span>
+                        <Select
+                          value={testStartNode || currentNode.id}
+                          onValueChange={(nodeId) => {
+                            setTestStartNode(nodeId);
+                            setTestCurrentNode(nodeId);
+                            setTestHistory([nodeId]);
+                          }}
+                        >
+                          <SelectTrigger className="bg-black/50 border-teal-700 text-stone-300 min-h-[36px] w-[220px]">
+                            <SelectValue placeholder="Select start node..." />
+                          </SelectTrigger>
+                          <SelectContent className="bg-stone-900 border-teal-700">
+                            {campaign.nodes.map(node => (
+                              <SelectItem key={node.id} value={node.id} className="text-stone-300">
+                                {node.title || node.id.slice(0, 8)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <div className="flex items-center gap-2">
                         <Badge className={
                           currentNode.color === 'amber' ? 'bg-amber-700 text-white' :
@@ -2381,10 +2901,35 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                         <Badge className="bg-amber-900 text-amber-300">End of flow - no outgoing links</Badge>
                       )}
 
-                      <div className="flex items-center gap-2 text-xs text-stone-500 pt-2 border-t border-teal-900">
-                        <span>Step {testHistory.length}</span>
-                        <span>•</span>
-                        <span>Path: {testHistory.map(id => campaign.nodes.find(n => n.id === id)?.title || 'Unknown').join(' → ')}</span>
+                      <div className="pt-2 border-t border-teal-900">
+                        <div className="flex items-center gap-2 text-xs text-stone-500">
+                          <span>Step {testHistory.length}</span>
+                          <span>•</span>
+                          <span>History</span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {testHistory.map((id, index) => {
+                            const title = campaign.nodes.find(n => n.id === id)?.title || 'Unknown';
+                            return (
+                              <button
+                                key={`${id}-${index}`}
+                                onClick={() => {
+                                  const newHistory = testHistory.slice(0, index + 1);
+                                  setTestHistory(newHistory);
+                                  setTestCurrentNode(id);
+                                }}
+                                className={`text-[10px] px-2 py-1 rounded border ${
+                                  index === testHistory.length - 1
+                                    ? 'border-teal-600 text-teal-300 bg-teal-900/30'
+                                    : 'border-stone-700 text-stone-400 hover:text-stone-200'
+                                }`}
+                                data-testid={`test-history-${index}`}
+                              >
+                                {index + 1}. {title}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   ) : null;
@@ -2406,6 +2951,15 @@ export default function CampaignDesigner({ open, onOpenChange }: Props) {
                 </div>
 
                 <div className="space-y-6 pb-20 sm:pb-0">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => startTestRun(editingNode.id)}
+                    className="w-full border-teal-800 text-teal-300 hover:bg-teal-900/30 min-h-[44px]"
+                    data-testid="test-from-node-btn"
+                  >
+                    <Play className="w-4 h-4 mr-2" /> Playtest from this node
+                  </Button>
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Node Type</label>
                     <Select

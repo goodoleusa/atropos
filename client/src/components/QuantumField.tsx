@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '@/hooks/useGameSession';
+import { QUANTUM_EVENTS, QUANTUM_MESSAGES } from '@/config/quantumConfig';
 
 interface QuantumState {
   probability: number;
@@ -18,26 +19,17 @@ interface ProbabilityEvent {
   modifiers: string[];
 }
 
-const QUANTUM_MESSAGES = [
-  "The wave function trembles...",
-  "Probability fields shifting...",
-  "Observer effect detected.",
-  "Superposition destabilizing...",
-  "Entanglement established.",
-  "Decoherence imminent.",
-  "Schrödinger's data: both found and lost.",
-  "Quantum tunneling in progress...",
-];
-
-const PROBABILITY_EVENTS: ProbabilityEvent[] = [
-  { id: 'clue-spawn', name: 'Hidden Clue Manifestation', description: 'A clue materializes from the probability field', baseProb: 0.15, currentProb: 0.15, modifiers: [] },
-  { id: 'glitch-surge', name: 'Reality Glitch', description: 'The system experiences temporal instability', baseProb: 0.08, currentProb: 0.08, modifiers: [] },
-  { id: 'oracle-vision', name: 'Oracle Transmission', description: 'A mystical entity attempts contact', baseProb: 0.12, currentProb: 0.12, modifiers: [] },
-  { id: 'path-reveal', name: 'Hidden Path Collapse', description: 'A secret route becomes observable', baseProb: 0.05, currentProb: 0.05, modifiers: [] },
-];
+const DEFAULT_EVENTS: ProbabilityEvent[] = QUANTUM_EVENTS.map(event => ({
+  ...event,
+  baseProb: event.baseProb / 100,
+  currentProb: event.baseProb / 100,
+  modifiers: []
+}));
 
 export const QuantumField = () => {
   const { gameState, collectClue } = useGame();
+  const [quantumMessages, setQuantumMessages] = useState<string[]>(QUANTUM_MESSAGES);
+  const [probabilityEvents, setProbabilityEvents] = useState<ProbabilityEvent[]>(DEFAULT_EVENTS);
   const [quantumState, setQuantumState] = useState<QuantumState>({
     probability: 0.5,
     collapsed: false,
@@ -46,6 +38,48 @@ export const QuantumField = () => {
   });
   const [activeEvent, setActiveEvent] = useState<ProbabilityEvent | null>(null);
   const [showMeter, setShowMeter] = useState(false);
+
+  useEffect(() => {
+    const loadQuantumConfig = async () => {
+      try {
+        const [messagesRes, eventsRes] = await Promise.all([
+          fetch('/api/quantum/messages'),
+          fetch('/api/quantum/events')
+        ]);
+
+        if (messagesRes.ok) {
+          const messages = await messagesRes.json();
+          const enabledMessages = messages
+            .filter((m: { enabled?: boolean }) => m.enabled !== false)
+            .map((m: { message: string }) => m.message);
+          if (enabledMessages.length > 0) {
+            setQuantumMessages(enabledMessages);
+          }
+        }
+
+        if (eventsRes.ok) {
+          const events = await eventsRes.json();
+          const enabledEvents = events
+            .filter((e: { enabled?: boolean }) => e.enabled !== false)
+            .map((e: { id: string; name: string; description: string; baseProb: number }) => ({
+              id: e.id,
+              name: e.name,
+              description: e.description,
+              baseProb: Math.max(0, Math.min(1, (e.baseProb || 0) / 100)),
+              currentProb: Math.max(0, Math.min(1, (e.baseProb || 0) / 100)),
+              modifiers: []
+            }));
+          if (enabledEvents.length > 0) {
+            setProbabilityEvents(enabledEvents);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load quantum config:', error);
+      }
+    };
+
+    loadQuantumConfig();
+  }, []);
   // Calculate probability modifiers based on player actions
   const calculateModifiers = useCallback(() => {
     const clueCount = gameState.inventory.length;
@@ -73,14 +107,16 @@ export const QuantumField = () => {
 
   // Probability collapse events
   useEffect(() => {
+    if (probabilityEvents.length === 0) return;
+
     const modifiers = calculateModifiers();
-    
+
     const collapseInterval = setInterval(() => {
       const roll = Math.random();
-      
-      for (const event of PROBABILITY_EVENTS) {
+
+      for (const event of probabilityEvents) {
         const adjustedProb = modifiers[event.id] || event.baseProb;
-        
+
         if (roll < adjustedProb * 0.1) { // 10% of adjusted probability per check
           setActiveEvent({ ...event, currentProb: adjustedProb });
           setQuantumState(prev => ({
@@ -88,7 +124,7 @@ export const QuantumField = () => {
             collapsed: true,
             outcome: event.name
           }));
-          
+
           setTimeout(() => {
             setActiveEvent(null);
             setQuantumState(prev => ({
@@ -97,14 +133,14 @@ export const QuantumField = () => {
               outcome: null
             }));
           }, 5000);
-          
+
           break;
         }
       }
     }, 20000);
 
     return () => clearInterval(collapseInterval);
-  }, [calculateModifiers]);
+  }, [calculateModifiers, probabilityEvents]);
 
   const handleCollectEvent = () => {
     if (!activeEvent) return;
@@ -115,7 +151,7 @@ export const QuantumField = () => {
       id: clueId,
       name: `Quantum: ${activeEvent.name}`,
       description: activeEvent.description,
-      content: `Probability collapsed at ${(activeEvent.currentProb * 100).toFixed(1)}%. ${QUANTUM_MESSAGES[Math.floor(Math.random() * QUANTUM_MESSAGES.length)]}`,
+      content: `Probability collapsed at ${(activeEvent.currentProb * 100).toFixed(1)}%. ${quantumMessages[Math.floor(Math.random() * quantumMessages.length)] || 'Quantum fluctuation detected.'}`,
       foundAt: new Date().toISOString()
     });
     
@@ -282,7 +318,7 @@ export const QuantumField = () => {
                     Collapse Probability: <span className="text-amber-500">{(activeEvent.currentProb * 100).toFixed(1)}%</span>
                   </p>
                   <p className="text-xs text-purple-600 italic mt-1">
-                    {QUANTUM_MESSAGES[Math.floor(Math.random() * QUANTUM_MESSAGES.length)]}
+                    {quantumMessages[Math.floor(Math.random() * quantumMessages.length)] || "Quantum fluctuation detected."}
                   </p>
                 </div>
                 
