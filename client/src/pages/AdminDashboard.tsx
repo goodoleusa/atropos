@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Key, 
   Trophy, 
   Terminal, 
   Plus, 
@@ -52,6 +51,7 @@ import { ClueGraph } from "@/components/ClueGraph";
 import { ClueBreadcrumbs } from "@/components/ClueBreadcrumbs";
 import { ApiPlayground } from "@/components/ApiPlayground";
 import CampaignDesigner from "@/components/CampaignDesigner";
+import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
 
 interface Clue {
   id: string;
@@ -74,13 +74,10 @@ interface Quest {
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
   const { gameState, toggleDevMode } = useGame();
-  const [newClue, setNewClue] = useState<Partial<Clue>>({});
   const [newQuest, setNewQuest] = useState<Partial<Quest>>({});
-  const [clueDialogOpen, setClueDialogOpen] = useState(false);
   const [questDialogOpen, setQuestDialogOpen] = useState(false);
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
   const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
-  const [editingClue, setEditingClue] = useState<Clue | null>(null);
   const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({ 'root': true });
@@ -140,7 +137,6 @@ export default function AdminDashboard() {
   
   // Local state for live config editing (these would sync to server/localStorage)
   const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
-  const [mysticalEnabled, setMysticalEnabled] = useState(MYSTICAL_CARDS.enabled);
   const [subliminalMessages, setSubliminalMessages] = useState(CHAOS_MESSAGES.subliminal);
   const [newSubliminal, setNewSubliminal] = useState('');
 
@@ -152,33 +148,6 @@ export default function AdminDashboard() {
   const { data: quests = [] } = useQuery<Quest[]>({
     queryKey: ['/api/quests'],
     queryFn: () => fetch('/api/quests').then(r => r.json())
-  });
-
-  const createClueMutation = useMutation({
-    mutationFn: (clue: Partial<Clue>) => 
-      fetch('/api/clues', { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify({ ...clue, content: clue.content || '' })
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to create clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-      setClueDialogOpen(false);
-      setNewClue({});
-    },
-    onError: (error: Error) => {
-      console.error('Clue creation failed:', error);
-      alert(`Error: ${error.message}`);
-    }
   });
 
   const createQuestMutation = useMutation({
@@ -205,53 +174,6 @@ export default function AdminDashboard() {
     onError: (error: Error) => {
       console.error('Quest creation failed:', error);
       alert(`Error: ${error.message}`);
-    }
-  });
-
-  const updateClueMutation = useMutation({
-    mutationFn: (clue: Clue) => 
-      fetch(`/api/clues/${clue.id}`, { 
-        method: 'PATCH', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(clue)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to update clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-      setEditingClue(null);
-    },
-    onError: (error: Error) => {
-      alert(`Update failed: ${error.message}`);
-    }
-  });
-
-  const deleteClueMutation = useMutation({
-    mutationFn: (id: string) => 
-      fetch(`/api/clues/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        }
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to delete clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-    },
-    onError: (error: Error) => {
-      alert(`Delete failed: ${error.message}`);
     }
   });
 
@@ -517,19 +439,16 @@ export default function AdminDashboard() {
         </section>
 
         {/* Content Management Tabs */}
-        <Tabs defaultValue="clues" className="space-y-6">
+        <Tabs defaultValue="collectibles" className="space-y-6">
           <TabsList className="bg-[#0a0500] border border-amber-900/30 flex-wrap h-auto gap-1 p-1">
-            <TabsTrigger value="clues" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
-              <Key className="w-4 h-4 mr-2" /> Clues ({clues.length})
-            </TabsTrigger>
             <TabsTrigger value="quests" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Trophy className="w-4 h-4 mr-2" /> Quests ({quests.length})
             </TabsTrigger>
             <TabsTrigger value="messages" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
               <MessageSquare className="w-4 h-4 mr-2" /> Messages
             </TabsTrigger>
-            <TabsTrigger value="mystical" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-500">
-              <Sparkles className="w-4 h-4 mr-2" /> Mystical
+            <TabsTrigger value="collectibles" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
+              <Database className="w-4 h-4 mr-2" /> Collectibles
             </TabsTrigger>
             <TabsTrigger value="terminal" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Terminal className="w-4 h-4 mr-2" /> Commands
@@ -554,81 +473,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Clues Tab */}
-          <TabsContent value="clues">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-orbitron text-amber-600">Collectable Clues</h3>
-              <Dialog open={clueDialogOpen} onOpenChange={setClueDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-amber-700 hover:bg-amber-600 text-black">
-                    <Plus className="w-4 h-4 mr-2" /> Add Clue
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-                  <DialogHeader>
-                    <DialogTitle className="text-amber-600 font-orbitron">Create New Clue</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <Input 
-                      placeholder="Clue ID (e.g., clue-03)" 
-                      value={newClue.id || ''}
-                      onChange={e => setNewClue({...newClue, id: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Name" 
-                      value={newClue.name || ''}
-                      onChange={e => setNewClue({...newClue, name: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Textarea 
-                      placeholder="Description" 
-                      value={newClue.description || ''}
-                      onChange={e => setNewClue({...newClue, description: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Content (the secret)" 
-                      value={newClue.content || ''}
-                      onChange={e => setNewClue({...newClue, content: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Location (e.g., /terminal, home-page)" 
-                      value={newClue.location || ''}
-                      onChange={e => setNewClue({...newClue, location: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Button 
-                      onClick={() => createClueMutation.mutate(newClue)}
-                      className="w-full bg-amber-700 hover:bg-amber-600 text-black"
-                    >
-                      Create Clue
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {clues.map(clue => (
-                <Card key={clue.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-                      <Key className="w-4 h-4" /> {clue.name}
-                    </CardTitle>
-                    <CardDescription className="text-stone-600 text-xs">{clue.id}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs">
-                    <p className="text-stone-400 mb-2">{clue.description}</p>
-                    <p className="text-amber-700 font-bold">Location: {clue.location}</p>
-                  </CardContent>
-                </Card>
-              ))}
-              {clues.length === 0 && (
-                <p className="text-stone-600 col-span-3 text-center py-8">No clues in database. Add some to get started!</p>
-              )}
-            </div>
+          {/* Collectibles Tab */}
+          <TabsContent value="collectibles">
+            <CollectiblesSection />
           </TabsContent>
 
           {/* Quests Tab */}
@@ -770,15 +617,15 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Direct Quantum Controls */}
+                {/* Chaos Overlay Controls */}
                 <div className="space-y-4">
                   <Card className="bg-[#0a0500] border-teal-900/30">
                     <CardHeader>
                       <CardTitle className="text-teal-400 font-mono text-sm flex items-center gap-2">
-                        <Zap className="w-4 h-4" /> Quantum Probability Text
+                        <Zap className="w-4 h-4" /> Chaos Overlay Strings
                       </CardTitle>
                       <CardDescription className="text-stone-500 text-[10px]">
-                        Manage strings used in the quantum fluctuation simulations
+                        Manage strings used in the chaos/glitch overlay
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -796,7 +643,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="mt-4 flex gap-2">
                           <Input 
-                            placeholder="New quantum string..." 
+                            placeholder="New chaos string..." 
                             className="bg-black/50 border-teal-900/30 text-teal-400 text-xs h-8" 
                           />
                           <Button size="sm" className="bg-teal-600 hover:bg-teal-500 text-black h-8">
@@ -827,68 +674,6 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Mystical Cards Tab */}
-          <TabsContent value="mystical">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-orbitron text-purple-400">Mystical Card System</h3>
-                <div className="flex items-center gap-4">
-                  <Label htmlFor="mystical-enabled" className="text-stone-400">Enable Mystical Popups</Label>
-                  <Switch 
-                    id="mystical-enabled" 
-                    checked={mysticalEnabled} 
-                    onCheckedChange={setMysticalEnabled}
-                    data-testid="mystical-toggle"
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Tarot Cards */}
-                <Card className="bg-[#0a0500] border-amber-900/30">
-                  <CardHeader>
-                    <CardTitle className="text-amber-500 font-mono">Tarot Cards ({MYSTICAL_CARDS.tarot.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
-                    {MYSTICAL_CARDS.tarot.map((card, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-amber-900/20">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{card.icon}</span>
-                          <div>
-                            <p className="text-amber-500 text-sm font-bold">{card.name}</p>
-                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{card.hint}</p>
-                          </div>
-                        </div>
-                        <Switch checked={card.enabled} className="scale-75" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* Zodiac Signs */}
-                <Card className="bg-[#0a0500] border-purple-900/30">
-                  <CardHeader>
-                    <CardTitle className="text-purple-400 font-mono">Zodiac Signs ({MYSTICAL_CARDS.zodiac.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
-                    {MYSTICAL_CARDS.zodiac.map((sign, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-purple-900/20">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl text-purple-400">{sign.symbol}</span>
-                          <div>
-                            <p className="text-purple-400 text-sm font-bold">{sign.name}</p>
-                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{sign.hint}</p>
-                          </div>
-                        </div>
-                        <Switch checked={sign.enabled} className="scale-75" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </TabsContent>
