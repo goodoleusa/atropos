@@ -608,6 +608,41 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         { id: 'l5', source: 'n4', target: 'n5', color: 'amber' }
       ]
     },
+    { id: 'story', name: 'Story Starter (Twine-Style)', icon: '🧭', difficulty: 'any',
+      description: 'Narrative flow with hooks, choices, and a twist',
+      nodes: [
+        { id: 'n1', type: 'step' as const, title: 'Opening Hook', content: 'Set the scene and tone. What is strange, urgent, or tempting?', x: 100, y: 150, width: 220, height: 110, color: 'amber',
+          metadata: { questions: ['What is the world like right now?', 'What is the promise to the player?'], successIndicators: ['Player is curious and wants to continue'] }
+        },
+        { id: 'n2', type: 'step' as const, title: 'Inciting Incident', content: 'The moment that breaks normal and forces action.', x: 380, y: 150, width: 220, height: 110, color: 'amber',
+          metadata: { questions: ['What changes? Who is threatened?'], successIndicators: ['Player has a clear goal'] }
+        },
+        { id: 'n3', type: 'decision' as const, title: 'First Choice', content: 'Two believable paths forward. Let the player choose.', x: 660, y: 150, width: 220, height: 110, color: 'purple',
+          metadata: { condition: 'Choice A = follow the lead. Choice B = take the risky detour.' }
+        },
+        { id: 'n4', type: 'step' as const, title: 'Branch A: Follow the Lead', content: 'Straightforward investigation. Reward with a hint.', x: 940, y: 60, width: 240, height: 110, color: 'amber',
+          metadata: { questions: ['What evidence is found?'], successIndicators: ['Player learns something concrete'] }
+        },
+        { id: 'n5', type: 'step' as const, title: 'Branch B: Risky Detour', content: 'Higher risk, bigger reward. Show a cost.', x: 940, y: 240, width: 240, height: 110, color: 'amber',
+          metadata: { questions: ['What is the setback or danger?'], successIndicators: ['Player feels the stakes'] }
+        },
+        { id: 'n6', type: 'output' as const, title: 'Reveal / Clue', content: 'Drop a clue that reframes the mystery.', x: 1240, y: 150, width: 220, height: 110, color: 'purple' },
+        { id: 'n7', type: 'decision' as const, title: 'Twist Decision', content: 'A new complication appears. Choose the next move.', x: 1500, y: 150, width: 220, height: 110, color: 'purple',
+          metadata: { condition: 'If clue points to insider, branch to social route. If external threat, branch to technical route.' }
+        },
+        { id: 'n8', type: 'output' as const, title: 'Resolution / Next Chapter', content: 'What changes now? Set up the next act.', x: 1760, y: 150, width: 240, height: 110, color: 'purple' }
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
+        { id: 'l2', source: 'n2', target: 'n3', color: 'amber' },
+        { id: 'l3', source: 'n3', target: 'n4', color: 'purple', label: 'Follow lead' },
+        { id: 'l4', source: 'n3', target: 'n5', color: 'purple', label: 'Risky detour' },
+        { id: 'l5', source: 'n4', target: 'n6', color: 'amber' },
+        { id: 'l6', source: 'n5', target: 'n6', color: 'amber' },
+        { id: 'l7', source: 'n6', target: 'n7', color: 'teal' },
+        { id: 'l8', source: 'n7', target: 'n8', color: 'teal' }
+      ]
+    },
     { id: 'blank', name: 'Blank Canvas', icon: '📝', difficulty: 'any', description: 'Start from scratch', nodes: [], links: [] }
   ], []);
 
