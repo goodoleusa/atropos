@@ -10,6 +10,8 @@ export const gameSessions = pgTable("game_sessions", {
   collectedClues: jsonb("collected_clues").$type<string[]>().notNull().default([]),
   completedQuests: jsonb("completed_quests").$type<string[]>().notNull().default([]),
   discoveries: jsonb("discoveries").$type<Record<string, any>>().notNull().default({}),
+  settings: jsonb("settings").$type<Record<string, any>>().notNull().default({}),
+  progress: jsonb("progress").$type<Record<string, any>>().notNull().default({}),
   lastActive: timestamp("last_active").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -421,6 +423,32 @@ export const insertAdminPromptSchema = createInsertSchema(adminPrompts).omit({
 
 export type AdminPrompt = typeof adminPrompts.$inferSelect;
 export type InsertAdminPrompt = z.infer<typeof insertAdminPromptSchema>;
+
+// Community Prompt Gallery - user-submitted prompts for sharing
+export const promptGallery = pgTable("prompt_gallery", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  prompt: text("prompt").notNull(),
+  category: text("category").notNull().default("general"),
+  tool: text("tool").notNull().default("atropos"),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  sessionToken: text("session_token"),
+  username: text("username"),
+  status: text("status").notNull().default("published"), // 'published', 'pending', 'rejected'
+  riskFlags: jsonb("risk_flags").$type<string[]>().notNull().default([]),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertPromptGallerySchema = createInsertSchema(promptGallery).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type PromptGalleryEntry = typeof promptGallery.$inferSelect;
+export type InsertPromptGallery = z.infer<typeof insertPromptGallerySchema>;
 
 // Campaign Templates - reusable investigation flows
 export const campaignTemplates = pgTable("campaign_templates", {

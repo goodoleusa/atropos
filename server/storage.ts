@@ -7,6 +7,7 @@ import {
   commandLogs,
   behavioralProfiles,
   adminPrompts,
+  promptGallery,
   campaignTemplates,
   flowNodes,
   designerCampaigns,
@@ -36,6 +37,8 @@ import {
   type InsertBehavioralProfile,
   type AdminPrompt,
   type InsertAdminPrompt,
+  type PromptGalleryEntry,
+  type InsertPromptGallery,
   type CampaignTemplate,
   type InsertCampaignTemplate,
   type FlowNode,
@@ -111,6 +114,11 @@ export interface IStorage {
   getAdminPromptByKey(key: string): Promise<AdminPrompt | undefined>;
   getAllAdminPrompts(): Promise<AdminPrompt[]>;
   upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt>;
+
+  // Prompt Gallery
+  getPromptGallery(status?: string): Promise<PromptGalleryEntry[]>;
+  getPromptGalleryBySession(sessionToken: string): Promise<PromptGalleryEntry[]>;
+  createPromptGalleryEntry(entry: InsertPromptGallery): Promise<PromptGalleryEntry>;
   
   // Campaign Templates
   getCampaignByKey(key: string): Promise<CampaignTemplate | undefined>;
@@ -474,6 +482,31 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return created;
     }
+  }
+
+  // Prompt Gallery
+  async getPromptGallery(status?: string): Promise<PromptGalleryEntry[]> {
+    if (status) {
+      return await db
+        .select()
+        .from(promptGallery)
+        .where(eq(promptGallery.status, status))
+        .orderBy(desc(promptGallery.createdAt));
+    }
+    return await db.select().from(promptGallery).orderBy(desc(promptGallery.createdAt));
+  }
+
+  async getPromptGalleryBySession(sessionToken: string): Promise<PromptGalleryEntry[]> {
+    return await db
+      .select()
+      .from(promptGallery)
+      .where(eq(promptGallery.sessionToken, sessionToken))
+      .orderBy(desc(promptGallery.createdAt));
+  }
+
+  async createPromptGalleryEntry(entry: InsertPromptGallery): Promise<PromptGalleryEntry> {
+    const [created] = await db.insert(promptGallery).values(entry).returning();
+    return created;
   }
 
   // Campaign Templates
