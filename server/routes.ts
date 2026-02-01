@@ -24,6 +24,38 @@ import {
   type LearningStyle
 } from "./behaviorAnalyzer";
 
+const PROMPT_RISK_PATTERNS = [
+  { id: "shell-exec", regex: /\b(?:bash|sh|zsh|fish|cmd|powershell)\s+-c\b/i },
+  { id: "script-exec", regex: /\b(?:python|node|perl|ruby)\s+-c\b/i },
+  { id: "download-exec", regex: /\b(?:curl|wget)\b.*\|\s*(?:sh|bash|zsh|powershell|cmd)\b/i },
+  { id: "destructive", regex: /\brm\s+-rf\b|\bmkfs\b|\bdd\s+if=|\bchmod\s+777\b/i },
+  { id: "privileged", regex: /\bsudo\b|\bsu\s+-/i },
+  { id: "process-spawn", regex: /\b(?:os\.system|subprocess\.|child_process|exec\(|spawn\(|popen\()/i },
+  { id: "reverse-shell", regex: /\b(?:nc|netcat|socat)\b.*\b(?:-e|\/bin\/sh|\/bin\/bash)\b/i },
+  { id: "shutdown-reboot", regex: /\b(?:shutdown|reboot)\b/i }
+];
+
+const sanitizePromptContent = (input: string) => {
+  const cleaned = sanitizeInput(input, 50000);
+  if (!cleaned) return '';
+  const lines = cleaned.split('\n');
+  const redacted = lines.map((line) => {
+    const shouldRedact = PROMPT_RISK_PATTERNS.some((pattern) => pattern.regex.test(line));
+    return shouldRedact ? '[REDACTED COMMAND]' : line;
+  });
+  return redacted.join('\n').trim();
+};
+
+const detectPromptRisks = (input: string) => {
+  const flags: string[] = [];
+  for (const pattern of PROMPT_RISK_PATTERNS) {
+    if (pattern.regex.test(input)) {
+      flags.push(pattern.id);
+    }
+  }
+  return flags;
+};
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -628,6 +660,88 @@ BEHAVIOR:
     } catch (error) {
       console.error("Update admin prompt error:", error);
       res.status(500).json({ error: "Failed to update admin prompt" });
+    }
+  });
+
+  // ===== PROMPT GALLERY =====
+
+  app.get("/api/prompts/gallery", async (req, res) => {
+    try {
+      const statusParam = typeof req.query.status === "string" ? req.query.status : "published";
+      const normalizedStatus = statusParam === "all" ? "" : statusParam;
+      if (normalizedStatus && normalizedStatus !== "published") {
+        const accessToken = req.headers['x-access-token'] as string;
+        if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
+          return res.status(403).json({ error: "Admin access required" });
+        }
+      }
+      const prompts = await storage.getPromptGallery(normalizedStatus || undefined);
+      res.json(prompts);
+    } catch (error) {
+      console.error("Get prompt gallery error:", error);
+      res.status(500).json({ error: "Failed to fetch prompt gallery" });
+    }
+  });
+
+  app.get("/api/prompts/gallery/mine/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      if (!validateSessionToken(token)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+      const prompts = await storage.getPromptGalleryBySession(token);
+      res.json(prompts);
+    } catch (error) {
+      console.error("Get prompt submissions error:", error);
+      res.status(500).json({ error: "Failed to fetch prompt submissions" });
+    }
+  });
+
+  app.post("/api/prompts/gallery", rateLimit(20, 60000), async (req, res) => {
+    try {
+      const rawPrompt = typeof req.body.prompt === "string" ? req.body.prompt : "";
+      const prompt = sanitizePromptContent(rawPrompt);
+      const title = sanitizeInput(req.body.title || "", 200);
+      const description = sanitizeInput(req.body.description || "", 1000);
+      const category = sanitizeInput(req.body.category || "general", 50) || "general";
+      const tool = sanitizeInput(req.body.tool || "atropos", 50) || "atropos";
+      const username = sanitizeInput(req.body.username || "", 100);
+      const sessionToken = typeof req.body.sessionToken === "string" ? req.body.sessionToken : undefined;
+
+      if (sessionToken && !validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+      if (!title || !prompt) {
+        return res.status(400).json({ error: "Title and prompt are required" });
+      }
+
+      const tags = Array.isArray(req.body.tags)
+        ? req.body.tags
+            .map((tag: string) => sanitizeInput(String(tag || ""), 50))
+            .filter(Boolean)
+            .slice(0, 12)
+        : [];
+
+      const riskFlags = detectPromptRisks(rawPrompt);
+      const status = riskFlags.length > 0 ? "pending" : "published";
+
+      const created = await storage.createPromptGalleryEntry({
+        title,
+        description,
+        prompt,
+        category,
+        tool,
+        tags,
+        sessionToken,
+        username,
+        status,
+        riskFlags
+      });
+
+      res.json(created);
+    } catch (error) {
+      console.error("Create prompt gallery entry error:", error);
+      res.status(500).json({ error: "Failed to submit prompt" });
     }
   });
 
