@@ -1,126 +1,127 @@
-# Atropos - Security Investigation Platform
+# SysAdmin Corp - Interactive Terminal Game
 
-A comprehensive AI-powered security investigation platform with dual purposes: professional bug bounty/security research tools and hidden CTF game elements.
+An interactive web-based terminal game with a molten bronze / industrial
+cyber-ritual aesthetic. Players navigate a fictional corporate system through
+custom terminal commands, collect clues, complete quests, and uncover hidden
+routes. The experience blends occult motifs (tarot, zodiac, quantum lore) with a
+retro-futuristic corporate hacking narrative.
 
-## Quick Start
-
-```bash
-npm install
-npm run dev
-```
-
-The app runs at `http://localhost:5000`.
+This repository is a full-stack TypeScript app: React + Vite on the frontend and
+Express on the backend, with PostgreSQL via Drizzle ORM.
 
 ## Features
 
-### Core Platform
-- **AI-Powered OSINT Agent**: Investigation assistant with pre-built campaigns (Shell Corp, BGP Tracing, Threat Hunting, etc.)
-- **Campaign Designer**: Visual Twine-inspired flow editor for creating investigation paths with wikilinks and branching logic
-- **AI Lab (Battleground)**: Prompt engineering playground with model comparison, token cost tracking, and AI pentesting challenges
-- **Report Builder**: Structure bug bounty findings with export capabilities and AI benchmarking
-- **Terminal Interface**: Custom command-line experience with hidden CTF elements
+- Custom terminal emulator with command parsing and history.
+- Clue + quest system with configurable campaigns and messages.
+- Atmospheric overlays (Chaos, Glitch text, Quantum field, etc.).
+- Agent Chat (OpenRouter-backed) for investigations and guidance.
+- Campaign Designer with wikilinks, breadcrumbs, and backlinks.
+- Admin dashboard for managing content, sessions, and UX effects.
+- Report Builder for structured bug bounty style writeups.
+- AI Lab for prompt testing, comparisons, and evaluations.
 
-### Investigation Capabilities
-- **Passive Reconnaissance**: DNS enumeration, certificate transparency, WHOIS analysis
-- **Active Reconnaissance**: Port scanning, service detection, vulnerability probing
-- **Network Analysis**: BGP tracing, topology mapping, traffic analysis
-- **Threat Hunting**: IOC detection, log analysis, persistence identification
-- **Social Engineering Recon**: Personnel profiling, org structure mapping
+## Architecture
 
-### Design
-- **Mobile-First**: 48px+ touch targets, responsive layouts, touch-friendly terminal
-- **Molten Bronze Aesthetic**: Dark theme with amber/gold accents and vaporwave teal highlights
-- **No Green Elements**: Intentional design constraint for visual consistency
+### Frontend
 
-## Project Structure
+- React + TypeScript (Vite)
+- Wouter for routing
+- Tailwind CSS v4 + Framer Motion
+- shadcn/ui (Radix primitives)
+- Zustand for learning preferences
+
+### Backend
+
+- Express + TypeScript (ESM)
+- REST JSON APIs under `/api/`
+- PostgreSQL via Drizzle ORM
+
+### Data
+
+- Schema: `shared/schema.ts`
+- Tables: `game_sessions`, `clues`, `quests`, `command_logs`
+
+## Running locally
+
+### 1) Install dependencies
 
 ```
-client/
-├── src/
-│   ├── components/          # React components
-│   │   ├── AgentChat.tsx        # AI investigation assistant
-│   │   ├── CampaignDesigner.tsx # Visual flow editor
-│   │   └── Terminal.tsx         # Custom terminal
-│   ├── config/
-│   │   ├── agentCampaigns.ts    # Investigation campaign definitions
-│   │   ├── agentPrompts.ts      # AI system prompts
-│   │   └── bountyConfig.ts      # Bug bounty tools & resources
-│   ├── hooks/               # Custom React hooks
-│   ├── pages/               # Route pages
-│   └── stores/              # Zustand state stores
-server/
-├── routes.ts                # API endpoints
-├── storage.ts               # Database interface (IStorage)
-└── index.ts                 # Express server entry
-shared/
-└── schema.ts                # Drizzle ORM schema
-docs/
-└── YUBIKEY_SSH_SETUP.md     # SSH key setup guide
+npm install
 ```
 
-## Customizing Agent Campaigns
+### 2) Start the app (dev)
 
-Agent campaigns are defined in `client/src/config/agentCampaigns.ts`. See [replit.md](./replit.md) for detailed customization instructions.
-
-### Quick Example
-
-```typescript
-{
-  id: 'my_campaign',
-  name: 'My Investigation',
-  icon: '🔍',
-  description: 'Brief description',
-  difficulty: 'intermediate',
-  estimatedTime: '30-45 min',
-  tags: ['OSINT', 'Recon'],
-  color: 'teal',
-  starterPrompt: `Investigation prompt...`,
-  objectives: ['Goal 1', 'Goal 2'],
-  tools: ['Shodan', 'Censys']
-}
+```
+npm run dev
 ```
 
-## Environment Variables
+The server and client are served from the same port.
+Default: `http://localhost:5000`
 
-Required secrets (set via Replit Secrets):
-- `OPENROUTER_API_KEY` - For AI agent functionality
-- `DATABASE_URL` - PostgreSQL connection (auto-configured on Replit)
+### 3) Build for production
 
-## Tech Stack
-
-- **Frontend**: React 18, TypeScript, Tailwind CSS v4, Framer Motion, Wouter
-- **Backend**: Node.js, Express, TypeScript (ESM)
-- **Database**: PostgreSQL with Drizzle ORM
-- **AI**: OpenRouter (Claude, GPT-4, Llama, etc.)
-- **Auth**: Replit OpenID Connect
-- **UI**: shadcn/ui (Radix UI primitives)
-
-## Development
-
-### External IDE Setup (Cursor/VS Code)
-
-See [docs/YUBIKEY_SSH_SETUP.md](./docs/YUBIKEY_SSH_SETUP.md) for connecting via SSH with YubiKey.
-
-### Key Commands
-
-```bash
-npm run dev          # Start development server
-npm run db:push      # Sync database schema
-npm run build        # Build for production
+```
+npm run build
+npm start
 ```
 
-## Related Tools
+## Environment variables
 
-Atropos integrates with and recommends:
-- **RITA** - Real Intelligence Threat Analytics for C2 detection
-- **CAI** - AI-powered pentesting framework
-- **Shodan/Censys** - Internet-connected device search
-- **SecurityTrails** - Historical DNS/WHOIS data
+Some features require these environment variables:
 
-## License
+- `PORT` (defaults to 5000)
+- `DATABASE_URL` (Postgres connection)
+- `ISSUER_URL` and related Replit Auth envs when using Replit OIDC
 
-MIT
+## Replit integration
 
----
+This repo includes Replit integrations and defaults:
 
-**Built with Atropos** - Security research made intelligent.
+- `.replit` defines Node 20, port 5000, and `npm run dev`
+- Replit Auth and OpenRouter integrations under `server/replit_integrations/`
+- Vite plugins for Replit dev tooling
+
+If you host on Replit, the app runs on port 5000 and Replit maps it to port 80.
+
+## Cursor + Replit workflow (same repo)
+
+To keep Replit and Cursor in sync, use GitHub as the source of truth:
+
+1. In Replit, connect the project to GitHub and push changes.
+2. In Cursor, clone the same repo:
+
+   ```
+   git clone https://github.com/goodoleusa/atropos
+   cd atropos
+   ```
+
+3. Make edits in Cursor, then commit + push:
+
+   ```
+   git add .
+   git commit -m "Describe change"
+   git push -u origin <branch>
+   ```
+
+4. In Replit, pull the latest changes.
+
+Tip: use separate branches (e.g., `cursor-experiments` vs `replit-experiments`)
+to compare agent results safely.
+
+## Scripts
+
+- `npm run dev` - start server in development (serves client too)
+- `npm run dev:client` - start Vite dev server only
+- `npm run build` - build client + server for production
+- `npm run start` - run production build
+- `npm run check` - TypeScript check
+- `npm run db:push` - push Drizzle schema to DB
+
+## Repo structure
+
+```
+client/     React app (UI)
+server/     Express API + integrations
+shared/     Shared schema and models
+script/     Build scripts
+```
