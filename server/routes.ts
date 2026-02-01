@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertGameSessionSchema, insertCommandLogSchema } from "../shared/schema";
+import { insertGameSessionSchema, insertCommandLogSchema, insertCampaignRunSchema } from "../shared/schema";
 import { generateSessionExportCode, generateSecretCode, decodeQRPayload } from "./qrcode";
 import { registerChatRoutes } from "./replit_integrations/chat";
 import osintRoutes from "./routes/osint";
@@ -141,6 +141,127 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Get sessions error:", error);
       res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+  });
+
+  // ==================== Campaign Runs API ====================
+
+  // Create a new campaign run
+  app.post("/api/campaign-runs", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { sessionToken, campaignId, currentNodeId, runId } = req.body;
+
+      if (!validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+
+      if (!campaignId || typeof campaignId !== "string") {
+        return res.status(400).json({ error: "campaignId is required" });
+      }
+
+      const generatedRunId =
+        typeof runId === "string" && runId.trim().length > 0
+          ? runId
+          : `run_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+      const history = Array.isArray(req.body.nodeHistory)
+        ? req.body.nodeHistory
+        : currentNodeId
+          ? [currentNodeId]
+          : [];
+
+      const visited = Array.isArray(req.body.visitedNodes)
+        ? req.body.visitedNodes
+        : history;
+
+      const validatedRun = insertCampaignRunSchema.parse({
+        runId: generatedRunId,
+        sessionToken,
+        campaignId,
+        currentNodeId,
+        nodeHistory: history,
+        visitedNodes: visited,
+        inventory: Array.isArray(req.body.inventory) ? req.body.inventory : [],
+        flags: Array.isArray(req.body.flags) ? req.body.flags : [],
+        variables: typeof req.body.variables === "object" && req.body.variables ? req.body.variables : {},
+        status: req.body.status || "active"
+      });
+
+      const run = await storage.createCampaignRun(validatedRun);
+      res.json(run);
+    } catch (error) {
+      console.error("Create campaign run error:", error);
+      res.status(500).json({ error: "Failed to create campaign run" });
+    }
+  });
+
+  // Get active campaign run for a session
+  app.get("/api/campaign-runs/active/:sessionToken", async (req, res) => {
+    try {
+      const { sessionToken } = req.params;
+      if (!validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+
+      const campaignId = typeof req.query.campaignId === "string" ? req.query.campaignId : undefined;
+      const run = await storage.getActiveCampaignRun(sessionToken, campaignId);
+
+      if (!run) {
+        return res.status(404).json({ error: "No active run found" });
+      }
+
+      res.json(run);
+    } catch (error) {
+      console.error("Get active campaign run error:", error);
+      res.status(500).json({ error: "Failed to fetch active run" });
+    }
+  });
+
+  // Get all campaign runs for a session
+  app.get("/api/campaign-runs/session/:sessionToken", async (req, res) => {
+    try {
+      const { sessionToken } = req.params;
+      if (!validateSessionToken(sessionToken)) {
+        return res.status(400).json({ error: "Invalid session token format" });
+      }
+
+      const runs = await storage.getCampaignRunsBySession(sessionToken);
+      res.json(runs);
+    } catch (error) {
+      console.error("Get campaign runs by session error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign runs" });
+    }
+  });
+
+  // Get a campaign run by ID
+  app.get("/api/campaign-runs/:runId", async (req, res) => {
+    try {
+      const { runId } = req.params;
+      const run = await storage.getCampaignRunById(runId);
+      if (!run) {
+        return res.status(404).json({ error: "Run not found" });
+      }
+      res.json(run);
+    } catch (error) {
+      console.error("Get campaign run error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign run" });
+    }
+  });
+
+  // Update a campaign run
+  app.patch("/api/campaign-runs/:runId", rateLimit(60, 60000), async (req, res) => {
+    try {
+      const { runId } = req.params;
+      const updates = req.body || {};
+
+      const updated = await storage.updateCampaignRun(runId, updates);
+      if (!updated) {
+        return res.status(404).json({ error: "Run not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Update campaign run error:", error);
+      res.status(500).json({ error: "Failed to update campaign run" });
     }
   });
 
@@ -726,6 +847,190 @@ BEHAVIOR:
     } catch (error) {
       console.error("Delete shared clue error:", error);
       res.status(500).json({ error: "Failed to delete clue" });
+    }
+  });
+
+  // ==================== Collectibles API ====================
+
+  // Artifacts
+  app.get("/api/artifacts", async (_req, res) => {
+    try {
+      const artifacts = await storage.getAllArtifacts();
+      res.json(artifacts);
+    } catch (error) {
+      console.error("Get artifacts error:", error);
+      res.status(500).json({ error: "Failed to fetch artifacts" });
+    }
+  });
+
+  app.post("/api/artifacts", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const payload = {
+        id: sanitizeInput(req.body.id || ''),
+        name: sanitizeInput(req.body.name || ''),
+        description: sanitizeInput(req.body.description || ''),
+        content: sanitizeInput(req.body.content || ''),
+        category: sanitizeInput(req.body.category || 'general'),
+        tags: Array.isArray(req.body.tags) ? req.body.tags : []
+      };
+
+      if (!payload.id || !payload.name) {
+        return res.status(400).json({ error: "Artifact id and name are required" });
+      }
+
+      const artifact = await storage.createArtifact(payload);
+      res.json(artifact);
+    } catch (error) {
+      console.error("Create artifact error:", error);
+      res.status(500).json({ error: "Failed to create artifact" });
+    }
+  });
+
+  app.patch("/api/artifacts/:id", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      const updated = await storage.updateArtifact(id, updates as any);
+      if (!updated) {
+        return res.status(404).json({ error: "Artifact not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Update artifact error:", error);
+      res.status(500).json({ error: "Failed to update artifact" });
+    }
+  });
+
+  app.delete("/api/artifacts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteArtifact(id);
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete artifact error:", error);
+      res.status(500).json({ error: "Failed to delete artifact" });
+    }
+  });
+
+  // Mystical Cards
+  app.get("/api/mystical-cards", async (_req, res) => {
+    try {
+      const cards = await storage.getMysticalCards();
+      res.json(cards);
+    } catch (error) {
+      console.error("Get mystical cards error:", error);
+      res.status(500).json({ error: "Failed to fetch mystical cards" });
+    }
+  });
+
+  app.put("/api/mystical-cards/:cardId", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { cardId } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      const card = await storage.upsertMysticalCard(cardId, updates as any);
+      res.json(card);
+    } catch (error) {
+      console.error("Save mystical card error:", error);
+      res.status(500).json({ error: "Failed to save mystical card" });
+    }
+  });
+
+  app.delete("/api/mystical-cards/:cardId", async (req, res) => {
+    try {
+      const { cardId } = req.params;
+      const deleted = await storage.deleteMysticalCard(cardId);
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete mystical card error:", error);
+      res.status(500).json({ error: "Failed to delete mystical card" });
+    }
+  });
+
+  // Quantum Popups
+  app.get("/api/quantum/events", async (_req, res) => {
+    try {
+      const events = await storage.getQuantumEvents();
+      res.json(events);
+    } catch (error) {
+      console.error("Get quantum events error:", error);
+      res.status(500).json({ error: "Failed to fetch quantum events" });
+    }
+  });
+
+  app.put("/api/quantum/events/:eventId", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      if (updates.baseProb !== undefined) {
+        updates.baseProb = parseInt(String(updates.baseProb), 10);
+      }
+      const event = await storage.upsertQuantumEvent(eventId, updates as any);
+      res.json(event);
+    } catch (error) {
+      console.error("Save quantum event error:", error);
+      res.status(500).json({ error: "Failed to save quantum event" });
+    }
+  });
+
+  app.get("/api/quantum/messages", async (_req, res) => {
+    try {
+      const messages = await storage.getQuantumMessages();
+      res.json(messages);
+    } catch (error) {
+      console.error("Get quantum messages error:", error);
+      res.status(500).json({ error: "Failed to fetch quantum messages" });
+    }
+  });
+
+  app.post("/api/quantum/messages", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const message = sanitizeInput(req.body.message || '');
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+      const created = await storage.createQuantumMessage({ message, enabled: true });
+      res.json(created);
+    } catch (error) {
+      console.error("Create quantum message error:", error);
+      res.status(500).json({ error: "Failed to create quantum message" });
+    }
+  });
+
+  app.patch("/api/quantum/messages/:id", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates: Record<string, any> = {};
+      for (const [key, value] of Object.entries(req.body || {})) {
+        updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
+      }
+      const updated = await storage.updateQuantumMessage(parseInt(id, 10), updates as any);
+      if (!updated) {
+        return res.status(404).json({ error: "Quantum message not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Update quantum message error:", error);
+      res.status(500).json({ error: "Failed to update quantum message" });
+    }
+  });
+
+  app.delete("/api/quantum/messages/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteQuantumMessage(parseInt(id, 10));
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Delete quantum message error:", error);
+      res.status(500).json({ error: "Failed to delete quantum message" });
     }
   });
 

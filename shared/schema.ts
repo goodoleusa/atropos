@@ -14,6 +14,24 @@ export const gameSessions = pgTable("game_sessions", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Campaign Runs - tracks session-based campaign progress (no signup required)
+export const campaignRuns = pgTable("campaign_runs", {
+  id: serial("id").primaryKey(),
+  runId: text("run_id").notNull().unique(),
+  sessionToken: text("session_token").notNull(),
+  campaignId: text("campaign_id").notNull(),
+  currentNodeId: text("current_node_id"),
+  nodeHistory: jsonb("node_history").$type<string[]>().notNull().default([]),
+  visitedNodes: jsonb("visited_nodes").$type<string[]>().notNull().default([]),
+  inventory: jsonb("inventory").$type<string[]>().notNull().default([]),
+  flags: jsonb("flags").$type<string[]>().notNull().default([]),
+  variables: jsonb("variables").$type<Record<string, any>>().notNull().default({}),
+  status: text("status").notNull().default("active"), // active, completed, abandoned
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  lastActionAt: timestamp("last_action_at").notNull().defaultNow(),
+});
+
 // Clues - available clues in the game
 export const clues = pgTable("clues", {
   id: text("id").primaryKey(),
@@ -51,6 +69,13 @@ export const insertGameSessionSchema = createInsertSchema(gameSessions).omit({
   lastActive: true,
 });
 
+export const insertCampaignRunSchema = createInsertSchema(campaignRuns).omit({
+  id: true,
+  startedAt: true,
+  updatedAt: true,
+  lastActionAt: true,
+});
+
 export const insertClueSchema = createInsertSchema(clues);
 export const insertQuestSchema = createInsertSchema(quests);
 export const insertCommandLogSchema = createInsertSchema(commandLogs).omit({
@@ -61,6 +86,8 @@ export const insertCommandLogSchema = createInsertSchema(commandLogs).omit({
 // Select Types
 export type GameSession = typeof gameSessions.$inferSelect;
 export type InsertGameSession = z.infer<typeof insertGameSessionSchema>;
+export type CampaignRun = typeof campaignRuns.$inferSelect;
+export type InsertCampaignRun = z.infer<typeof insertCampaignRunSchema>;
 export type Clue = typeof clues.$inferSelect;
 export type InsertClue = z.infer<typeof insertClueSchema>;
 export type Quest = typeof quests.$inferSelect;
@@ -568,6 +595,54 @@ export const sharedClues = pgTable("shared_clues", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Artifacts - collectible data items used in campaigns
+export const artifacts = pgTable("artifacts", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  content: text("content").notNull().default(""),
+  category: text("category").notNull().default("general"), // 'file', 'log', 'intel', 'credential'
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Mystical Cards - tarot/zodiac popup collectibles
+export const mysticalCards = pgTable("mystical_cards", {
+  id: serial("id").primaryKey(),
+  cardId: text("card_id").notNull().unique(), // e.g., tarot-the-fool
+  type: text("type").notNull(), // 'tarot' | 'zodiac'
+  name: text("name").notNull(),
+  symbol: text("symbol"),
+  hint: text("hint").notNull(),
+  icon: text("icon"),
+  element: text("element"),
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Quantum Events - probability popups and collectible events
+export const quantumEvents = pgTable("quantum_events", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  baseProb: integer("base_prob").notNull().default(10), // 0-100 percent
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Quantum Messages - flavor strings used in quantum popups
+export const quantumMessages = pgTable("quantum_messages", {
+  id: serial("id").primaryKey(),
+  message: text("message").notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Campaign Links - cross-campaign connections
 export const campaignLinks = pgTable("campaign_links", {
   id: serial("id").primaryKey(),
@@ -592,6 +667,28 @@ export const insertSharedClueSchema = createInsertSchema(sharedClues).omit({
   updatedAt: true,
 });
 
+export const insertArtifactSchema = createInsertSchema(artifacts).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMysticalCardSchema = createInsertSchema(mysticalCards).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertQuantumEventSchema = createInsertSchema(quantumEvents).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertQuantumMessageSchema = createInsertSchema(quantumMessages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertCampaignLinkSchema = createInsertSchema(campaignLinks).omit({
   id: true,
   createdAt: true,
@@ -601,6 +698,14 @@ export type DesignerCampaign = typeof designerCampaigns.$inferSelect;
 export type InsertDesignerCampaign = z.infer<typeof insertDesignerCampaignSchema>;
 export type SharedClue = typeof sharedClues.$inferSelect;
 export type InsertSharedClue = z.infer<typeof insertSharedClueSchema>;
+export type Artifact = typeof artifacts.$inferSelect;
+export type InsertArtifact = z.infer<typeof insertArtifactSchema>;
+export type MysticalCard = typeof mysticalCards.$inferSelect;
+export type InsertMysticalCard = z.infer<typeof insertMysticalCardSchema>;
+export type QuantumEvent = typeof quantumEvents.$inferSelect;
+export type InsertQuantumEvent = z.infer<typeof insertQuantumEventSchema>;
+export type QuantumMessage = typeof quantumMessages.$inferSelect;
+export type InsertQuantumMessage = z.infer<typeof insertQuantumMessageSchema>;
 export type CampaignLink = typeof campaignLinks.$inferSelect;
 export type InsertCampaignLink = z.infer<typeof insertCampaignLinkSchema>;
 
