@@ -1,7 +1,7 @@
-# NEXUS - Security Investigation Platform
+# Atropos - Security Investigation Platform
 
 ## Project Overview
-NEXUS is a comprehensive security investigation platform with dual purposes:
+Atropos is a comprehensive security investigation platform with dual purposes:
 1. Professional bug bounty/security research website with AI-powered OSINT tools
 2. Hidden CTF game with real-world exercises
 
