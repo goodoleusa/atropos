@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +51,7 @@ import { ClueBreadcrumbs } from "@/components/ClueBreadcrumbs";
 import { ApiPlayground } from "@/components/ApiPlayground";
 import CampaignDesigner from "@/components/CampaignDesigner";
 import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
+import { QuestsSection } from "@/pages/admin/QuestsSection";
 
 interface Clue {
   id: string;
@@ -72,13 +72,9 @@ interface Quest {
 }
 
 export default function AdminDashboard() {
-  const queryClient = useQueryClient();
   const { gameState, toggleDevMode } = useGame();
-  const [newQuest, setNewQuest] = useState<Partial<Quest>>({});
-  const [questDialogOpen, setQuestDialogOpen] = useState(false);
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
   const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
-  const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({ 'root': true });
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
@@ -148,80 +144,6 @@ export default function AdminDashboard() {
   const { data: quests = [] } = useQuery<Quest[]>({
     queryKey: ['/api/quests'],
     queryFn: () => fetch('/api/quests').then(r => r.json())
-  });
-
-  const createQuestMutation = useMutation({
-    mutationFn: (quest: Partial<Quest>) => 
-      fetch('/api/quests', { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(quest)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to create quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-      setQuestDialogOpen(false);
-      setNewQuest({});
-    },
-    onError: (error: Error) => {
-      console.error('Quest creation failed:', error);
-      alert(`Error: ${error.message}`);
-    }
-  });
-
-  const updateQuestMutation = useMutation({
-    mutationFn: (quest: Quest) => 
-      fetch(`/api/quests/${quest.id}`, { 
-        method: 'PATCH', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(quest)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to update quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-      setEditingQuest(null);
-    },
-    onError: (error: Error) => {
-      alert(`Update failed: ${error.message}`);
-    }
-  });
-
-  const deleteQuestMutation = useMutation({
-    mutationFn: (id: string) => 
-      fetch(`/api/quests/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        }
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to delete quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-    },
-    onError: (error: Error) => {
-      alert(`Delete failed: ${error.message}`);
-    }
   });
 
   const addSubliminalMessage = () => {
@@ -480,111 +402,7 @@ export default function AdminDashboard() {
 
           {/* Quests Tab */}
           <TabsContent value="quests">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-orbitron text-amber-600">Quest Chains</h3>
-              <Dialog open={questDialogOpen} onOpenChange={setQuestDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-amber-700 hover:bg-amber-600 text-black">
-                    <Plus className="w-4 h-4 mr-2" /> Add Quest
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-                  <DialogHeader>
-                    <DialogTitle className="text-amber-600 font-orbitron">Create New Quest</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Quest ID</Label>
-                      <Input 
-                        placeholder="e.g., quest-01" 
-                        value={newQuest.id || ''}
-                        onChange={e => setNewQuest({...newQuest, id: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Quest Name</Label>
-                      <Input 
-                        placeholder="Quest Name" 
-                        value={newQuest.name || ''}
-                        onChange={e => setNewQuest({...newQuest, name: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Description</Label>
-                      <Textarea 
-                        placeholder="Detailed quest description" 
-                        value={newQuest.description || ''}
-                        onChange={e => setNewQuest({...newQuest, description: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Required Clues (IDs, comma-separated)</Label>
-                      <Input 
-                        placeholder="clue-01, clue-02" 
-                        value={newQuest.requiredClues?.join(', ') || ''}
-                        onChange={e => setNewQuest({...newQuest, requiredClues: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Reward (Optional)</Label>
-                      <Input 
-                        placeholder="e.g., Access to Archive" 
-                        value={newQuest.reward || ''}
-                        onChange={e => setNewQuest({...newQuest, reward: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Unlocks (Optional)</Label>
-                      <Input 
-                        placeholder="e.g., /archive" 
-                        value={newQuest.unlocks || ''}
-                        onChange={e => setNewQuest({...newQuest, unlocks: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <Button 
-                      onClick={() => {
-                        console.log("Submitting quest:", newQuest);
-                        createQuestMutation.mutate(newQuest);
-                      }}
-                      disabled={createQuestMutation.isPending || !newQuest.id || !newQuest.name}
-                      className="w-full bg-amber-700 hover:bg-amber-600 text-black font-bold"
-                    >
-                      {createQuestMutation.isPending ? 'Processing...' : 'Create Quest'}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {quests.map(quest => (
-                <Card key={quest.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-                      <Trophy className="w-4 h-4" /> {quest.name}
-                    </CardTitle>
-                    <CardDescription className="text-stone-600 text-xs">{quest.id}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs">
-                    <p className="text-stone-400 mb-2">{quest.description}</p>
-                    <p className="text-amber-700">Requires: {quest.requiredClues?.join(', ') || 'None'}</p>
-                    {quest.unlocks && <p className="text-amber-600 mt-1">Unlocks: {quest.unlocks}</p>}
-                  </CardContent>
-                </Card>
-              ))}
-              {quests.length === 0 && (
-                <p className="text-stone-600 col-span-2 text-center py-8">No quests defined. Create quest chains to guide players!</p>
-              )}
-            </div>
+            <QuestsSection quests={quests} />
           </TabsContent>
 
           <TabsContent value="messages">
