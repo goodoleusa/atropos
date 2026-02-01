@@ -1,7 +1,7 @@
-# SysAdmin Corp - Interactive Terminal Game
+# Atropos - Security Investigation Platform
 
 ## Overview
-This project is an interactive web-based terminal game, "SysAdmin Corp," featuring a molten bronze/industrial aesthetic. Players navigate a fictional corporate system through a custom terminal interface, collecting clues, completing quests, and uncovering secrets. The game blends mystical/occult elements (tarot cards, zodiac signs, quantum mechanics) with a retro-futuristic corporate hacking narrative. Key capabilities include a custom terminal emulator, a quest and clue system, QR code generation for session management, hidden routes, and atmospheric visual effects. The business vision is to create an engaging "escape room" style CTF experience, providing market potential in interactive narrative gaming and gamified cybersecurity training.
+Atropos is a comprehensive AI-powered security investigation platform with dual purposes: (1) professional bug bounty/security research website featuring AI-powered OSINT tools, behavioral analytics, and report generation, and (2) hidden CTF game with real-world exercises. The platform features a molten bronze/industrial aesthetic with a custom terminal interface, investigation campaigns, and atmospheric visual effects. Key capabilities include AI-powered investigation workflows, visual campaign designer, report builder, and gamified security training. The business vision is to create an intelligent security research platform that combines professional OSINT capabilities with engaging CTF-style learning experiences.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -35,7 +35,7 @@ Preferred communication style: Simple, everyday language.
 - **Game Progression**: Clue collection, quest chains, and unlockable content.
 - **Dynamic Content**: Centralized message and campaign configuration for terminal messages, toasts, and overlays. Campaigns switch themes and narratives.
 - **Security Design (Intentionally Vulnerable)**: Designed as an "escape room" CTF; allows enumeration and simulated hacking, but prevents real attacks with input sanitization, rate limiting, CSP, and session validation.
-- **NEXUS Agent System**: Integrated AI assistant (`AgentChat.tsx`) for payload execution and game interaction, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns (e.g., OSINT, BGP tracing). Admin can configure system prompt via **Admin → Agent tab** (core identity, capability modules, custom instructions).
+- **Atropos Agent System**: Integrated AI assistant (`AgentChat.tsx`) for security investigation and OSINT operations, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns (e.g., Shell Corp, BGP tracing, Threat Hunting). Admin can configure system prompt via **Admin → Agent tab** (core identity, capability modules, custom instructions).
 - **Admin Dashboard**: Content management for clues, quests, messages, mystical elements, Player Sessions tab with live session data, and a UX Playground for real-time visual effect tweaking (backgrounds, mouse tracking, glitches, event probabilities).
 - **Campaign Designer**: Twine-inspired visual flow editor with Obsidian-style wikilinks and breadcrumb metadata for conditional decision trees.
   - **Wikilinks**: Use `[[Node Title]]` in content to auto-create links between nodes
@@ -72,7 +72,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Customizing Agent Campaigns
 
-The Agent Campaigns module (`client/src/config/agentCampaigns.ts`) provides pre-built investigation workflows for the NEXUS agent. Here's how to customize it:
+The Agent Campaigns module (`client/src/config/agentCampaigns.ts`) provides pre-built investigation workflows for the Atropos agent. Here's how to customize it:
 
 ### File Structure
 
@@ -167,7 +167,7 @@ Group campaigns in `CAMPAIGN_CATEGORIES`:
 ### Core Services
 - **PostgreSQL Database**: Primary data store.
 - **Replit Auth**: OpenID Connect authentication.
-- **OpenRouter AI**: Provides LLM capabilities for the NEXUS agent.
+- **OpenRouter AI**: Provides LLM capabilities for the Atropos agent.
 
 ### Third-Party Libraries
 - **QRCode Library**: Server-side QR code generation.
