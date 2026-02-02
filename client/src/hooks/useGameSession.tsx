@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useLearningStore } from "@/stores/useLearningStore";
 
@@ -41,12 +41,13 @@ export const useGame = () => {
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
-  const learningProfile = useLearningStore(state => ({
-    style: state.style,
-    goals: state.goals,
-    skillLevel: state.skillLevel,
-    preferredPace: state.preferredPace
-  }));
+  const style = useLearningStore(state => state.style);
+  const goals = useLearningStore(state => state.goals);
+  const skillLevel = useLearningStore(state => state.skillLevel);
+  const preferredPace = useLearningStore(state => state.preferredPace);
+  
+  const learningProfileRef = useRef({ style, goals, skillLevel, preferredPace });
+  learningProfileRef.current = { style, goals, skillLevel, preferredPace };
   
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem('sysadmin_session');
@@ -110,7 +111,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         
         // Update server with any local clues it doesn't have
         const settings = {
-          learningProfile,
+          learningProfile: learningProfileRef.current,
           devMode: gameState.devMode
         };
 
@@ -138,7 +139,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Session sync failed:', error);
     }
-  }, [gameState.sessionToken, gameState.username, gameState.inventory, gameState.devMode, learningProfile, persistSessionMetadata]);
+  }, [gameState.sessionToken, gameState.username, gameState.inventory, gameState.devMode, persistSessionMetadata]);
 
   // Sync on mount
   useEffect(() => {
@@ -148,14 +149,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Persist settings changes to server
   useEffect(() => {
     if (!gameState.synced) return;
-    const settings = { learningProfile, devMode: gameState.devMode };
+    const settings = { learningProfile: learningProfileRef.current, devMode: gameState.devMode };
     const progress = {
       lastRoute: window.location.pathname,
       inventoryCount: gameState.inventory.length,
       lastSyncedAt: new Date().toISOString()
     };
     persistSessionMetadata({ settings, progress });
-  }, [learningProfile, gameState.devMode, gameState.inventory.length, persistSessionMetadata, gameState.synced]);
+  }, [style, goals, skillLevel, preferredPace, gameState.devMode, gameState.inventory.length, persistSessionMetadata, gameState.synced]);
 
   // Persist to localStorage on change
   useEffect(() => {
@@ -211,7 +212,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       body: JSON.stringify({
         username: name,
         settings: {
-          learningProfile,
+          learningProfile: learningProfileRef.current,
           devMode: gameState.devMode
         }
       })
