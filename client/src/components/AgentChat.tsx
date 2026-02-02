@@ -70,6 +70,7 @@ Object.values(MODELS).flat().forEach(m => {
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  scanSuggestions?: Array<{ script: string; target: string; match: string }>;
 }
 
 interface AgentChatProps {
@@ -81,7 +82,7 @@ interface AgentChatProps {
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
 const DEFAULT_PROMPT_CONFIG: PromptConfig = {
-  modules: ['terminal_cmds', 'clue_system'] as ModuleKey[],
+  modules: ['terminal_cmds', 'clue_system', 'osint_recon', 'atropos_scans'] as ModuleKey[],
   compressedContext: '',
   taskFocus: '',
   maxTokens: 8000,
@@ -281,6 +282,20 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
             metadata: { severity: findingResult.severity, model: selectedModel }
           });
         }
+        
+        // Detect Atropos scan suggestions
+        const scanSuggestions = detectScanSuggestions(assistantMessage);
+        if (scanSuggestions.length > 0) {
+          // Store suggestions for UI display
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMsg = newMessages[newMessages.length - 1];
+            if (lastMsg.role === 'assistant') {
+              lastMsg.scanSuggestions = scanSuggestions;
+            }
+            return newMessages;
+          });
+        }
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -386,6 +401,87 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     } catch {
       return 'Execution failed';
     }
+  };
+
+  const executeAtroposScan = async (scriptPath: string, target: string) => {
+    try {
+      const response = await fetch('/api/atropos/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scriptPath,
+          target,
+          sessionToken: gameState?.sessionToken,
+          investigationId: currentSession?.id,
+          source: 'chat'
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Add scan result as tool output
+        addToolOutput({
+          type: 'osint',
+          source: 'atropos',
+          content: JSON.stringify(result.data, null, 2),
+          metadata: { 
+            scanId: result.scanId,
+            script: scriptPath,
+            target,
+            latencyMs: result.latencyMs
+          }
+        });
+        
+        return `Scan completed successfully. Found ${Array.isArray(result.data) ? result.data.length : 1} result(s). Results added to investigation.`;
+      } else {
+        return `Scan failed: ${result.error || 'Unknown error'}`;
+      }
+    } catch (error: any) {
+      return `Scan execution error: ${error.message || 'Failed to execute scan'}`;
+    }
+  };
+
+  // Detect Atropos scan suggestions in agent messages
+  const detectScanSuggestions = (message: string): Array<{ script: string; target: string; match: string }> => {
+    const suggestions: Array<{ script: string; target: string; match: string }> = [];
+    
+    // Pattern 1: [ATROPOS_SCAN:script:target]
+    const explicitPattern = /\[ATROPOS_SCAN:([^:]+):([^\]]+)\]/g;
+    let match;
+    while ((match = explicitPattern.exec(message)) !== null) {
+      suggestions.push({
+        script: match[1].trim(),
+        target: match[2].trim(),
+        match: match[0]
+      });
+    }
+    
+    // Pattern 2: Detect common scan suggestions
+    const scanKeywords = [
+      { keyword: /subdomain/i, script: 'bbot_scanner.lua' },
+      { keyword: /threat intelligence|shodan|virustotal/i, script: 'threat_intel_scanner.lua' },
+      { keyword: /vulnerability|vuln|nuclei/i, script: 'nuclei_scanner.lua' },
+      { keyword: /secret|credential|gitleaks/i, script: 'gitleaks_scanner.lua' },
+      { keyword: /amass|subdomain enum/i, script: 'amass_osint.lua' }
+    ];
+    
+    // Try to extract target from context (domain, IP, URL patterns)
+    const targetPattern = /(?:scan|check|analyze|enumerate)\s+([a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|(?:\d{1,3}\.){3}\d{1,3}|https?:\/\/[^\s]+)/i;
+    const targetMatch = message.match(targetPattern);
+    const extractedTarget = targetMatch ? targetMatch[1] : null;
+    
+    for (const { keyword, script } of scanKeywords) {
+      if (keyword.test(message) && extractedTarget) {
+        suggestions.push({
+          script,
+          target: extractedTarget,
+          match: message.substring(Math.max(0, message.search(keyword) - 20), message.search(keyword) + 50)
+        });
+      }
+    }
+    
+    return suggestions;
   };
 
   const quickActions = [
@@ -682,6 +778,38 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                     </div>
                   )}
                   <pre className="whitespace-pre-wrap text-sm font-mono">{msg.content}</pre>
+                  
+                  {/* Atropos Scan Suggestions */}
+                  {msg.scanSuggestions && msg.scanSuggestions.length > 0 && (
+                    <div className="mt-3 p-3 bg-orange-900/20 border border-orange-900/50 rounded-lg">
+                      <div className="text-xs text-orange-400 mb-2 flex items-center gap-1">
+                        <Zap className="w-3 h-3" />
+                        <span>Atropos Scan Suggestions</span>
+                      </div>
+                      <div className="space-y-2">
+                        {msg.scanSuggestions.map((suggestion, idx) => (
+                          <Button
+                            key={idx}
+                            size="sm"
+                            variant="outline"
+                            className="w-full text-xs bg-orange-900/30 border-orange-700/50 text-orange-300 hover:bg-orange-900/50 hover:text-orange-200 h-auto py-2"
+                            onClick={async () => {
+                              setLoading(true);
+                              const result = await executeAtroposScan(suggestion.script, suggestion.target);
+                              setMessages(prev => [...prev, {
+                                role: 'assistant',
+                                content: `[ATROPOS_SCAN_EXECUTED]\n${result}`
+                              }]);
+                              setLoading(false);
+                            }}
+                          >
+                            <Zap className="w-3 h-3 mr-2" />
+                            Run {suggestion.script.replace('.lua', '')} on {suggestion.target}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

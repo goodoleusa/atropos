@@ -12,7 +12,7 @@ import {
   Play, Loader2, CheckCircle2, XCircle, FileText, 
   Search, Clock, Zap, AlertCircle, ExternalLink
 } from 'lucide-react';
-import { useGameSession } from '@/hooks/useGameSession';
+import { useGame } from '@/hooks/useGameSession';
 
 export interface AtroposScript {
   scriptId: string;
@@ -40,7 +40,7 @@ interface AtroposPanelProps {
 }
 
 export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelProps) {
-  const { gameState } = useGameSession();
+  const { gameState } = useGame();
   const [scripts, setScripts] = useState<AtroposScript[]>([]);
   const [selectedScript, setSelectedScript] = useState<string>('');
   const [target, setTarget] = useState('');
