@@ -6,6 +6,7 @@ import { generateSessionExportCode, generateSecretCode, decodeQRPayload } from "
 import { registerChatRoutes } from "./replit_integrations/chat";
 import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
+import atroposRoutes from "./routes/atropos";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -40,6 +41,9 @@ export async function registerRoutes(
   
   // Register OSINT routes
   app.use("/api/osint", osintRoutes);
+  
+  // Register Atropos routes
+  app.use("/api/atropos", atroposRoutes);
   
   // Register Behavior Analysis routes
   app.use("/api/behavior", behaviorRoutes);

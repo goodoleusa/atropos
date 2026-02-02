@@ -801,6 +801,52 @@ export type InsertInteractionLog = z.infer<typeof insertInteractionLogSchema>;
 export type StateCapsule = typeof stateCapsules.$inferSelect;
 export type InsertStateCapsule = z.infer<typeof insertStateCapsuleSchema>;
 
+// Atropos Scans - track scan executions
+export const atroposScans = pgTable("atropos_scans", {
+  id: serial("id").primaryKey(),
+  scanId: text("scan_id").notNull().unique(),
+  sessionToken: text("session_token").notNull(),
+  investigationId: text("investigation_id"),
+  scriptPath: text("script_path").notNull(),
+  target: text("target").notNull(),
+  status: text("status").notNull().default("pending"), // pending, running, completed, failed
+  results: jsonb("results").$type<any>(),
+  error: text("error"),
+  outputPath: text("output_path"),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+// Atropos Scripts - registered Lua scripts
+export const atroposScripts = pgTable("atropos_scripts", {
+  id: serial("id").primaryKey(),
+  scriptId: text("script_id").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // 'osint', 'vulnerability', 'secret_detection', 'general'
+  scriptPath: text("script_path").notNull(), // Path to .lua file
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Insert schemas
+export const insertAtroposScanSchema = createInsertSchema(atroposScans).omit({
+  id: true,
+  startedAt: true,
+  completedAt: true,
+});
+export const insertAtroposScriptSchema = createInsertSchema(atroposScripts).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type AtroposScan = typeof atroposScans.$inferSelect;
+export type InsertAtroposScan = z.infer<typeof insertAtroposScanSchema>;
+export type AtroposScript = typeof atroposScripts.$inferSelect;
+export type InsertAtroposScript = z.infer<typeof insertAtroposScriptSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
