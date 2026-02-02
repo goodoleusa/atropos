@@ -15,6 +15,7 @@ interface GameState {
   username: string;
   synced: boolean;
   devMode: boolean;
+  settings: Record<string, any>;
 }
 
 interface GameContextType {
@@ -45,7 +46,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return { ...parsed, synced: false, devMode: parsed.devMode || false };
+        return { ...parsed, synced: false, devMode: parsed.devMode || false, settings: parsed.settings || {} };
       } catch (e) {
         console.error("Corrupted save file", e);
       }
@@ -55,7 +56,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       sessionToken: Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2),
       username: 'Guest',
       synced: false,
-      devMode: false
+      devMode: false,
+      settings: {}
     };
   });
 
@@ -77,13 +79,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         // Merge server clues with local inventory
         const serverClueIds = serverSession.collectedClues || [];
         const localClueIds = gameState.inventory.map(c => c.id);
-        const allClueIds = [...new Set([...serverClueIds, ...localClueIds])];
+        const allClueIds = Array.from(new Set([...serverClueIds, ...localClueIds]));
         
         // If there are clues on server that we don't have locally, we can't restore full data
         // But at least mark synced
         setGameState(prev => ({
           ...prev,
-          synced: true
+          synced: true,
+          settings: serverSession.settings || prev.settings || {}
         }));
         
         // Update server with any local clues it doesn't have
