@@ -12,8 +12,6 @@ export interface Campaign {
   color: string;
   steps?: CampaignStep[];
   adaptivePrompts?: string[];
-  targetFields?: CampaignTargetField[];
-  dummyTargets?: Record<string, string>;
 }
 
 export interface CampaignStep {
@@ -34,30 +32,6 @@ export interface ToolIntegration {
   exampleQuery: string;
   outputInterpretation: string;
   externalUrl?: string;
-}
-
-export type TargetFieldType =
-  | 'domain'
-  | 'ip'
-  | 'url'
-  | 'email'
-  | 'api'
-  | 'system'
-  | 'org'
-  | 'asn'
-  | 'hash'
-  | 'cidr'
-  | 'address'
-  | 'text'
-  | 'custom';
-
-export interface CampaignTargetField {
-  key: string;
-  label: string;
-  type: TargetFieldType;
-  required?: boolean;
-  placeholder?: string;
-  helpText?: string;
 }
 
 export const INVESTIGATION_PERSPECTIVES = [
@@ -226,14 +200,6 @@ export const AGENT_CAMPAIGNS: Campaign[] = [
     difficulty: 'intermediate',
     estimatedTime: '45-60 min',
     tags: ['OSINT', 'Corporate Intel', 'Financial'],
-    targetFields: [
-      { key: 'org', label: 'Organization Name', type: 'org', required: true, placeholder: 'Obsidian Holdings LLC' },
-      { key: 'domain', label: 'Primary Domain', type: 'domain', required: false, placeholder: 'obsidian-holdings.com' }
-    ],
-    dummyTargets: {
-      org: 'Obsidian Holdings LLC',
-      domain: 'obsidian-holdings.com'
-    },
     starterPrompt: `I want to investigate a shell corporation called "Obsidian Holdings LLC". 
 
 Help me build a dossier by:
@@ -262,14 +228,6 @@ Start with the basics - what sources would you check first for corporate intel?`
     difficulty: 'advanced',
     estimatedTime: '30-45 min',
     tags: ['Network', 'BGP', 'Infrastructure'],
-    targetFields: [
-      { key: 'ip', label: 'IP Address', type: 'ip', required: true, placeholder: '185.199.108.153' },
-      { key: 'asn', label: 'ASN (optional)', type: 'asn', required: false, placeholder: 'AS13335' }
-    ],
-    dummyTargets: {
-      ip: '185.199.108.153',
-      asn: 'AS13335'
-    },
     starterPrompt: `I want to trace network routes and understand BGP peering relationships.
 
 Target: An IP address I found in the logs - 185.199.108.153
@@ -300,14 +258,6 @@ What tools and looking glasses should we use to start this investigation?`,
     difficulty: 'beginner',
     estimatedTime: '20-30 min',
     tags: ['Recon', 'OSINT', 'DNS'],
-    targetFields: [
-      { key: 'domain', label: 'Domain', type: 'domain', required: true, placeholder: 'sysadmincorp.net' },
-      { key: 'org', label: 'Organization (optional)', type: 'org', required: false, placeholder: 'SysAdmin Corp' }
-    ],
-    dummyTargets: {
-      domain: 'sysadmincorp.net',
-      org: 'SysAdmin Corp'
-    },
     starterPrompt: `I need to perform passive reconnaissance on target domain: sysadmincorp.net
 
 Rules: NO active scanning, NO direct connections to target infrastructure.
@@ -340,12 +290,6 @@ What's our first passive recon step?`,
     difficulty: 'intermediate',
     estimatedTime: '30-45 min',
     tags: ['Recon', 'Scanning', 'Enumeration'],
-    targetFields: [
-      { key: 'cidr', label: 'Network Range', type: 'cidr', required: true, placeholder: '10.0.0.0/24' }
-    ],
-    dummyTargets: {
-      cidr: '10.0.0.0/24'
-    },
     starterPrompt: `Time for active reconnaissance on target: 10.0.0.0/24 (simulated lab network)
 
 Help me conduct:
@@ -375,14 +319,6 @@ Start with host discovery - what nmap commands would you recommend and why?`,
     difficulty: 'advanced',
     estimatedTime: '45-60 min',
     tags: ['Network', 'Infrastructure', 'Mapping'],
-    targetFields: [
-      { key: 'ip', label: 'Entry Host IP', type: 'ip', required: true, placeholder: '192.168.1.50' },
-      { key: 'cidr', label: 'Network Range (optional)', type: 'cidr', required: false, placeholder: '192.168.1.0/24' }
-    ],
-    dummyTargets: {
-      ip: '192.168.1.50',
-      cidr: '192.168.1.0/24'
-    },
     starterPrompt: `I've gained access to an internal network and need to map the topology.
 
 Current position: 192.168.1.50 (workstation VLAN)
@@ -414,14 +350,6 @@ What's the safest way to start mapping without triggering alerts?`,
     difficulty: 'expert',
     estimatedTime: '60-90 min',
     tags: ['Blue Team', 'DFIR', 'Detection'],
-    targetFields: [
-      { key: 'org', label: 'Organization / Environment', type: 'org', required: true, placeholder: 'SysAdmin Corp' },
-      { key: 'context', label: 'Incident Context (optional)', type: 'text', required: false, placeholder: 'Unusual outbound traffic at 3 AM' }
-    ],
-    dummyTargets: {
-      org: 'SysAdmin Corp',
-      context: 'Unusual outbound traffic at 3 AM'
-    },
     starterPrompt: `I'm a threat hunter investigating potential compromise indicators.
 
 Available data sources:
@@ -459,14 +387,6 @@ Where should we start the hunt?`,
     difficulty: 'intermediate',
     estimatedTime: '30-45 min',
     tags: ['Malware', 'Analysis', 'Reverse Engineering'],
-    targetFields: [
-      { key: 'filename', label: 'File Name', type: 'text', required: false, placeholder: 'invoice_final.exe' },
-      { key: 'hash', label: 'File Hash', type: 'hash', required: true, placeholder: '3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c' }
-    ],
-    dummyTargets: {
-      filename: 'invoice_final.exe',
-      hash: '3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c'
-    },
     starterPrompt: `I have a suspicious file that was flagged by our EDR: invoice_final.exe
 
 Hash: 3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c
@@ -498,14 +418,6 @@ What's the safe triage methodology?`,
     difficulty: 'intermediate',
     estimatedTime: '45-60 min',
     tags: ['OSINT', 'Social Engineering', 'Personnel'],
-    targetFields: [
-      { key: 'org', label: 'Organization', type: 'org', required: true, placeholder: 'TechCorp Industries' },
-      { key: 'domain', label: 'Primary Domain (optional)', type: 'domain', required: false, placeholder: 'techcorp.com' }
-    ],
-    dummyTargets: {
-      org: 'TechCorp Industries',
-      domain: 'techcorp.com'
-    },
     starterPrompt: `I need to build social engineering reconnaissance on organization: TechCorp Industries
 
 Goals:
@@ -535,14 +447,6 @@ What OSINT sources should we mine first for personnel intelligence?`,
     difficulty: 'advanced',
     estimatedTime: '30-45 min',
     tags: ['Dark Web', 'Threat Intel', 'Breaches'],
-    targetFields: [
-      { key: 'org', label: 'Organization', type: 'org', required: true, placeholder: 'MegaCorp' },
-      { key: 'domain', label: 'Domain (optional)', type: 'domain', required: false, placeholder: 'megacorp.com' }
-    ],
-    dummyTargets: {
-      org: 'MegaCorp',
-      domain: 'megacorp.com'
-    },
     starterPrompt: `I need to check if our organization has exposure on the dark web.
 
 Target organization: MegaCorp (domain: megacorp.com)
@@ -574,12 +478,6 @@ What safe OSINT methods can we use without accessing actual dark web markets?`,
     difficulty: 'advanced',
     estimatedTime: '45-60 min',
     tags: ['Crypto', 'Financial', 'Blockchain'],
-    targetFields: [
-      { key: 'address', label: 'Wallet Address', type: 'address', required: true, placeholder: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' }
-    ],
-    dummyTargets: {
-      address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
-    },
     starterPrompt: `I need to trace cryptocurrency associated with a suspected fraud operation.
 
 Known Bitcoin address: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
@@ -611,14 +509,6 @@ What blockchain analysis approach should we take?`,
     difficulty: 'expert',
     estimatedTime: '60-90 min',
     tags: ['DFIR', 'Blue Team', 'Crisis'],
-    targetFields: [
-      { key: 'context', label: 'Incident Summary', type: 'text', required: true, placeholder: 'Ransomware behavior on finance workstations' },
-      { key: 'scope', label: 'Affected Scope (optional)', type: 'text', required: false, placeholder: 'Finance department (10+ hosts)' }
-    ],
-    dummyTargets: {
-      context: 'Ransomware behavior on finance workstations',
-      scope: 'Finance department (10+ hosts)'
-    },
     starterPrompt: `ALERT: Active incident in progress!
 
 Situation: Multiple workstations exhibiting ransomware behavior
@@ -652,16 +542,6 @@ What's our immediate priority action?`,
     difficulty: 'beginner',
     estimatedTime: '20-30 min',
     tags: ['Phishing', 'Email', 'Analysis'],
-    targetFields: [
-      { key: 'url', label: 'Suspicious URL', type: 'url', required: true, placeholder: 'hxxp://amaz0n-verify[.]com/login' },
-      { key: 'email', label: 'Sender Email (optional)', type: 'email', required: false, placeholder: 'support@amaz0n-verify.com' },
-      { key: 'ip', label: 'Originating IP (optional)', type: 'ip', required: false, placeholder: '185.234.xxx.xxx' }
-    ],
-    dummyTargets: {
-      url: 'hxxp://amaz0n-verify[.]com/login',
-      email: 'support@amaz0n-verify.com',
-      ip: '185.234.xxx.xxx'
-    },
     starterPrompt: `User reported a suspicious email. I have the full EML file.
 
 Headers show:

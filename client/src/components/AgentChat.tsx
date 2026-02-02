@@ -1,21 +1,17 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext, detectFindingFromMessage } from '@/hooks/useReportContext';
 import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target, Copy, Download, Save, ExternalLink as ExternalLinkIcon, Settings2, FileText } from 'lucide-react';
-import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign, type CampaignTargetField, type TargetFieldType } from '@/config/agentCampaigns';
+import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign } from '@/config/agentCampaigns';
 import { toast } from "@/hooks/use-toast";
 import { PromptStudio, type PromptConfig } from './PromptStudio';
 import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
 import { exportAgentSessionToReport } from '@/lib/reportExporter';
-import { useLearningStore } from '@/stores/useLearningStore';
 
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
@@ -94,8 +90,7 @@ const DEFAULT_PROMPT_CONFIG: PromptConfig = {
 
 export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps) => {
   const { gameState } = useGame();
-  const { addAgentMessage, addToolOutput, currentSession, startSession, setCampaign: setContextCampaign, addTarget } = useReportContext();
-  const getLearningProfile = useLearningStore((state) => state.getFullPromptModifier);
+  const { addAgentMessage, addToolOutput, currentSession, startSession, setCampaign: setContextCampaign } = useReportContext();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -107,18 +102,13 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const [promptConfig, setPromptConfig] = useState<PromptConfig>(DEFAULT_PROMPT_CONFIG);
   const [isCompressing, setIsCompressing] = useState(false);
   const [showPromptStudio, setShowPromptStudio] = useState(false);
-  const [captureEnabled, setCaptureEnabled] = useState(false);
-  const [targetModalOpen, setTargetModalOpen] = useState(false);
-  const [pendingCampaign, setPendingCampaign] = useState<Campaign | null>(null);
-  const [targetValues, setTargetValues] = useState<Record<string, string>>({});
-  const [useDummyTargets, setUseDummyTargets] = useState(false);
 
-  // Auto-start session only when capture is enabled
+  // Auto-start session when first message is sent
   useEffect(() => {
-    if (captureEnabled && messages.length === 1 && !currentSession) {
-      startSession(`Agent Module - ${new Date().toLocaleDateString()}`);
+    if (messages.length === 1 && !currentSession) {
+      startSession(`Agent Session - ${new Date().toLocaleDateString()}`);
     }
-  }, [captureEnabled, messages.length, currentSession, startSession]);
+  }, [messages.length, currentSession, startSession]);
 
   // Initialize with payload if provided
   useEffect(() => {
@@ -153,72 +143,6 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     }
   };
 
-  const mapTargetType = (type: TargetFieldType) => {
-    switch (type) {
-      case 'domain':
-        return 'domain';
-      case 'ip':
-        return 'ip';
-      case 'url':
-        return 'url';
-      case 'api':
-        return 'api';
-      case 'system':
-        return 'system';
-      default:
-        return 'custom';
-    }
-  };
-
-  const buildTargetSummary = (fields: CampaignTargetField[], values: Record<string, string>) => {
-    const lines = fields
-      .map((field) => {
-        const value = values[field.key]?.trim();
-        if (!value) return null;
-        return `- ${field.label}: ${value}`;
-      })
-      .filter(Boolean);
-    return lines.length > 0 ? lines.join('\n') : 'None';
-  };
-
-  const startAgentModule = (campaign: Campaign, values: Record<string, string>) => {
-    const targetFields = campaign.targetFields || [];
-    const targetSummary = buildTargetSummary(targetFields, values);
-    const learningProfile = getLearningProfile();
-
-    startSession(`Agent Module - ${campaign.name}`);
-    setContextCampaign(campaign.id);
-    setCaptureEnabled(true);
-
-    targetFields.forEach((field) => {
-      const value = values[field.key]?.trim();
-      if (!value) return;
-      addTarget({
-        type: mapTargetType(field.type),
-        value,
-        name: field.label,
-        notes: field.helpText
-      });
-    });
-
-    setActiveCampaign(campaign);
-    setShowCampaigns(false);
-
-    setPromptConfig((prev) => ({
-      ...prev,
-      taskFocus: `Agent Module: ${campaign.name}\n\nObjectives:\n- ${campaign.objectives.join('\n- ')}\n\nTargets:\n${targetSummary}\n\n${learningProfile}`
-    }));
-
-    setInput(`${campaign.starterPrompt}\n\nTargets:\n${targetSummary}`);
-  };
-
-  const openTargetSetup = (campaign: Campaign) => {
-    setPendingCampaign(campaign);
-    setTargetValues(campaign.dummyTargets || {});
-    setUseDummyTargets(false);
-    setTargetModalOpen(true);
-  };
-
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
@@ -246,12 +170,8 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setLoading(true);
     
-    const shouldCapture = captureEnabled && !!activeCampaign;
-
-    // Track in shared context only when capture is enabled
-    if (shouldCapture) {
-      addAgentMessage({ role: 'user', content: userMessage, model: selectedModel, campaign: activeCampaign?.id });
-    }
+    // Track in shared context
+    addAgentMessage({ role: 'user', content: userMessage, model: selectedModel, campaign: activeCampaign?.id });
 
     try {
       // Ensure we have a conversation
@@ -349,19 +269,17 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       }
       // Track assistant response in shared context
       if (assistantMessage) {
-        if (shouldCapture) {
-          addAgentMessage({ role: 'assistant', content: assistantMessage, model: selectedModel, campaign: activeCampaign?.id });
-
-          // Detect and track any findings
-          const findingResult = detectFindingFromMessage(assistantMessage);
-          if (findingResult?.detected) {
-            addToolOutput({
-              type: findingResult.type as any,
-              source: 'agent',
-              content: assistantMessage,
-              metadata: { severity: findingResult.severity, model: selectedModel }
-            });
-          }
+        addAgentMessage({ role: 'assistant', content: assistantMessage, model: selectedModel, campaign: activeCampaign?.id });
+        
+        // Detect and track any findings
+        const findingResult = detectFindingFromMessage(assistantMessage);
+        if (findingResult?.detected) {
+          addToolOutput({
+            type: findingResult.type as any,
+            source: 'agent',
+            content: assistantMessage,
+            metadata: { severity: findingResult.severity, model: selectedModel }
+          });
         }
       }
     } catch (error) {
@@ -377,7 +295,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
 
   const copySession = () => {
     const transcript = messages.map(m => `[${m.role.toUpperCase()}]\n${m.content}`).join('\n\n');
-    const header = `NEXUS AGENT SESSION LOG\nDate: ${new Date().toLocaleString()}\nModel: ${selectedModel}\nModule: ${activeCampaign?.name || 'None'}\n\n`;
+    const header = `NEXUS AGENT SESSION LOG\nDate: ${new Date().toLocaleString()}\nModel: ${selectedModel}\nCampaign: ${activeCampaign?.name || 'None'}\n\n`;
     navigator.clipboard.writeText(header + transcript);
     toast({
       title: "Transcript Copied",
@@ -477,13 +395,10 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   ];
 
   const startCampaign = (campaign: Campaign) => {
-    const needsTargets = (campaign.targetFields || []).length > 0;
-    if (needsTargets) {
-      openTargetSetup(campaign);
-      return;
-    }
-
-    startAgentModule(campaign, {});
+    setActiveCampaign(campaign);
+    setShowCampaigns(false);
+    setInput(campaign.starterPrompt);
+    setContextCampaign(campaign.id);
   };
 
   const resetChat = () => {
@@ -493,8 +408,6 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setShowCampaigns(true);
     setInput('');
     setPromptConfig(DEFAULT_PROMPT_CONFIG);
-    setCaptureEnabled(false);
-    setContextCampaign('');
   };
 
   // Compress conversation context using AI
@@ -541,7 +454,6 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   }, [messages, selectedModel]);
 
   return (
-    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono w-[95vw] max-w-2xl h-[90vh] md:h-[80vh] flex flex-col p-3 md:p-6">
         <DialogHeader className="flex-shrink-0">
@@ -666,14 +578,14 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
           <div className="space-y-3 md:space-y-4 py-2 md:py-4">
             {messages.length === 0 && showCampaigns && (
               <div className="space-y-4">
-                {/* Module Header */}
+                {/* Campaign Header */}
                 <div className="text-center py-2">
                   <Rocket className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 text-teal-500 opacity-70" />
-                  <p className="text-sm md:text-base text-amber-500 font-bold">Choose an Agent Module</p>
-                  <p className="text-[10px] md:text-xs text-stone-500 mt-1">Select a skill module or start a freeform session</p>
+                  <p className="text-sm md:text-base text-amber-500 font-bold">Choose a Campaign</p>
+                  <p className="text-[10px] md:text-xs text-stone-500 mt-1">Select an investigation path or start a freeform session</p>
                 </div>
 
-                {/* Module Grid - Mobile Optimized */}
+                {/* Campaign Grid - Mobile Optimized */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                   {AGENT_CAMPAIGNS.slice(0, 8).map((campaign) => (
                     <button
@@ -708,18 +620,13 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                 {/* Freeform Option */}
                 <div className="pt-2 border-t border-amber-900/20">
                   <button
-                    onClick={() => {
-                      setShowCampaigns(false);
-                      setActiveCampaign(null);
-                      setCaptureEnabled(false);
-                      setContextCampaign('');
-                    }}
+                    onClick={() => setShowCampaigns(false)}
                     className="w-full p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg hover:bg-amber-900/30 transition-all text-center"
                     data-testid="freeform-session"
                   >
                     <Terminal className="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-amber-600" />
                     <p className="text-amber-500 font-bold text-xs md:text-sm">Freeform Session</p>
-                    <p className="text-stone-500 text-[10px] md:text-xs">Start without a module template</p>
+                    <p className="text-stone-500 text-[10px] md:text-xs">Start without a campaign template</p>
                   </button>
                 </div>
               </div>
@@ -749,15 +656,10 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    setShowCampaigns(true);
-                    setActiveCampaign(null);
-                    setCaptureEnabled(false);
-                    setContextCampaign('');
-                  }}
+                  onClick={() => setShowCampaigns(true)}
                   className="mt-3 text-stone-500 hover:text-teal-400 text-[10px] md:text-xs"
                 >
-                  <ArrowLeft className="w-3 h-3 mr-1" /> Back to Modules
+                  <ArrowLeft className="w-3 h-3 mr-1" /> Back to Campaigns
                 </Button>
               </div>
             )}
@@ -824,106 +726,5 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         </div>
       </DialogContent>
     </Dialog>
-
-    <Dialog
-      open={targetModalOpen}
-      onOpenChange={(open) => {
-        setTargetModalOpen(open);
-        if (!open) {
-          setPendingCampaign(null);
-          setTargetValues({});
-          setUseDummyTargets(false);
-        }
-      }}
-    >
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-amber-500 font-orbitron text-sm">Module Target Setup</DialogTitle>
-        </DialogHeader>
-        {pendingCampaign ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-stone-500">Agent Module</p>
-                <p className="text-sm text-amber-400 font-bold">{pendingCampaign.name}</p>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  if (pendingCampaign.dummyTargets) {
-                    setTargetValues(pendingCampaign.dummyTargets);
-                    setUseDummyTargets(true);
-                  }
-                }}
-                className="border-amber-700 text-amber-400"
-              >
-                Use Dummy Data
-              </Button>
-            </div>
-
-            <div className="space-y-3">
-              {(pendingCampaign.targetFields || []).map((field) => (
-                <div key={field.key}>
-                  <div className="flex items-center justify-between">
-                    <Label className="text-[10px] text-stone-500 uppercase">
-                      {field.label}
-                    </Label>
-                    {field.required && <Badge variant="outline" className="text-[8px] border-red-700 text-red-400">Required</Badge>}
-                  </div>
-                  <Input
-                    value={targetValues[field.key] || ''}
-                    placeholder={field.placeholder || ''}
-                    onChange={(e) => {
-                      setUseDummyTargets(false);
-                      setTargetValues((prev) => ({ ...prev, [field.key]: e.target.value }));
-                    }}
-                    className="bg-black/50 border-amber-900/30 text-amber-300 text-sm"
-                  />
-                  {field.helpText && (
-                    <p className="text-[10px] text-stone-600 mt-1">{field.helpText}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {useDummyTargets && (
-              <p className="text-[10px] text-teal-400">Dummy data loaded. You can edit any field.</p>
-            )}
-
-            <div className="flex gap-2 pt-2">
-              <Button
-                variant="outline"
-                className="border-stone-700 text-stone-400 w-full"
-                onClick={() => setTargetModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="bg-amber-700 hover:bg-amber-600 text-black w-full"
-                onClick={() => {
-                  const fields = pendingCampaign.targetFields || [];
-                  const missing = fields.filter((f) => f.required && !targetValues[f.key]?.trim());
-                  if (missing.length > 0) {
-                    toast({
-                      title: "Missing required targets",
-                      description: `Fill: ${missing.map((m) => m.label).join(', ')}`
-                    });
-                    return;
-                  }
-                  setTargetModalOpen(false);
-                  startAgentModule(pendingCampaign, targetValues);
-                }}
-              >
-                Start Module
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm text-stone-500">No module selected.</p>
-        )}
-      </DialogContent>
-    </Dialog>
-    </>
   );
 };
