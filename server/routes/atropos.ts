@@ -99,9 +99,10 @@ router.post("/scan", async (req: Request, res: Response) => {
           
           if (findings.length > 0) {
             const updatedFindings = [...(investigation.findings || []), ...findings];
+            const toolsUsedSet = new Set([...(investigation.toolsUsed || []), 'atropos']);
             await storage.updateInvestigation(investigationId, {
               findings: updatedFindings,
-              toolsUsed: [...new Set([...(investigation.toolsUsed || []), 'atropos'])]
+              toolsUsed: Array.from(toolsUsedSet)
             });
           }
         }
