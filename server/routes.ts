@@ -80,6 +80,9 @@ export async function registerRoutes(
   // Register Behavior Analysis routes
   app.use("/api/behavior", behaviorRoutes);
   
+  // Register Atropos Scanner routes
+  app.use("/api/atropos", atroposRoutes);
+  
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
     try {
@@ -290,7 +293,7 @@ export async function registerRoutes(
       const { runId } = req.params;
       const updates = req.body || {};
 
-      const updated = await storage.updateCampaignRun(runId, updates);
+      const updated = await storage.updateCampaignRun(runId as string, updates);
       if (!updated) {
         return res.status(404).json({ error: "Run not found" });
       }
@@ -1011,7 +1014,7 @@ BEHAVIOR:
       for (const [key, value] of Object.entries(req.body || {})) {
         updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
       }
-      const updated = await storage.updateArtifact(id, updates as any);
+      const updated = await storage.updateArtifact(id as string, updates as any);
       if (!updated) {
         return res.status(404).json({ error: "Artifact not found" });
       }
@@ -1051,7 +1054,7 @@ BEHAVIOR:
       for (const [key, value] of Object.entries(req.body || {})) {
         updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
       }
-      const card = await storage.upsertMysticalCard(cardId, updates as any);
+      const card = await storage.upsertMysticalCard(cardId as string, updates as any);
       res.json(card);
     } catch (error) {
       console.error("Save mystical card error:", error);
@@ -1091,7 +1094,7 @@ BEHAVIOR:
       if (updates.baseProb !== undefined) {
         updates.baseProb = parseInt(String(updates.baseProb), 10);
       }
-      const event = await storage.upsertQuantumEvent(eventId, updates as any);
+      const event = await storage.upsertQuantumEvent(eventId as string, updates as any);
       res.json(event);
     } catch (error) {
       console.error("Save quantum event error:", error);
@@ -1130,7 +1133,7 @@ BEHAVIOR:
       for (const [key, value] of Object.entries(req.body || {})) {
         updates[key] = typeof value === "string" ? sanitizeInput(value) : value;
       }
-      const updated = await storage.updateQuantumMessage(parseInt(id, 10), updates as any);
+      const updated = await storage.updateQuantumMessage(parseInt(id as string, 10), updates as any);
       if (!updated) {
         return res.status(404).json({ error: "Quantum message not found" });
       }
