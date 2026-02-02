@@ -1,7 +1,7 @@
-# SysAdmin Corp - Interactive Terminal Game
+# Atropos - Security Investigation Platform
 
 ## Overview
-This project is an interactive web-based terminal game, "SysAdmin Corp," featuring a molten bronze/industrial aesthetic. Players navigate a fictional corporate system through a custom terminal interface, collecting clues, completing quests, and uncovering secrets. The game blends mystical/occult elements (tarot cards, zodiac signs, quantum mechanics) with a retro-futuristic corporate hacking narrative. Key capabilities include a custom terminal emulator, a quest and clue system, QR code generation for session management, hidden routes, and atmospheric visual effects. The business vision is to create an engaging "escape room" style CTF experience, providing market potential in interactive narrative gaming and gamified cybersecurity training.
+Atropos is a comprehensive AI-powered security investigation platform with dual purposes: (1) professional bug bounty/security research website featuring AI-powered OSINT tools, behavioral analytics, and report generation, and (2) hidden CTF game with real-world exercises. The platform features a molten bronze/industrial aesthetic with a custom terminal interface, investigation campaigns, and atmospheric visual effects. Key capabilities include AI-powered investigation workflows, visual campaign designer, report builder, and gamified security training. The business vision is to create an intelligent security research platform that combines professional OSINT capabilities with engaging CTF-style learning experiences.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -35,7 +35,7 @@ Preferred communication style: Simple, everyday language.
 - **Game Progression**: Clue collection, quest chains, and unlockable content.
 - **Dynamic Content**: Centralized message and campaign configuration for terminal messages, toasts, and overlays. Campaigns switch themes and narratives.
 - **Security Design (Intentionally Vulnerable)**: Designed as an "escape room" CTF; allows enumeration and simulated hacking, but prevents real attacks with input sanitization, rate limiting, CSP, and session validation.
-- **NEXUS Agent System**: Integrated AI assistant (`AgentChat.tsx`) for payload execution and game interaction, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns (e.g., OSINT, BGP tracing). Admin can configure system prompt via **Admin → Agent tab** (core identity, capability modules, custom instructions).
+- **Atropos Agent System**: Integrated AI assistant (`AgentChat.tsx`) for security investigation and OSINT operations, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns (e.g., Shell Corp, BGP tracing, Threat Hunting). Admin can configure system prompt via **Admin → Agent tab** (core identity, capability modules, custom instructions).
 - **Admin Dashboard**: Content management for clues, quests, messages, mystical elements, Player Sessions tab with live session data, and a UX Playground for real-time visual effect tweaking (backgrounds, mouse tracking, glitches, event probabilities).
 - **Campaign Designer**: Twine-inspired visual flow editor with Obsidian-style wikilinks and breadcrumb metadata for conditional decision trees.
   - **Wikilinks**: Use `[[Node Title]]` in content to auto-create links between nodes
@@ -70,12 +70,104 @@ Preferred communication style: Simple, everyday language.
 - **Campaign Designer Learning Integration**: Nodes support learning goals, skill levels, and teaching notes metadata for educational campaign development.
 - **Mobile Node Ordering**: Campaign Designer includes 3x3 button grid for node hierarchy management (up/down/indent/outdent) with visual depth indicators, plus keyboard navigation support (arrow keys, Tab for indentation).
 
+## Customizing Agent Campaigns
+
+The Agent Campaigns module (`client/src/config/agentCampaigns.ts`) provides pre-built investigation workflows for the Atropos agent. Here's how to customize it:
+
+### File Structure
+
+```
+client/src/config/agentCampaigns.ts
+├── Campaign interface          # Campaign data shape
+├── CampaignStep interface      # Step-by-step guidance
+├── ToolIntegration interface   # External tool definitions
+├── INVESTIGATION_PERSPECTIVES  # Mindset perspectives (adversary, defender, etc.)
+├── OSINT_TOOLS                 # Tool reference library (Shodan, Censys, etc.)
+├── ADAPTIVE_RESPONSES          # Context-aware guidance templates
+├── GUIDED_QUESTIONS            # Phase-based prompting questions
+├── AGENT_CAMPAIGNS             # Main campaign definitions array
+├── CAMPAIGN_CATEGORIES         # Grouping for UI display
+└── Helper functions            # getDifficultyColor, getCampaignById
+```
+
+### Adding a New Campaign
+
+Add to the `AGENT_CAMPAIGNS` array:
+
+```typescript
+{
+  id: 'my_campaign',           // Unique slug (used in URLs)
+  name: 'My Campaign Name',    // Display name
+  icon: '🔍',                  // Emoji icon
+  description: 'Brief description for card display',
+  difficulty: 'intermediate',  // beginner | intermediate | advanced | expert
+  estimatedTime: '30-45 min',
+  tags: ['OSINT', 'Recon'],   // Filterable tags
+  color: 'teal',               // Tailwind color for theming
+  starterPrompt: `The initial prompt sent to the AI agent...`,
+  objectives: [                // Checklist items
+    'First objective',
+    'Second objective'
+  ],
+  tools: ['Tool1', 'Tool2'],  // Recommended tools
+  steps: [...],               // Optional: step-by-step guidance
+  adaptivePrompts: [...]      // Optional: context-triggered prompts
+}
+```
+
+### Adding OSINT Tools
+
+Add to `OSINT_TOOLS` array:
+
+```typescript
+{
+  name: 'ToolName',
+  purpose: 'What it does',
+  whenToUse: 'When to recommend it',
+  exampleQuery: 'target.com',
+  outputInterpretation: 'How to read results',
+  externalUrl: 'https://tool.com'  // Optional
+}
+```
+
+### Adding Adaptive Responses
+
+Add to `ADAPTIVE_RESPONSES` object:
+
+```typescript
+my_scenario: `Markdown guidance text that appears when this scenario is detected...`
+```
+
+### Adding Investigation Perspectives
+
+Add to `INVESTIGATION_PERSPECTIVES` array:
+
+```typescript
+{ id: 'my_perspective', name: 'Display Name', icon: '🎯', prompt: 'Guiding question...' }
+```
+
+### Updating Campaign Categories
+
+Group campaigns in `CAMPAIGN_CATEGORIES`:
+
+```typescript
+{ id: 'my_category', name: 'Category Name', campaigns: ['campaign_id_1', 'campaign_id_2'] }
+```
+
+### Best Practices
+
+1. **Starter Prompts**: Write detailed, actionable prompts that set context and list specific steps
+2. **Objectives**: Keep to 5-7 items; these become the user's checklist
+3. **Tools**: Only list tools relevant to the campaign's scope
+4. **Difficulty**: Be honest - expert campaigns should require real expertise
+5. **Colors**: Use Tailwind colors that contrast well with the dark theme
+
 ## External Dependencies
 
 ### Core Services
 - **PostgreSQL Database**: Primary data store.
 - **Replit Auth**: OpenID Connect authentication.
-- **OpenRouter AI**: Provides LLM capabilities for the NEXUS agent.
+- **OpenRouter AI**: Provides LLM capabilities for the Atropos agent.
 
 ### Third-Party Libraries
 - **QRCode Library**: Server-side QR code generation.

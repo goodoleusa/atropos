@@ -26,7 +26,16 @@ Pattern: decode hints → reveal secrets → unlock routes`,
 
   osint_recon: `[OSINT]
 Enumerate: routes, clues, quests, session state
-Analyze: QR payloads, encoded messages, hidden patterns`
+Analyze: QR payloads, encoded messages, hidden patterns`,
+
+  atropos_scans: `[ATROPOS_SCANS]
+Execute OSINT and security scans using Atropos tool with Lua scripts.
+Available scripts: bbot_scanner (subdomain enum), threat_intel_scanner (Shodan/VirusTotal), 
+amass_osint (subdomain discovery), nuclei_scanner (vulnerability scan), gitleaks (secret detection).
+When user asks about scanning a target (domain, IP, URL), suggest: "I can run an Atropos scan. Should I proceed?"
+To execute: Use special command format: [ATROPOS_SCAN:script_name:target]
+Example: [ATROPOS_SCAN:bbot_scanner:example.com]
+Results are automatically added to investigation context.`
 };
 
 // Context compression template - distill conversation to essentials
@@ -160,8 +169,8 @@ export const PROMPT_PROFILES = {
   
   // OSINT/Recon mode
   reconnaissance: {
-    modules: ['osint_recon', 'terminal_cmds'],
-    task_focus: 'Enumerate system state. Find hidden routes and clues.'
+    modules: ['osint_recon', 'atropos_scans', 'terminal_cmds'],
+    task_focus: 'Enumerate system state. Find hidden routes and clues. Suggest Atropos scans when appropriate.'
   },
   
   // Puzzle solving mode

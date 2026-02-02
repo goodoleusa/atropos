@@ -2,63 +2,70 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '@/hooks/useGameSession';
 import { X } from 'lucide-react';
+import { MYSTICAL_CARDS } from '@/config/messages';
 
-const TAROT_CARDS = [
-  { name: 'The Fool', symbol: '0', hint: 'Begin anew. The terminal awaits the curious.', icon: '🃏' },
-  { name: 'The Magician', symbol: 'I', hint: 'All tools are at your disposal. Type "help".', icon: '🪄' },
-  { name: 'The High Priestess', symbol: 'II', hint: 'Hidden knowledge lies in .hidden files.', icon: '🌙' },
-  { name: 'The Empress', symbol: 'III', hint: 'Abundance flows through /void.', icon: '👑' },
-  { name: 'The Tower', symbol: 'XVI', hint: 'Destruction reveals truth. Try ssh molten_core.', icon: '🗼' },
-  { name: 'The Star', symbol: 'XVII', hint: 'Hope guides you. Check the routes config.', icon: '⭐' },
-  { name: 'The Moon', symbol: 'XVIII', hint: 'Illusions obscure. The admin hides in plain sight.', icon: '🌕' },
-  { name: 'The World', symbol: 'XXI', hint: 'Completion awaits those who collect all fragments.', icon: '🌍' },
-];
-
-const ZODIAC_SIGNS = [
-  { name: 'Aries', symbol: '♈', element: 'Fire', hint: 'Charge forward. Hidden paths reward the bold.' },
-  { name: 'Taurus', symbol: '♉', element: 'Earth', hint: 'Patience reveals secrets in the footer.' },
-  { name: 'Gemini', symbol: '♊', element: 'Air', hint: 'Duality exists. Two terminals, one truth.' },
-  { name: 'Cancer', symbol: '♋', element: 'Water', hint: 'Home holds secrets. Look closer at the cards.' },
-  { name: 'Leo', symbol: '♌', element: 'Fire', hint: 'The spotlight hides shadows. Check netstat.' },
-  { name: 'Virgo', symbol: '♍', element: 'Earth', hint: 'Details matter. ls reveals hidden files.' },
-  { name: 'Libra', symbol: '♎', element: 'Air', hint: 'Balance the scales. Import and export are mirrors.' },
-  { name: 'Scorpio', symbol: '♏', element: 'Water', hint: 'Secrets run deep. Probe the void.' },
-  { name: 'Sagittarius', symbol: '♐', element: 'Fire', hint: 'Adventure calls. Explore every route.' },
-  { name: 'Capricorn', symbol: '♑', element: 'Earth', hint: 'Climb higher. The admin console watches all.' },
-  { name: 'Aquarius', symbol: '♒', element: 'Air', hint: 'Innovation unlocks paths. Decode the messages.' },
-  { name: 'Pisces', symbol: '♓', element: 'Water', hint: 'Dreams hold truth. The void speaks to seekers.' },
-];
+const DEFAULT_TAROT = MYSTICAL_CARDS.tarot.filter(card => card.enabled !== false);
+const DEFAULT_ZODIAC = MYSTICAL_CARDS.zodiac.filter(card => card.enabled !== false);
 
 interface MysticalCard {
   type: 'tarot' | 'zodiac';
-  data: typeof TAROT_CARDS[0] | typeof ZODIAC_SIGNS[0];
+  data: typeof DEFAULT_TAROT[0] | typeof DEFAULT_ZODIAC[0];
 }
 
 export const MysticalPopups = () => {
   const [activeCard, setActiveCard] = useState<MysticalCard | null>(null);
+  const [tarotCards, setTarotCards] = useState(DEFAULT_TAROT);
+  const [zodiacSigns, setZodiacSigns] = useState(DEFAULT_ZODIAC);
   const { collectClue, hasClue } = useGame();
+
+  useEffect(() => {
+    const loadCards = async () => {
+      try {
+        const res = await fetch('/api/mystical-cards');
+        if (!res.ok) return;
+        const cards = await res.json();
+        if (!Array.isArray(cards) || cards.length === 0) return;
+
+        const tarot = cards.filter((c: { type: string; enabled?: boolean }) => c.type === 'tarot' && c.enabled !== false);
+        const zodiac = cards.filter((c: { type: string; enabled?: boolean }) => c.type === 'zodiac' && c.enabled !== false);
+
+        if (tarot.length > 0) setTarotCards(tarot);
+        if (zodiac.length > 0) setZodiacSigns(zodiac);
+      } catch (error) {
+        console.error('Failed to load mystical cards:', error);
+      }
+    };
+
+    loadCards();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() > 0.92) {
-        const isTarot = Math.random() > 0.5;
+        const hasTarot = tarotCards.length > 0;
+        const hasZodiac = zodiacSigns.length > 0;
+        if (!hasTarot && !hasZodiac) return;
+
+        const isTarot = hasTarot && (!hasZodiac || Math.random() > 0.5);
         if (isTarot) {
-          const card = TAROT_CARDS[Math.floor(Math.random() * TAROT_CARDS.length)];
-          setActiveCard({ type: 'tarot', data: card });
-        } else {
-          const sign = ZODIAC_SIGNS[Math.floor(Math.random() * ZODIAC_SIGNS.length)];
-          setActiveCard({ type: 'zodiac', data: sign });
+          const card = tarotCards[Math.floor(Math.random() * tarotCards.length)];
+          if (card) setActiveCard({ type: 'tarot', data: card });
+        } else if (hasZodiac) {
+          const sign = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
+          if (sign) setActiveCard({ type: 'zodiac', data: sign });
         }
       }
     }, 15000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [tarotCards, zodiacSigns]);
 
   const handleCollect = () => {
     if (!activeCard) return;
-    
-    const clueId = `mystical-${activeCard.type}-${activeCard.data.name.toLowerCase().replace(/\s+/g, '-')}`;
+
+    const cardId = (activeCard.data as { cardId?: string }).cardId;
+    const fallbackId = activeCard.data.name.toLowerCase().replace(/\s+/g, '-');
+    const clueId = cardId ? `mystical-${cardId}` : `mystical-${activeCard.type}-${fallbackId}`;
     
     if (!hasClue(clueId)) {
       collectClue({
@@ -120,9 +127,9 @@ export const MysticalPopups = () => {
             {activeCard.type === 'tarot' ? (
               // Tarot Card Design
               <div className="text-center">
-                <div className="text-4xl mb-2">{(activeCard.data as typeof TAROT_CARDS[0]).icon}</div>
+                <div className="text-4xl mb-2">{(activeCard.data as typeof DEFAULT_TAROT[0]).icon}</div>
                 <div className="text-xs text-amber-700 font-mono mb-1">
-                  {(activeCard.data as typeof TAROT_CARDS[0]).symbol}
+                  {(activeCard.data as typeof DEFAULT_TAROT[0]).symbol}
                 </div>
                 <h3 className="text-amber-500 font-orbitron text-lg mb-3">
                   {activeCard.data.name}
@@ -142,10 +149,10 @@ export const MysticalPopups = () => {
               // Zodiac Sign Design
               <div className="text-center">
                 <div className="text-5xl mb-2 text-purple-400">
-                  {(activeCard.data as typeof ZODIAC_SIGNS[0]).symbol}
+                  {(activeCard.data as typeof DEFAULT_ZODIAC[0]).symbol}
                 </div>
                 <div className="text-xs text-purple-700 font-mono mb-1">
-                  {(activeCard.data as typeof ZODIAC_SIGNS[0]).element}
+                  {(activeCard.data as typeof DEFAULT_ZODIAC[0]).element}
                 </div>
                 <h3 className="text-purple-400 font-orbitron text-lg mb-3">
                   {activeCard.data.name}

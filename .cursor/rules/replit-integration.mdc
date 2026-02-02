@@ -1,0 +1,19 @@
+---
+description: Optimize work for Replit-hosted projects in Cursor
+alwaysApply: true
+---
+
+# Replit Integration
+
+- Assume projects run in Replit; use workspace paths under `/home/runner/workspace`.
+- Do not use `sudo` or system-wide installs; use the project package manager.
+- Read and respect `.replit`, `replit.nix`, and `replit.md` when present.
+- Bind dev servers to `0.0.0.0` and honor `PORT` if provided.
+- Keep secrets out of git; prefer `.env` and avoid printing secrets.
+
+## Server binding example
+
+```ts
+const port = Number(process.env.PORT ?? 3000);
+app.listen(port, "0.0.0.0");
+```

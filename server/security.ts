@@ -110,14 +110,14 @@ export const rateLimit = (maxRequests: number, windowMs: number) => {
   };
 };
 
-export const sanitizeInput = (input: string): string => {
+export const sanitizeInput = (input: string, maxLength = 10000): string => {
   if (typeof input !== 'string') return '';
   return input
     .replace(/[<>]/g, '') // Remove angle brackets to prevent HTML injection
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .replace(/on\w+=/gi, '') // Remove event handlers
     .trim()
-    .slice(0, 10000); // Max length
+    .slice(0, maxLength); // Max length
 };
 
 export const validateSessionToken = (token: unknown): token is string => {
