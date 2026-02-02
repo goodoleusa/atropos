@@ -10,6 +10,7 @@ export const gameSessions = pgTable("game_sessions", {
   collectedClues: jsonb("collected_clues").$type<string[]>().notNull().default([]),
   completedQuests: jsonb("completed_quests").$type<string[]>().notNull().default([]),
   discoveries: jsonb("discoveries").$type<Record<string, any>>().notNull().default({}),
+  settings: jsonb("settings").$type<Record<string, any>>().notNull().default({}),
   lastActive: timestamp("last_active").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
