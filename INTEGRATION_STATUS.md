@@ -38,13 +38,15 @@
 
 ---
 
-## 🔄 In Progress
+## ✅ Phase 3 Complete: Frontend Integration
+- [x] Create `AtroposPanel` component
+- [x] Integrate with Investigation Workspace
+- [x] Add scan execution UI
+- [x] Results display component
+- [x] Scan history viewer
+- [x] Health status checking
 
-### Phase 3: Frontend Integration
-- [ ] Create `AtroposPanel` component
-- [ ] Integrate with Investigation Workspace
-- [ ] Add scan execution UI
-- [ ] Results display component
+## 🔄 In Progress
 
 ### Phase 4: NEXUS Integration
 - [ ] Enable NEXUS to suggest Atropos scans
@@ -98,6 +100,7 @@
 - `server/routes.ts` - Added atropos routes registration
 - `script/build.ts` - Added Atropos build step
 - `shared/schema.ts` - Added atropos tables
+- `client/src/pages/InvestigationWorkspace.tsx` - Added Atropos tab
 
 ---
 
