@@ -13,6 +13,7 @@ import {
   MessageSquare, Beaker, GraduationCap, Settings, Send, Loader2, ExternalLink, Copy
 } from 'lucide-react';
 import { AgentChat } from '@/components/AgentChat';
+import { AtroposPanel } from '@/components/AtroposPanel';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { useReportContext } from '@/hooks/useReportContext';
 import { LEARNING_STYLES, LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS } from '@/config/learningConfig';
@@ -158,6 +159,14 @@ Be concise but thorough. Focus on practical, actionable information.`;
               <Beaker className="w-4 h-4" />
               <span className="hidden sm:inline">AI Lab</span>
               <span className="sm:hidden">Lab</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="atropos" 
+              className="data-[state=active]:bg-orange-900/50 data-[state=active]:text-orange-400 min-h-[44px] gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              <span className="hidden sm:inline">Atropos</span>
+              <span className="sm:hidden">Scan</span>
             </TabsTrigger>
             <TabsTrigger 
               value="learning" 
@@ -400,6 +409,32 @@ Be concise but thorough. Focus on practical, actionable information.`;
                     </Button>
                   </Link>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Atropos Scans Tab */}
+          <TabsContent value="atropos" className="space-y-4">
+            <Card className="bg-gradient-to-br from-stone-900/80 to-stone-950/80 border-orange-900/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-400">
+                  <Zap className="w-5 h-5" />
+                  Atropos OSINT Tool
+                </CardTitle>
+                <p className="text-sm text-stone-400">
+                  Execute OSINT and security scans using Lua scripts. Results are automatically linked to your investigation.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <AtroposPanel 
+                  investigationId={currentSession?.id}
+                  onScanComplete={(scan) => {
+                    toast({
+                      title: "Scan completed",
+                      description: `Scan results for ${scan.target} are ready`,
+                    });
+                  }}
+                />
               </CardContent>
             </Card>
           </TabsContent>
