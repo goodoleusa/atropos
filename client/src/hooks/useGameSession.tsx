@@ -147,6 +147,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   // Persist settings changes to server
   useEffect(() => {
+    if (!gameState.synced) return;
     const settings = { learningProfile, devMode: gameState.devMode };
     const progress = {
       lastRoute: window.location.pathname,
@@ -154,7 +155,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       lastSyncedAt: new Date().toISOString()
     };
     persistSessionMetadata({ settings, progress });
-  }, [learningProfile, gameState.devMode, gameState.inventory.length, persistSessionMetadata]);
+  }, [learningProfile, gameState.devMode, gameState.inventory.length, persistSessionMetadata, gameState.synced]);
 
   // Persist to localStorage on change
   useEffect(() => {
