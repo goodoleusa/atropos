@@ -1,24 +1,35 @@
-# SysAdmin Corp - Interactive Terminal Game
+# NEXUS Security Platform
 
-An interactive web-based terminal game with a molten bronze / industrial
-cyber-ritual aesthetic. Players navigate a fictional corporate system through
-custom terminal commands, collect clues, complete quests, and uncover hidden
-routes. The experience blends occult motifs (tarot, zodiac, quantum lore) with a
-retro-futuristic corporate hacking narrative.
+A comprehensive AI-powered security investigation platform featuring two core systems:
 
-This repository is a full-stack TypeScript app: React + Vite on the frontend and
-Express on the backend, with PostgreSQL via Drizzle ORM.
+1. **NEXUS Agent** - AI assistant for analysis, reporting, and campaign management
+2. **Atropos Scanner** - Rust-based OSINT & vulnerability scanning tool
+
+The platform features a molten bronze/industrial aesthetic with custom terminal interface,
+investigation campaigns, visual campaign designer, and atmospheric effects.
 
 ## Features
 
-- Custom terminal emulator with command parsing and history.
-- Clue + quest system with configurable campaigns and messages.
-- Atmospheric overlays (Chaos, Glitch text, Quantum field, etc.).
-- Agent Chat (OpenRouter-backed) for investigations and guidance.
-- Campaign Designer with wikilinks, breadcrumbs, and backlinks.
-- Admin dashboard for managing content, sessions, and UX effects.
-- Report Builder for structured bug bounty style writeups.
-- AI Lab for prompt testing, comparisons, and evaluations.
+### NEXUS Agent
+- AI-powered investigation assistant (OpenRouter LLMs)
+- Pre-built security campaigns (Shell Corp, BGP tracing, Threat Hunting)
+- Report Builder for structured bug bounty writeups
+- AI Lab for prompt engineering and model comparison
+- Campaign Designer with wikilinks and conditional decision trees
+
+### Atropos Scanner
+- OSINT reconnaissance (BBOT, Amass, theHarvester, Subfinder)
+- Vulnerability scanning (Nuclei, httpx, nmap)
+- Secret detection (Gitleaks, TruffleHog)
+- Threat intelligence (Shodan, VirusTotal, SecurityTrails)
+- Lua scripting for custom automation
+
+### Platform
+- Custom terminal emulator with command parsing
+- Clue + quest system with configurable campaigns
+- Atmospheric overlays (Chaos, Glitch, Quantum field)
+- Admin dashboard for content and UX management
+- Mobile-responsive with 48px+ touch targets
 
 ## Architecture
 
