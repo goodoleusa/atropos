@@ -215,6 +215,26 @@ Atropos can be run via:
    - Cross-reference with campaign objectives
    - Flag high-priority vulnerabilities
 
+### Running Rust on Replit (full tool hosting)
+
+To build and run the Atropos binary on Replit (so `/api/atropos/*` can execute scans instead of returning "binary not found"):
+
+1. **Add the Rust toolchain via Nix**  
+   The repo includes a `replit.nix` that adds `rustc` and `cargo` to the environment. If you use the Dependencies tool instead, add **rustc** and **cargo** under **System Dependencies**.
+
+2. **Reload the shell**  
+   After changing `replit.nix` or system dependencies, open a new shell or run **Run** so the environment picks up Rust.
+
+3. **Build the Atropos binary**  
+   - **Dev**: `npm run build` builds the app and runs `cargo build --release` in `tools/atropos`, then copies the binary to `dist/bin/atropos`.  
+   - **Deploy**: The same build runs during deployment; if Rust is in the Nix deps, the deployment image will have `cargo` and the Atropos binary will be built and included.
+
+4. **Optional env vars** (in Secrets or `[env]` in `.replit`):
+   - `ATROPOS_BINARY_PATH` — override path to the atropos binary (default: `dist/bin/atropos`).
+   - `ATROPOS_SCRIPTS_DIR` — override Lua scripts directory (default: `tools/atropos/examples`).
+
+Without Rust, the app still runs; the build step skips Atropos and the Atropos API returns a health status indicating the binary is not available.
+
 ### Lua Scripting
 Custom scans via Lua scripts in `tools/atropos/examples/`:
 ```lua

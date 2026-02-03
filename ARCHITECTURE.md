@@ -136,7 +136,7 @@ git remote add lotus https://github.com/goodoleusa/lotus.git
 git fetch lotus
 
 # Create subtree or submodule (prefer subtree for easier merging)
-git subtree add --prefix=tools/lotus lotus main --squash
+git subtree add --prefix=tools/atropos lotus main --squash
 ```
 
 #### 1.2 Directory Structure
@@ -151,8 +151,7 @@ mcl/
 │       ├── osint.ts     # Existing OSINT service
 │       └── atropos.ts   # NEW: Atropos service wrapper
 ├── tools/
-│   ├── atropos/         # EXISTING: Current atropos (may merge)
-│   └── lotus/           # NEW: Lotus repository (renamed to atropos later)
+│   └── atropos/         # Atropos OSINT tool (Rust/Lua)
 └── shared/              # Shared schemas (unchanged)
 ```
 
@@ -164,19 +163,27 @@ mcl/
   - `README.md` (documentation)
   - Binary name (`atropos` command)
   - Web UI branding
-- Keep "Atropos" branding consistent with existing `tools/atropos/`
+- Canonical Atropos tool source: `tools/atropos/`
 
 #### 2.2 Build System Integration
-**Option A: Standalone Binary (Recommended)**
-- Build atropos as standalone Rust binary
-- Express server spawns atropos processes for scans
-- Communication via CLI or HTTP API
 
-**Option B: Embedded Library**
-- Compile atropos as Node.js addon (via `neon` or `napi-rs`)
-- More complex but better performance
+**Primary: Option A — Standalone Binary**
+- Build atropos as a standalone Rust binary; this is the default and only supported path for production.
+- Express server spawns atropos processes for each scan (CLI: `echo <target> | atropos scan <script>`).
+- Communication is process-based (stdin/stdout or CLI args); no long-lived atropos daemon required.
+- Binary is built from `tools/atropos` and placed at `dist/bin/atropos` (or `ATROPOS_BINARY_PATH`).
+- Enables clear process boundaries, easier security and resource limits, and works on Replit when Rust is in the Nix environment.
 
-**Recommendation**: Start with Option A, migrate to Option B if needed.
+**Future: Option B — Embedded Library (groundwork only)**
+- Possible evolution: compile atropos core as a Node.js addon (e.g. `neon` or `napi-rs`) for lower latency and no process spawn per scan.
+- Requires: atropos core exposed as a callable library (e.g. `libatropos`), then a thin Node binding. Not implemented; the current codebase is structured so that a future library API could mirror `AtroposService.executeScript()` without changing the rest of the stack.
+- Prefer only if profiling shows process spawn overhead is a bottleneck.
+
+**Lightweight / Replit-optimized variant**
+- If Replit or resource-constrained hosting needs a smaller footprint:
+  - **Build**: Use `cargo build --release` with strip and optional LTO in `tools/atropos`; consider a feature flag or a separate minimal binary that only runs a subset of scripts (e.g. no web UI, no optional OSINT backends).
+  - **Runtime**: The existing design already supports “binary missing”: if the atropos binary is not built or not installed, the API returns a clear health/error and the rest of the app runs. No separate “light” code path is required.
+  - **Optional**: A future “atropos-lite” crate could exclude heavy dependencies (e.g. optional HTTP server, unused Lua extensions) and ship a smaller binary; document in `tools/atropos/README.md` and wire a second binary path (e.g. `ATROPOS_LITE_BINARY_PATH`) only if needed.
 
 #### 2.3 API Integration Layer
 Create `server/services/atropos.ts`:
@@ -302,9 +309,9 @@ Modify `script/build.ts`:
 // Add Rust build step
 async function buildAtropos() {
   console.log("building atropos tool...");
-  await exec("cd tools/lotus && cargo build --release");
+  await exec("cd tools/atropos && cargo build --release");
   // Copy binary to dist/
-  await copyFile("tools/lotus/target/release/atropos", "dist/bin/atropos");
+  await copyFile("tools/atropos/target/release/atropos", "dist/bin/atropos");
 }
 ```
 
@@ -315,7 +322,7 @@ Update `Dockerfile` (if exists) or create new:
 # Multi-stage build
 FROM rust:latest AS atropos-builder
 WORKDIR /atropos
-COPY tools/lotus .
+COPY tools/atropos .
 RUN cargo build --release
 
 FROM node:20-alpine
@@ -329,7 +336,7 @@ Add to `.env.example`:
 ```bash
 # Atropos Configuration
 ATROPOS_BINARY_PATH=/usr/local/bin/atropos  # or relative path
-ATROPOS_SCRIPTS_DIR=./tools/lotus/examples
+ATROPOS_SCRIPTS_DIR=./tools/atropos/examples
 ATROPOS_WEB_PORT=8081  # If running web UI separately
 
 # Atropos API Keys (for integrated tools)
@@ -400,7 +407,7 @@ SECURITYTRAILS_API_KEY=
 ### Potential Issues
 
 1. **Binary Size**: Rust binary may be large
-   - **Mitigation**: Use Docker multi-stage builds, strip symbols
+   - **Mitigation**: Use Docker multi-stage builds, strip symbols; for Replit or constrained hosts see §2.2 lightweight/Replit-optimized variant (optional atropos-lite, feature flags).
 
 2. **Process Management**: Spawning processes from Node.js
    - **Mitigation**: Use proper process pools, timeout handling
@@ -483,7 +490,7 @@ SECURITYTRAILS_API_KEY=
 
 1. **Subtree vs Submodule**: Prefer subtree for easier merging?
 2. **Binary vs Library**: Start with binary, migrate to library later?
-3. **Existing `tools/atropos/`**: Merge with lotus or keep separate?
+3. **Canonical tool directory**: Resolved — use `tools/atropos/` as single source.
 4. **Web UI**: Integrate Atropos web UI or use main app UI only?
 5. **Script Management**: Admin-only or user-uploadable scripts?
 
