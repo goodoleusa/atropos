@@ -1,3 +1,8 @@
+/**
+ * Atropos integration: Option A (standalone binary). Spawns the atropos CLI for scans.
+ * Option B (embedded library) would swap the implementation behind this same interface
+ * (executeScript, listScripts, getScript, checkBinary) without changing callers.
+ */
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { nanoid } from 'nanoid';
@@ -42,11 +47,11 @@ export class AtroposService {
     // Try to find atropos binary
     this.binaryPath = process.env.ATROPOS_BINARY_PATH || 
                      path.join(process.cwd(), 'dist', 'bin', 'atropos') ||
-                     path.join(process.cwd(), 'tools', 'lotus', 'target', 'release', 'atropos') ||
+                     path.join(process.cwd(), 'tools', 'atropos', 'target', 'release', 'atropos') ||
                      'atropos'; // Fallback to PATH
     
     this.scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || 
-                     path.join(process.cwd(), 'tools', 'lotus', 'examples');
+                     path.join(process.cwd(), 'tools', 'atropos', 'examples');
   }
   
   /**
@@ -61,7 +66,7 @@ export class AtroposService {
         return { 
           available: false, 
           path: this.binaryPath,
-          error: 'Atropos binary not found. Build it first with: cd tools/lotus && cargo build --release'
+          error: 'Atropos binary not found. Build it first with: cd tools/atropos && cargo build --release'
         };
       }
       

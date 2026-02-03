@@ -29,7 +29,7 @@ This guide provides a quick reference for integrating the **lotus** repository a
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
-│      Atropos Tool (tools/lotus/)        │
+│      Atropos Tool (tools/atropos/)       │
 │  - Rust binary                          │
 │  - Lua script execution                 │
 │  - OSINT tool integrations              │
@@ -49,12 +49,12 @@ git remote add lotus https://github.com/goodoleusa/lotus.git
 git fetch lotus
 
 # Add as subtree (recommended)
-git subtree add --prefix=tools/lotus lotus main --squash
+git subtree add --prefix=tools/atropos lotus main --squash
 ```
 
 ### Step 2: Rebrand Lotus → Atropos
 
-Update in `tools/lotus/`:
+Update in `tools/atropos/`:
 - `Cargo.toml`: Change package name to `atropos`
 - `README.md`: Update branding
 - Binary name: `atropos` (already correct)
@@ -67,9 +67,9 @@ Add to `script/build.ts`:
 ```typescript
 async function buildAtropos() {
   console.log("building atropos tool...");
-  await exec("cd tools/lotus && cargo build --release");
+  await exec("cd tools/atropos && cargo build --release");
   await copyFile(
-    "tools/lotus/target/release/atropos",
+    "tools/atropos/target/release/atropos",
     "dist/bin/atropos"
   );
 }
@@ -229,7 +229,7 @@ const handleAtroposScan = async (script: string, target: string) => {
 ```bash
 # Atropos Configuration
 ATROPOS_BINARY_PATH=./dist/bin/atropos
-ATROPOS_SCRIPTS_DIR=./tools/lotus/examples
+ATROPOS_SCRIPTS_DIR=./tools/atropos/examples
 
 # API Keys for Atropos tools
 SHODAN_API_KEY=your-key
