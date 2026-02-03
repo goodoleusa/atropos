@@ -1,0 +1,61 @@
+Try 'ykman.exe piv certificates generate -h' for help.
+
+Error: No such option: -v
+PS C:\Users\amand\.ssh> ykman piv cetificates generate -h
+Usage: ykman.exe piv [OPTIONS] COMMAND [ARGS]...
+Try 'ykman.exe piv -h' for help.
+
+Error: No such command 'cetificates'.
+PS C:\Users\amand\.ssh> ykman piv certificates generate -h
+Usage: ykman.exe piv certificates generate [OPTIONS] SLOT PUBLIC-KEY
+
+  Generate a self-signed X.509 certificate.
+
+  A self-signed certificate is generated and written to one of the slots on the YubiKey.
+  A private key must already be present in the corresponding key slot.
+
+  SLOT            PIV slot of the certificate
+  PUBLIC-KEY      file containing a public key (use '-' to use stdin)
+
+Options:
+  -m, --management-key TEXT       the management key
+  -P, --pin TEXT                  PIN code
+  -s, --subject TEXT              subject for the certificate, as an RFC 4514 string
+                                  [required]
+  -d, --valid-days INTEGER        number of days until the certificate expires  [default:
+                                  365]
+  -a, --hash-algorithm [sha256|sha384|sha512]
+                                  hash algorithm  [default: SHA256]
+  --update-chuid / --no-update-chuid
+                                  update the CHUID GUID to a new random value  [default:
+                                  update-chuid]
+  -h, --help                      show this message and exit
+PS C:\Users\amand\.ssh> ykman piv certificates generate -s "hunter@patriotfarms.org" -d 365 9a ecc_p256_pub.pem
+ERROR: Unable to load PEM file. See https://cryptography.io/en/latest/faq/#why-can-t-i-import-my-pem-file for more details. MalformedFraming
+PS C:\Users\amand\.ssh> ykman piv keys export 9a pubkey1.pem
+Public key for slot 9A (AUTHENTICATION) written to pubkey1.pem.
+PS C:\Users\amand\.ssh> ssh-keygen -i -m PKCS8 -f pubkey1.pem > ~/.ssh/yubikey.pub
+PS C:\Users\amand\.ssh> nano
+nano : The term 'nano' is not recognized as the name of a cmdlet, function, script file,
+or operable program. Check the spelling of the name, or if a path was included, verify
+that the path is correct and try again.
+At line:1 char:1
++ nano
++ ~~~~
+    + CategoryInfo          : ObjectNotFound: (nano:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\amand\.ssh> notepade config
+notepade : The term 'notepade' is not recognized as the name of a cmdlet, function,
+script file, or operable program. Check the spelling of the name, or if a path was
+included, verify that the path is correct and try again.
+At line:1 char:1
++ notepade config
++ ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (notepade:String) [], CommandNotFoundExcept
+   ion
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\amand\.ssh> notepad config
+PS C:\Users\amand\.ssh> cat yubikey.pub
+PS C:\Users\amand\.ssh>
