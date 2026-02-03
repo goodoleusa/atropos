@@ -146,17 +146,23 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     syncSession();
   }, []);
 
-  // Persist settings changes to server
+  // Persist settings changes to server - use stable string for goals comparison
+  const goalsKey = JSON.stringify(goals);
+  const hasSyncedRef = useRef(false);
+  
   useEffect(() => {
     if (!gameState.synced) return;
-    const settings = { learningProfile: learningProfileRef.current, devMode: gameState.devMode };
-    const progress = {
-      lastRoute: window.location.pathname,
-      inventoryCount: gameState.inventory.length,
-      lastSyncedAt: new Date().toISOString()
-    };
-    persistSessionMetadata({ settings, progress });
-  }, [style, goals, skillLevel, preferredPace, gameState.devMode, gameState.inventory.length, persistSessionMetadata, gameState.synced]);
+    if (hasSyncedRef.current) {
+      const settings = { learningProfile: learningProfileRef.current, devMode: gameState.devMode };
+      const progress = {
+        lastRoute: window.location.pathname,
+        inventoryCount: gameState.inventory.length,
+        lastSyncedAt: new Date().toISOString()
+      };
+      persistSessionMetadata({ settings, progress });
+    }
+    hasSyncedRef.current = true;
+  }, [style, goalsKey, skillLevel, preferredPace, gameState.devMode, gameState.inventory.length, persistSessionMetadata, gameState.synced]);
 
   // Persist to localStorage on change
   useEffect(() => {
