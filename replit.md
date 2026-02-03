@@ -1,7 +1,18 @@
-# Atropos - Security Investigation Platform
+# NEXUS Security Platform
 
 ## Overview
-Atropos is a comprehensive AI-powered security investigation platform with dual purposes: (1) professional bug bounty/security research website featuring AI-powered OSINT tools, behavioral analytics, and report generation, and (2) hidden CTF game with real-world exercises. The platform features a molten bronze/industrial aesthetic with a custom terminal interface, investigation campaigns, and atmospheric visual effects. Key capabilities include AI-powered investigation workflows, visual campaign designer, report builder, and gamified security training. The business vision is to create an intelligent security research platform that combines professional OSINT capabilities with engaging CTF-style learning experiences.
+NEXUS is a comprehensive AI-powered security investigation platform featuring two core systems:
+
+1. **NEXUS Agent** - AI-powered assistant for analysis, reporting, campaign management, and investigation guidance (React/TypeScript frontend + OpenRouter AI)
+2. **Atropos Scanner** - Rust-based OSINT & vulnerability scanning tool with Lua scripting, integrated with 14+ security tools
+
+**How they work together:**
+- Atropos handles actual scanning, reconnaissance, and OSINT data collection
+- Atropos hands results to NEXUS for intelligent analysis
+- NEXUS helps users interpret findings, populate reports, and strategize next steps
+- Both share investigation context for seamless workflow
+
+The platform features a molten bronze/industrial aesthetic with custom terminal interface, investigation campaigns, and atmospheric visual effects. Key capabilities include AI-powered investigation workflows, visual campaign designer, report builder, and gamified CTF-style security training.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -35,7 +46,7 @@ Preferred communication style: Simple, everyday language.
 - **Game Progression**: Clue collection, quest chains, and unlockable content.
 - **Dynamic Content**: Centralized message and campaign configuration for terminal messages, toasts, and overlays. Campaigns switch themes and narratives.
 - **Security Design (Intentionally Vulnerable)**: Designed as an "escape room" CTF; allows enumeration and simulated hacking, but prevents real attacks with input sanitization, rate limiting, CSP, and session validation.
-- **Atropos Agent System**: Integrated AI assistant (`AgentChat.tsx`) for security investigation and OSINT operations, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns (e.g., Shell Corp, BGP tracing, Threat Hunting). Admin can configure system prompt via **Admin → Agent tab** (core identity, capability modules, custom instructions).
+- **NEXUS Agent System**: Integrated AI assistant (`AgentChat.tsx`) for security investigation analysis and guidance, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns (e.g., Shell Corp, BGP tracing, Threat Hunting). Admin can configure system prompt via **Admin → Agent tab** (core identity, capability modules, custom instructions). Works alongside Atropos Scanner for scan result analysis.
 - **Admin Dashboard**: Content management for clues, quests, messages, mystical elements, Player Sessions tab with live session data, and a UX Playground for real-time visual effect tweaking (backgrounds, mouse tracking, glitches, event probabilities).
 - **Campaign Designer**: Twine-inspired visual flow editor with Obsidian-style wikilinks and breadcrumb metadata for conditional decision trees.
   - **Wikilinks**: Use `[[Node Title]]` in content to auto-create links between nodes
@@ -70,9 +81,9 @@ Preferred communication style: Simple, everyday language.
 - **Campaign Designer Learning Integration**: Nodes support learning goals, skill levels, and teaching notes metadata for educational campaign development.
 - **Mobile Node Ordering**: Campaign Designer includes 3x3 button grid for node hierarchy management (up/down/indent/outdent) with visual depth indicators, plus keyboard navigation support (arrow keys, Tab for indentation).
 
-## Customizing Agent Campaigns
+## Customizing NEXUS Agent Campaigns
 
-The Agent Campaigns module (`client/src/config/agentCampaigns.ts`) provides pre-built investigation workflows for the Atropos agent. Here's how to customize it:
+The Agent Campaigns module (`client/src/config/agentCampaigns.ts`) provides pre-built investigation workflows for the NEXUS agent. Here's how to customize it:
 
 ### File Structure
 
@@ -167,7 +178,7 @@ Group campaigns in `CAMPAIGN_CATEGORIES`:
 ### Core Services
 - **PostgreSQL Database**: Primary data store.
 - **Replit Auth**: OpenID Connect authentication.
-- **OpenRouter AI**: Provides LLM capabilities for the Atropos agent.
+- **OpenRouter AI**: Provides LLM capabilities for the NEXUS agent.
 
 ### Third-Party Libraries
 - **QRCode Library**: Server-side QR code generation.
@@ -176,3 +187,61 @@ Group campaigns in `CAMPAIGN_CATEGORIES`:
 - **TanStack Query**: Server state management.
 - **Drizzle ORM**: Type-safe database queries.
 - **date-fns**: Date utilities.
+
+## Atropos Scanner Integration
+
+The Atropos scanner is located at `tools/atropos/` and provides:
+
+### Capabilities
+- **OSINT Tools**: BBOT, Amass, theHarvester, SpiderFoot, Subfinder
+- **Vulnerability Scanning**: Nuclei, httpx, nmap
+- **Secret Detection**: Gitleaks, TruffleHog
+- **Threat Intelligence**: Shodan, VirusTotal, SecurityTrails, Censys
+- **Network Analysis**: DNSMonster, RITA, Zeek
+
+### API Integration
+Atropos can be run via:
+- **CLI**: `atropos scan <target>` - Direct command line
+- **Web UI**: `atropos serve` - Built-in vaporwave dashboard (port 8080)
+- **API Endpoints**: `/api/atropos/*` - Node.js proxy to scanner
+
+### NEXUS ↔ Atropos Handoff Flow
+1. User initiates scan from NEXUS Investigation Workspace
+2. NEXUS calls backend API → spawns Atropos process
+3. Atropos runs scan, outputs JSON results
+4. NEXUS receives results and offers analysis options:
+   - Summarize findings for Report Builder
+   - Suggest next steps based on discoveries
+   - Cross-reference with campaign objectives
+   - Flag high-priority vulnerabilities
+
+### Running Rust on Replit (full tool hosting)
+
+To build and run the Atropos binary on Replit (so `/api/atropos/*` can execute scans instead of returning "binary not found"):
+
+1. **Add the Rust toolchain via Nix**  
+   The repo includes a `replit.nix` that adds `rustc` and `cargo` to the environment. If you use the Dependencies tool instead, add **rustc** and **cargo** under **System Dependencies**.
+
+2. **Reload the shell**  
+   After changing `replit.nix` or system dependencies, open a new shell or run **Run** so the environment picks up Rust.
+
+3. **Build the Atropos binary**  
+   - **Dev**: `npm run build` builds the app and runs `cargo build --release` in `tools/atropos`, then copies the binary to `dist/bin/atropos`.  
+   - **Deploy**: The same build runs during deployment; if Rust is in the Nix deps, the deployment image will have `cargo` and the Atropos binary will be built and included.
+
+4. **Optional env vars** (in Secrets or `[env]` in `.replit`):
+   - `ATROPOS_BINARY_PATH` — override path to the atropos binary (default: `dist/bin/atropos`).
+   - `ATROPOS_SCRIPTS_DIR` — override Lua scripts directory (default: `tools/atropos/examples`).
+
+Without Rust, the app still runs; the build step skips Atropos and the Atropos API returns a health status indicating the binary is not available.
+
+### Lua Scripting
+Custom scans via Lua scripts in `tools/atropos/examples/`:
+```lua
+-- Example: Subdomain enumeration
+local bbot = BBOT()
+local results = bbot:subdomain_enum("target.com")
+for _, subdomain in ipairs(results) do
+  println(subdomain)
+end
+```

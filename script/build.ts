@@ -42,12 +42,12 @@ async function buildAtropos(): Promise<boolean> {
     await execAsync("cargo --version");
     
     console.log("building atropos tool...");
-    const lotusDir = path.join(process.cwd(), "tools", "lotus");
-    const targetDir = path.join(lotusDir, "target", "release", "atropos");
+    const atroposDir = path.join(process.cwd(), "tools", "atropos");
+    const targetDir = path.join(atroposDir, "target", "release", "atropos");
     const distBinDir = path.join(process.cwd(), "dist", "bin");
     
     // Build atropos
-    await execAsync("cargo build --release", { cwd: lotusDir });
+    await execAsync("cargo build --release", { cwd: atroposDir });
     
     // Ensure dist/bin directory exists
     await mkdir(distBinDir, { recursive: true });
