@@ -7,10 +7,15 @@ import {
   commandLogs,
   behavioralProfiles,
   adminPrompts,
+  promptGallery,
   campaignTemplates,
   flowNodes,
   designerCampaigns,
   sharedClues,
+  artifacts,
+  mysticalCards,
+  quantumEvents,
+  quantumMessages,
   campaignLinks,
   learningPaths,
   osintTools,
@@ -32,6 +37,8 @@ import {
   type InsertBehavioralProfile,
   type AdminPrompt,
   type InsertAdminPrompt,
+  type PromptGalleryEntry,
+  type InsertPromptGallery,
   type CampaignTemplate,
   type InsertCampaignTemplate,
   type FlowNode,
@@ -40,6 +47,14 @@ import {
   type InsertDesignerCampaign,
   type SharedClue,
   type InsertSharedClue,
+  type Artifact,
+  type InsertArtifact,
+  type MysticalCard,
+  type InsertMysticalCard,
+  type QuantumEvent,
+  type InsertQuantumEvent,
+  type QuantumMessage,
+  type InsertQuantumMessage,
   type CampaignLink,
   type InsertCampaignLink,
   type LearningPath,
@@ -99,6 +114,11 @@ export interface IStorage {
   getAdminPromptByKey(key: string): Promise<AdminPrompt | undefined>;
   getAllAdminPrompts(): Promise<AdminPrompt[]>;
   upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt>;
+
+  // Prompt Gallery
+  getPromptGallery(status?: string): Promise<PromptGalleryEntry[]>;
+  getPromptGalleryBySession(sessionToken: string): Promise<PromptGalleryEntry[]>;
+  createPromptGalleryEntry(entry: InsertPromptGallery): Promise<PromptGalleryEntry>;
   
   // Campaign Templates
   getCampaignByKey(key: string): Promise<CampaignTemplate | undefined>;
@@ -124,6 +144,26 @@ export interface IStorage {
   getSharedClueById(clueId: string): Promise<SharedClue | undefined>;
   upsertSharedClue(clueId: string, data: Partial<InsertSharedClue>): Promise<SharedClue>;
   deleteSharedClue(clueId: string): Promise<boolean>;
+
+  // Artifacts
+  getAllArtifacts(): Promise<Artifact[]>;
+  getArtifactById(id: string): Promise<Artifact | undefined>;
+  createArtifact(artifact: InsertArtifact): Promise<Artifact>;
+  updateArtifact(id: string, updates: Partial<Artifact>): Promise<Artifact | undefined>;
+  deleteArtifact(id: string): Promise<boolean>;
+
+  // Mystical Cards
+  getMysticalCards(): Promise<MysticalCard[]>;
+  upsertMysticalCard(cardId: string, data: Partial<InsertMysticalCard>): Promise<MysticalCard>;
+  deleteMysticalCard(cardId: string): Promise<boolean>;
+
+  // Quantum Popups
+  getQuantumEvents(): Promise<QuantumEvent[]>;
+  upsertQuantumEvent(eventId: string, data: Partial<InsertQuantumEvent>): Promise<QuantumEvent>;
+  getQuantumMessages(): Promise<QuantumMessage[]>;
+  createQuantumMessage(message: InsertQuantumMessage): Promise<QuantumMessage>;
+  updateQuantumMessage(id: number, updates: Partial<QuantumMessage>): Promise<QuantumMessage | undefined>;
+  deleteQuantumMessage(id: number): Promise<boolean>;
   
   // Campaign Links
   getCampaignLinks(campaignId: string): Promise<CampaignLink[]>;
@@ -444,6 +484,31 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Prompt Gallery
+  async getPromptGallery(status?: string): Promise<PromptGalleryEntry[]> {
+    if (status) {
+      return await db
+        .select()
+        .from(promptGallery)
+        .where(eq(promptGallery.status, status))
+        .orderBy(desc(promptGallery.createdAt));
+    }
+    return await db.select().from(promptGallery).orderBy(desc(promptGallery.createdAt));
+  }
+
+  async getPromptGalleryBySession(sessionToken: string): Promise<PromptGalleryEntry[]> {
+    return await db
+      .select()
+      .from(promptGallery)
+      .where(eq(promptGallery.sessionToken, sessionToken))
+      .orderBy(desc(promptGallery.createdAt));
+  }
+
+  async createPromptGalleryEntry(entry: InsertPromptGallery): Promise<PromptGalleryEntry> {
+    const [created] = await db.insert(promptGallery).values(entry).returning();
+    return created;
+  }
+
   // Campaign Templates
   async getCampaignByKey(key: string): Promise<CampaignTemplate | undefined> {
     const [campaign] = await db
@@ -599,6 +664,131 @@ export class DatabaseStorage implements IStorage {
   async deleteSharedClue(clueId: string): Promise<boolean> {
     await db.delete(sharedClues).where(eq(sharedClues.clueId, clueId));
     return true;
+  }
+
+  // Artifacts
+  async getAllArtifacts(): Promise<Artifact[]> {
+    return await db.select().from(artifacts).where(eq(artifacts.isActive, true));
+  }
+
+  async getArtifactById(id: string): Promise<Artifact | undefined> {
+    const [artifact] = await db.select().from(artifacts).where(eq(artifacts.id, id)).limit(1);
+    return artifact;
+  }
+
+  async createArtifact(artifact: InsertArtifact): Promise<Artifact> {
+    const [created] = await db.insert(artifacts).values(artifact).returning();
+    return created;
+  }
+
+  async updateArtifact(id: string, updates: Partial<Artifact>): Promise<Artifact | undefined> {
+    const [updated] = await db
+      .update(artifacts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(artifacts.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteArtifact(id: string): Promise<boolean> {
+    const [deleted] = await db
+      .update(artifacts)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(artifacts.id, id))
+      .returning();
+    return !!deleted;
+  }
+
+  // Mystical Cards
+  async getMysticalCards(): Promise<MysticalCard[]> {
+    return await db.select().from(mysticalCards).orderBy(desc(mysticalCards.updatedAt));
+  }
+
+  async upsertMysticalCard(cardId: string, data: Partial<InsertMysticalCard>): Promise<MysticalCard> {
+    const [existing] = await db
+      .select()
+      .from(mysticalCards)
+      .where(eq(mysticalCards.cardId, cardId))
+      .limit(1);
+
+    if (existing) {
+      const [updated] = await db
+        .update(mysticalCards)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(mysticalCards.cardId, cardId))
+        .returning();
+      return updated;
+    }
+
+    const [created] = await db
+      .insert(mysticalCards)
+      .values({ ...data, cardId } as InsertMysticalCard)
+      .returning();
+    return created;
+  }
+
+  async deleteMysticalCard(cardId: string): Promise<boolean> {
+    const [deleted] = await db
+      .update(mysticalCards)
+      .set({ enabled: false, updatedAt: new Date() })
+      .where(eq(mysticalCards.cardId, cardId))
+      .returning();
+    return !!deleted;
+  }
+
+  // Quantum Popups
+  async getQuantumEvents(): Promise<QuantumEvent[]> {
+    return await db.select().from(quantumEvents).orderBy(desc(quantumEvents.updatedAt));
+  }
+
+  async upsertQuantumEvent(eventId: string, data: Partial<InsertQuantumEvent>): Promise<QuantumEvent> {
+    const [existing] = await db
+      .select()
+      .from(quantumEvents)
+      .where(eq(quantumEvents.id, eventId))
+      .limit(1);
+
+    if (existing) {
+      const [updated] = await db
+        .update(quantumEvents)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(quantumEvents.id, eventId))
+        .returning();
+      return updated;
+    }
+
+    const [created] = await db
+      .insert(quantumEvents)
+      .values({ ...data, id: eventId } as InsertQuantumEvent)
+      .returning();
+    return created;
+  }
+
+  async getQuantumMessages(): Promise<QuantumMessage[]> {
+    return await db.select().from(quantumMessages).orderBy(desc(quantumMessages.updatedAt));
+  }
+
+  async createQuantumMessage(message: InsertQuantumMessage): Promise<QuantumMessage> {
+    const [created] = await db.insert(quantumMessages).values(message).returning();
+    return created;
+  }
+
+  async updateQuantumMessage(id: number, updates: Partial<QuantumMessage>): Promise<QuantumMessage | undefined> {
+    const [updated] = await db
+      .update(quantumMessages)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(quantumMessages.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteQuantumMessage(id: number): Promise<boolean> {
+    const [deleted] = await db
+      .update(quantumMessages)
+      .set({ enabled: false, updatedAt: new Date() })
+      .where(eq(quantumMessages.id, id))
+      .returning();
+    return !!deleted;
   }
 
   // Campaign Links

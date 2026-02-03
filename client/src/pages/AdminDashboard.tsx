@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Key, 
   Trophy, 
   Terminal, 
   Plus, 
@@ -52,6 +50,8 @@ import { ClueGraph } from "@/components/ClueGraph";
 import { ClueBreadcrumbs } from "@/components/ClueBreadcrumbs";
 import { ApiPlayground } from "@/components/ApiPlayground";
 import CampaignDesigner from "@/components/CampaignDesigner";
+import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
+import { QuestsSection } from "@/pages/admin/QuestsSection";
 
 interface Clue {
   id: string;
@@ -72,16 +72,9 @@ interface Quest {
 }
 
 export default function AdminDashboard() {
-  const queryClient = useQueryClient();
   const { gameState, toggleDevMode } = useGame();
-  const [newClue, setNewClue] = useState<Partial<Clue>>({});
-  const [newQuest, setNewQuest] = useState<Partial<Quest>>({});
-  const [clueDialogOpen, setClueDialogOpen] = useState(false);
-  const [questDialogOpen, setQuestDialogOpen] = useState(false);
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
   const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
-  const [editingClue, setEditingClue] = useState<Clue | null>(null);
-  const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({ 'root': true });
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
@@ -140,7 +133,6 @@ export default function AdminDashboard() {
   
   // Local state for live config editing (these would sync to server/localStorage)
   const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
-  const [mysticalEnabled, setMysticalEnabled] = useState(MYSTICAL_CARDS.enabled);
   const [subliminalMessages, setSubliminalMessages] = useState(CHAOS_MESSAGES.subliminal);
   const [newSubliminal, setNewSubliminal] = useState('');
 
@@ -152,154 +144,6 @@ export default function AdminDashboard() {
   const { data: quests = [] } = useQuery<Quest[]>({
     queryKey: ['/api/quests'],
     queryFn: () => fetch('/api/quests').then(r => r.json())
-  });
-
-  const createClueMutation = useMutation({
-    mutationFn: (clue: Partial<Clue>) => 
-      fetch('/api/clues', { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify({ ...clue, content: clue.content || '' })
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to create clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-      setClueDialogOpen(false);
-      setNewClue({});
-    },
-    onError: (error: Error) => {
-      console.error('Clue creation failed:', error);
-      alert(`Error: ${error.message}`);
-    }
-  });
-
-  const createQuestMutation = useMutation({
-    mutationFn: (quest: Partial<Quest>) => 
-      fetch('/api/quests', { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(quest)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to create quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-      setQuestDialogOpen(false);
-      setNewQuest({});
-    },
-    onError: (error: Error) => {
-      console.error('Quest creation failed:', error);
-      alert(`Error: ${error.message}`);
-    }
-  });
-
-  const updateClueMutation = useMutation({
-    mutationFn: (clue: Clue) => 
-      fetch(`/api/clues/${clue.id}`, { 
-        method: 'PATCH', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(clue)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to update clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-      setEditingClue(null);
-    },
-    onError: (error: Error) => {
-      alert(`Update failed: ${error.message}`);
-    }
-  });
-
-  const deleteClueMutation = useMutation({
-    mutationFn: (id: string) => 
-      fetch(`/api/clues/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        }
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to delete clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-    },
-    onError: (error: Error) => {
-      alert(`Delete failed: ${error.message}`);
-    }
-  });
-
-  const updateQuestMutation = useMutation({
-    mutationFn: (quest: Quest) => 
-      fetch(`/api/quests/${quest.id}`, { 
-        method: 'PATCH', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(quest)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to update quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-      setEditingQuest(null);
-    },
-    onError: (error: Error) => {
-      alert(`Update failed: ${error.message}`);
-    }
-  });
-
-  const deleteQuestMutation = useMutation({
-    mutationFn: (id: string) => 
-      fetch(`/api/quests/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        }
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to delete quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-    },
-    onError: (error: Error) => {
-      alert(`Delete failed: ${error.message}`);
-    }
   });
 
   const addSubliminalMessage = () => {
@@ -391,7 +235,7 @@ export default function AdminDashboard() {
                 onClick={() => setCampaignDesignerOpen(true)}
                 data-testid="campaign-designer-button"
               >
-                <Layers className="w-3 h-3 mr-1" /> Campaign Designer
+                <Layers className="w-3 h-3 mr-1" /> Game Campaign Builder
               </Button>
               <Link href="/debug">
                 <Button size="sm" variant="outline" className="h-7 text-xs border-red-800 text-red-400 hover:bg-red-950/50">
@@ -517,19 +361,16 @@ export default function AdminDashboard() {
         </section>
 
         {/* Content Management Tabs */}
-        <Tabs defaultValue="clues" className="space-y-6">
+        <Tabs defaultValue="collectibles" className="space-y-6">
           <TabsList className="bg-[#0a0500] border border-amber-900/30 flex-wrap h-auto gap-1 p-1">
-            <TabsTrigger value="clues" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
-              <Key className="w-4 h-4 mr-2" /> Clues ({clues.length})
-            </TabsTrigger>
             <TabsTrigger value="quests" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Trophy className="w-4 h-4 mr-2" /> Quests ({quests.length})
             </TabsTrigger>
             <TabsTrigger value="messages" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
               <MessageSquare className="w-4 h-4 mr-2" /> Messages
             </TabsTrigger>
-            <TabsTrigger value="mystical" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-500">
-              <Sparkles className="w-4 h-4 mr-2" /> Mystical
+            <TabsTrigger value="collectibles" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
+              <Database className="w-4 h-4 mr-2" /> Collectibles
             </TabsTrigger>
             <TabsTrigger value="terminal" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Terminal className="w-4 h-4 mr-2" /> Commands
@@ -538,7 +379,7 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4 mr-2" /> Config
             </TabsTrigger>
             <TabsTrigger value="campaigns" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
-              <Rocket className="w-4 h-4 mr-2" /> Campaigns
+              <Rocket className="w-4 h-4 mr-2" /> Agent Modules
             </TabsTrigger>
             <TabsTrigger value="graph" className="data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-500">
               <Map className="w-4 h-4 mr-2" /> Knowledge Graph
@@ -554,190 +395,14 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Clues Tab */}
-          <TabsContent value="clues">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-orbitron text-amber-600">Collectable Clues</h3>
-              <Dialog open={clueDialogOpen} onOpenChange={setClueDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-amber-700 hover:bg-amber-600 text-black">
-                    <Plus className="w-4 h-4 mr-2" /> Add Clue
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-                  <DialogHeader>
-                    <DialogTitle className="text-amber-600 font-orbitron">Create New Clue</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <Input 
-                      placeholder="Clue ID (e.g., clue-03)" 
-                      value={newClue.id || ''}
-                      onChange={e => setNewClue({...newClue, id: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Name" 
-                      value={newClue.name || ''}
-                      onChange={e => setNewClue({...newClue, name: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Textarea 
-                      placeholder="Description" 
-                      value={newClue.description || ''}
-                      onChange={e => setNewClue({...newClue, description: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Content (the secret)" 
-                      value={newClue.content || ''}
-                      onChange={e => setNewClue({...newClue, content: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Location (e.g., /terminal, home-page)" 
-                      value={newClue.location || ''}
-                      onChange={e => setNewClue({...newClue, location: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Button 
-                      onClick={() => createClueMutation.mutate(newClue)}
-                      className="w-full bg-amber-700 hover:bg-amber-600 text-black"
-                    >
-                      Create Clue
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {clues.map(clue => (
-                <Card key={clue.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-                      <Key className="w-4 h-4" /> {clue.name}
-                    </CardTitle>
-                    <CardDescription className="text-stone-600 text-xs">{clue.id}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs">
-                    <p className="text-stone-400 mb-2">{clue.description}</p>
-                    <p className="text-amber-700 font-bold">Location: {clue.location}</p>
-                  </CardContent>
-                </Card>
-              ))}
-              {clues.length === 0 && (
-                <p className="text-stone-600 col-span-3 text-center py-8">No clues in database. Add some to get started!</p>
-              )}
-            </div>
+          {/* Collectibles Tab */}
+          <TabsContent value="collectibles">
+            <CollectiblesSection />
           </TabsContent>
 
           {/* Quests Tab */}
           <TabsContent value="quests">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-orbitron text-amber-600">Quest Chains</h3>
-              <Dialog open={questDialogOpen} onOpenChange={setQuestDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-amber-700 hover:bg-amber-600 text-black">
-                    <Plus className="w-4 h-4 mr-2" /> Add Quest
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-                  <DialogHeader>
-                    <DialogTitle className="text-amber-600 font-orbitron">Create New Quest</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Quest ID</Label>
-                      <Input 
-                        placeholder="e.g., quest-01" 
-                        value={newQuest.id || ''}
-                        onChange={e => setNewQuest({...newQuest, id: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Quest Name</Label>
-                      <Input 
-                        placeholder="Quest Name" 
-                        value={newQuest.name || ''}
-                        onChange={e => setNewQuest({...newQuest, name: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Description</Label>
-                      <Textarea 
-                        placeholder="Detailed quest description" 
-                        value={newQuest.description || ''}
-                        onChange={e => setNewQuest({...newQuest, description: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Required Clues (IDs, comma-separated)</Label>
-                      <Input 
-                        placeholder="clue-01, clue-02" 
-                        value={newQuest.requiredClues?.join(', ') || ''}
-                        onChange={e => setNewQuest({...newQuest, requiredClues: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Reward (Optional)</Label>
-                      <Input 
-                        placeholder="e.g., Access to Archive" 
-                        value={newQuest.reward || ''}
-                        onChange={e => setNewQuest({...newQuest, reward: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Unlocks (Optional)</Label>
-                      <Input 
-                        placeholder="e.g., /archive" 
-                        value={newQuest.unlocks || ''}
-                        onChange={e => setNewQuest({...newQuest, unlocks: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <Button 
-                      onClick={() => {
-                        console.log("Submitting quest:", newQuest);
-                        createQuestMutation.mutate(newQuest);
-                      }}
-                      disabled={createQuestMutation.isPending || !newQuest.id || !newQuest.name}
-                      className="w-full bg-amber-700 hover:bg-amber-600 text-black font-bold"
-                    >
-                      {createQuestMutation.isPending ? 'Processing...' : 'Create Quest'}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {quests.map(quest => (
-                <Card key={quest.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-                      <Trophy className="w-4 h-4" /> {quest.name}
-                    </CardTitle>
-                    <CardDescription className="text-stone-600 text-xs">{quest.id}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs">
-                    <p className="text-stone-400 mb-2">{quest.description}</p>
-                    <p className="text-amber-700">Requires: {quest.requiredClues?.join(', ') || 'None'}</p>
-                    {quest.unlocks && <p className="text-amber-600 mt-1">Unlocks: {quest.unlocks}</p>}
-                  </CardContent>
-                </Card>
-              ))}
-              {quests.length === 0 && (
-                <p className="text-stone-600 col-span-2 text-center py-8">No quests defined. Create quest chains to guide players!</p>
-              )}
-            </div>
+            <QuestsSection quests={quests} />
           </TabsContent>
 
           <TabsContent value="messages">
@@ -770,15 +435,15 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Direct Quantum Controls */}
+                {/* Chaos Overlay Controls */}
                 <div className="space-y-4">
                   <Card className="bg-[#0a0500] border-teal-900/30">
                     <CardHeader>
                       <CardTitle className="text-teal-400 font-mono text-sm flex items-center gap-2">
-                        <Zap className="w-4 h-4" /> Quantum Probability Text
+                        <Zap className="w-4 h-4" /> Chaos Overlay Strings
                       </CardTitle>
                       <CardDescription className="text-stone-500 text-[10px]">
-                        Manage strings used in the quantum fluctuation simulations
+                        Manage strings used in the chaos/glitch overlay
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -796,7 +461,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="mt-4 flex gap-2">
                           <Input 
-                            placeholder="New quantum string..." 
+                            placeholder="New chaos string..." 
                             className="bg-black/50 border-teal-900/30 text-teal-400 text-xs h-8" 
                           />
                           <Button size="sm" className="bg-teal-600 hover:bg-teal-500 text-black h-8">
@@ -827,68 +492,6 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Mystical Cards Tab */}
-          <TabsContent value="mystical">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-orbitron text-purple-400">Mystical Card System</h3>
-                <div className="flex items-center gap-4">
-                  <Label htmlFor="mystical-enabled" className="text-stone-400">Enable Mystical Popups</Label>
-                  <Switch 
-                    id="mystical-enabled" 
-                    checked={mysticalEnabled} 
-                    onCheckedChange={setMysticalEnabled}
-                    data-testid="mystical-toggle"
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Tarot Cards */}
-                <Card className="bg-[#0a0500] border-amber-900/30">
-                  <CardHeader>
-                    <CardTitle className="text-amber-500 font-mono">Tarot Cards ({MYSTICAL_CARDS.tarot.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
-                    {MYSTICAL_CARDS.tarot.map((card, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-amber-900/20">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{card.icon}</span>
-                          <div>
-                            <p className="text-amber-500 text-sm font-bold">{card.name}</p>
-                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{card.hint}</p>
-                          </div>
-                        </div>
-                        <Switch checked={card.enabled} className="scale-75" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* Zodiac Signs */}
-                <Card className="bg-[#0a0500] border-purple-900/30">
-                  <CardHeader>
-                    <CardTitle className="text-purple-400 font-mono">Zodiac Signs ({MYSTICAL_CARDS.zodiac.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
-                    {MYSTICAL_CARDS.zodiac.map((sign, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-purple-900/20">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl text-purple-400">{sign.symbol}</span>
-                          <div>
-                            <p className="text-purple-400 text-sm font-bold">{sign.name}</p>
-                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{sign.hint}</p>
-                          </div>
-                        </div>
-                        <Switch checked={sign.enabled} className="scale-75" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </TabsContent>
@@ -1088,15 +691,15 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
-          {/* Campaigns Tab */}
+          {/* Agent Modules Tab */}
           <TabsContent value="campaigns">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-orbitron text-teal-400 flex items-center gap-2">
-                  <Rocket className="w-5 h-5" /> Investigation Campaigns
+                  <Rocket className="w-5 h-5" /> Agent Modules
                 </h3>
                 <Badge variant="outline" className="border-teal-600 text-teal-400">
-                  {AGENT_CAMPAIGNS.length} Campaigns
+                  {AGENT_CAMPAIGNS.length} Modules
                 </Badge>
               </div>
 
