@@ -151,22 +151,23 @@ export const SECURITY_TOOLS = [
     icon: "🤖"
   },
   {
-    id: "lotus",
-    name: "Lotus",
-    fullName: "Dynamic Application Security Testing (DAST)",
-    description: "Fast web security scanner in Rust with Lua scripting for automated vulnerability detection",
-    url: "https://lotus.knas.me/",
-    github: "https://github.com/Zeronleft/lotus",
-    category: "scanning",
+    id: "atropos",
+    name: "Atropos",
+    fullName: "Advanced OSINT & Security Investigation Platform",
+    description: "AI-powered security investigation platform combining OSINT tools, behavioral analytics, and report generation",
+    url: "https://github.com/goodoleusa/atropos",
+    github: "https://github.com/goodoleusa/atropos",
+    category: "osint",
     features: [
-      "Chainable Fluent Lua API",
-      "CSS Selector HTML Parsing",
-      "Multi-Threading Managers",
-      "Built-in Encoding (Base64, URL, HTML)",
-      "Custom HTTP Request Handling"
+      "AI-Powered Investigation Campaigns",
+      "Multi-Model LLM Support (OpenRouter)",
+      "Visual Campaign Designer",
+      "Bug Bounty Report Builder",
+      "OSINT Tool Integration (Shodan, Censys, etc.)",
+      "Real-time Threat Intelligence"
     ],
     difficulty: "intermediate",
-    icon: "🪷"
+    icon: "🔱"
   }
 ];
 
@@ -212,23 +213,23 @@ export const LEARNING_PATHS = [
     ]
   },
   {
-    id: "web-scanner",
-    name: "Web Security Scanner Path",
-    description: "Build and customize automated web vulnerability scanners with Lua scripting",
+    id: "osint-investigator",
+    name: "OSINT Investigator Path",
+    description: "Master open-source intelligence gathering with AI-powered investigation workflows",
     difficulty: "intermediate",
     estimatedTime: "30 hours",
-    tools: ["lotus", "lua"],
+    tools: ["atropos", "shodan", "censys"],
     objectives: [
-      { id: 1, title: "Install Lotus scanner", completed: false },
-      { id: 2, title: "Learn Lua scripting basics", completed: false },
-      { id: 3, title: "Write custom scan scripts", completed: false },
-      { id: 4, title: "Use chainable Fluent API", completed: false },
-      { id: 5, title: "Implement custom vulnerability checks", completed: false },
-      { id: 6, title: "Export and analyze results", completed: false }
+      { id: 1, title: "Set up Atropos investigation environment", completed: false },
+      { id: 2, title: "Learn passive reconnaissance techniques", completed: false },
+      { id: 3, title: "Master DNS and certificate enumeration", completed: false },
+      { id: 4, title: "Use AI-powered investigation campaigns", completed: false },
+      { id: 5, title: "Build custom investigation workflows", completed: false },
+      { id: 6, title: "Generate professional intelligence reports", completed: false }
     ],
     resources: [
-      { title: "Lotus Documentation", url: "https://lotus.knas.me/" },
-      { title: "Lotus Scripts Repository", url: "https://github.com/BugBlocker/lotus-scripts" }
+      { title: "Atropos Documentation", url: "https://github.com/goodoleusa/atropos" },
+      { title: "OSINT Framework", url: "https://osintframework.com/" }
     ]
   },
   {
@@ -237,7 +238,7 @@ export const LEARNING_PATHS = [
     description: "Complete path from reconnaissance to report submission for profitable bug hunting",
     difficulty: "beginner",
     estimatedTime: "80 hours",
-    tools: ["lotus", "cai", "rita"],
+    tools: ["atropos", "cai", "rita"],
     objectives: [
       { id: 1, title: "Understand bug bounty platforms", completed: false },
       { id: 2, title: "Set up reconnaissance toolkit", completed: false },

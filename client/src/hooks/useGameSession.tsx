@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { useLearningStore } from "@/stores/useLearningStore";
 
 interface Clue {
   id: string;
@@ -40,6 +41,13 @@ export const useGame = () => {
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
+  const style = useLearningStore(state => state.style);
+  const goals = useLearningStore(state => state.goals);
+  const skillLevel = useLearningStore(state => state.skillLevel);
+  const preferredPace = useLearningStore(state => state.preferredPace);
+  
+  const learningProfileRef = useRef({ style, goals, skillLevel, preferredPace });
+  learningProfileRef.current = { style, goals, skillLevel, preferredPace };
   
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem('sysadmin_session');
@@ -60,6 +68,18 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       settings: {}
     };
   });
+
+  const persistSessionMetadata = useCallback(async (updates: Record<string, any>) => {
+    try {
+      await fetch(`/api/session/${gameState.sessionToken}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+    } catch (error) {
+      console.error('Session metadata sync failed:', error);
+    }
+  }, [gameState.sessionToken]);
 
   // Sync session with server
   const syncSession = useCallback(async () => {
@@ -90,26 +110,59 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }));
         
         // Update server with any local clues it doesn't have
+        const settings = {
+          learningProfile: learningProfileRef.current,
+          devMode: gameState.devMode
+        };
+
+        const progress = {
+          lastRoute: window.location.pathname,
+          inventoryCount: gameState.inventory.length,
+          lastSyncedAt: new Date().toISOString()
+        };
+
         if (localClueIds.length > serverClueIds.length) {
           await fetch(`/api/session/${gameState.sessionToken}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               collectedClues: allClueIds,
-              username: gameState.username
+              username: gameState.username,
+              settings,
+              progress
             })
           });
+        } else {
+          await persistSessionMetadata({ settings, progress });
         }
       }
     } catch (error) {
       console.error('Session sync failed:', error);
     }
-  }, [gameState.sessionToken, gameState.username, gameState.inventory]);
+  }, [gameState.sessionToken, gameState.username, gameState.inventory, gameState.devMode, persistSessionMetadata]);
 
   // Sync on mount
   useEffect(() => {
     syncSession();
   }, []);
+
+  // Persist settings changes to server - use stable string for goals comparison
+  const goalsKey = JSON.stringify(goals);
+  const hasSyncedRef = useRef(false);
+  
+  useEffect(() => {
+    if (!gameState.synced) return;
+    if (hasSyncedRef.current) {
+      const settings = { learningProfile: learningProfileRef.current, devMode: gameState.devMode };
+      const progress = {
+        lastRoute: window.location.pathname,
+        inventoryCount: gameState.inventory.length,
+        lastSyncedAt: new Date().toISOString()
+      };
+      persistSessionMetadata({ settings, progress });
+    }
+    hasSyncedRef.current = true;
+  }, [style, goalsKey, skillLevel, preferredPace, gameState.devMode, gameState.inventory.length, persistSessionMetadata, gameState.synced]);
 
   // Persist to localStorage on change
   useEffect(() => {
@@ -132,7 +185,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          collectedClues: newInventory.map(c => c.id)
+          collectedClues: newInventory.map(c => c.id),
+          progress: {
+            lastRoute: window.location.pathname,
+            inventoryCount: newInventory.length,
+            lastSyncedAt: new Date().toISOString()
+          }
         })
       });
     } catch (error) {
@@ -157,7 +215,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     fetch(`/api/session/${gameState.sessionToken}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: name })
+      body: JSON.stringify({
+        username: name,
+        settings: {
+          learningProfile: learningProfileRef.current,
+          devMode: gameState.devMode
+        }
+      })
     }).catch(console.error);
   };
 

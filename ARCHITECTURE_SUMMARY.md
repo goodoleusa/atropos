@@ -274,7 +274,7 @@ mcl/
 │   └── replit_integrations/
 │       └── chat/                 # NEXUS agent backend
 ├── tools/
-│   └── lotus/                    # NEW: Lotus repo (→ Atropos)
+│   └── atropos/                  # Atropos OSINT tool
 │       ├── Cargo.toml
 │       ├── src/
 │       └── examples/              # Lua scripts
@@ -299,7 +299,7 @@ mcl/
 │   └── services/
 │       └── atropos.ts                # NEW
 ├── tools/
-│   └── lotus/                        # Lotus → Atropos
+│   └── atropos/                      # Atropos OSINT tool
 └── shared/
     └── schema.ts                      # Updated
 ```
@@ -325,7 +325,7 @@ DATABASE_URL=postgresql://...
 
 # Atropos Configuration
 ATROPOS_BINARY_PATH=./dist/bin/atropos
-ATROPOS_SCRIPTS_DIR=./tools/lotus/examples
+ATROPOS_SCRIPTS_DIR=./tools/atropos/examples
 
 # Atropos API Keys (for integrated tools)
 SHODAN_API_KEY=...
