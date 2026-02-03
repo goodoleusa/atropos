@@ -11,7 +11,7 @@
 ### Phase 1: Repository Setup
 - [x] Created `feature/lotus-integration` branch
 - [x] Added lotus as git remote
-- [x] Integrated lotus as git subtree in `tools/lotus/`
+- [x] Integrated Atropos (lotus) as git subtree in `tools/atropos/`
 - [x] Verified repository structure
 
 ### Phase 2: Atropos Tool Integration
@@ -83,7 +83,7 @@
 
 ### Testing
 5. Build and Test
-   - Build Atropos binary: `cd tools/lotus && cargo build --release`
+   - Build Atropos binary: `cd tools/atropos && cargo build --release`
    - Test API endpoints
    - Test frontend components
    - Test NEXUS integration
@@ -95,7 +95,7 @@
 ### New Files
 - `server/services/atropos.ts` - Atropos service wrapper
 - `server/routes/atropos.ts` - Express API routes
-- `tools/lotus/` - Lotus repository (subtree)
+- `tools/atropos/` - Atropos tool (Rust/Lua scanner, formerly lotus subtree)
 
 ### Modified Files
 - `server/routes.ts` - Added atropos routes registration
@@ -111,26 +111,26 @@
 ```bash
 # Atropos Configuration (optional, has defaults)
 ATROPOS_BINARY_PATH=./dist/bin/atropos
-ATROPOS_SCRIPTS_DIR=./tools/lotus/examples
+ATROPOS_SCRIPTS_DIR=./tools/atropos/examples
 ```
 
 ### Build Requirements
 - **Rust toolchain** (optional): Required to build Atropos binary
   - If not available, build will skip Atropos (graceful degradation)
-  - Binary can be built separately: `cd tools/lotus && cargo build --release`
+  - Binary can be built separately: `cd tools/atropos && cargo build --release`
 
 ---
 
 ## 🧪 Testing Checklist
 
-- [ ] Build succeeds (with and without Rust)
-- [ ] API health check works: `GET /api/atropos/health`
-- [ ] Script listing works: `GET /api/atropos/scripts`
-- [ ] Scan execution works: `POST /api/atropos/scan`
-- [ ] Results stored correctly
-- [ ] Frontend components render
-- [ ] NEXUS can trigger scans
-- [ ] Results appear in Investigation Workspace
+- [x] Build succeeds (with and without Rust) — verified; without Rust build skips atropos
+- [x] API health check works: `GET /api/atropos/health`
+- [x] Script listing works: `GET /api/atropos/scripts`
+- [x] Scan execution works: `POST /api/atropos/scan` (returns structured response when binary missing)
+- [ ] Results stored correctly (requires atropos binary)
+- [ ] Frontend components render (manual: open Investigation Workspace, Atropos Scanner tab)
+- [ ] NEXUS can trigger scans (manual: use "Analyze with NEXUS" handoff)
+- [ ] Results appear in Investigation Workspace (manual: after successful scan)
 
 ---
 
@@ -147,9 +147,9 @@ ATROPOS_SCRIPTS_DIR=./tools/lotus/examples
 
 ### Build Atropos Binary
 ```bash
-cd tools/lotus
+cd tools/atropos
 cargo build --release
-# Binary will be at: tools/lotus/target/release/atropos
+# Binary will be at: tools/atropos/target/release/atropos
 ```
 
 ### Test API
