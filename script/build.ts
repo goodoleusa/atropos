@@ -63,7 +63,8 @@ async function buildAtropos(): Promise<boolean> {
     return true;
   } catch (error: any) {
     if (error.message?.includes("cargo: command not found") || error.code === "ENOENT") {
-      console.log("⚠ cargo not found, skipping atropos build (install Rust to build)");
+      console.log("⚠ cargo not found, skipping atropos build.");
+      console.log("  To build the atropos binary: install Rust (https://rustup.rs) or on Replit add rustc/cargo in replit.nix and reload the shell.");
       return false;
     }
     console.warn("⚠ Failed to build atropos:", error.message);
