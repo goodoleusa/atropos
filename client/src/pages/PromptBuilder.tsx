@@ -38,7 +38,6 @@ import {
   CATEGORY_COLORS 
 } from '@/config/learningConfig';
 import { useLearningStore } from '@/stores/useLearningStore';
-import { PromptGallerySection } from '@/components/PromptGallerySection';
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
@@ -624,10 +623,6 @@ ${getFullPromptModifier()}
             </Card>
           </TabsContent>
         </Tabs>
-
-        <div className="mt-8">
-          <PromptGallerySection defaultPrompt={generatedPrompt} defaultTitle={taskFocus} />
-        </div>
       </div>
     </div>
   );
