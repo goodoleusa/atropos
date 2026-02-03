@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,15 +33,12 @@ import {
   type Finding,
   type ReportSection
 } from '@/config/reportTemplate';
-import { useReportContext } from '@/hooks/useReportContext';
-import { getCampaignById } from '@/config/agentCampaigns';
 
 interface ReportData {
   [key: string]: string;
 }
 
 export default function ReportBuilder() {
-  const { toolOutputs, pendingFindings, currentSession, targets } = useReportContext();
   const [activeSection, setActiveSection] = useState('executive_summary');
   const [reportData, setReportData] = useState<ReportData>({});
   const [findings, setFindings] = useState<Finding[]>([]);
@@ -55,14 +52,6 @@ export default function ReportBuilder() {
     evidence: []
   });
   const [selectedIndicators, setSelectedIndicators] = useState<string[]>([]);
-  const lastAutoFields = useRef<Record<string, string>>({});
-
-  const activeModule = useMemo(() => {
-    if (!currentSession?.activeCampaign) return undefined;
-    return getCampaignById(currentSession.activeCampaign);
-  }, [currentSession?.activeCampaign]);
-
-  const autoCaptureActive = !!currentSession?.activeCampaign;
 
   useEffect(() => {
     const saved = localStorage.getItem('bugBountyReport');
@@ -76,102 +65,6 @@ export default function ReportBuilder() {
   useEffect(() => {
     localStorage.setItem('bugBountyReport', JSON.stringify({ reportData, findings }));
   }, [reportData, findings]);
-
-  useEffect(() => {
-    if (!autoCaptureActive || pendingFindings.length === 0) return;
-
-    setFindings(prev => {
-      const existing = new Set(prev.map(f => `${f.title}::${f.description}`));
-      const toAdd = pendingFindings
-        .filter(f => f.title || f.description)
-        .filter(f => !existing.has(`${f.title || 'Untitled'}::${f.description || ''}`))
-        .map(f => ({
-          id: `finding-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-          title: f.title || 'Untitled Finding',
-          severity: (f.severity as Finding['severity']) || 'medium',
-          category: f.category || 'info_disclosure',
-          description: f.description || '',
-          stepsToReproduce: f.stepsToReproduce || 'TBD',
-          impact: f.impact || '',
-          recommendation: f.recommendation || '',
-          evidence: f.evidence || [],
-          estimatedBounty: f.estimatedBounty || '',
-          confidence: (f.confidence as Finding['confidence']) || 'potential',
-          status: (f.status as Finding['status']) || 'new'
-        }));
-
-      if (toAdd.length === 0) return prev;
-      return [...prev, ...toAdd];
-    });
-  }, [autoCaptureActive, pendingFindings]);
-
-  useEffect(() => {
-    if (!autoCaptureActive) return;
-
-    const targetScope = targets.length > 0
-      ? targets.map(t => `${t.name || t.type}: ${t.value}`).join(', ')
-      : 'Not specified';
-
-    const toolSet = new Set<string>();
-    (activeModule?.tools || []).forEach(tool => toolSet.add(tool));
-    toolOutputs.forEach(output => {
-      if (output.source) toolSet.add(output.source);
-    });
-
-    const toolsUsed = Array.from(toolSet).join(', ');
-    const observations = toolOutputs
-      .slice(-8)
-      .map(output => {
-        const snippet = output.content.length > 200 ? `${output.content.slice(0, 200)}...` : output.content;
-        return `• [${output.source}] ${output.type}: ${snippet}`;
-      })
-      .join('\n');
-
-    const findingsBySeverity = findings.reduce(
-      (acc, f) => {
-        acc[f.severity] = (acc[f.severity] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-
-    const totalFindingsSummary = [
-      `Critical: ${findingsBySeverity.critical || 0}`,
-      `High: ${findingsBySeverity.high || 0}`,
-      `Medium: ${findingsBySeverity.medium || 0}`,
-      `Low: ${findingsBySeverity.low || 0}`,
-      `Info: ${findingsBySeverity.info || 0}`
-    ].join(', ');
-
-    const methodologyLines = [
-      activeModule ? `Module: ${activeModule.name}` : null,
-      activeModule?.objectives?.length ? `Objectives:\n- ${activeModule.objectives.join('\n- ')}` : null,
-      targetScope ? `Targets: ${targetScope}` : null,
-      toolsUsed ? `Tools: ${toolsUsed}` : null
-    ].filter(Boolean);
-
-    const autoFields: Record<string, string> = {
-      target: targetScope !== 'Not specified' ? targetScope : '',
-      testing_period: new Date().toLocaleDateString(),
-      total_findings: totalFindingsSummary,
-      tools: toolsUsed,
-      methodology: methodologyLines.join('\n\n'),
-      observations
-    };
-
-    setReportData(prev => {
-      const next = { ...prev };
-      Object.entries(autoFields).forEach(([key, value]) => {
-        if (!value) return;
-        const existing = prev[key];
-        if (!existing || existing.trim() === '' || existing === lastAutoFields.current[key]) {
-          next[key] = value;
-        }
-      });
-      lastAutoFields.current = { ...lastAutoFields.current, ...autoFields };
-      return next;
-    });
-  }, [autoCaptureActive, activeModule, targets, toolOutputs, findings]);
 
   const updateField = (fieldId: string, value: string) => {
     setReportData(prev => ({ ...prev, [fieldId]: value }));
@@ -256,26 +149,6 @@ export default function ReportBuilder() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        {autoCaptureActive && (
-          <div className="mb-4">
-            <Card className="bg-teal-950/30 border-teal-700/40">
-              <CardContent className="p-4 flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-teal-400 text-xs uppercase">Agent Module Capture Active</p>
-                  <p className="text-stone-300 text-sm font-semibold">
-                    {activeModule?.name || 'Active Module'}
-                  </p>
-                  <p className="text-stone-500 text-xs mt-1">
-                    Targets: {targets.map(t => t.value).join(', ') || 'None'}
-                  </p>
-                </div>
-                <Badge variant="outline" className="border-teal-700 text-teal-300">
-                  Auto-fill enabled
-                </Badge>
-              </CardContent>
-            </Card>
-          </div>
-        )}
         <div className="flex items-center justify-between mb-4">
           <Link href="/">
             <Button variant="ghost" className="text-amber-600 hover:text-amber-500" data-testid="back-button">
