@@ -2148,6 +2148,25 @@ const DEFAULT_ADMIN_TASKS: AdminTask[] = [
     status: 'pending',
     createdAt: new Date().toISOString(),
   },
+  {
+    id: 'atropos-binary-fix',
+    title: 'Fix Atropos Binary Environment',
+    description: 'Update Nix shell to include Rust 1.80+ or pre-compile Atropos binary for the environment. Current cargo version 1.74 is too old for some dependencies.',
+    category: 'infrastructure',
+    priority: 'critical',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    notes: 'Required for OSINT scanning capabilities. Currently failing build due to rustc version mismatch in native-tls.',
+  },
+  {
+    id: 'atropos-scripts-review',
+    title: 'Audit Atropos Lua Scripts',
+    description: 'Review examples in tools/atropos/examples/ for safety and functionality.',
+    category: 'security',
+    priority: 'high',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 function AdminTasksPanel() {
