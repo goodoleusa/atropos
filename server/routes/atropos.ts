@@ -235,6 +235,17 @@ interface AtroposSummary {
   riskLevel: "critical" | "high" | "medium" | "low";
 }
 
+interface SimulatedScanResult {
+  id: string;
+  scanType: string;
+  target: string;
+  timestamp: string;
+  status: string;
+  findings: AtroposFinding[];
+  summary: AtroposSummary;
+  scriptUsed?: string;
+}
+
 const AVAILABLE_SCRIPTS = [
   { id: "bbot_scanner", name: "BBOT Scanner", description: "Recursive subdomain enumeration", category: "osint" },
   { id: "amass_osint", name: "Amass OSINT", description: "OWASP subdomain discovery", category: "osint" },
@@ -247,9 +258,9 @@ const AVAILABLE_SCRIPTS = [
   { id: "api_fuzzer", name: "API Fuzzer", description: "API endpoint discovery and testing", category: "api" },
 ];
 
-const scanResults: Map<string, AtroposScanResult> = new Map();
+const scanResults: Map<string, SimulatedScanResult> = new Map();
 
-function generateSimulatedScan(target: string, scriptId: string): AtroposScanResult {
+function generateSimulatedScan(target: string, scriptId: string): SimulatedScanResult {
   const now = new Date().toISOString();
   const vulnCount = Math.floor(Math.random() * 5);
   const subdomainCount = Math.floor(Math.random() * 20) + 5;
@@ -356,10 +367,10 @@ router.post("/results/import", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Results data is required" });
     }
     
-    let parsed: AtroposScanResult;
+    let parsed: SimulatedScanResult;
     
     if (format === "atropos") {
-      parsed = results as AtroposScanResult;
+      parsed = results as SimulatedScanResult;
       parsed.id = parsed.id || nanoid();
       parsed.timestamp = parsed.timestamp || new Date().toISOString();
     } else if (format === "bbot") {
