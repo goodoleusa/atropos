@@ -397,17 +397,18 @@ export default function Home() {
       </footer>
 
       {/* Floating Action Buttons - Mobile Optimized */}
+      {/* Floating buttons - hidden on mobile to avoid overlap with MobileFloatingMenu */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.3 }}
-        className={`fixed bottom-6 right-6 z-50 flex flex-col gap-3 transition-opacity duration-500 ${
+        className={`hidden md:flex fixed bottom-6 right-6 z-50 flex-col gap-3 transition-opacity duration-500 ${
           scrolledPastVideo ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
         <Button
           onClick={() => setAgentChatOpen(true)}
-          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50 touch-target"
+          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50"
           data-testid="floating-agent-button"
         >
           <Bot className="w-6 h-6" />
@@ -415,7 +416,7 @@ export default function Home() {
         
         <Button
           onClick={() => setQrModalOpen(true)}
-          className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30 touch-target"
+          className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30"
           data-testid="floating-qr-button"
         >
           <QrCode className="w-6 h-6" />

@@ -240,6 +240,26 @@ export interface IStorage {
   joinLobby(lobbyId: string, player: { sessionToken: string; alias: string }): Promise<MultiplayerLobby | undefined>;
   leaveLobby(lobbyId: string, sessionToken: string): Promise<MultiplayerLobby | undefined>;
   deleteLobby(lobbyId: string): Promise<boolean>;
+  
+  // Admin Configuration
+  getAdminConfig(): Promise<AdminConfig | undefined>;
+  updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig>;
+}
+
+// Admin configuration type (stored in memory/file, not DB)
+export interface AdminConfig {
+  agentConfig?: Record<string, {
+    baseInstructions?: string;
+    model?: string;
+    temperature?: number;
+    updatedAt?: string;
+  }>;
+  wandbConfig?: {
+    enabled?: boolean;
+    project?: string;
+    entity?: string;
+    apiKeySet?: boolean;
+  };
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1281,6 +1301,54 @@ export class DatabaseStorage implements IStorage {
       .delete(multiplayerLobbies)
       .where(eq(multiplayerLobbies.lobbyId, lobbyId));
     return true;
+  }
+
+  // Admin Configuration (in-memory with file persistence)
+  private adminConfig: AdminConfig = {};
+  private adminConfigLoaded = false;
+
+  private async loadAdminConfig(): Promise<void> {
+    if (this.adminConfigLoaded) return;
+    try {
+      const fs = await import('fs/promises');
+      const data = await fs.readFile('.admin-config.json', 'utf-8');
+      this.adminConfig = JSON.parse(data);
+    } catch {
+      this.adminConfig = {};
+    }
+    this.adminConfigLoaded = true;
+  }
+
+  private async saveAdminConfig(): Promise<void> {
+    try {
+      const fs = await import('fs/promises');
+      await fs.writeFile('.admin-config.json', JSON.stringify(this.adminConfig, null, 2));
+    } catch (e) {
+      console.error('Failed to save admin config:', e);
+    }
+  }
+
+  async getAdminConfig(): Promise<AdminConfig | undefined> {
+    await this.loadAdminConfig();
+    return this.adminConfig;
+  }
+
+  async updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig> {
+    await this.loadAdminConfig();
+    this.adminConfig = {
+      ...this.adminConfig,
+      ...updates,
+      agentConfig: {
+        ...this.adminConfig.agentConfig,
+        ...updates.agentConfig,
+      },
+      wandbConfig: {
+        ...this.adminConfig.wandbConfig,
+        ...updates.wandbConfig,
+      },
+    };
+    await this.saveAdminConfig();
+    return this.adminConfig;
   }
 }
 
