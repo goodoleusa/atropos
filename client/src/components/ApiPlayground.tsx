@@ -139,6 +139,98 @@ const API_ENDPOINTS: ApiEndpoint[] = [
     description: 'Get agent API schema documentation',
     category: 'Agent'
   },
+  // Multi-Agent Orchestration Endpoints
+  {
+    method: 'POST',
+    path: '/api/agents/analyze',
+    description: 'Route scan results to multiple specialist agents for parallel analysis',
+    category: 'Multi-Agent',
+    rateLimit: '10/min',
+    exampleBody: JSON.stringify({
+      scanType: 'vulnerability',
+      data: { findings: [{ id: 'CVE-2024-1234', severity: 'high' }] },
+      target: 'example.com'
+    }, null, 2),
+    exampleResponse: JSON.stringify({
+      success: true,
+      results: [
+        { agentId: 'vuln_analyst', analysis: '...', confidence: 0.95 },
+        { agentId: 'threat_intel', analysis: '...', confidence: 0.88 }
+      ]
+    }, null, 2),
+    params: [
+      { name: 'scanType', type: 'string', required: true, description: 'Type of scan: vulnerability, osint, network, secrets' },
+      { name: 'data', type: 'object', required: true, description: 'Scan results to analyze' },
+      { name: 'target', type: 'string', required: false, description: 'Target identifier for context' }
+    ]
+  },
+  {
+    method: 'GET',
+    path: '/api/agents',
+    description: 'List all available specialist agents and their capabilities',
+    category: 'Multi-Agent',
+    rateLimit: '30/min',
+    exampleResponse: JSON.stringify({
+      agents: [
+        { id: 'vuln_analyst', name: 'VulnAnalyst', category: 'vulnerability', capabilities: ['CVE analysis', 'CVSS scoring'] },
+        { id: 'osint_analyst', name: 'OSINTAnalyst', category: 'osint', capabilities: ['data correlation', 'pattern detection'] },
+        { id: 'threat_intel', name: 'ThreatIntel', category: 'threat', capabilities: ['threat attribution', 'TTPs mapping'] },
+        { id: 'secret_hunter', name: 'SecretHunter', category: 'secrets', capabilities: ['credential detection', 'API key analysis'] },
+        { id: 'network_recon', name: 'NetworkRecon', category: 'network', capabilities: ['topology mapping', 'service identification'] },
+        { id: 'synthesis', name: 'Synthesis', category: 'synthesis', capabilities: ['findings aggregation', 'report generation'] }
+      ]
+    }, null, 2)
+  },
+  {
+    method: 'POST',
+    path: '/api/agents/route',
+    description: 'Route data to specific agents by category',
+    category: 'Multi-Agent',
+    rateLimit: '20/min',
+    exampleBody: JSON.stringify({
+      category: 'vulnerability',
+      payload: { vulnerabilities: [] },
+      parallel: true
+    }, null, 2),
+    params: [
+      { name: 'category', type: 'string', required: true, description: 'Agent category: vulnerability, osint, network, secrets, threat' },
+      { name: 'payload', type: 'object', required: true, description: 'Data payload to send to agents' },
+      { name: 'parallel', type: 'boolean', required: false, description: 'Run matching agents in parallel (default: true)' }
+    ]
+  },
+  {
+    method: 'POST',
+    path: '/api/agents/synthesize',
+    description: 'Synthesize multiple agent results into a unified report',
+    category: 'Multi-Agent',
+    rateLimit: '10/min',
+    exampleBody: JSON.stringify({
+      results: [
+        { agentId: 'vuln_analyst', analysis: '...' },
+        { agentId: 'threat_intel', analysis: '...' }
+      ],
+      format: 'markdown'
+    }, null, 2),
+    params: [
+      { name: 'results', type: 'array', required: true, description: 'Array of agent analysis results' },
+      { name: 'format', type: 'string', required: false, description: 'Output format: markdown, json, html' }
+    ]
+  },
+  {
+    method: 'POST',
+    path: '/api/agents/export',
+    description: 'Export agent configuration for CrewAI or LangChain',
+    category: 'Multi-Agent',
+    rateLimit: '10/min',
+    exampleBody: JSON.stringify({
+      format: 'crewai',
+      agents: ['vuln_analyst', 'threat_intel']
+    }, null, 2),
+    params: [
+      { name: 'format', type: 'string', required: true, description: 'Export format: crewai, langchain' },
+      { name: 'agents', type: 'array', required: false, description: 'Specific agents to export (default: all)' }
+    ]
+  },
   {
     method: 'GET',
     path: '/api/admin/campaigns',
