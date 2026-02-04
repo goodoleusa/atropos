@@ -11,14 +11,29 @@ Express on the backend, with PostgreSQL via Drizzle ORM.
 
 ## Features
 
-- Custom terminal emulator with command parsing and history.
-- Clue + quest system with configurable campaigns and messages.
-- Atmospheric overlays (Chaos, Glitch text, Quantum field, etc.).
-- Agent Chat (OpenRouter-backed) for investigations and guidance.
-- Campaign Designer with wikilinks, breadcrumbs, and backlinks.
-- Admin dashboard for managing content, sessions, and UX effects.
-- Report Builder for structured bug bounty style writeups.
-- AI Lab for prompt testing, comparisons, and evaluations.
+### Core Platform
+- Custom terminal emulator with command parsing and history
+- Clue + quest system with configurable campaigns and messages
+- Atmospheric overlays (Chaos, Glitch text, Quantum field, etc.)
+- Mobile-first responsive design with touch-friendly interactions
+
+### NEXUS AI System
+- Agent Chat (OpenRouter-backed) for investigations and guidance
+- AI Lab for prompt testing, model comparisons, and evaluations
+- Report Builder for structured bug bounty style writeups
+- Shared investigation context across all AI features
+
+### Atropos OSINT Scanner
+- Rust-based security scanning tool (`/api/atropos`)
+- Script execution and scan history tracking
+- Remote Atropos server connection support
+- AI-assisted analysis prompt generation
+- Auto-integration with investigation contexts
+
+### Content Tools
+- Campaign Designer with wikilinks, breadcrumbs, and backlinks
+- Admin dashboard for managing content, sessions, and UX effects
+- API Playground for learning security concepts
 
 ## Architecture
 
@@ -120,8 +135,157 @@ to compare agent results safely.
 ## Repo structure
 
 ```
-client/     React app (UI)
-server/     Express API + integrations
-shared/     Shared schema and models
-script/     Build scripts
+client/          React app (UI)
+server/          Express API + integrations
+shared/          Shared schema and models
+script/          Build scripts
+tools/atropos/   Atropos OSINT scanner (Rust)
+```
+
+## Production Deployment: Hetzner Cloud
+
+Use Replit for development, Hetzner for production hosting.
+
+### 1) Provision Hetzner Server
+
+```bash
+# Recommended: CX21 (2 vCPU, 4GB RAM) or CX31 for heavier scans
+# OS: Ubuntu 22.04 or Debian 12
+```
+
+### 2) Install Rust on Hetzner
+
+```bash
+# SSH into your Hetzner server
+ssh root@your-server-ip
+
+# Install Rust via rustup
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+# Verify installation
+rustc --version
+cargo --version
+```
+
+### 3) Install System Dependencies
+
+```bash
+# Ubuntu/Debian
+apt update && apt install -y \
+  build-essential \
+  pkg-config \
+  libssl-dev \
+  libluajit-5.1-dev \
+  git \
+  postgresql-client
+
+# Optional: for DNS/network tools
+apt install -y dnsutils nmap whois
+```
+
+### 4) Build Atropos Binary
+
+```bash
+# Clone the repo
+git clone https://github.com/goodoleusa/atropos.git
+cd atropos/tools/atropos
+
+# Build release binary (optimized)
+cargo build --release
+
+# Binary is at: target/release/atropos
+# Copy to system path
+cp target/release/atropos /usr/local/bin/
+chmod +x /usr/local/bin/atropos
+
+# Verify
+atropos --version
+```
+
+### 5) Configure Node.js Backend
+
+```bash
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs
+
+# Clone and build the web app
+cd /opt
+git clone https://github.com/goodoleusa/atropos.git sysadmin-corp
+cd sysadmin-corp
+npm install
+npm run build
+```
+
+### 6) Environment Setup
+
+```bash
+# Create .env file
+cat > .env << 'EOF'
+PORT=5000
+DATABASE_URL=postgresql://user:pass@localhost:5432/sysadmin
+OPENROUTER_API_KEY=your_openrouter_key
+NODE_ENV=production
+EOF
+```
+
+### 7) Systemd Service
+
+```bash
+cat > /etc/systemd/system/sysadmin-corp.service << 'EOF'
+[Unit]
+Description=SysAdmin Corp Web App
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/sysadmin-corp
+ExecStart=/usr/bin/node dist/index.js
+Restart=on-failure
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable sysadmin-corp
+systemctl start sysadmin-corp
+```
+
+### 8) Nginx Reverse Proxy
+
+```bash
+apt install -y nginx certbot python3-certbot-nginx
+
+cat > /etc/nginx/sites-available/sysadmin-corp << 'EOF'
+server {
+    listen 80;
+    server_name your-domain.com;
+    
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+EOF
+
+ln -s /etc/nginx/sites-available/sysadmin-corp /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+
+# SSL with Let's Encrypt
+certbot --nginx -d your-domain.com
+```
+
+### Hetzner Firewall Rules
+
+```
+Allow: 22 (SSH), 80 (HTTP), 443 (HTTPS)
+Block: All other inbound
 ```
