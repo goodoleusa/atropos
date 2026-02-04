@@ -24,6 +24,119 @@ router.get("/health", async (req: Request, res: Response) => {
   }
 });
 
+// ============ Diagnostics & Troubleshooting ============
+
+router.get("/diagnose", async (req: Request, res: Response) => {
+  try {
+    const diagnostics = await atroposService.diagnose();
+    
+    // Determine overall status
+    const status = diagnostics.errors.length === 0 ? 'healthy' : 
+                   diagnostics.binaryExists ? 'degraded' : 'unavailable';
+    
+    res.json({
+      status,
+      diagnostics,
+      troubleshooting: {
+        quickFix: diagnostics.suggestions[0] || null,
+        documentation: 'https://github.com/your-org/atropos#installation',
+        commonIssues: [
+          {
+            issue: 'Binary not found',
+            solution: 'Run: cd tools/atropos && cargo build --release'
+          },
+          {
+            issue: 'Rust not installed',
+            solution: 'Run: curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh'
+          },
+          {
+            issue: 'Build fails with linker error',
+            solution: 'Install build tools: apt-get install build-essential'
+          },
+          {
+            issue: 'Permission denied',
+            solution: 'Run: chmod +x tools/atropos/target/release/atropos'
+          }
+        ]
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ 
+      status: 'error',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+router.post("/build", async (req: Request, res: Response) => {
+  try {
+    const { release = true, verbose = true } = req.body;
+    
+    console.log('[Atropos:API] Build requested', { release, verbose });
+    
+    const result = await atroposService.buildBinary({ release, verbose });
+    
+    if (result.success) {
+      res.json({
+        status: 'success',
+        message: 'Atropos built successfully',
+        duration: `${result.duration}ms`,
+        binaryPath: result.binaryPath,
+        logs: {
+          stdout: result.stdout.slice(-5000),
+          stderr: result.stderr.slice(-5000)
+        }
+      });
+    } else {
+      res.status(500).json({
+        status: 'failed',
+        message: result.error,
+        duration: `${result.duration}ms`,
+        troubleshooting: {
+          checkRust: 'Ensure Rust is installed: rustc --version',
+          checkCargo: 'Ensure Cargo is installed: cargo --version',
+          checkSource: 'Ensure source exists: ls tools/atropos/Cargo.toml',
+          clearCache: 'Try clearing build cache: rm -rf tools/atropos/target',
+          verboseBuild: 'Run verbose build: cd tools/atropos && RUST_BACKTRACE=1 cargo build --release -vv'
+        },
+        logs: {
+          stdout: result.stdout.slice(-10000),
+          stderr: result.stderr.slice(-10000)
+        }
+      });
+    }
+  } catch (error: any) {
+    console.error('[Atropos:API] Build error:', error);
+    res.status(500).json({
+      status: 'error',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+router.post("/ensure", async (req: Request, res: Response) => {
+  try {
+    console.log('[Atropos:API] Ensuring binary is available...');
+    
+    const result = await atroposService.ensureBinary();
+    
+    res.json({
+      available: result.available,
+      path: result.path,
+      builtNow: result.built || false,
+      error: result.error
+    });
+  } catch (error: any) {
+    console.error('[Atropos:API] Ensure error:', error);
+    res.status(500).json({
+      available: false,
+      error: error.message
+    });
+  }
+});
+
 // ============ Scripts Management ============
 
 // List available scripts
