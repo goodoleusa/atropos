@@ -83,7 +83,7 @@ export default function DevModePanel() {
       {/* Quick Admin Access Button - Always visible when Dev Mode is ON (hidden on mobile) */}
       {gameState.devMode && !expanded && (
         <motion.div
-          className="hidden md:flex fixed bottom-4 right-20 z-50 gap-2"
+          className="hidden md:flex fixed bottom-20 right-4 z-50 gap-2 flex-col"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
