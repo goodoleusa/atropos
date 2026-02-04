@@ -52,6 +52,8 @@ import { ApiPlayground } from "@/components/ApiPlayground";
 import CampaignDesigner from "@/components/CampaignDesigner";
 import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
 import { QuestsSection } from "@/pages/admin/QuestsSection";
+import { QuickPushSection } from "@/pages/admin/QuickPushSection";
+import { EffectsPlaygroundSection } from "@/pages/admin/EffectsPlaygroundSection";
 
 interface Clue {
   id: string;
@@ -395,6 +397,12 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="modmail" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500" data-testid="modmail-tab">
               <MessageSquare className="w-4 h-4 mr-2" /> Modmail
+            </TabsTrigger>
+            <TabsTrigger value="quickpush" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500" data-testid="quickpush-tab">
+              <Zap className="w-4 h-4 mr-2" /> Quick Push
+            </TabsTrigger>
+            <TabsTrigger value="effects" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-500" data-testid="effects-tab">
+              <Sparkles className="w-4 h-4 mr-2" /> Effects
             </TabsTrigger>
           </TabsList>
 
@@ -1103,6 +1111,14 @@ export default function AdminDashboard() {
 
           <TabsContent value="modmail">
             <ModmailPanel />
+          </TabsContent>
+
+          <TabsContent value="quickpush">
+            <QuickPushSection />
+          </TabsContent>
+
+          <TabsContent value="effects">
+            <EffectsPlaygroundSection />
           </TabsContent>
         </Tabs>
       </div>
