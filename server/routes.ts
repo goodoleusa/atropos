@@ -1700,5 +1700,202 @@ BEHAVIOR:
     }
   });
 
+  // ============== MODMAIL ROUTES ==============
+  
+  // Get all modmail (admin)
+  app.get("/api/admin/modmail", async (req, res) => {
+    try {
+      const mail = await storage.getAllModmail();
+      res.json(mail);
+    } catch (error) {
+      console.error("Get modmail error:", error);
+      res.status(500).json({ error: "Failed to retrieve modmail" });
+    }
+  });
+
+  // Get user's own modmail tickets
+  app.get("/api/modmail/my-tickets", async (req, res) => {
+    try {
+      const sessionToken = req.headers['x-session-token'] as string;
+      if (!sessionToken) {
+        return res.status(400).json({ error: "Session token required" });
+      }
+      const tickets = await storage.getModmailBySession(sessionToken);
+      res.json(tickets);
+    } catch (error) {
+      console.error("Get user modmail error:", error);
+      res.status(500).json({ error: "Failed to retrieve tickets" });
+    }
+  });
+
+  // Submit new modmail ticket
+  app.post("/api/modmail", rateLimit(5, 60000), async (req, res) => {
+    try {
+      const { subject, message, category, username, sessionToken } = req.body;
+      
+      if (!subject || !message || !sessionToken) {
+        return res.status(400).json({ error: "Subject, message, and session required" });
+      }
+      
+      const ticketId = `ticket-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+      
+      const ticket = await storage.createModmail({
+        ticketId,
+        sessionToken,
+        username: username || 'Anonymous',
+        subject: sanitizeInput(subject, 200) || 'No subject',
+        message: sanitizeInput(message, 5000) || '',
+        category: category || 'general',
+        status: 'open',
+        priority: 'normal'
+      });
+      
+      res.json({ success: true, ticket });
+    } catch (error) {
+      console.error("Create modmail error:", error);
+      res.status(500).json({ error: "Failed to create ticket" });
+    }
+  });
+
+  // Admin respond to modmail
+  app.put("/api/admin/modmail/:ticketId", async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      const { adminResponse, status, priority, respondedBy } = req.body;
+      
+      const updates: any = { status, priority };
+      if (adminResponse) {
+        updates.adminResponse = sanitizeInput(adminResponse, 5000);
+        updates.respondedBy = respondedBy || 'Admin';
+        updates.respondedAt = new Date();
+      }
+      
+      const updated = await storage.updateModmail(ticketId, updates);
+      if (!updated) {
+        return res.status(404).json({ error: "Ticket not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Update modmail error:", error);
+      res.status(500).json({ error: "Failed to update ticket" });
+    }
+  });
+
+  // ============== MULTIPLAYER LOBBY ROUTES ==============
+  
+  // Get active lobbies
+  app.get("/api/lobbies", async (req, res) => {
+    try {
+      const lobbies = await storage.getActiveLobbies();
+      res.json(lobbies);
+    } catch (error) {
+      console.error("Get lobbies error:", error);
+      res.status(500).json({ error: "Failed to retrieve lobbies" });
+    }
+  });
+
+  // Get specific lobby
+  app.get("/api/lobbies/:lobbyId", async (req, res) => {
+    try {
+      const lobby = await storage.getLobbyById(req.params.lobbyId);
+      if (!lobby) {
+        return res.status(404).json({ error: "Lobby not found" });
+      }
+      res.json(lobby);
+    } catch (error) {
+      console.error("Get lobby error:", error);
+      res.status(500).json({ error: "Failed to retrieve lobby" });
+    }
+  });
+
+  // Create new lobby
+  app.post("/api/lobbies", rateLimit(10, 60000), async (req, res) => {
+    try {
+      const { name, mode, maxPlayers, campaignId, sessionToken, alias } = req.body;
+      
+      if (!name || !sessionToken) {
+        return res.status(400).json({ error: "Name and session required" });
+      }
+      
+      const lobbyId = `lobby-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+      
+      const lobby = await storage.createLobby({
+        lobbyId,
+        name: sanitizeInput(name, 100) || 'New Lobby',
+        mode: mode || 'coop',
+        maxPlayers: Math.min(maxPlayers || 4, 8),
+        campaignId: campaignId || null,
+        currentPlayers: [{ sessionToken, alias: alias || 'Host', score: 0 }],
+        status: 'waiting',
+        settings: {},
+        expiresAt: new Date(Date.now() + 3600000) // 1 hour expiry
+      });
+      
+      res.json({ success: true, lobby });
+    } catch (error) {
+      console.error("Create lobby error:", error);
+      res.status(500).json({ error: "Failed to create lobby" });
+    }
+  });
+
+  // Join lobby
+  app.post("/api/lobbies/:lobbyId/join", rateLimit(20, 60000), async (req, res) => {
+    try {
+      const { lobbyId } = req.params;
+      const { sessionToken, alias } = req.body;
+      
+      if (!sessionToken) {
+        return res.status(400).json({ error: "Session required" });
+      }
+      
+      const lobby = await storage.joinLobby(lobbyId, {
+        sessionToken,
+        alias: alias || `Agent-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+      });
+      
+      if (!lobby) {
+        return res.status(400).json({ error: "Could not join lobby (full or not found)" });
+      }
+      
+      res.json({ success: true, lobby });
+    } catch (error) {
+      console.error("Join lobby error:", error);
+      res.status(500).json({ error: "Failed to join lobby" });
+    }
+  });
+
+  // Leave lobby
+  app.post("/api/lobbies/:lobbyId/leave", async (req, res) => {
+    try {
+      const { lobbyId } = req.params;
+      const { sessionToken } = req.body;
+      
+      const lobby = await storage.leaveLobby(lobbyId, sessionToken);
+      res.json({ success: true, lobby });
+    } catch (error) {
+      console.error("Leave lobby error:", error);
+      res.status(500).json({ error: "Failed to leave lobby" });
+    }
+  });
+
+  // Update lobby status (start game, etc)
+  app.put("/api/lobbies/:lobbyId", async (req, res) => {
+    try {
+      const { lobbyId } = req.params;
+      const { status, settings } = req.body;
+      
+      const lobby = await storage.updateLobby(lobbyId, { status, settings });
+      if (!lobby) {
+        return res.status(404).json({ error: "Lobby not found" });
+      }
+      
+      res.json(lobby);
+    } catch (error) {
+      console.error("Update lobby error:", error);
+      res.status(500).json({ error: "Failed to update lobby" });
+    }
+  });
+
   return httpServer;
 }

@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
 import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search } from 'lucide-react';
+import { ModmailDialog } from './ModmailDialog';
+import { MultiplayerLobby } from './MultiplayerLobby';
 
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
@@ -82,6 +84,11 @@ export default function QuickNav() {
                 <span className="text-[10px] text-amber-400">{gameState.inventory?.length || 0} clues</span>
               </div>
             </div>
+          </div>
+
+          <div className="border-t border-stone-800 pt-2 mt-2 flex gap-1">
+            <ModmailDialog />
+            <MultiplayerLobby />
           </div>
         </div>
       )}
