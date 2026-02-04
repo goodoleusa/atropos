@@ -50,6 +50,10 @@ Preferred communication style: Simple, everyday language.
 - **Interactive Campaign System**: Adaptive investigation flows responding to user discoveries, offering perspective shifts and tool guidance.
 - **Investigation Workspace**: Unified hub for Agent Chat, AI Lab quick testing, and Learning Profile configuration.
 - **Unified Learning Store**: Zustand-based centralized state for learning preferences (style, goals, skill level, pace), persisting to localStorage and providing prompt modifiers for AI interactions. Integrated with Campaign Designer nodes.
+- **Modmail System**: User support ticket system for questions and admin responses. Users submit tickets via ModmailDialog, admins respond via Admin Dashboard Modmail tab. Categories: general, bug, feature, question, help. API: `/api/modmail`, `/api/admin/modmail`.
+- **Multiplayer Lobbies**: Anonymous real-time session system for co-op, versus, or race modes. Players join/create lobbies with aliases, max 8 players per lobby, 1-hour expiry. API: `/api/lobbies`.
+- **Zodiac Engagement Effects**: 60% chance bonus collectibles/tips when collecting zodiac cards, element-based rewards (Fire, Earth, Air, Water).
+- **Mystical Cards Admin**: Full editing capabilities for tarot and zodiac cards in Admin Dashboard CollectiblesSection.
 
 ### Atropos Scanner Integration
 - **Capabilities**: OSINT (BBOT, Amass, theHarvester), Vulnerability Scanning (Nuclei, httpx, nmap), Secret Detection (Gitleaks, TruffleHog), Threat Intelligence (Shodan, VirusTotal), Network Analysis (DNSMonster, RITA, Zeek).
