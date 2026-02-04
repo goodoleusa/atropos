@@ -74,6 +74,18 @@ export function EffectsPlaygroundSection() {
   useEffect(() => {
     const saved = localStorage.getItem('effects_presets');
     if (saved) setSavedPresets(JSON.parse(saved));
+    
+    // Load current effectsConfig from localStorage or session
+    const savedConfig = localStorage.getItem('clue_effects_config');
+    if (savedConfig) {
+      try {
+        const parsed = JSON.parse(savedConfig);
+        setConfig(prev => ({ ...prev, ...parsed }));
+        if (parsed.appliedTo) setSelectedClueTypes(parsed.appliedTo);
+      } catch (e) {
+        console.error('Failed to load saved config:', e);
+      }
+    }
   }, []);
 
   const updateConfig = <K extends keyof EffectConfig>(key: K, value: EffectConfig[K]) => {
@@ -87,16 +99,40 @@ export function EffectsPlaygroundSection() {
     toast({ title: 'Preset Saved', description: `"${name}" saved successfully` });
   };
 
-  const applyToClueTypes = () => {
+  const applyToClueTypes = async () => {
     if (selectedClueTypes.length === 0) {
       toast({ title: 'Select Clue Types', description: 'Choose which types to apply effects to', variant: 'destructive' });
       return;
     }
-    const effectsConfig = { ...config, appliedTo: selectedClueTypes };
+    const effectsConfig = { ...config, appliedTo: selectedClueTypes, updatedAt: new Date().toISOString() };
+    
+    // Persist to localStorage for immediate use
     localStorage.setItem('clue_effects_config', JSON.stringify(effectsConfig));
+    
+    // Also persist to session settings via API - fetch current settings first to merge
+    try {
+      const sessionToken = localStorage.getItem('session_token');
+      if (sessionToken) {
+        // Get current session to preserve existing settings
+        const currentSession = await fetch(`/api/session`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }).then(r => r.json());
+        const mergedSettings = { 
+          ...(currentSession?.settings || {}),
+          effectsConfig 
+        };
+        
+        await fetch(`/api/session/${sessionToken}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ settings: mergedSettings })
+        });
+      }
+    } catch (error) {
+      console.error('Failed to sync effects config to server:', error);
+    }
+    
     toast({ 
       title: 'Effects Applied', 
-      description: `Applied to ${selectedClueTypes.length} clue type(s)` 
+      description: `Applied to ${selectedClueTypes.length} clue type(s) - synced to session` 
     });
   };
 

@@ -1842,10 +1842,10 @@ BEHAVIOR:
   // Join lobby
   app.post("/api/lobbies/:lobbyId/join", rateLimit(20, 60000), async (req, res) => {
     try {
-      const { lobbyId } = req.params;
+      const lobbyId = req.params.lobbyId as string;
       const { sessionToken, alias } = req.body;
       
-      if (!sessionToken) {
+      if (!sessionToken || typeof sessionToken !== 'string') {
         return res.status(400).json({ error: "Session required" });
       }
       

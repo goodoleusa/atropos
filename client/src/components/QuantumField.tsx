@@ -160,9 +160,9 @@ export const QuantumField = () => {
 
   return (
     <>
-      {/* Probability Field Indicator - Subtle corner element (hidden on mobile) */}
+      {/* Probability Field Indicator - Subtle corner element (hidden on mobile, positioned above DevModePanel) */}
       <div 
-        className="hidden md:block fixed bottom-4 left-20 z-40 cursor-pointer group"
+        className="hidden md:block fixed bottom-20 left-4 z-40 cursor-pointer group"
         onClick={() => setShowMeter(!showMeter)}
         data-testid="quantum-indicator"
       >
@@ -214,7 +214,7 @@ export const QuantumField = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="hidden md:block fixed bottom-16 left-20 z-40 w-64 bg-[#0a0500]/95 border border-amber-900/50 rounded-lg p-4 backdrop-blur-md"
+            className="hidden md:block fixed bottom-32 left-4 z-40 w-64 bg-[#0a0500]/95 border border-amber-900/50 rounded-lg p-4 backdrop-blur-md"
           >
             <h3 className="text-amber-600 font-orbitron text-sm mb-3 flex items-center gap-2">
               <span className="text-purple-500">Ψ</span> QUANTUM STATE

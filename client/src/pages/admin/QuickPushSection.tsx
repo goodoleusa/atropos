@@ -64,12 +64,19 @@ export function QuickPushSection() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(clueData)
       });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to create clue');
+      }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
       toast({ title: 'Clue Pushed', description: `Deployed to ${selectedZones.length} zones` });
       resetForm();
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Push Failed', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -93,13 +100,11 @@ export function QuickPushSection() {
 
     const clueData = {
       id: `push-${Date.now()}`,
-      name: customName || selectedTemplate?.name,
-      description: selectedTemplate?.description || 'Quick pushed clue',
+      name: customName || selectedTemplate?.name || 'Unnamed Clue',
+      description: `${selectedTemplate?.description || 'Quick pushed clue'}${selectedCampaigns.length > 0 ? ` [Campaigns: ${selectedCampaigns.join(', ')}]` : ''} [Type: ${selectedTemplate?.type || 'intel'}]`,
       content: customContent || `Deployed via Quick Push to: ${selectedZones.join(', ')}`,
       location: selectedZones.join(','),
       difficulty: selectedTemplate?.difficulty || 2,
-      campaigns: selectedCampaigns,
-      type: selectedTemplate?.type || 'intel',
     };
 
     pushClueMutation.mutate(clueData);
