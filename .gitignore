@@ -4,4 +4,22 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
-# Keep Atropos binary
+.env
+*.sha256
+*.md5
+*.sha1
+*.sha512
+*_raw_osint_*.md
+*_crew_output_*.md
+*_maltego_export_*.csv
+*_maltego_export_*.graphml
+*_maltego_export_*.json
+*_maltego_export_*.txt
+*_maltego_export_*.csv.sha256
+*_maltego_export_*.graphml.sha256
+*_maltego_export_*.json.sha256
+*_maltego_export_*.txt.sha256
+*_maltego_export_*.csv.md5
+*_maltego_export_*.graphml.md5
+*_maltego_export_*.json.md5
+*_maltego_export_*.txt.md5
