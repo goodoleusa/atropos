@@ -1950,5 +1950,114 @@ BEHAVIOR:
     }
   });
 
+  // === LIVE BOUNTY FEED ===
+  
+  const BOUNTY_FEED_ALLOWLIST = [
+    // Bug Bounty Platforms
+    'hackerone.com',
+    'bugcrowd.com',
+    'immunefi.com',
+    // Vulnerability Feeds
+    'nvd.nist.gov',
+    'cisa.gov',
+    'exploit-db.com',
+    // Threat Intelligence
+    'abuse.ch',
+    'threatfox.abuse.ch',
+    'malwarebazaar.abuse.ch',
+    'urlhaus.abuse.ch',
+    'ransomware.live',
+    // Security News
+    'bleepingcomputer.com',
+    'krebsonsecurity.com',
+    'therecord.media',
+    'darkreading.com',
+    'securityweek.com',
+    'threatpost.com',
+    // Law Enforcement & Cybercrime Bounties
+    'fbi.gov',
+    'europol.europa.eu',
+    'interpol.int',
+    'rewardsforjustice.net',
+    'treasury.gov',
+    'ofac.treasury.gov',
+    'sec.gov',
+    'justice.gov',
+    'dea.gov',
+    'ice.gov',
+    'secretservice.gov',
+    // International
+    'ncsc.gov.uk',
+    'cyber.gc.ca',
+    'asd.gov.au',
+    'bsi.bund.de',
+    // Financial Crime
+    'fincen.gov',
+    'fatf-gafi.org',
+    'chainalysis.com',
+    'elliptic.co'
+  ];
+  
+  app.get("/api/bounty-feeds", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const feedUrl = req.query.url as string;
+      
+      if (!feedUrl) {
+        return res.status(400).json({ error: "Feed URL required" });
+      }
+      
+      // Validate URL is in allowlist
+      const url = new URL(feedUrl);
+      const isAllowed = BOUNTY_FEED_ALLOWLIST.some(domain => url.hostname.endsWith(domain));
+      
+      if (!isAllowed) {
+        logSecurityEvent('BOUNTY_FEED_BLOCKED', { url: feedUrl, hostname: url.hostname });
+        return res.status(403).json({ error: "Feed source not in allowlist" });
+      }
+      
+      const response = await fetch(feedUrl, {
+        headers: { 'User-Agent': 'NEXUS Security Platform/1.0' },
+        signal: AbortSignal.timeout(10000)
+      });
+      
+      if (!response.ok) {
+        return res.status(502).json({ error: "Failed to fetch feed" });
+      }
+      
+      const contentType = response.headers.get('content-type') || '';
+      const text = await response.text();
+      
+      // Parse RSS/XML to JSON
+      const items: any[] = [];
+      const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+      let match;
+      
+      while ((match = itemRegex.exec(text)) !== null && items.length < 20) {
+        const itemXml = match[1];
+        const getTag = (tag: string) => {
+          const tagMatch = itemXml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, 'i'));
+          return tagMatch ? tagMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim() : null;
+        };
+        
+        items.push({
+          title: getTag('title'),
+          link: getTag('link'),
+          description: getTag('description')?.substring(0, 300),
+          pubDate: getTag('pubDate'),
+          category: getTag('category')
+        });
+      }
+      
+      res.json({ 
+        items,
+        source: url.hostname,
+        fetchedAt: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error("Bounty feed error:", error.message);
+      res.status(500).json({ error: "Failed to fetch bounty feed" });
+    }
+  });
+
   return httpServer;
 }

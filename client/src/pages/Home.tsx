@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { QRCodeModal } from "@/components/QRCodeModal";
 import { AgentChat } from "@/components/AgentChat";
+import { LiveBountyFeed } from "@/components/LiveBountyFeed";
 import { useGame } from "@/hooks/useGameSession";
 import { Button } from "@/components/ui/button";
 import { 
@@ -333,6 +334,55 @@ export default function Home() {
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-orbitron font-bold text-stone-300">15+</div>
               <div className="text-xs text-stone-500 font-mono mt-1">GLOBAL NODES</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Live Bounty Feed Section */}
+      <section className="bg-[#080405] py-16 px-4 border-t border-amber-900/20">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-10">
+            <h2 className="font-orbitron text-2xl md:text-3xl text-stone-200 mb-3">
+              <span className="text-amber-500">Live</span> Intelligence Feed
+            </h2>
+            <p className="text-stone-500 max-w-2xl mx-auto">
+              Real-time bounty programs, vulnerabilities, and cybercrime rewards. Start investigating today.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <LiveBountyFeed />
+            <div className="space-y-4">
+              <div className="p-6 bg-zinc-900/50 border border-amber-900/30 rounded-lg">
+                <h3 className="font-orbitron text-lg text-amber-300 mb-3">Investigation Workflow</h3>
+                <ol className="space-y-3 text-sm text-stone-400">
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-amber-900/50 text-amber-400 flex items-center justify-center text-xs shrink-0">1</span>
+                    <span>Select a bounty program or target from the live feed</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-amber-900/50 text-amber-400 flex items-center justify-center text-xs shrink-0">2</span>
+                    <span>Run reconnaissance with Atropos scanner</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-teal-900/50 text-teal-400 flex items-center justify-center text-xs shrink-0">3</span>
+                    <span>Analyze findings with NEXUS AI agents</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-teal-900/50 text-teal-400 flex items-center justify-center text-xs shrink-0">4</span>
+                    <span>Generate professional report and submit</span>
+                  </li>
+                </ol>
+                <Link href="/investigate">
+                  <Button className="w-full mt-6 bg-gradient-to-r from-amber-700 to-teal-700 hover:from-amber-600 hover:to-teal-600" data-testid="start-investigation-btn">
+                    Start Investigation
+                  </Button>
+                </Link>
+              </div>
+              <div className="p-4 bg-zinc-900/30 border border-stone-800 rounded-lg text-xs text-stone-500">
+                <strong className="text-amber-400">Legal Notice:</strong> Only investigate targets where you have explicit permission. 
+                Bug bounty programs define scope and rules of engagement.
+              </div>
             </div>
           </div>
         </div>
