@@ -124,12 +124,12 @@ interface Props {
 }
 
 export default function CampaignDesigner({ open, onOpenChange, sessionToken }: Props) {
-  const learningProfile = useLearningStore(state => ({
-    goals: state.goals,
-    skillLevel: state.skillLevel,
-    style: state.style,
-    preferredPace: state.preferredPace
-  }));
+  // Use individual selectors to avoid infinite re-render loops
+  const goals = useLearningStore(state => state.goals);
+  const skillLevel = useLearningStore(state => state.skillLevel);
+  const style = useLearningStore(state => state.style);
+  const preferredPace = useLearningStore(state => state.preferredPace);
+  const learningProfile = useMemo(() => ({ goals, skillLevel, style, preferredPace }), [goals, skillLevel, style, preferredPace]);
   const [mode, setMode] = useState<'tree' | 'graph'>('tree');
   const [campaign, setCampaign] = useState<Campaign>({
     id: `campaign-${Date.now()}`,

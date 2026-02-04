@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGame } from '@/hooks/useGameSession';
@@ -12,6 +12,7 @@ import {
   type MissionBriefing,
   type LearningStyle
 } from '@/config/spyMissions';
+import { TERMINAL_MESSAGES } from '@/config/messages';
 
 interface TerminalLine {
   type: 'input' | 'output' | 'error' | 'system' | 'clue' | 'ascii' | 'success' | 'warning';
@@ -138,6 +139,34 @@ export const CustomTerminal = () => {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [history]);
+
+  // Ambient narrative messages - Ghost in the Machine effect
+  useEffect(() => {
+    if (!TERMINAL_MESSAGES.ambient?.enabled) return;
+    
+    const showAmbientMessage = () => {
+      const messages = TERMINAL_MESSAGES.ambient.messages;
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      setHistory(h => [...h, { type: 'system', content: randomMessage }]);
+    };
+    
+    // Show first message after 30-60 seconds
+    const initialDelay = 30000 + Math.random() * 30000;
+    const initialTimer = setTimeout(() => {
+      showAmbientMessage();
+      
+      // Then show messages every 45-90 seconds
+      const interval = setInterval(() => {
+        if (Math.random() > 0.4) { // 60% chance to show message
+          showAmbientMessage();
+        }
+      }, 45000 + Math.random() * 45000);
+      
+      return () => clearInterval(interval);
+    }, initialDelay);
+    
+    return () => clearTimeout(initialTimer);
+  }, []);
 
   const addLines = (lines: TerminalLine[]) => {
     setHistory(h => [...h, ...lines]);
@@ -823,21 +852,23 @@ export const CustomTerminal = () => {
         newHistory.push({ type: 'system', content: '║           INCOMING TRANSMISSION FROM HOME BASE                  ║' });
         newHistory.push({ type: 'system', content: '╠══════════════════════════════════════════════════════════════════╣' });
         newHistory.push({ type: 'output', content: '║  AVAILABLE ASSIGNMENTS:                                         ║' });
+        newHistory.push({ type: 'output', content: '║                                                                  ║' });
         SPY_MISSIONS.forEach((m, i) => {
           const phase = MISSION_PHASES[m.phase];
           const missionComplete = gameState.inventory.some(c => c.id === `mission-${m.id}-complete`);
-          const status = missionComplete ? '✓ COMPLETE' : 
-                        activeMission?.id === m.id ? '→ ACTIVE' : '  PENDING';
-          newHistory.push({ type: 'output', content: `║  ${i + 1}. [${m.classification}] ${m.codename.padEnd(20)} ${status.padEnd(12)}║` });
-          newHistory.push({ type: 'output', content: `║     Phase: ${phase.name.padEnd(20)} Difficulty: ${m.difficulty.padEnd(12)}║` });
+          const status = missionComplete ? '✓' : activeMission?.id === m.id ? '→' : '○';
+          newHistory.push({ type: 'output', content: `║  ${status} [${i + 1}] ${m.codename}` });
+          newHistory.push({ type: 'clue', content: `║      ID: ${m.id}  |  ${m.classification}  |  ${m.difficulty}` });
         });
+        newHistory.push({ type: 'output', content: '║                                                                  ║' });
         newHistory.push({ type: 'system', content: '╠══════════════════════════════════════════════════════════════════╣' });
-        newHistory.push({ type: 'output', content: '║  COMMANDS:                                                       ║' });
-        newHistory.push({ type: 'output', content: '║    mission <id>     - Accept and view mission briefing          ║' });
-        newHistory.push({ type: 'output', content: '║    mission status   - View current mission objectives           ║' });
-        newHistory.push({ type: 'output', content: '║    mission abort    - Abort current mission                     ║' });
-        newHistory.push({ type: 'output', content: '║    style <type>     - Set learning style (visual/reading/       ║' });
-        newHistory.push({ type: 'output', content: '║                       kinesthetic/auditory)                     ║' });
+        newHistory.push({ type: 'output', content: '║  TO START A MISSION:                                            ║' });
+        newHistory.push({ type: 'success', content: '║    mission 1         - Start mission by number                  ║' });
+        newHistory.push({ type: 'success', content: '║    mission ghost     - Start mission by ID                      ║' });
+        newHistory.push({ type: 'output', content: '║                                                                  ║' });
+        newHistory.push({ type: 'output', content: '║  OTHER COMMANDS:                                                 ║' });
+        newHistory.push({ type: 'output', content: '║    mission status    - View current objectives                  ║' });
+        newHistory.push({ type: 'output', content: '║    mission abort     - Abort current mission                    ║' });
         newHistory.push({ type: 'system', content: '╚══════════════════════════════════════════════════════════════════╝' });
         break;
 
@@ -875,11 +906,18 @@ export const CustomTerminal = () => {
             setActiveMission(null);
           }
         } else {
-          const missionId = missionArg.toLowerCase().replace(/\s+/g, '-');
-          const mission = getMissionById(missionId) || SPY_MISSIONS.find(m => 
-            m.codename.toLowerCase().includes(missionArg.toLowerCase()) ||
-            m.id.includes(missionArg)
-          );
+          // Support selection by number (mission 1, mission 2, etc)
+          const missionNumber = parseInt(missionArg);
+          let mission;
+          if (!isNaN(missionNumber) && missionNumber >= 1 && missionNumber <= SPY_MISSIONS.length) {
+            mission = SPY_MISSIONS[missionNumber - 1];
+          } else {
+            const missionId = missionArg.toLowerCase().replace(/\s+/g, '-');
+            mission = getMissionById(missionId) || SPY_MISSIONS.find(m => 
+              m.codename.toLowerCase().includes(missionArg.toLowerCase()) ||
+              m.id.includes(missionArg.toLowerCase())
+            );
+          }
           if (mission) {
             setActiveMission(mission);
             const handler = getHandlerInfo(mission.handler);
