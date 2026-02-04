@@ -36,6 +36,8 @@ Preferred communication style: Simple, everyday language.
 - **Dynamic Content**: Centralized message and campaign configuration for terminal messages, toasts, and overlays. Campaigns switch themes and narratives.
 - **Security Design (Intentionally Vulnerable)**: Designed as an "escape room" CTF; allows enumeration and simulated hacking, preventing real attacks with input sanitization, rate limiting, CSP, and session validation.
 - **NEXUS Agent System**: AI assistant for security investigation analysis and guidance, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns. Admin configurable system prompt. Works with Atropos Scanner results.
+- **Multi-Agent Orchestration**: 6 specialized security agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis) with category-based routing. Supports parallel analysis, W&B experiment tracking, and CrewAI/LangChain export. API: `/api/agents/*`.
+- **Mobile Floating Menu**: Consolidated mobile navigation (MobileFloatingMenu.tsx) with proper ARIA accessibility, touch-friendly 48px targets, and keyboard escape handling.
 - **Admin Dashboard**: Content management for game elements, player sessions, and a UX Playground for visual effect tweaking.
 - **Campaign Designer**: Twine-inspired visual flow editor with wikilinks, backlinks, breadcrumb trail, and multiple view modes. Nodes support feature type, campaign type, skills, linked clues, and branch conditions. Includes quick-start templates.
 - **Global Attack Map**: Animated real-time threat visualization on the homepage.
