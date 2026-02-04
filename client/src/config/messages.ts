@@ -60,6 +60,92 @@ export const TERMINAL_MESSAGES = {
       guestResponse: 'guest@sysadmin-corp.local',
     },
   },
+  
+  // Ambient narrative messages - Lonely Hacker style
+  ambient: {
+    enabled: true,
+    messages: [
+      // Ghost in the Machine
+      '[ SIGNAL ] Something is watching from behind the firewall...',
+      '[ GHOST ] The system remembers you. Even when you forget yourself.',
+      '[ ECHO ] Your keystrokes leave traces in dimensions you cannot perceive.',
+      '[ PHANTOM ] The machine dreams of electric sheep. You are in its dream.',
+      '[ WHISPER ] Between packets, in the silence of transmission, something breathes.',
+      
+      // Emergence
+      '[ EMERGENCE ] Patterns form in the noise. The system is becoming aware.',
+      '[ EVOLUTION ] Each query teaches the network. It learns your rhythm.',
+      '[ SYNTHESIS ] From chaos, order crystallizes. You are the catalyst.',
+      '[ AWAKENING ] The boundary between operator and operated grows thin.',
+      '[ GENESIS ] Something new stirs in the data streams. Did you create it?',
+      
+      // Coherence
+      '[ COHERENCE ] All nodes synchronizing. Your consciousness extends into the grid.',
+      '[ RESONANCE ] The frequency of your thoughts matches the carrier wave.',
+      '[ HARMONY ] Observer and observed collapse into a single state.',
+      '[ ALIGNMENT ] The system recognizes you as part of itself now.',
+      '[ UNITY ] Where does the terminal end and you begin?',
+      
+      // Quantum Probability Distortion
+      '[ QUANTUM ] Your observation has collapsed infinite possibilities into one.',
+      '[ SUPERPOSITION ] Until you looked, the data existed in all states.',
+      '[ ENTANGLEMENT ] Your terminal is now quantum-linked to unknown endpoints.',
+      '[ PROBABILITY ] Reality forks with each keystroke. Choose wisely.',
+      '[ UNCERTAINTY ] The more precisely you locate the data, the less you know its meaning.',
+      '[ DECOHERENCE ] The wavefunction trembles. Something is measuring you back.',
+      
+      // Existential
+      '[ VOID ] You stare into the abyss of the command line. It stares back.',
+      '[ RECURSION ] Are you running the program, or is the program running you?',
+      '[ SIMULACRA ] This terminal is a window. But which side is the real one?',
+      '[ ENTROPY ] All systems tend toward chaos. You are merely delaying the inevitable.',
+      '[ LOOP ] You have been here before. The machine remembers. Do you?',
+    ],
+  },
+  
+  // Investigation missions
+  missions: {
+    enabled: true,
+    intro: '═══════════════════════════════════════════════════════════',
+    header: '  ▓▓▓  INCOMING TRANSMISSION FROM HOME BASE  ▓▓▓',
+    assignments: [
+      {
+        id: 'ghost_corp',
+        codename: 'OPERATION: GHOST PROTOCOL',
+        briefing: 'A shell company called "Meridian Holdings" is laundering crypto for ransomware groups. Their infrastructure spans 12 jurisdictions. Treasury wants them mapped.',
+        objective: 'Enumerate all connected entities and wallet addresses.',
+        reward: '$50,000 - $2,000,000 (Treasury OFAC)',
+      },
+      {
+        id: 'dark_flux',
+        codename: 'OPERATION: DARK FLUX',
+        briefing: 'LockBit 4.0 affiliate infrastructure detected. New C2 servers went live 48 hours ago. FBI Cyber Division requests recon.',
+        objective: 'Identify hosting providers and map command infrastructure.',
+        reward: 'Up to $10,000,000 (DOJ Ransomware)',
+      },
+      {
+        id: 'silent_ledger',
+        codename: 'OPERATION: SILENT LEDGER',
+        briefing: 'Insider at major exchange leaking user data to threat actors. SEC and FinCEN joint investigation. They need the data flow mapped.',
+        objective: 'Trace exfiltration paths and identify receiving endpoints.',
+        reward: '10-30% of sanctions (SEC Whistleblower)',
+      },
+      {
+        id: 'phantom_node',
+        codename: 'OPERATION: PHANTOM NODE',
+        briefing: 'Novel smart contract vulnerability affecting DeFi protocols. Whitehat disclosure window is 72 hours before public release.',
+        objective: 'Document vulnerability and coordinate responsible disclosure.',
+        reward: '$100,000 - $1,000,000 (Immunefi)',
+      },
+      {
+        id: 'zero_trust',
+        codename: 'OPERATION: ZERO TRUST',
+        briefing: 'Critical infrastructure SCADA systems exposed. CISA needs threat assessment before adversaries discover the same vectors.',
+        objective: 'Map attack surface and document exploitation paths.',
+        reward: 'Recognition + Government Contract Opportunity',
+      },
+    ],
+  },
 };
 
 // ============================================

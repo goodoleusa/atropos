@@ -52,6 +52,8 @@ import { ApiPlayground } from "@/components/ApiPlayground";
 import CampaignDesigner from "@/components/CampaignDesigner";
 import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
 import { QuestsSection } from "@/pages/admin/QuestsSection";
+import { useEffectsStore, EFFECT_PRESETS } from "@/stores/useEffectsStore";
+import { EFFECT_SUGGESTIONS } from "@/components/GlobalEffects";
 
 interface Clue {
   id: string;
@@ -73,6 +75,18 @@ interface Quest {
 
 export default function AdminDashboard() {
   const { gameState, toggleDevMode } = useGame();
+  
+  // Use individual selectors to avoid re-render loops
+  const background = useEffectsStore((s) => s.background);
+  const mouse = useEffectsStore((s) => s.mouse);
+  const glitch = useEffectsStore((s) => s.glitch);
+  const ambient = useEffectsStore((s) => s.ambient);
+  const setBackground = useEffectsStore((s) => s.setBackground);
+  const setMouse = useEffectsStore((s) => s.setMouse);
+  const setGlitch = useEffectsStore((s) => s.setGlitch);
+  const setAmbient = useEffectsStore((s) => s.setAmbient);
+  const resetToDefaults = useEffectsStore((s) => s.resetToDefaults);
+  
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
   const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
@@ -80,6 +94,19 @@ export default function AdminDashboard() {
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
   const [clueTrail, setClueTrail] = useState<string[]>([]);
   const [showGraphView, setShowGraphView] = useState(false);
+
+  const applyPreset = (presetKey: keyof typeof EFFECT_PRESETS) => {
+    const preset = EFFECT_PRESETS[presetKey];
+    Object.entries(preset.settings.background).forEach(([key, value]) => {
+      setBackground(key as any, value);
+    });
+    Object.entries(preset.settings.mouse).forEach(([key, value]) => {
+      setMouse(key as any, value);
+    });
+    Object.entries(preset.settings.glitch).forEach(([key, value]) => {
+      setGlitch(key as any, value);
+    });
+  };
 
   const toggleNode = (id: string) => {
     setExpandedNodes(prev => ({ ...prev, [id]: !prev[id] }));
@@ -532,6 +559,42 @@ export default function AdminDashboard() {
                 <Settings className="w-5 h-5" /> UX Playground - Visual Effects
               </h3>
 
+              {/* Quick Presets */}
+              <Card className="bg-gradient-to-r from-amber-900/20 to-teal-900/20 border-amber-700/30">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-amber-400 font-mono text-sm">Quick Presets</CardTitle>
+                  <CardDescription className="text-stone-500 text-xs">One-click theme configurations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(EFFECT_PRESETS).map(([key, preset]) => (
+                      <Button 
+                        key={key}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => applyPreset(key as keyof typeof EFFECT_PRESETS)}
+                        className="border-amber-700/50 hover:bg-amber-900/30 text-xs"
+                        data-testid={`preset-${key}`}
+                      >
+                        {preset.name}
+                      </Button>
+                    ))}
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      onClick={() => resetToDefaults()}
+                      className="border-red-700/50 hover:bg-red-900/30 text-red-400 text-xs"
+                      data-testid="preset-reset"
+                    >
+                      Reset
+                    </Button>
+                  </div>
+                  <p className="text-stone-600 text-xs mt-2">
+                    Presets: Minimal (clean) • Cyberpunk (neon) • Glitchcore (chaos) • Retro CRT • Matrix
+                  </p>
+                </CardContent>
+              </Card>
+
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Background Effects */}
                 <Card className="bg-[#0a0500] border-amber-900/30">
@@ -541,19 +604,31 @@ export default function AdminDashboard() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Gradient Overlay</Label>
-                      <Switch defaultChecked data-testid="gradient-toggle" />
+                      <Switch checked={background.gradientOverlay} onCheckedChange={(v) => setBackground('gradientOverlay', v)} data-testid="gradient-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Scanlines</Label>
-                      <Switch defaultChecked data-testid="scanlines-toggle" />
+                      <Switch checked={background.scanlines} onCheckedChange={(v) => setBackground('scanlines', v)} data-testid="scanlines-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Noise Texture</Label>
-                      <Switch data-testid="noise-toggle" />
+                      <Switch checked={background.noiseTexture} onCheckedChange={(v) => setBackground('noiseTexture', v)} data-testid="noise-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Vignette</Label>
-                      <Switch defaultChecked data-testid="vignette-toggle" />
+                      <Switch checked={background.vignette} onCheckedChange={(v) => setBackground('vignette', v)} data-testid="vignette-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">CRT Curvature</Label>
+                      <Switch checked={background.crtCurvature} onCheckedChange={(v) => setBackground('crtCurvature', v)} data-testid="crt-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Matrix Rain</Label>
+                      <Switch checked={background.matrixRain} onCheckedChange={(v) => setBackground('matrixRain', v)} data-testid="matrix-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Grid Pulse</Label>
+                      <Switch checked={background.gridPulse} onCheckedChange={(v) => setBackground('gridPulse', v)} data-testid="grid-toggle" />
                     </div>
                   </CardContent>
                 </Card>
@@ -566,19 +641,23 @@ export default function AdminDashboard() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Lens Distortion</Label>
-                      <Switch defaultChecked data-testid="lens-toggle" />
+                      <Switch checked={mouse.lensDistortion} onCheckedChange={(v) => setMouse('lensDistortion', v)} data-testid="lens-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Glow Follow</Label>
-                      <Switch data-testid="glow-follow-toggle" />
+                      <Switch checked={mouse.glowFollow} onCheckedChange={(v) => setMouse('glowFollow', v)} data-testid="glow-follow-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Cursor Trail</Label>
-                      <Switch data-testid="cursor-trail-toggle" />
+                      <Switch checked={mouse.cursorTrail} onCheckedChange={(v) => setMouse('cursorTrail', v)} data-testid="cursor-trail-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Magnetic Buttons</Label>
-                      <Switch data-testid="magnetic-toggle" />
+                      <Switch checked={mouse.magneticButtons} onCheckedChange={(v) => setMouse('magneticButtons', v)} data-testid="magnetic-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Click Ripple</Label>
+                      <Switch checked={mouse.rippleClick} onCheckedChange={(v) => setMouse('rippleClick', v)} data-testid="ripple-toggle" />
                     </div>
                   </CardContent>
                 </Card>
@@ -591,19 +670,81 @@ export default function AdminDashboard() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Text Glitch</Label>
-                      <Switch defaultChecked data-testid="text-glitch-toggle" />
+                      <Switch checked={glitch.textGlitch} onCheckedChange={(v) => setGlitch('textGlitch', v)} data-testid="text-glitch-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">RGB Split</Label>
-                      <Switch data-testid="rgb-split-toggle" />
+                      <Switch checked={glitch.rgbSplit} onCheckedChange={(v) => setGlitch('rgbSplit', v)} data-testid="rgb-split-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Screen Shake</Label>
-                      <Switch data-testid="shake-toggle" />
+                      <Switch checked={glitch.screenShake} onCheckedChange={(v) => setGlitch('screenShake', v)} data-testid="shake-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Flicker</Label>
-                      <Switch data-testid="flicker-toggle" />
+                      <Switch checked={glitch.flicker} onCheckedChange={(v) => setGlitch('flicker', v)} data-testid="flicker-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Corrupted Pixels</Label>
+                      <Switch checked={glitch.corruptedPixels} onCheckedChange={(v) => setGlitch('corruptedPixels', v)} data-testid="corrupted-toggle" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Data Mosh</Label>
+                      <Switch checked={glitch.dataMosh} onCheckedChange={(v) => setGlitch('dataMosh', v)} data-testid="datamosh-toggle" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Ambient Atmospherics */}
+                <Card className="bg-[#0a0500] border-cyan-900/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-cyan-400 font-mono text-sm">Ambient Atmospherics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-stone-400 text-xs">Terminal Narrative</Label>
+                      <Switch checked={ambient.terminalMessages} onCheckedChange={(v) => setAmbient('terminalMessages', v)} data-testid="narrative-toggle" />
+                    </div>
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Message Interval (sec)</Label>
+                      <Input 
+                        type="number" 
+                        value={ambient.messageInterval} 
+                        onChange={(e) => setAmbient('messageInterval', parseInt(e.target.value) || 45)}
+                        className="bg-black/50 border-cyan-900/30 text-cyan-400 w-20" 
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-stone-400 text-xs block mb-2">Chaos Flash Chance (%)</Label>
+                      <Input 
+                        type="number" 
+                        value={ambient.chaosFlashChance}
+                        onChange={(e) => setAmbient('chaosFlashChance', parseInt(e.target.value) || 3)}
+                        min="0" max="100" 
+                        className="bg-black/50 border-cyan-900/30 text-cyan-400 w-20" 
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Zone Suggestions */}
+                <Card className="bg-[#0a0500] border-stone-700/30 lg:col-span-2">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-stone-400 font-mono text-sm">Recommended Effects by Zone</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                      {Object.entries(EFFECT_SUGGESTIONS).map(([zone, config]) => (
+                        <div key={zone} className="p-2 bg-stone-900/50 rounded border border-stone-800">
+                          <p className="text-amber-400 font-bold capitalize">{zone}</p>
+                          <p className="text-stone-500 text-[10px] mb-1">{config.description}</p>
+                          <div className="flex flex-wrap gap-1">
+                            {config.recommended.slice(0, 4).map(effect => (
+                              <Badge key={effect} variant="outline" className="text-[9px] border-stone-700">{effect}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
