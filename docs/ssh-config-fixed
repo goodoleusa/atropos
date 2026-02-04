@@ -1,0 +1,23 @@
+# -------------------------------------------------
+# Global: Use YubiKey for all SSH connections
+# -------------------------------------------------
+Host *
+    PKCS11Provider "C:\Program Files\OpenSC Project\OpenSC\pkcs11\opensc-pkcs11.dll"
+    IdentitiesOnly yes
+    AddKeysToAgent yes
+    LogLevel INFO
+
+# -------------------------------------------------
+# GitHub
+# -------------------------------------------------
+Host github.com
+    HostName github.com
+    User git
+
+# -------------------------------------------------
+# Replit (update with your actual repl details)
+# -------------------------------------------------
+Host replit-nexus
+    HostName <your-repl-id>.replit.dev
+    User <your-username>
+    Port <port-from-replit-ssh-pane>

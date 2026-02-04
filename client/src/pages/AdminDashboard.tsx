@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Key, 
   Trophy, 
   Terminal, 
   Plus, 
@@ -52,6 +50,8 @@ import { ClueGraph } from "@/components/ClueGraph";
 import { ClueBreadcrumbs } from "@/components/ClueBreadcrumbs";
 import { ApiPlayground } from "@/components/ApiPlayground";
 import CampaignDesigner from "@/components/CampaignDesigner";
+import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
+import { QuestsSection } from "@/pages/admin/QuestsSection";
 
 interface Clue {
   id: string;
@@ -72,16 +72,9 @@ interface Quest {
 }
 
 export default function AdminDashboard() {
-  const queryClient = useQueryClient();
   const { gameState, toggleDevMode } = useGame();
-  const [newClue, setNewClue] = useState<Partial<Clue>>({});
-  const [newQuest, setNewQuest] = useState<Partial<Quest>>({});
-  const [clueDialogOpen, setClueDialogOpen] = useState(false);
-  const [questDialogOpen, setQuestDialogOpen] = useState(false);
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
   const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
-  const [editingClue, setEditingClue] = useState<Clue | null>(null);
-  const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({ 'root': true });
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
@@ -140,7 +133,6 @@ export default function AdminDashboard() {
   
   // Local state for live config editing (these would sync to server/localStorage)
   const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
-  const [mysticalEnabled, setMysticalEnabled] = useState(MYSTICAL_CARDS.enabled);
   const [subliminalMessages, setSubliminalMessages] = useState(CHAOS_MESSAGES.subliminal);
   const [newSubliminal, setNewSubliminal] = useState('');
 
@@ -152,154 +144,6 @@ export default function AdminDashboard() {
   const { data: quests = [] } = useQuery<Quest[]>({
     queryKey: ['/api/quests'],
     queryFn: () => fetch('/api/quests').then(r => r.json())
-  });
-
-  const createClueMutation = useMutation({
-    mutationFn: (clue: Partial<Clue>) => 
-      fetch('/api/clues', { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify({ ...clue, content: clue.content || '' })
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to create clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-      setClueDialogOpen(false);
-      setNewClue({});
-    },
-    onError: (error: Error) => {
-      console.error('Clue creation failed:', error);
-      alert(`Error: ${error.message}`);
-    }
-  });
-
-  const createQuestMutation = useMutation({
-    mutationFn: (quest: Partial<Quest>) => 
-      fetch('/api/quests', { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(quest)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to create quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-      setQuestDialogOpen(false);
-      setNewQuest({});
-    },
-    onError: (error: Error) => {
-      console.error('Quest creation failed:', error);
-      alert(`Error: ${error.message}`);
-    }
-  });
-
-  const updateClueMutation = useMutation({
-    mutationFn: (clue: Clue) => 
-      fetch(`/api/clues/${clue.id}`, { 
-        method: 'PATCH', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(clue)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to update clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-      setEditingClue(null);
-    },
-    onError: (error: Error) => {
-      alert(`Update failed: ${error.message}`);
-    }
-  });
-
-  const deleteClueMutation = useMutation({
-    mutationFn: (id: string) => 
-      fetch(`/api/clues/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        }
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to delete clue');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clues'] });
-    },
-    onError: (error: Error) => {
-      alert(`Delete failed: ${error.message}`);
-    }
-  });
-
-  const updateQuestMutation = useMutation({
-    mutationFn: (quest: Quest) => 
-      fetch(`/api/quests/${quest.id}`, { 
-        method: 'PATCH', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        },
-        body: JSON.stringify(quest)
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to update quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-      setEditingQuest(null);
-    },
-    onError: (error: Error) => {
-      alert(`Update failed: ${error.message}`);
-    }
-  });
-
-  const deleteQuestMutation = useMutation({
-    mutationFn: (id: string) => 
-      fetch(`/api/quests/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
-        }
-      }).then(async r => {
-        if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Failed to delete quest');
-        }
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quests'] });
-    },
-    onError: (error: Error) => {
-      alert(`Delete failed: ${error.message}`);
-    }
   });
 
   const addSubliminalMessage = () => {
@@ -391,7 +235,7 @@ export default function AdminDashboard() {
                 onClick={() => setCampaignDesignerOpen(true)}
                 data-testid="campaign-designer-button"
               >
-                <Layers className="w-3 h-3 mr-1" /> Campaign Designer
+                <Layers className="w-3 h-3 mr-1" /> Game Campaign Builder
               </Button>
               <Link href="/debug">
                 <Button size="sm" variant="outline" className="h-7 text-xs border-red-800 text-red-400 hover:bg-red-950/50">
@@ -517,19 +361,16 @@ export default function AdminDashboard() {
         </section>
 
         {/* Content Management Tabs */}
-        <Tabs defaultValue="clues" className="space-y-6">
+        <Tabs defaultValue="collectibles" className="space-y-6">
           <TabsList className="bg-[#0a0500] border border-amber-900/30 flex-wrap h-auto gap-1 p-1">
-            <TabsTrigger value="clues" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
-              <Key className="w-4 h-4 mr-2" /> Clues ({clues.length})
-            </TabsTrigger>
             <TabsTrigger value="quests" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Trophy className="w-4 h-4 mr-2" /> Quests ({quests.length})
             </TabsTrigger>
             <TabsTrigger value="messages" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
               <MessageSquare className="w-4 h-4 mr-2" /> Messages
             </TabsTrigger>
-            <TabsTrigger value="mystical" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-500">
-              <Sparkles className="w-4 h-4 mr-2" /> Mystical
+            <TabsTrigger value="collectibles" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
+              <Database className="w-4 h-4 mr-2" /> Collectibles
             </TabsTrigger>
             <TabsTrigger value="terminal" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
               <Terminal className="w-4 h-4 mr-2" /> Commands
@@ -538,7 +379,7 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4 mr-2" /> Config
             </TabsTrigger>
             <TabsTrigger value="campaigns" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500">
-              <Rocket className="w-4 h-4 mr-2" /> Campaigns
+              <Rocket className="w-4 h-4 mr-2" /> Agent Modules
             </TabsTrigger>
             <TabsTrigger value="graph" className="data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-500">
               <Map className="w-4 h-4 mr-2" /> Knowledge Graph
@@ -552,195 +393,16 @@ export default function AdminDashboard() {
             <TabsTrigger value="agent" className="data-[state=active]:bg-cyan-900/30 data-[state=active]:text-cyan-500" data-testid="agent-tab">
               <Bot className="w-4 h-4 mr-2" /> Agent
             </TabsTrigger>
-            <TabsTrigger value="admin-tasks" className="data-[state=active]:bg-orange-900/30 data-[state=active]:text-orange-500" data-testid="admin-tasks-tab">
-              <FileText className="w-4 h-4 mr-2" /> Admin Tasks
-            </TabsTrigger>
           </TabsList>
 
-          {/* Clues Tab */}
-          <TabsContent value="clues">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-orbitron text-amber-600">Collectable Clues</h3>
-              <Dialog open={clueDialogOpen} onOpenChange={setClueDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-amber-700 hover:bg-amber-600 text-black">
-                    <Plus className="w-4 h-4 mr-2" /> Add Clue
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-                  <DialogHeader>
-                    <DialogTitle className="text-amber-600 font-orbitron">Create New Clue</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <Input 
-                      placeholder="Clue ID (e.g., clue-03)" 
-                      value={newClue.id || ''}
-                      onChange={e => setNewClue({...newClue, id: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Name" 
-                      value={newClue.name || ''}
-                      onChange={e => setNewClue({...newClue, name: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Textarea 
-                      placeholder="Description" 
-                      value={newClue.description || ''}
-                      onChange={e => setNewClue({...newClue, description: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Content (the secret)" 
-                      value={newClue.content || ''}
-                      onChange={e => setNewClue({...newClue, content: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Input 
-                      placeholder="Location (e.g., /terminal, home-page)" 
-                      value={newClue.location || ''}
-                      onChange={e => setNewClue({...newClue, location: e.target.value})}
-                      className="bg-black/50 border-amber-900/30 text-amber-500"
-                    />
-                    <Button 
-                      onClick={() => createClueMutation.mutate(newClue)}
-                      className="w-full bg-amber-700 hover:bg-amber-600 text-black"
-                    >
-                      Create Clue
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {clues.map(clue => (
-                <Card key={clue.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-                      <Key className="w-4 h-4" /> {clue.name}
-                    </CardTitle>
-                    <CardDescription className="text-stone-600 text-xs">{clue.id}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs">
-                    <p className="text-stone-400 mb-2">{clue.description}</p>
-                    <p className="text-amber-700 font-bold">Location: {clue.location}</p>
-                  </CardContent>
-                </Card>
-              ))}
-              {clues.length === 0 && (
-                <p className="text-stone-600 col-span-3 text-center py-8">No clues in database. Add some to get started!</p>
-              )}
-            </div>
+          {/* Collectibles Tab */}
+          <TabsContent value="collectibles">
+            <CollectiblesSection />
           </TabsContent>
 
           {/* Quests Tab */}
           <TabsContent value="quests">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-orbitron text-amber-600">Quest Chains</h3>
-              <Dialog open={questDialogOpen} onOpenChange={setQuestDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-amber-700 hover:bg-amber-600 text-black">
-                    <Plus className="w-4 h-4 mr-2" /> Add Quest
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-                  <DialogHeader>
-                    <DialogTitle className="text-amber-600 font-orbitron">Create New Quest</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Quest ID</Label>
-                      <Input 
-                        placeholder="e.g., quest-01" 
-                        value={newQuest.id || ''}
-                        onChange={e => setNewQuest({...newQuest, id: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Quest Name</Label>
-                      <Input 
-                        placeholder="Quest Name" 
-                        value={newQuest.name || ''}
-                        onChange={e => setNewQuest({...newQuest, name: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Description</Label>
-                      <Textarea 
-                        placeholder="Detailed quest description" 
-                        value={newQuest.description || ''}
-                        onChange={e => setNewQuest({...newQuest, description: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Required Clues (IDs, comma-separated)</Label>
-                      <Input 
-                        placeholder="clue-01, clue-02" 
-                        value={newQuest.requiredClues?.join(', ') || ''}
-                        onChange={e => setNewQuest({...newQuest, requiredClues: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Reward (Optional)</Label>
-                      <Input 
-                        placeholder="e.g., Access to Archive" 
-                        value={newQuest.reward || ''}
-                        onChange={e => setNewQuest({...newQuest, reward: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-amber-600 text-xs">Unlocks (Optional)</Label>
-                      <Input 
-                        placeholder="e.g., /archive" 
-                        value={newQuest.unlocks || ''}
-                        onChange={e => setNewQuest({...newQuest, unlocks: e.target.value})}
-                        className="bg-black/50 border-amber-900/30 text-amber-500"
-                      />
-                    </div>
-                    <Button 
-                      onClick={() => {
-                        console.log("Submitting quest:", newQuest);
-                        createQuestMutation.mutate(newQuest);
-                      }}
-                      disabled={createQuestMutation.isPending || !newQuest.id || !newQuest.name}
-                      className="w-full bg-amber-700 hover:bg-amber-600 text-black font-bold"
-                    >
-                      {createQuestMutation.isPending ? 'Processing...' : 'Create Quest'}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {quests.map(quest => (
-                <Card key={quest.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-                      <Trophy className="w-4 h-4" /> {quest.name}
-                    </CardTitle>
-                    <CardDescription className="text-stone-600 text-xs">{quest.id}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs">
-                    <p className="text-stone-400 mb-2">{quest.description}</p>
-                    <p className="text-amber-700">Requires: {quest.requiredClues?.join(', ') || 'None'}</p>
-                    {quest.unlocks && <p className="text-amber-600 mt-1">Unlocks: {quest.unlocks}</p>}
-                  </CardContent>
-                </Card>
-              ))}
-              {quests.length === 0 && (
-                <p className="text-stone-600 col-span-2 text-center py-8">No quests defined. Create quest chains to guide players!</p>
-              )}
-            </div>
+            <QuestsSection quests={quests} />
           </TabsContent>
 
           <TabsContent value="messages">
@@ -773,15 +435,15 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Direct Quantum Controls */}
+                {/* Chaos Overlay Controls */}
                 <div className="space-y-4">
                   <Card className="bg-[#0a0500] border-teal-900/30">
                     <CardHeader>
                       <CardTitle className="text-teal-400 font-mono text-sm flex items-center gap-2">
-                        <Zap className="w-4 h-4" /> Quantum Probability Text
+                        <Zap className="w-4 h-4" /> Chaos Overlay Strings
                       </CardTitle>
                       <CardDescription className="text-stone-500 text-[10px]">
-                        Manage strings used in the quantum fluctuation simulations
+                        Manage strings used in the chaos/glitch overlay
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -799,7 +461,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="mt-4 flex gap-2">
                           <Input 
-                            placeholder="New quantum string..." 
+                            placeholder="New chaos string..." 
                             className="bg-black/50 border-teal-900/30 text-teal-400 text-xs h-8" 
                           />
                           <Button size="sm" className="bg-teal-600 hover:bg-teal-500 text-black h-8">
@@ -830,68 +492,6 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Mystical Cards Tab */}
-          <TabsContent value="mystical">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-orbitron text-purple-400">Mystical Card System</h3>
-                <div className="flex items-center gap-4">
-                  <Label htmlFor="mystical-enabled" className="text-stone-400">Enable Mystical Popups</Label>
-                  <Switch 
-                    id="mystical-enabled" 
-                    checked={mysticalEnabled} 
-                    onCheckedChange={setMysticalEnabled}
-                    data-testid="mystical-toggle"
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Tarot Cards */}
-                <Card className="bg-[#0a0500] border-amber-900/30">
-                  <CardHeader>
-                    <CardTitle className="text-amber-500 font-mono">Tarot Cards ({MYSTICAL_CARDS.tarot.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
-                    {MYSTICAL_CARDS.tarot.map((card, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-amber-900/20">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{card.icon}</span>
-                          <div>
-                            <p className="text-amber-500 text-sm font-bold">{card.name}</p>
-                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{card.hint}</p>
-                          </div>
-                        </div>
-                        <Switch checked={card.enabled} className="scale-75" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* Zodiac Signs */}
-                <Card className="bg-[#0a0500] border-purple-900/30">
-                  <CardHeader>
-                    <CardTitle className="text-purple-400 font-mono">Zodiac Signs ({MYSTICAL_CARDS.zodiac.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 max-h-80 overflow-y-auto">
-                    {MYSTICAL_CARDS.zodiac.map((sign, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-black/50 rounded border border-purple-900/20">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl text-purple-400">{sign.symbol}</span>
-                          <div>
-                            <p className="text-purple-400 text-sm font-bold">{sign.name}</p>
-                            <p className="text-stone-600 text-xs truncate max-w-[200px]">{sign.hint}</p>
-                          </div>
-                        </div>
-                        <Switch checked={sign.enabled} className="scale-75" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </TabsContent>
@@ -1091,15 +691,15 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
-          {/* Campaigns Tab */}
+          {/* Agent Modules Tab */}
           <TabsContent value="campaigns">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-orbitron text-teal-400 flex items-center gap-2">
-                  <Rocket className="w-5 h-5" /> Investigation Campaigns
+                  <Rocket className="w-5 h-5" /> Agent Modules
                 </h3>
                 <Badge variant="outline" className="border-teal-600 text-teal-400">
-                  {AGENT_CAMPAIGNS.length} Campaigns
+                  {AGENT_CAMPAIGNS.length} Modules
                 </Badge>
               </div>
 
@@ -1496,10 +1096,6 @@ export default function AdminDashboard() {
 
           <TabsContent value="agent">
             <AgentConfigPanel />
-          </TabsContent>
-
-          <TabsContent value="admin-tasks">
-            <AdminTasksPanel />
           </TabsContent>
         </Tabs>
       </div>
@@ -2071,416 +1667,6 @@ Context: Escape room game with hidden routes, QR mechanics, clue collection`}
             {enabledModules.map(m => `[${m.toUpperCase()}] enabled`).join('\n')}
             {customInstructions ? `\n\n## CUSTOM INSTRUCTIONS\n${customInstructions}` : ''}
           </pre>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-interface AdminTask {
-  id: string;
-  title: string;
-  description: string;
-  category: 'legal' | 'security' | 'infrastructure' | 'content' | 'other';
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  status: 'pending' | 'in_progress' | 'completed' | 'blocked';
-  dueDate?: string;
-  notes?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-const DEFAULT_ADMIN_TASKS: AdminTask[] = [
-  {
-    id: 'openrouter-dpa',
-    title: 'Obtain OpenRouter Data Processing Agreement',
-    description: 'Request and sign DPA from OpenRouter for GDPR compliance. Contact: support@openrouter.ai',
-    category: 'legal',
-    priority: 'critical',
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-    notes: 'Required for GDPR compliance with AI processing. Without this, data transfers to OpenRouter may not be legally compliant for EU users.',
-  },
-  {
-    id: 'annual-lia-review',
-    title: 'Annual Legitimate Interest Assessment Review',
-    description: 'Review and update LIA document in docs/LEGITIMATE_INTEREST_ASSESSMENT.md',
-    category: 'legal',
-    priority: 'medium',
-    status: 'pending',
-    dueDate: '2026-02-04',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'annual-ropa-review',
-    title: 'Annual Records of Processing Review',
-    description: 'Review and update ROPA document in docs/RECORDS_OF_PROCESSING.md',
-    category: 'legal',
-    priority: 'medium',
-    status: 'pending',
-    dueDate: '2026-02-04',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'privacy-policy-publish',
-    title: 'Publish Privacy Policy Page',
-    description: 'Add frontend page displaying PRIVACY_POLICY.md content',
-    category: 'content',
-    priority: 'high',
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'consent-ui',
-    title: 'Build Consent Preferences UI',
-    description: 'Add settings panel for users to manage their consent preferences',
-    category: 'content',
-    priority: 'high',
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'dsar-ui',
-    title: 'Build DSAR Request Form',
-    description: 'Add UI for users to submit data access/erasure requests',
-    category: 'content',
-    priority: 'medium',
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'atropos-binary-fix',
-    title: 'Fix Atropos Binary Environment',
-    description: 'Update Nix shell to include Rust 1.80+ or pre-compile Atropos binary for the environment. Current cargo version 1.74 is too old for some dependencies.',
-    category: 'infrastructure',
-    priority: 'critical',
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-    notes: 'Required for OSINT scanning capabilities. Currently failing build due to rustc version mismatch in native-tls.',
-  },
-  {
-    id: 'atropos-scripts-review',
-    title: 'Audit Atropos Lua Scripts',
-    description: 'Review examples in tools/atropos/examples/ for safety and functionality.',
-    category: 'security',
-    priority: 'high',
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-  },
-];
-
-function AdminTasksPanel() {
-  const [tasks, setTasks] = useState<AdminTask[]>(() => {
-    const saved = localStorage.getItem('admin_tasks');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return DEFAULT_ADMIN_TASKS;
-  });
-  
-  const [newTask, setNewTask] = useState<Partial<AdminTask>>({
-    category: 'other',
-    priority: 'medium',
-    status: 'pending',
-  });
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<AdminTask | null>(null);
-
-  useEffect(() => {
-    localStorage.setItem('admin_tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  const addTask = () => {
-    if (!newTask.title) return;
-    const task: AdminTask = {
-      id: `task-${Date.now()}`,
-      title: newTask.title || '',
-      description: newTask.description || '',
-      category: newTask.category || 'other',
-      priority: newTask.priority || 'medium',
-      status: 'pending',
-      dueDate: newTask.dueDate,
-      notes: newTask.notes,
-      createdAt: new Date().toISOString(),
-    };
-    setTasks([...tasks, task]);
-    setNewTask({ category: 'other', priority: 'medium', status: 'pending' });
-    setDialogOpen(false);
-  };
-
-  const updateTaskStatus = (id: string, status: AdminTask['status']) => {
-    setTasks(tasks.map(t => 
-      t.id === id ? { ...t, status, completedAt: status === 'completed' ? new Date().toISOString() : undefined } : t
-    ));
-  };
-
-  const deleteTask = (id: string) => {
-    setTasks(tasks.filter(t => t.id !== id));
-  };
-
-  const getPriorityColor = (priority: AdminTask['priority']) => {
-    switch (priority) {
-      case 'critical': return 'bg-red-900/50 text-red-400 border-red-800';
-      case 'high': return 'bg-orange-900/50 text-orange-400 border-orange-800';
-      case 'medium': return 'bg-yellow-900/50 text-yellow-400 border-yellow-800';
-      case 'low': return 'bg-green-900/50 text-green-400 border-green-800';
-    }
-  };
-
-  const getCategoryColor = (category: AdminTask['category']) => {
-    switch (category) {
-      case 'legal': return 'bg-purple-900/50 text-purple-400';
-      case 'security': return 'bg-red-900/50 text-red-400';
-      case 'infrastructure': return 'bg-blue-900/50 text-blue-400';
-      case 'content': return 'bg-teal-900/50 text-teal-400';
-      case 'other': return 'bg-stone-800/50 text-stone-400';
-    }
-  };
-
-  const getStatusIcon = (status: AdminTask['status']) => {
-    switch (status) {
-      case 'pending': return '○';
-      case 'in_progress': return '◐';
-      case 'completed': return '●';
-      case 'blocked': return '◌';
-    }
-  };
-
-  const pendingTasks = tasks.filter(t => t.status !== 'completed');
-  const completedTasks = tasks.filter(t => t.status === 'completed');
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-orbitron text-orange-500">Admin Tasks</h3>
-          <p className="text-sm text-stone-500">Manual tasks that require human action (cannot be automated by agents)</p>
-        </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-orange-700 hover:bg-orange-600 text-black">
-              <Plus className="w-4 h-4 mr-2" /> Add Task
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-stone-900 border-orange-900/50">
-            <DialogHeader>
-              <DialogTitle className="text-orange-400">Add Admin Task</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label className="text-stone-400">Title</Label>
-                <Input
-                  value={newTask.title || ''}
-                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                  className="bg-stone-800 border-stone-700 text-stone-200"
-                  placeholder="Task title"
-                />
-              </div>
-              <div>
-                <Label className="text-stone-400">Description</Label>
-                <Textarea
-                  value={newTask.description || ''}
-                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  className="bg-stone-800 border-stone-700 text-stone-200"
-                  placeholder="Task description"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-stone-400">Category</Label>
-                  <select
-                    value={newTask.category}
-                    onChange={(e) => setNewTask({ ...newTask, category: e.target.value as AdminTask['category'] })}
-                    className="w-full bg-stone-800 border border-stone-700 text-stone-200 rounded-md p-2"
-                  >
-                    <option value="legal">Legal</option>
-                    <option value="security">Security</option>
-                    <option value="infrastructure">Infrastructure</option>
-                    <option value="content">Content</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <Label className="text-stone-400">Priority</Label>
-                  <select
-                    value={newTask.priority}
-                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as AdminTask['priority'] })}
-                    className="w-full bg-stone-800 border border-stone-700 text-stone-200 rounded-md p-2"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="critical">Critical</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <Label className="text-stone-400">Due Date (optional)</Label>
-                <Input
-                  type="date"
-                  value={newTask.dueDate || ''}
-                  onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                  className="bg-stone-800 border-stone-700 text-stone-200"
-                />
-              </div>
-              <div>
-                <Label className="text-stone-400">Notes (optional)</Label>
-                <Textarea
-                  value={newTask.notes || ''}
-                  onChange={(e) => setNewTask({ ...newTask, notes: e.target.value })}
-                  className="bg-stone-800 border-stone-700 text-stone-200"
-                  placeholder="Additional notes"
-                />
-              </div>
-              <Button onClick={addTask} className="w-full bg-orange-700 hover:bg-orange-600 text-black">
-                <Plus className="w-4 h-4 mr-2" /> Add Task
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-red-950/20 border-red-900/30">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-red-400">{tasks.filter(t => t.priority === 'critical' && t.status !== 'completed').length}</div>
-            <div className="text-xs text-stone-500">Critical</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-orange-950/20 border-orange-900/30">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-orange-400">{pendingTasks.length}</div>
-            <div className="text-xs text-stone-500">Pending</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-yellow-950/20 border-yellow-900/30">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-yellow-400">{tasks.filter(t => t.status === 'in_progress').length}</div>
-            <div className="text-xs text-stone-500">In Progress</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-green-950/20 border-green-900/30">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-400">{completedTasks.length}</div>
-            <div className="text-xs text-stone-500">Completed</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Pending Tasks */}
-      <Card className="bg-stone-900/50 border-orange-900/30">
-        <CardHeader>
-          <CardTitle className="text-orange-400 text-sm flex items-center gap-2">
-            <Target className="w-4 h-4" /> Pending Tasks ({pendingTasks.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {pendingTasks.length === 0 ? (
-            <p className="text-stone-500 text-sm text-center py-4">No pending tasks</p>
-          ) : (
-            pendingTasks.map(task => (
-              <div key={task.id} className={`p-4 rounded-lg border ${getPriorityColor(task.priority)}`}>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">{getStatusIcon(task.status)}</span>
-                      <h4 className="font-semibold text-stone-200">{task.title}</h4>
-                      <Badge className={`text-[10px] ${getCategoryColor(task.category)}`}>{task.category}</Badge>
-                    </div>
-                    <p className="text-sm text-stone-400 mb-2">{task.description}</p>
-                    {task.notes && (
-                      <p className="text-xs text-stone-500 italic mb-2">Note: {task.notes}</p>
-                    )}
-                    {task.dueDate && (
-                      <p className="text-xs text-stone-500">Due: {task.dueDate}</p>
-                    )}
-                  </div>
-                  <div className="flex gap-2 ml-4">
-                    <select
-                      value={task.status}
-                      onChange={(e) => updateTaskStatus(task.id, e.target.value as AdminTask['status'])}
-                      className="bg-stone-800 border border-stone-700 text-stone-300 text-xs rounded px-2 py-1"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="in_progress">In Progress</option>
-                      <option value="completed">Completed</option>
-                      <option value="blocked">Blocked</option>
-                    </select>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteTask(task.id)}
-                      className="text-red-500 hover:text-red-400 hover:bg-red-900/20"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Completed Tasks */}
-      {completedTasks.length > 0 && (
-        <Card className="bg-stone-900/30 border-stone-800/30">
-          <CardHeader>
-            <CardTitle className="text-stone-500 text-sm flex items-center gap-2">
-              <Target className="w-4 h-4" /> Completed ({completedTasks.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {completedTasks.map(task => (
-              <div key={task.id} className="p-3 rounded-lg border border-stone-800/30 bg-stone-900/20 opacity-60">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-500">●</span>
-                    <span className="text-stone-400 line-through">{task.title}</span>
-                    <Badge className={`text-[10px] ${getCategoryColor(task.category)}`}>{task.category}</Badge>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-xs text-stone-600">{task.completedAt ? new Date(task.completedAt).toLocaleDateString() : ''}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteTask(task.id)}
-                      className="text-stone-600 hover:text-red-400 hover:bg-red-900/20"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Documentation Links */}
-      <Card className="bg-purple-950/20 border-purple-900/30">
-        <CardHeader>
-          <CardTitle className="text-purple-400 text-sm flex items-center gap-2">
-            <FileText className="w-4 h-4" /> Legal Documentation
-          </CardTitle>
-          <CardDescription className="text-stone-500">
-            GDPR compliance documentation (stored in /docs folder)
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
-            <span className="text-stone-300 text-sm">Legitimate Interest Assessment</span>
-            <span className="text-stone-500 text-xs font-mono">docs/LEGITIMATE_INTEREST_ASSESSMENT.md</span>
-          </div>
-          <div className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
-            <span className="text-stone-300 text-sm">Records of Processing Activities</span>
-            <span className="text-stone-500 text-xs font-mono">docs/RECORDS_OF_PROCESSING.md</span>
-          </div>
-          <div className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
-            <span className="text-stone-300 text-sm">Privacy Policy</span>
-            <span className="text-stone-500 text-xs font-mono">PRIVACY_POLICY.md</span>
-          </div>
         </CardContent>
       </Card>
     </div>

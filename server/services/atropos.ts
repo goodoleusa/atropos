@@ -3,7 +3,7 @@
  * Option B (embedded library) would swap the implementation behind this same interface
  * (executeScript, listScripts, getScript, checkBinary) without changing callers.
  */
-import { execFile, spawn } from 'child_process';
+import { exec } from 'child_process';
 import { promisify } from 'util';
 import { nanoid } from 'nanoid';
 import path from 'path';
@@ -11,10 +11,7 @@ import fs from 'fs/promises';
 import { storage } from '../storage';
 import type { InsertOsintToolCall } from '@shared/schema';
 
-const execFileAsync = promisify(execFile);
-
-const ALLOWED_SCRIPT_PATTERN = /^[a-zA-Z0-9_-]+\.lua$/;
-const SAFE_TARGET_PATTERN = /^[a-zA-Z0-9._@:/-]+$/;
+const execAsync = promisify(exec);
 
 export interface AtroposScanParams {
   scriptPath: string;
@@ -43,54 +40,18 @@ export interface AtroposScriptInfo {
 }
 
 export class AtroposService {
-  private binaryPath: string = '';
+  private binaryPath: string;
   private scriptsDir: string;
   
   constructor() {
+    // Try to find atropos binary
+    this.binaryPath = process.env.ATROPOS_BINARY_PATH || 
+                     path.join(process.cwd(), 'dist', 'bin', 'atropos') ||
+                     path.join(process.cwd(), 'tools', 'atropos', 'target', 'release', 'atropos') ||
+                     'atropos'; // Fallback to PATH
+    
     this.scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || 
                      path.join(process.cwd(), 'tools', 'atropos', 'examples');
-  }
-  
-  private async resolveBinaryPath(): Promise<string> {
-    if (this.binaryPath) return this.binaryPath;
-    
-    const candidates = [
-      process.env.ATROPOS_BINARY_PATH,
-      path.join(process.cwd(), 'dist', 'bin', 'atropos'),
-      path.join(process.cwd(), 'tools', 'atropos', 'target', 'release', 'atropos'),
-      '/usr/local/bin/atropos',
-      'atropos'
-    ].filter(Boolean) as string[];
-    
-    for (const candidate of candidates) {
-      try {
-        await fs.access(candidate, fs.constants.X_OK);
-        this.binaryPath = candidate;
-        return candidate;
-      } catch {
-        continue;
-      }
-    }
-    
-    this.binaryPath = 'atropos';
-    return 'atropos';
-  }
-  
-  private sanitizeTarget(target: string): string {
-    if (!SAFE_TARGET_PATTERN.test(target)) {
-      throw new Error('Invalid target format: contains unsafe characters');
-    }
-    return target.slice(0, 500);
-  }
-  
-  private validateScriptPath(scriptPath: string): void {
-    const basename = path.basename(scriptPath);
-    if (!ALLOWED_SCRIPT_PATTERN.test(basename)) {
-      throw new Error('Invalid script path: must be a .lua file with alphanumeric name');
-    }
-    if (scriptPath.includes('..')) {
-      throw new Error('Invalid script path: directory traversal not allowed');
-    }
   }
   
   /**
@@ -98,16 +59,23 @@ export class AtroposService {
    */
   async checkBinary(): Promise<{ available: boolean; path: string; error?: string }> {
     try {
-      const binaryPath = await this.resolveBinaryPath();
-      const { stdout } = await execFileAsync(binaryPath, ['--version']);
+      // Try to run atropos --version
+      const { stdout } = await execAsync(`${this.binaryPath} --version 2>&1 || echo "NOT_FOUND"`);
       
-      return { available: true, path: binaryPath };
+      if (stdout.includes('NOT_FOUND') || stdout.includes('command not found')) {
+        return { 
+          available: false, 
+          path: this.binaryPath,
+          error: 'Atropos binary not found. Build it first with: cd tools/atropos && cargo build --release'
+        };
+      }
+      
+      return { available: true, path: this.binaryPath };
     } catch (error: any) {
-      const binaryPath = this.binaryPath || 'atropos';
       return { 
         available: false, 
-        path: binaryPath,
-        error: 'Atropos binary not found. Build it first with: cd tools/atropos && cargo build --release'
+        path: this.binaryPath,
+        error: error.message || 'Unknown error checking binary'
       };
     }
   }
@@ -119,44 +87,46 @@ export class AtroposService {
     const startTime = Date.now();
     const scanId = `scan_${nanoid(12)}`;
     
+    // Resolve script path
+    const scriptPath = path.isAbsolute(params.scriptPath) 
+      ? params.scriptPath 
+      : path.join(this.scriptsDir, params.scriptPath);
+    
+    // Check if script exists
     try {
-      this.validateScriptPath(params.scriptPath);
-      const sanitizedTarget = this.sanitizeTarget(params.target);
-      
-      const scriptPath = path.isAbsolute(params.scriptPath) 
-        ? params.scriptPath 
-        : path.join(this.scriptsDir, params.scriptPath);
-      
       await fs.access(scriptPath);
-      
-      const binaryCheck = await this.checkBinary();
-      if (!binaryCheck.available) {
-        return {
-          success: false,
-          scanId,
-          error: binaryCheck.error || 'Atropos binary not available',
-          latencyMs: Date.now() - startTime
-        };
-      }
-      
-      const outputPath = params.outputPath || path.join(process.cwd(), 'dist', 'atropos-results', `${scanId}.json`);
-      await fs.mkdir(path.dirname(outputPath), { recursive: true });
-      
-      const binaryPath = await this.resolveBinaryPath();
-      const args = ['scan', scriptPath, '-t', sanitizedTarget, '-o', outputPath];
-      
-      const { stdout, stderr } = await new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
-        let stdout = '';
-        let stderr = '';
-        const proc = spawn(binaryPath, args, { timeout: 300000 });
-        
-        proc.stdout.on('data', (data) => { stdout += data.toString(); });
-        proc.stderr.on('data', (data) => { stderr += data.toString(); });
-        proc.on('close', (code) => {
-          if (code === 0) resolve({ stdout, stderr });
-          else reject(new Error(`Process exited with code ${code}: ${stderr}`));
-        });
-        proc.on('error', reject);
+    } catch {
+      return {
+        success: false,
+        scanId,
+        error: `Script not found: ${scriptPath}`,
+        latencyMs: Date.now() - startTime
+      };
+    }
+    
+    // Check binary availability
+    const binaryCheck = await this.checkBinary();
+    if (!binaryCheck.available) {
+      return {
+        success: false,
+        scanId,
+        error: binaryCheck.error || 'Atropos binary not available',
+        latencyMs: Date.now() - startTime
+      };
+    }
+    
+    // Prepare output path if specified
+    const outputPath = params.outputPath || path.join(process.cwd(), 'dist', 'atropos-results', `${scanId}.json`);
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    
+    // Build command: echo "target" | atropos scan script.lua -o output.json
+    const cmd = `echo "${params.target}" | ${this.binaryPath} scan "${scriptPath}" -o "${outputPath}"`;
+    
+    try {
+      // Execute scan
+      const { stdout, stderr } = await execAsync(cmd, {
+        timeout: 300000, // 5 minute timeout
+        maxBuffer: 10 * 1024 * 1024 // 10MB buffer
       });
       
       const latencyMs = Date.now() - startTime;

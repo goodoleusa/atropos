@@ -11,6 +11,7 @@ export const gameSessions = pgTable("game_sessions", {
   completedQuests: jsonb("completed_quests").$type<string[]>().notNull().default([]),
   discoveries: jsonb("discoveries").$type<Record<string, any>>().notNull().default({}),
   settings: jsonb("settings").$type<Record<string, any>>().notNull().default({}),
+  progress: jsonb("progress").$type<Record<string, any>>().notNull().default({}),
   lastActive: timestamp("last_active").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -423,6 +424,32 @@ export const insertAdminPromptSchema = createInsertSchema(adminPrompts).omit({
 export type AdminPrompt = typeof adminPrompts.$inferSelect;
 export type InsertAdminPrompt = z.infer<typeof insertAdminPromptSchema>;
 
+// Community Prompt Gallery - user-submitted prompts for sharing
+export const promptGallery = pgTable("prompt_gallery", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  prompt: text("prompt").notNull(),
+  category: text("category").notNull().default("general"),
+  tool: text("tool").notNull().default("atropos"),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  sessionToken: text("session_token"),
+  username: text("username"),
+  status: text("status").notNull().default("published"), // 'published', 'pending', 'rejected'
+  riskFlags: jsonb("risk_flags").$type<string[]>().notNull().default([]),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertPromptGallerySchema = createInsertSchema(promptGallery).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type PromptGalleryEntry = typeof promptGallery.$inferSelect;
+export type InsertPromptGallery = z.infer<typeof insertPromptGallerySchema>;
+
 // Campaign Templates - reusable investigation flows
 export const campaignTemplates = pgTable("campaign_templates", {
   id: serial("id").primaryKey(),
@@ -596,6 +623,54 @@ export const sharedClues = pgTable("shared_clues", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Artifacts - collectible data items used in campaigns
+export const artifacts = pgTable("artifacts", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  content: text("content").notNull().default(""),
+  category: text("category").notNull().default("general"), // 'file', 'log', 'intel', 'credential'
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Mystical Cards - tarot/zodiac popup collectibles
+export const mysticalCards = pgTable("mystical_cards", {
+  id: serial("id").primaryKey(),
+  cardId: text("card_id").notNull().unique(), // e.g., tarot-the-fool
+  type: text("type").notNull(), // 'tarot' | 'zodiac'
+  name: text("name").notNull(),
+  symbol: text("symbol"),
+  hint: text("hint").notNull(),
+  icon: text("icon"),
+  element: text("element"),
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Quantum Events - probability popups and collectible events
+export const quantumEvents = pgTable("quantum_events", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  baseProb: integer("base_prob").notNull().default(10), // 0-100 percent
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Quantum Messages - flavor strings used in quantum popups
+export const quantumMessages = pgTable("quantum_messages", {
+  id: serial("id").primaryKey(),
+  message: text("message").notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Campaign Links - cross-campaign connections
 export const campaignLinks = pgTable("campaign_links", {
   id: serial("id").primaryKey(),
@@ -620,6 +695,28 @@ export const insertSharedClueSchema = createInsertSchema(sharedClues).omit({
   updatedAt: true,
 });
 
+export const insertArtifactSchema = createInsertSchema(artifacts).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMysticalCardSchema = createInsertSchema(mysticalCards).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertQuantumEventSchema = createInsertSchema(quantumEvents).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertQuantumMessageSchema = createInsertSchema(quantumMessages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertCampaignLinkSchema = createInsertSchema(campaignLinks).omit({
   id: true,
   createdAt: true,
@@ -629,6 +726,14 @@ export type DesignerCampaign = typeof designerCampaigns.$inferSelect;
 export type InsertDesignerCampaign = z.infer<typeof insertDesignerCampaignSchema>;
 export type SharedClue = typeof sharedClues.$inferSelect;
 export type InsertSharedClue = z.infer<typeof insertSharedClueSchema>;
+export type Artifact = typeof artifacts.$inferSelect;
+export type InsertArtifact = z.infer<typeof insertArtifactSchema>;
+export type MysticalCard = typeof mysticalCards.$inferSelect;
+export type InsertMysticalCard = z.infer<typeof insertMysticalCardSchema>;
+export type QuantumEvent = typeof quantumEvents.$inferSelect;
+export type InsertQuantumEvent = z.infer<typeof insertQuantumEventSchema>;
+export type QuantumMessage = typeof quantumMessages.$inferSelect;
+export type InsertQuantumMessage = z.infer<typeof insertQuantumMessageSchema>;
 export type CampaignLink = typeof campaignLinks.$inferSelect;
 export type InsertCampaignLink = z.infer<typeof insertCampaignLinkSchema>;
 
@@ -765,116 +870,7 @@ export const stateCapsules = pgTable("state_capsules", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// Consent Records - GDPR-compliant consent tracking
-export const consentRecords = pgTable("consent_records", {
-  id: serial("id").primaryKey(),
-  sessionToken: text("session_token").notNull(),
-  consentType: text("consent_type").notNull(), // 'model_training', 'research_use', 'email_contact', 'analytics'
-  granted: boolean("granted").notNull().default(false),
-  grantedAt: timestamp("granted_at"),
-  revokedAt: timestamp("revoked_at"),
-  ipAddress: text("ip_address"), // Anonymized (last octet removed)
-  userAgent: text("user_agent"),
-  version: text("version").notNull().default("1.0"), // Policy version consented to
-  metadata: jsonb("metadata").$type<{
-    source: 'banner' | 'settings' | 'api';
-    policyUrl?: string;
-    legalBasis?: string;
-  }>().notNull().default({}),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
-// Data Subject Access Requests (DSAR) - track user data requests
-export const dsarRequests = pgTable("dsar_requests", {
-  id: serial("id").primaryKey(),
-  requestId: text("request_id").notNull().unique(),
-  sessionToken: text("session_token").notNull(),
-  requestType: text("request_type").notNull(), // 'access', 'erasure', 'portability', 'rectification', 'objection'
-  email: text("email"), // Optional contact email
-  verificationStatus: text("verification_status").notNull().default("pending"), // 'pending', 'verified', 'rejected'
-  verificationMethod: text("verification_method"), // 'session_token', 'email', 'knowledge_questions'
-  verificationDetails: jsonb("verification_details").$type<{
-    questionsAsked?: string[];
-    questionsAnswered?: number;
-    emailVerified?: boolean;
-    attemptCount?: number;
-  }>(),
-  status: text("status").notNull().default("pending"), // 'pending', 'processing', 'completed', 'rejected'
-  completedAt: timestamp("completed_at"),
-  responseData: jsonb("response_data").$type<{
-    dataExported?: boolean;
-    dataDeleted?: boolean;
-    itemsAffected?: number;
-    notes?: string;
-  }>(),
-  dueDate: timestamp("due_date").notNull(), // 30 days from request
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
-// Exported Reports - preserves user investigation reports for company retention
-export const exportedReports = pgTable("exported_reports", {
-  id: serial("id").primaryKey(),
-  reportId: text("report_id").notNull().unique(),
-  sessionToken: text("session_token").notNull(),
-  investigationId: text("investigation_id"),
-  title: text("title").notNull(),
-  reportType: text("report_type").notNull().default("investigation"), // 'investigation', 'vulnerability', 'osint', 'incident'
-  summary: text("summary"),
-  content: jsonb("content").$type<{
-    sections: Array<{
-      title: string;
-      content: string;
-      type: 'text' | 'findings' | 'recommendations' | 'evidence';
-    }>;
-    findings: Array<{
-      id: string;
-      severity: string;
-      title: string;
-      description: string;
-      evidence?: any;
-    }>;
-    recommendations: string[];
-    toolsUsed: string[];
-    targetsInvestigated: string[];
-  }>().notNull(),
-  metadata: jsonb("metadata").$type<{
-    exportFormat: 'json' | 'markdown' | 'pdf';
-    version: number;
-    learningProfile?: Record<string, any>;
-    riskScore?: number;
-    atroposScansRun?: number;
-  }>().notNull().default({}),
-  status: text("status").notNull().default("submitted"), // 'draft', 'submitted', 'reviewed', 'archived'
-  reviewedBy: text("reviewed_by"),
-  reviewedAt: timestamp("reviewed_at"),
-  retentionPriority: text("retention_priority").notNull().default("normal"), // 'low', 'normal', 'high', 'critical'
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
 // Insert schemas
-export const insertConsentRecordSchema = createInsertSchema(consentRecords).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertDsarRequestSchema = createInsertSchema(dsarRequests).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  completedAt: true,
-});
-
-export const insertExportedReportSchema = createInsertSchema(exportedReports).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  reviewedAt: true,
-});
-
 export const insertOsintToolSchema = createInsertSchema(osintTools).omit({
   id: true,
   createdAt: true,
@@ -909,12 +905,52 @@ export type InteractionLog = typeof interactionLogs.$inferSelect;
 export type InsertInteractionLog = z.infer<typeof insertInteractionLogSchema>;
 export type StateCapsule = typeof stateCapsules.$inferSelect;
 export type InsertStateCapsule = z.infer<typeof insertStateCapsuleSchema>;
-export type ExportedReport = typeof exportedReports.$inferSelect;
-export type InsertExportedReport = z.infer<typeof insertExportedReportSchema>;
-export type ConsentRecord = typeof consentRecords.$inferSelect;
-export type InsertConsentRecord = z.infer<typeof insertConsentRecordSchema>;
-export type DsarRequest = typeof dsarRequests.$inferSelect;
-export type InsertDsarRequest = z.infer<typeof insertDsarRequestSchema>;
+
+// Atropos Scans - track scan executions
+export const atroposScans = pgTable("atropos_scans", {
+  id: serial("id").primaryKey(),
+  scanId: text("scan_id").notNull().unique(),
+  sessionToken: text("session_token").notNull(),
+  investigationId: text("investigation_id"),
+  scriptPath: text("script_path").notNull(),
+  target: text("target").notNull(),
+  status: text("status").notNull().default("pending"), // pending, running, completed, failed
+  results: jsonb("results").$type<any>(),
+  error: text("error"),
+  outputPath: text("output_path"),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+// Atropos Scripts - registered Lua scripts
+export const atroposScripts = pgTable("atropos_scripts", {
+  id: serial("id").primaryKey(),
+  scriptId: text("script_id").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // 'osint', 'vulnerability', 'secret_detection', 'general'
+  scriptPath: text("script_path").notNull(), // Path to .lua file
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Insert schemas
+export const insertAtroposScanSchema = createInsertSchema(atroposScans).omit({
+  id: true,
+  startedAt: true,
+  completedAt: true,
+});
+export const insertAtroposScriptSchema = createInsertSchema(atroposScripts).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type AtroposScan = typeof atroposScans.$inferSelect;
+export type InsertAtroposScan = z.infer<typeof insertAtroposScanSchema>;
+export type AtroposScript = typeof atroposScripts.$inferSelect;
+export type InsertAtroposScript = z.infer<typeof insertAtroposScriptSchema>;
 
 // Export auth and chat models
 export * from "./models/auth";

@@ -1,39 +1,35 @@
-# SysAdmin Corp - Interactive Terminal Game
+# NEXUS Security Platform
 
-An interactive web-based terminal game with a molten bronze / industrial
-cyber-ritual aesthetic. Players navigate a fictional corporate system through
-custom terminal commands, collect clues, complete quests, and uncover hidden
-routes. The experience blends occult motifs (tarot, zodiac, quantum lore) with a
-retro-futuristic corporate hacking narrative.
+A comprehensive AI-powered security investigation platform featuring two core systems:
 
-This repository is a full-stack TypeScript app: React + Vite on the frontend and
-Express on the backend, with PostgreSQL via Drizzle ORM.
+1. **NEXUS Agent** - AI assistant for analysis, reporting, and campaign management
+2. **Atropos Scanner** - Rust-based OSINT & vulnerability scanning tool
+
+The platform features a molten bronze/industrial aesthetic with custom terminal interface,
+investigation campaigns, visual campaign designer, and atmospheric effects.
 
 ## Features
 
-### Core Platform
-- Custom terminal emulator with command parsing and history
-- Clue + quest system with configurable campaigns and messages
-- Atmospheric overlays (Chaos, Glitch text, Quantum field, etc.)
-- Mobile-first responsive design with touch-friendly interactions
+### NEXUS Agent
+- AI-powered investigation assistant (OpenRouter LLMs)
+- Pre-built security campaigns (Shell Corp, BGP tracing, Threat Hunting)
+- Report Builder for structured bug bounty writeups
+- AI Lab for prompt engineering and model comparison
+- Campaign Designer with wikilinks and conditional decision trees
 
-### NEXUS AI System
-- Agent Chat (OpenRouter-backed) for investigations and guidance
-- AI Lab for prompt testing, model comparisons, and evaluations
-- Report Builder for structured bug bounty style writeups
-- Shared investigation context across all AI features
+### Atropos Scanner
+- OSINT reconnaissance (BBOT, Amass, theHarvester, Subfinder)
+- Vulnerability scanning (Nuclei, httpx, nmap)
+- Secret detection (Gitleaks, TruffleHog)
+- Threat intelligence (Shodan, VirusTotal, SecurityTrails)
+- Lua scripting for custom automation
 
-### Atropos OSINT Scanner
-- Rust-based security scanning tool (`/api/atropos`)
-- Script execution and scan history tracking
-- Remote Atropos server connection support
-- AI-assisted analysis prompt generation
-- Auto-integration with investigation contexts
-
-### Content Tools
-- Campaign Designer with wikilinks, breadcrumbs, and backlinks
-- Admin dashboard for managing content, sessions, and UX effects
-- API Playground for learning security concepts
+### Platform
+- Custom terminal emulator with command parsing
+- Clue + quest system with configurable campaigns
+- Atmospheric overlays (Chaos, Glitch, Quantum field)
+- Admin dashboard for content and UX management
+- Mobile-responsive with 48px+ touch targets
 
 ## Architecture
 
@@ -135,157 +131,8 @@ to compare agent results safely.
 ## Repo structure
 
 ```
-client/          React app (UI)
-server/          Express API + integrations
-shared/          Shared schema and models
-script/          Build scripts
-tools/atropos/   Atropos OSINT scanner (Rust)
-```
-
-## Production Deployment: Hetzner Cloud
-
-Use Replit for development, Hetzner for production hosting.
-
-### 1) Provision Hetzner Server
-
-```bash
-# Recommended: CX21 (2 vCPU, 4GB RAM) or CX31 for heavier scans
-# OS: Ubuntu 22.04 or Debian 12
-```
-
-### 2) Install Rust on Hetzner
-
-```bash
-# SSH into your Hetzner server
-ssh root@your-server-ip
-
-# Install Rust via rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env
-
-# Verify installation
-rustc --version
-cargo --version
-```
-
-### 3) Install System Dependencies
-
-```bash
-# Ubuntu/Debian
-apt update && apt install -y \
-  build-essential \
-  pkg-config \
-  libssl-dev \
-  libluajit-5.1-dev \
-  git \
-  postgresql-client
-
-# Optional: for DNS/network tools
-apt install -y dnsutils nmap whois
-```
-
-### 4) Build Atropos Binary
-
-```bash
-# Clone the repo
-git clone https://github.com/goodoleusa/atropos.git
-cd atropos/tools/atropos
-
-# Build release binary (optimized)
-cargo build --release
-
-# Binary is at: target/release/atropos
-# Copy to system path
-cp target/release/atropos /usr/local/bin/
-chmod +x /usr/local/bin/atropos
-
-# Verify
-atropos --version
-```
-
-### 5) Configure Node.js Backend
-
-```bash
-# Install Node.js 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y nodejs
-
-# Clone and build the web app
-cd /opt
-git clone https://github.com/goodoleusa/atropos.git sysadmin-corp
-cd sysadmin-corp
-npm install
-npm run build
-```
-
-### 6) Environment Setup
-
-```bash
-# Create .env file
-cat > .env << 'EOF'
-PORT=5000
-DATABASE_URL=postgresql://user:pass@localhost:5432/sysadmin
-OPENROUTER_API_KEY=your_openrouter_key
-NODE_ENV=production
-EOF
-```
-
-### 7) Systemd Service
-
-```bash
-cat > /etc/systemd/system/sysadmin-corp.service << 'EOF'
-[Unit]
-Description=SysAdmin Corp Web App
-After=network.target postgresql.service
-
-[Service]
-Type=simple
-User=www-data
-WorkingDirectory=/opt/sysadmin-corp
-ExecStart=/usr/bin/node dist/index.js
-Restart=on-failure
-Environment=NODE_ENV=production
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl enable sysadmin-corp
-systemctl start sysadmin-corp
-```
-
-### 8) Nginx Reverse Proxy
-
-```bash
-apt install -y nginx certbot python3-certbot-nginx
-
-cat > /etc/nginx/sites-available/sysadmin-corp << 'EOF'
-server {
-    listen 80;
-    server_name your-domain.com;
-    
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-EOF
-
-ln -s /etc/nginx/sites-available/sysadmin-corp /etc/nginx/sites-enabled/
-nginx -t && systemctl reload nginx
-
-# SSL with Let's Encrypt
-certbot --nginx -d your-domain.com
-```
-
-### Hetzner Firewall Rules
-
-```
-Allow: 22 (SSH), 80 (HTTP), 443 (HTTPS)
-Block: All other inbound
+client/     React app (UI)
+server/     Express API + integrations
+shared/     Shared schema and models
+script/     Build scripts
 ```
