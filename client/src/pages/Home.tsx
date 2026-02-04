@@ -401,7 +401,7 @@ export default function Home() {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.3 }}
-        className={`fixed bottom-6 right-6 z-50 flex flex-col gap-3 transition-opacity duration-500 ${
+        className={`fixed bottom-6 right-6 z-50 hidden md:flex flex-col gap-3 transition-opacity duration-500 ${
           scrolledPastVideo ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >

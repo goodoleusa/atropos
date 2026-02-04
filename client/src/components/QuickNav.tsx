@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare } from 'lucide-react';
+import { QRCodeModal } from '@/components/QRCodeModal';
+import { AgentChat } from '@/components/AgentChat';
 
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
@@ -14,6 +16,8 @@ const NAV_STYLES = {
 
 export default function QuickNav() {
   const [expanded, setExpanded] = useState(false);
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [location] = useLocation();
   const { gameState } = useGame();
   const { pendingFindings, currentSession, targets } = useReportContext();
@@ -70,6 +74,25 @@ export default function QuickNav() {
             );
           })}
 
+          <div className="border-t border-stone-800 pt-2 mt-2 flex gap-2">
+            <Button
+              onClick={() => { setAgentChatOpen(true); setExpanded(false); }}
+              className="flex-1 bg-stone-800 hover:bg-stone-700 text-amber-400 min-h-[44px]"
+              data-testid="nav-agent-chat"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Agent
+            </Button>
+            <Button
+              onClick={() => { setQrModalOpen(true); setExpanded(false); }}
+              className="flex-1 bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]"
+              data-testid="nav-qr-code"
+            >
+              <QrCode className="w-4 h-4 mr-2" />
+              QR
+            </Button>
+          </div>
+
           <div className="border-t border-stone-800 pt-2 mt-2">
             <div className="px-3 py-1">
               <p className="text-[10px] text-stone-500 uppercase">Progress</p>
@@ -109,6 +132,9 @@ export default function QuickNav() {
           </div>
         )}
       </Button>
+
+      <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
+      <AgentChat open={agentChatOpen} onOpenChange={setAgentChatOpen} />
     </div>
   );
 }
