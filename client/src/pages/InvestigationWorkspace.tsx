@@ -10,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Bot, Zap, BarChart3, FileText, Target, 
-  MessageSquare, Beaker, GraduationCap, Settings, Send, Loader2, ExternalLink, Copy, Radar
+  MessageSquare, Beaker, GraduationCap, Settings, Send, Loader2, ExternalLink, Copy, Radar, Crosshair
 } from 'lucide-react';
 import { AgentChat } from '@/components/AgentChat';
 import { AtroposScanner } from '@/components/AtroposScanner';
+import { LiveBountyFeed } from '@/components/LiveBountyFeed';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { useReportContext } from '@/hooks/useReportContext';
 import { LEARNING_STYLES, LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS } from '@/config/learningConfig';
@@ -27,9 +28,19 @@ const QUICK_MODELS = [
 ];
 
 export default function InvestigationWorkspace() {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('targets');
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [atroposPayload, setAtroposPayload] = useState<string | undefined>(undefined);
+  const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
+
+  const handleSelectTarget = (target: string) => {
+    setSelectedTarget(target);
+    setActiveTab('atropos');
+    toast({
+      title: "Target Selected",
+      description: "Switch to Atropos Scanner to begin reconnaissance."
+    });
+  };
   
   // Quick Lab state
   const [quickModel, setQuickModel] = useState(QUICK_MODELS[0].id);
@@ -146,38 +157,110 @@ Be concise but thorough. Focus on practical, actionable information.`;
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="bg-stone-900/50 border border-stone-800 p-1 flex-wrap min-h-[52px]">
             <TabsTrigger 
-              value="chat" 
-              className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-400 min-h-[44px] gap-2"
+              value="targets" 
+              className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400 min-h-[44px] gap-2"
             >
-              <MessageSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">Agent Chat</span>
-              <span className="sm:hidden">Chat</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="lab" 
-              className="data-[state=active]:bg-purple-900/50 data-[state=active]:text-purple-400 min-h-[44px] gap-2"
-            >
-              <Beaker className="w-4 h-4" />
-              <span className="hidden sm:inline">AI Lab</span>
-              <span className="sm:hidden">Lab</span>
+              <Crosshair className="w-4 h-4" />
+              <span className="hidden sm:inline">Targets</span>
+              <span className="sm:hidden">Hunt</span>
             </TabsTrigger>
             <TabsTrigger 
               value="atropos" 
               className="data-[state=active]:bg-orange-900/50 data-[state=active]:text-orange-400 min-h-[44px] gap-2"
             >
               <Radar className="w-4 h-4" />
-              <span className="hidden sm:inline">Atropos Scanner</span>
+              <span className="hidden sm:inline">Atropos</span>
               <span className="sm:hidden">Scan</span>
             </TabsTrigger>
             <TabsTrigger 
+              value="chat" 
+              className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-400 min-h-[44px] gap-2"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span className="hidden sm:inline">Agent</span>
+              <span className="sm:hidden">AI</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="lab" 
+              className="data-[state=active]:bg-purple-900/50 data-[state=active]:text-purple-400 min-h-[44px] gap-2"
+            >
+              <Beaker className="w-4 h-4" />
+              <span className="hidden sm:inline">Lab</span>
+              <span className="sm:hidden">Lab</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="learning" 
-              className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400 min-h-[44px] gap-2"
+              className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-400 min-h-[44px] gap-2"
             >
               <GraduationCap className="w-4 h-4" />
-              <span className="hidden sm:inline">Learning Profile</span>
+              <span className="hidden sm:inline">Profile</span>
               <span className="sm:hidden">Learn</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Targets Tab - Start here */}
+          <TabsContent value="targets" className="space-y-4">
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <LiveBountyFeed onSelectTarget={handleSelectTarget} />
+              </div>
+              <div className="space-y-4">
+                <Card className="bg-zinc-900/50 border-amber-900/30">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-amber-300 flex items-center gap-2 text-sm">
+                      <Crosshair className="w-4 h-4" />
+                      Investigation Workflow
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-xs text-stone-400 space-y-3">
+                    <div className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-amber-900/50 text-amber-400 flex items-center justify-center text-[10px] shrink-0">1</span>
+                      <span>Select a bounty program or threat actor from the feed</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-amber-900/50 text-amber-400 flex items-center justify-center text-[10px] shrink-0">2</span>
+                      <span>Run passive reconnaissance with Atropos scanner</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-teal-900/50 text-teal-400 flex items-center justify-center text-[10px] shrink-0">3</span>
+                      <span>Analyze findings with NEXUS AI agent</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-teal-900/50 text-teal-400 flex items-center justify-center text-[10px] shrink-0">4</span>
+                      <span>Export professional report for submission</span>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {selectedTarget && (
+                  <Card className="bg-teal-900/20 border-teal-700/50">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-teal-400 text-sm">Current Target</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-xs text-stone-300 break-all">{selectedTarget}</p>
+                      <Button 
+                        size="sm" 
+                        className="mt-3 w-full bg-teal-700 hover:bg-teal-600"
+                        onClick={() => setActiveTab('atropos')}
+                      >
+                        <Radar className="w-3 h-3 mr-1" />
+                        Start Scan
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+                
+                <Card className="bg-stone-900/30 border-stone-800">
+                  <CardContent className="pt-4 text-[10px] text-stone-600">
+                    <strong className="text-amber-500">Legal Notice:</strong> Only investigate targets where you have explicit written permission. 
+                    Bug bounty programs define scope, rules of engagement, and acceptable testing methods. 
+                    Unauthorized access is a federal crime.
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
 
           {/* Agent Chat Tab */}
           <TabsContent value="chat" className="space-y-4">
@@ -428,6 +511,7 @@ Be concise but thorough. Focus on practical, actionable information.`;
               </CardHeader>
               <CardContent>
                 <AtroposScanner 
+                  initialTarget={selectedTarget || undefined}
                   onAnalyzeWithNexus={(prompt, data) => {
                     setAtroposPayload(prompt);
                     setActiveTab('chat');

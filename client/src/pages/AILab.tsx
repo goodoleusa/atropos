@@ -219,6 +219,7 @@ const moduleDescriptions: Record<ModuleKey, { name: string; desc: string; icon: 
   payload_exec: { name: 'Payload Execution', desc: 'QR payloads', icon: '⚡' },
   terminal_cmds: { name: 'Terminal Commands', desc: 'Unix-like commands', icon: '💻' },
   clue_system: { name: 'Clue Tracking', desc: 'Clue management', icon: '🔍' },
+  atropos_scans: { name: 'Atropos Scanner', desc: 'OSINT & recon', icon: '📡' },
   crypto_puzzles: { name: 'Crypto Puzzles', desc: 'Cipher decoding', icon: '🔐' },
   osint_recon: { name: 'OSINT Recon', desc: 'Reconnaissance', icon: '🎯' }
 };
