@@ -217,6 +217,26 @@ export interface IStorage {
     suspiciousPatterns: string[];
   }[]>;
   getSessionsByIpPattern(ipPrefix: string): Promise<string[]>;
+  
+  // Admin Configuration
+  getAdminConfig(): Promise<AdminConfig | null>;
+  updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig>;
+}
+
+// Admin configuration type for agents and W&B
+export interface AdminConfig {
+  agentConfig?: Record<string, {
+    baseInstructions?: string;
+    model?: string;
+    temperature?: number;
+    updatedAt?: string;
+  }>;
+  wandbConfig?: {
+    enabled: boolean;
+    project: string;
+    entity: string;
+    apiKey?: string;
+  };
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1146,6 +1166,50 @@ export class DatabaseStorage implements IStorage {
     // This would require storing IP in session data - return placeholder for now
     // In real implementation, would query sessions with matching IP patterns
     return [];
+  }
+
+  // Admin Configuration - file-based storage with memory cache
+  private adminConfigCache: AdminConfig | null = null;
+  private adminConfigPath = '.admin-config.json';
+
+  async getAdminConfig(): Promise<AdminConfig | null> {
+    if (this.adminConfigCache) {
+      return this.adminConfigCache;
+    }
+    
+    try {
+      const fs = await import('fs/promises');
+      const data = await fs.readFile(this.adminConfigPath, 'utf-8');
+      this.adminConfigCache = JSON.parse(data);
+      return this.adminConfigCache;
+    } catch (error) {
+      // File doesn't exist yet
+      return null;
+    }
+  }
+
+  async updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig> {
+    const current = await this.getAdminConfig() || {};
+    const updated: AdminConfig = {
+      ...current,
+      ...updates,
+      agentConfig: updates.agentConfig 
+        ? { ...current.agentConfig, ...updates.agentConfig }
+        : current.agentConfig,
+      wandbConfig: updates.wandbConfig 
+        ? { ...current.wandbConfig, ...updates.wandbConfig }
+        : current.wandbConfig
+    };
+    
+    try {
+      const fs = await import('fs/promises');
+      await fs.writeFile(this.adminConfigPath, JSON.stringify(updated, null, 2));
+      this.adminConfigCache = updated;
+      return updated;
+    } catch (error) {
+      console.error('Failed to save admin config:', error);
+      throw error;
+    }
   }
 }
 
