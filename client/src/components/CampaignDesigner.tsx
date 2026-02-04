@@ -3272,40 +3272,73 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   {/* Linked Clues */}
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Linked Clues (IDs)</label>
-                    <Input
-                      placeholder="Enter clue ID and press Enter..."
-                      className="bg-black/50 border-stone-700 text-sm min-h-[44px]"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          const val = (e.target as HTMLInputElement).value.trim();
-                          if (val) {
-                            const current = editingNode.metadata?.linkedClues || [];
-                            if (!current.includes(val)) {
-                              const newMeta = { ...editingNode.metadata, linkedClues: [...current, val] };
-                              setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
-                              updateNode(editingNode.id, { metadata: newMeta });
-                            }
-                            (e.target as HTMLInputElement).value = '';
-                          }
+                    <Select
+                      onValueChange={(clueId) => {
+                        const current = editingNode.metadata?.linkedClues || [];
+                        if (clueId && !current.includes(clueId)) {
+                          const newMeta = { ...editingNode.metadata, linkedClues: [...current, clueId] };
+                          setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                          updateNode(editingNode.id, { metadata: newMeta });
+                          toast({ title: "Clue linked", description: `Added ${sharedClues.find(c => c.id === clueId)?.name || clueId}` });
                         }
                       }}
-                    />
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {editingNode.metadata?.linkedClues?.map((clueId, i) => (
-                        <Badge 
-                          key={i} 
-                          variant="outline" 
-                          className="text-[8px] border-purple-600 text-purple-400 cursor-pointer hover:bg-red-900/30"
-                          onClick={() => {
-                            const newClues = editingNode.metadata?.linkedClues?.filter(c => c !== clueId) || [];
-                            const newMeta = { ...editingNode.metadata, linkedClues: newClues };
-                            setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
-                            updateNode(editingNode.id, { metadata: newMeta });
-                          }}
-                        >
-                          🔗 {clueId} ×
-                        </Badge>
-                      ))}
+                    >
+                      <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
+                        <SelectValue placeholder="Select clue to link..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
+                        {sharedClues.length === 0 ? (
+                          <div className="p-2 text-center text-stone-500 text-xs">
+                            No clues available. Add clues in Admin → Clues tab.
+                          </div>
+                        ) : (
+                          sharedClues.map(clue => {
+                            const isLinked = editingNode.metadata?.linkedClues?.includes(clue.id);
+                            return (
+                              <SelectItem 
+                                key={clue.id} 
+                                value={clue.id} 
+                                className={`text-stone-300 ${isLinked ? 'opacity-50' : ''}`}
+                                disabled={isLinked}
+                              >
+                                <span className="flex items-center gap-2">
+                                  <span className="text-purple-400">🔗</span>
+                                  <span>{clue.name}</span>
+                                  {clue.tags?.length > 0 && (
+                                    <span className="text-[9px] text-stone-500">[{clue.tags.slice(0, 2).join(', ')}]</span>
+                                  )}
+                                  {isLinked && <span className="text-teal-400 text-[9px]">✓</span>}
+                                </span>
+                              </SelectItem>
+                            );
+                          })
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {editingNode.metadata?.linkedClues?.map((clueId, i) => {
+                        const clue = sharedClues.find(c => c.id === clueId);
+                        return (
+                          <Badge 
+                            key={i} 
+                            variant="outline" 
+                            className="text-[10px] border-purple-600 text-purple-400 cursor-pointer hover:bg-red-900/30 hover:border-red-600 transition-colors flex items-center gap-1"
+                            onClick={() => {
+                              const newClues = editingNode.metadata?.linkedClues?.filter(c => c !== clueId) || [];
+                              const newMeta = { ...editingNode.metadata, linkedClues: newClues };
+                              setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                              updateNode(editingNode.id, { metadata: newMeta });
+                              toast({ title: "Clue unlinked", description: clue?.name || clueId });
+                            }}
+                            title={`Click to remove: ${clue?.description || clueId}`}
+                          >
+                            🔗 {clue?.name || clueId} ×
+                          </Badge>
+                        );
+                      })}
+                      {(!editingNode.metadata?.linkedClues || editingNode.metadata.linkedClues.length === 0) && (
+                        <span className="text-stone-600 text-xs italic">No clues linked</span>
+                      )}
                     </div>
                   </div>
 
