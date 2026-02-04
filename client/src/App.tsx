@@ -21,6 +21,7 @@ import Wiki from "@/pages/Wiki";
 import AILab from "@/pages/AILab";
 import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 import VideoGallery from "@/pages/VideoGallery";
+import Agents from "@/pages/Agents";
 
 function Router() {
   return (
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/report" component={ReportBuilder} />
       <Route path="/wiki" component={Wiki} />
       <Route path="/videos" component={VideoGallery} />
+      <Route path="/agents" component={Agents} />
       <Route component={NotFound} />
     </Switch>
   );

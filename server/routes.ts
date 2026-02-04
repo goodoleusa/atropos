@@ -1699,5 +1699,256 @@ BEHAVIOR:
     }
   });
 
+  // ============================================
+  // THREAT INTELLIGENCE FEEDS
+  // ============================================
+  
+  // Allowlist of approved threat intel feed URLs (security: prevents SSRF)
+  const THREAT_INTEL_FEEDS: Record<string, { url: string; method: 'GET' | 'POST'; body?: string }> = {
+    'abuse_ch_urlhaus': { url: 'https://urlhaus-api.abuse.ch/v1/', method: 'POST', body: 'query=get_recent&limit=25' },
+    'abuse_ch_threatfox': { url: 'https://threatfox-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_iocs&days=1' },
+    'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_recent&selector=100' },
+    'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
+    'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
+  };
+  
+  app.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) => {
+    try {
+      const { feedId } = req.body;
+      
+      if (!feedId) {
+        return res.status(400).json({ error: "feedId required" });
+      }
+      
+      // Security: Only allow approved feeds from allowlist
+      const feed = THREAT_INTEL_FEEDS[feedId];
+      if (!feed) {
+        return res.status(400).json({ error: "Unknown feed. Allowed: " + Object.keys(THREAT_INTEL_FEEDS).join(', ') });
+      }
+      
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      
+      const headers: Record<string, string> = {
+        'User-Agent': 'NEXUS-Security-Platform/1.0',
+        'Accept': 'application/json'
+      };
+      
+      let response;
+      if (feed.method === 'POST') {
+        response = await fetch(feed.url, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: feed.body,
+          signal: controller.signal
+        });
+      } else {
+        response = await fetch(feed.url, { headers, signal: controller.signal });
+      }
+      
+      clearTimeout(timeout);
+      
+      if (!response.ok) {
+        throw new Error(`Feed returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Return trimmed data to avoid huge payloads
+      const trimmed = Array.isArray(data) 
+        ? data.slice(0, 50) 
+        : (data.data ? { ...data, data: data.data.slice?.(0, 50) || data.data } : data);
+      
+      res.json(trimmed);
+    } catch (error: any) {
+      console.error("Threat intel fetch error:", error);
+      res.status(500).json({ error: error.message || "Failed to fetch threat intel" });
+    }
+  });
+
+  // ============================================
+  // SECURITY AGENTS ANALYSIS
+  // ============================================
+  
+  app.post("/api/agents/analyze", rateLimit(20, 60000), async (req, res) => {
+    try {
+      const { agentId, prompt, sessionToken } = req.body;
+      
+      if (!agentId || !prompt) {
+        return res.status(400).json({ error: "agentId and prompt required" });
+      }
+      
+      // Import agent definitions
+      const { SECURITY_AGENTS, getAgentById } = await import("@shared/agents");
+      const agent = getAgentById(agentId);
+      
+      if (!agent) {
+        return res.status(404).json({ error: "Agent not found" });
+      }
+      
+      // Get admin config for any overrides
+      const adminConfig = await storage.getAdminConfig();
+      const agentOverrides = adminConfig?.agentConfig?.[agentId] || {};
+      
+      // Combine base instructions (admin protected) with user prompt
+      const baseInstructions = agentOverrides.baseInstructions || agent.baseInstructions;
+      const model = agentOverrides.model || agent.defaultModel;
+      const temperature = agentOverrides.temperature ?? agent.defaultTemperature;
+      
+      const fullPrompt = `${baseInstructions}\n\n---\nUser Request:\n${prompt}`;
+      
+      // Call OpenRouter API
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://nexus-security.replit.app",
+          "X-Title": "NEXUS Security Platform"
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: baseInstructions },
+            { role: "user", content: prompt }
+          ],
+          temperature,
+          max_tokens: 2000
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenRouter API error: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      const analysis = data.choices?.[0]?.message?.content || "No response generated";
+      
+      res.json({
+        agentId,
+        agentName: agent.name,
+        analysis,
+        model,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error("Agent analysis error:", error);
+      res.status(500).json({ error: error.message || "Analysis failed" });
+    }
+  });
+
+  // ============================================
+  // ADMIN AGENT CONFIGURATION (Admin Auth Required)
+  // ============================================
+  
+  // Helper: Check if session has admin (devMode) enabled
+  async function checkAdminAuth(req: any, res: any): Promise<boolean> {
+    const sessionToken = req.headers['x-session-token'] || req.query.sessionToken;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      res.status(401).json({ error: "Session token required" });
+      return false;
+    }
+    
+    const session = await storage.getSessionByToken(sessionToken);
+    if (!session) {
+      res.status(401).json({ error: "Invalid session" });
+      return false;
+    }
+    
+    // Check if devMode is enabled in session settings
+    const settings = session.settings as Record<string, any> || {};
+    if (!settings.devMode) {
+      res.status(403).json({ error: "Admin access required (devMode must be enabled)" });
+      return false;
+    }
+    
+    return true;
+  }
+  
+  // Get admin agent configs (base instructions) - admin only
+  app.get("/api/admin/agent-config", async (req, res) => {
+    try {
+      if (!await checkAdminAuth(req, res)) return;
+      
+      const config = await storage.getAdminConfig();
+      res.json(config?.agentConfig || {});
+    } catch (error) {
+      console.error("Get agent config error:", error);
+      res.status(500).json({ error: "Failed to get agent config" });
+    }
+  });
+  
+  // Update admin agent configs (protected base instructions) - admin only
+  app.put("/api/admin/agent-config", async (req, res) => {
+    try {
+      if (!await checkAdminAuth(req, res)) return;
+      
+      const { agentId, baseInstructions, model, temperature } = req.body;
+      
+      if (!agentId) {
+        return res.status(400).json({ error: "agentId required" });
+      }
+      
+      const currentConfig = await storage.getAdminConfig() || { agentConfig: {} };
+      const agentConfigs = currentConfig.agentConfig || {};
+      
+      agentConfigs[agentId] = {
+        baseInstructions: baseInstructions || agentConfigs[agentId]?.baseInstructions,
+        model: model || agentConfigs[agentId]?.model,
+        temperature: temperature ?? agentConfigs[agentId]?.temperature,
+        updatedAt: new Date().toISOString()
+      };
+      
+      await storage.updateAdminConfig({ agentConfig: agentConfigs });
+      
+      res.json({ success: true, config: agentConfigs[agentId] });
+    } catch (error) {
+      console.error("Update agent config error:", error);
+      res.status(500).json({ error: "Failed to update agent config" });
+    }
+  });
+  
+  // Get W&B configuration (admin only)
+  app.get("/api/admin/wandb-config", async (req, res) => {
+    try {
+      if (!await checkAdminAuth(req, res)) return;
+      
+      const config = await storage.getAdminConfig();
+      // Only return non-sensitive info
+      res.json({
+        enabled: !!config?.wandbConfig?.enabled,
+        project: config?.wandbConfig?.project || 'nexus-agents',
+        entity: config?.wandbConfig?.entity || ''
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get W&B config" });
+    }
+  });
+  
+  // Update W&B configuration (admin only)
+  app.put("/api/admin/wandb-config", async (req, res) => {
+    try {
+      if (!await checkAdminAuth(req, res)) return;
+      
+      const { enabled, project, entity, apiKey } = req.body;
+      
+      const currentConfig = await storage.getAdminConfig() || {};
+      
+      await storage.updateAdminConfig({
+        wandbConfig: {
+          enabled: enabled ?? currentConfig.wandbConfig?.enabled ?? false,
+          project: project || currentConfig.wandbConfig?.project || 'nexus-agents',
+          entity: entity || currentConfig.wandbConfig?.entity || '',
+          apiKey: apiKey || currentConfig.wandbConfig?.apiKey
+        }
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update W&B config" });
+    }
+  });
+
   return httpServer;
 }
