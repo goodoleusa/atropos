@@ -42,40 +42,55 @@ export interface AtroposScriptInfo {
 export class AtroposService {
   private binaryPath: string;
   private scriptsDir: string;
+  private scanTimeout: number;
+  private versionCheckTimeout: number;
   
   constructor() {
-    // Try to find atropos binary
-    this.binaryPath = process.env.ATROPOS_BINARY_PATH || 
-                     path.join(process.cwd(), 'dist', 'bin', 'atropos') ||
-                     path.join(process.cwd(), 'tools', 'atropos', 'target', 'release', 'atropos') ||
-                     'atropos'; // Fallback to PATH
+    // Try to find atropos binary - check multiple locations
+    const possiblePaths = [
+      process.env.ATROPOS_BINARY_PATH,
+      path.join(process.cwd(), 'dist', 'bin', 'atropos'),
+      path.join(process.cwd(), 'tools', 'atropos', 'target', 'release', 'atropos'),
+    ].filter(Boolean) as string[];
+    
+    this.binaryPath = possiblePaths[0] || 'atropos';
     
     this.scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || 
                      path.join(process.cwd(), 'tools', 'atropos', 'examples');
+    
+    // Timeouts to prevent hanging
+    this.scanTimeout = parseInt(process.env.ATROPOS_SCAN_TIMEOUT || '300000'); // 5 min default
+    this.versionCheckTimeout = 5000; // 5 second timeout for version check
   }
   
   /**
    * Check if atropos binary exists and is executable
    */
-  async checkBinary(): Promise<{ available: boolean; path: string; error?: string }> {
+  async checkBinary(): Promise<{ available: boolean; path: string; version?: string; error?: string }> {
     try {
-      // Try to run atropos --version
-      const { stdout } = await execAsync(`${this.binaryPath} --version 2>&1 || echo "NOT_FOUND"`);
+      // Try to run atropos --version with timeout to prevent hanging
+      const { stdout } = await execAsync(`${this.binaryPath} --version 2>&1 || echo "NOT_FOUND"`, {
+        timeout: this.versionCheckTimeout
+      });
       
       if (stdout.includes('NOT_FOUND') || stdout.includes('command not found')) {
         return { 
           available: false, 
           path: this.binaryPath,
-          error: 'Atropos binary not found. Build it first with: cd tools/atropos && cargo build --release'
+          error: 'Atropos binary not found. Build with: bash scripts/build-atropos.sh'
         };
       }
       
-      return { available: true, path: this.binaryPath };
+      const version = stdout.trim();
+      return { available: true, path: this.binaryPath, version };
     } catch (error: any) {
+      const isTimeout = error.killed || error.signal === 'SIGTERM';
       return { 
         available: false, 
         path: this.binaryPath,
-        error: error.message || 'Unknown error checking binary'
+        error: isTimeout 
+          ? 'Atropos version check timed out. Binary may be unresponsive.'
+          : (error.message || 'Unknown error checking binary')
       };
     }
   }
