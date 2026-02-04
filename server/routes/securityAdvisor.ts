@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { securityAdvisor } from "../services/securityAdvisor";
 import { db } from "../db";
 import { exportedReports } from "@shared/schema";
-import { eq, desc, and, gte } from "drizzle-orm";
+import { eq, desc, and, gte, sql, count } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { rateLimit } from "../security";
 
@@ -122,9 +122,10 @@ router.get("/reports/:sessionToken", async (req: Request, res: Response) => {
 
 router.get("/reports/id/:reportId", async (req: Request, res: Response) => {
   try {
+    const reportId = req.params.reportId as string;
     const [report] = await db.select()
       .from(exportedReports)
-      .where(eq(exportedReports.reportId, req.params.reportId));
+      .where(eq(exportedReports.reportId, reportId));
     
     if (!report) {
       return res.status(404).json({ error: "Report not found" });
@@ -147,9 +148,10 @@ router.patch("/reports/:reportId", async (req: Request, res: Response) => {
       updates.reviewedAt = new Date();
     }
     
+    const reportId = req.params.reportId as string;
     const [report] = await db.update(exportedReports)
       .set(updates)
-      .where(eq(exportedReports.reportId, req.params.reportId))
+      .where(eq(exportedReports.reportId, reportId))
       .returning();
     
     if (!report) {
@@ -187,21 +189,14 @@ router.get("/admin/reports", async (req: Request, res: Response) => {
 
 router.get("/admin/reports/stats", async (req: Request, res: Response) => {
   try {
-    const [stats] = await db.execute<{
-      total: number;
-      submitted: number;
-      reviewed: number;
-      critical: number;
-      high: number;
-    }>`
-      SELECT 
-        COUNT(*) as total,
-        COUNT(*) FILTER (WHERE status = 'submitted') as submitted,
-        COUNT(*) FILTER (WHERE status = 'reviewed') as reviewed,
-        COUNT(*) FILTER (WHERE retention_priority = 'critical') as critical,
-        COUNT(*) FILTER (WHERE retention_priority = 'high') as high
-      FROM exported_reports
-    `;
+    const allReports = await db.select().from(exportedReports);
+    const stats = {
+      total: allReports.length,
+      submitted: allReports.filter(r => r.status === 'submitted').length,
+      reviewed: allReports.filter(r => r.status === 'reviewed').length,
+      critical: allReports.filter(r => r.retentionPriority === 'critical').length,
+      high: allReports.filter(r => r.retentionPriority === 'high').length
+    };
     res.json(stats);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

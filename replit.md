@@ -132,7 +132,47 @@ git merge main --no-edit
 git add . && git commit -m "Merge main"
 ```
 
+## GDPR Compliance Architecture
+
+### Privacy-First Design
+Platform operates session-based (no user accounts required), minimizing personal data collection by design.
+
+### Legal Documentation
+| Document | Location | Purpose |
+|----------|----------|---------|
+| Privacy Policy | `PRIVACY_POLICY.md` | User-facing data practices disclosure |
+| Legitimate Interest Assessment | `docs/LEGITIMATE_INTEREST_ASSESSMENT.md` | Art. 6(1)(f) justification for AI logging |
+| Records of Processing | `docs/RECORDS_OF_PROCESSING.md` | Art. 30 compliance documentation |
+
+### Consent Management System
+- **Database Tables**: `consent_records`, `dsar_requests`
+- **API Routes**: `/api/consent/*` (preferences, DSAR requests, audit trail)
+- **Consent Types**: `model_training`, `research_use`, `email_contact`, `analytics`
+- **IP Anonymization**: Last octet removed before storage
+
+### Data Subject Access Requests (DSAR)
+| Request Type | Processing | Timeframe |
+|--------------|------------|-----------|
+| Access | Export session data | 30 days |
+| Erasure | Delete all session data | 30 days |
+| Portability | JSON export | 30 days |
+| Objection | Revoke all optional consents | 30 days |
+
+### Retention Periods
+| Data Type | Retention | Legal Basis |
+|-----------|-----------|-------------|
+| AI Interactions | 12 months | Legitimate interest |
+| Exported Reports | 7 years max | Research/legal |
+| Technical Logs | 30-90 days | Security |
+| Sessions | Session + 90 days | Contract |
+
+### Key Files
+- `server/routes/consent.ts` - Consent and DSAR API endpoints
+- `shared/schema.ts` - `consentRecords`, `dsarRequests` tables
+
 ## Recent Changes
+- **2025-02-04**: Added GDPR compliance system with consent tracking and DSAR API
+- **2025-02-04**: Created legal documentation (LIA, ROPA, Privacy Policy)
 - **2025-02-04**: Integrated Atropos OSINT scanner routes and services
 - **2025-02-04**: Added homepage video with tumbling tarot card animation
 - **2025-02-03**: Fixed React infinite loop in GameProvider (useRef for learningProfile)

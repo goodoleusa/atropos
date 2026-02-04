@@ -8,6 +8,7 @@ import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
 import atroposRoutes from "./routes/atropos";
 import securityAdvisorRoutes from "./routes/securityAdvisor";
+import consentRoutes from "./routes/consent";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -51,6 +52,9 @@ export async function registerRoutes(
   
   // Register Security Advisor routes (behavior + Atropos integration)
   app.use("/api/security", securityAdvisorRoutes);
+  
+  // Register Consent management routes (GDPR compliance)
+  app.use("/api/consent", consentRoutes);
   
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
