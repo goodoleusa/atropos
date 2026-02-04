@@ -2,7 +2,6 @@ import OpenAI from "openai";
 import { nanoid } from "nanoid";
 import { 
   SECURITY_AGENTS, 
-  getAgentForCategory, 
   getAgentById,
   AgentConfig,
   AgentRun 
@@ -21,6 +20,16 @@ interface OrchestrationResult {
   totalLatencyMs: number;
   totalTokens: number;
 }
+
+const CATEGORY_AGENTS: Record<string, string[]> = {
+  'vulnerability': ['vuln_analyst', 'threat_intel'],
+  'vuln': ['vuln_analyst', 'threat_intel'],
+  'osint': ['osint_analyst', 'network_recon'],
+  'intel': ['threat_intel', 'osint_analyst'],
+  'secret_detection': ['secret_hunter', 'vuln_analyst'],
+  'network': ['network_recon', 'vuln_analyst'],
+  'general': ['vuln_analyst', 'osint_analyst', 'threat_intel', 'secret_hunter', 'network_recon'],
+};
 
 function getOpenRouterClient(): OpenAI {
   if (process.env.OPENROUTER_API_KEY) {
@@ -121,6 +130,13 @@ export class AgentOrchestrator {
     return `Analyze the following scan results:\n\n${dataStr}\n\nProvide your analysis following your output format guidelines.`;
   }
 
+  private getAgentsForCategory(category: string): AgentConfig[] {
+    const agentIds = CATEGORY_AGENTS[category] || CATEGORY_AGENTS['general'];
+    return agentIds
+      .map(id => getAgentById(id))
+      .filter((a): a is AgentConfig => a !== undefined);
+  }
+
   async orchestrate(
     scanData: any,
     scanId: string,
@@ -142,8 +158,7 @@ export class AgentOrchestrator {
         .map(id => getAgentById(id))
         .filter((a): a is AgentConfig => a !== undefined && a.role !== "synthesis");
     } else {
-      const matchedAgent = getAgentForCategory(category);
-      agentsToRun = matchedAgent ? [matchedAgent] : [];
+      agentsToRun = this.getAgentsForCategory(category);
     }
 
     const runPromises = agentsToRun.map(agent => 
