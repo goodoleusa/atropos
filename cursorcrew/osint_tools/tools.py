@@ -379,6 +379,87 @@ def abuseipdb_check(ip_address: str, max_age_in_days: int = 90) -> str:
         return f"Error: {e}"
 
 
+# Hybrid Analysis (Falcon Sandbox) API v2
+_BASE_HA = "https://hybrid-analysis.com/api/v2"
+
+
+def _get_ha_key() -> str:
+    k = get_api_key("hybridanalysis")
+    return (k or "") if isinstance(k, str) else ""
+
+
+def _req_ha(endpoint: str, timeout: int = 20) -> dict:
+    key = _get_ha_key()
+    if not key:
+        return {"error": "Hybrid Analysis API key not set"}
+    try:
+        import requests
+        url = f"{_BASE_HA}/{endpoint.lstrip('/')}"
+        headers = {"api-key": key, "User-Agent": "Falcon Sandbox"}
+        r = requests.get(url, headers=headers, timeout=timeout)
+        r.raise_for_status()
+        return r.json()
+    except Exception as e:
+        logger.warning("Hybrid Analysis request failed %s: %s", endpoint, e)
+        return {"error": str(e)}
+
+
+def hybrid_analysis_hash_search(hash_value: str) -> str:
+    """Search Hybrid Analysis for malware reports by file hash (MD5, SHA1, SHA256, or SHA512). Requires HYBRID_ANALYSIS_API_KEY. Input: file hash."""
+    h = (hash_value or "").strip()
+    if not h or len(h) not in (32, 40, 64, 128):
+        return "Error: Invalid hash (expected MD5/SHA1/SHA256/SHA512)."
+    result = _req_ha(f"search/hash?hash={quote(h)}")
+    if "error" in result:
+        return f"Error: {result.get('error', 'Unknown error')}"
+    try:
+        return json.dumps(result, indent=2)
+    except Exception:
+        return str(result)
+
+
+def hybrid_analysis_overview(sha256: str) -> str:
+    """Get Hybrid Analysis overview/summary for a sample by SHA256. Requires HYBRID_ANALYSIS_API_KEY. Input: SHA256 hash."""
+    h = (sha256 or "").strip()
+    if not h or len(h) != 64 or not re.match(r"^[a-fA-F0-9]+$", h):
+        return "Error: Invalid SHA256 (64 hex characters required)."
+    result = _req_ha(f"overview/{quote(h)}/summary")
+    if "error" in result:
+        return f"Error: {result.get('error', 'Unknown error')}"
+    try:
+        return json.dumps(result, indent=2)
+    except Exception:
+        return str(result)
+
+
+# IPinfo API
+_BASE_IPINFO = "https://ipinfo.io"
+
+
+def _get_ipinfo_token() -> str:
+    k = get_api_key("ipinfo")
+    return (k or "") if isinstance(k, str) else ""
+
+
+def ipinfo_lookup(ip_address: str) -> str:
+    """Get IP geolocation and ASN info from IPinfo (city, region, country, org, hostname). Optional IPINFO_TOKEN for higher rate limits. Input: IPv4 or IPv6 address."""
+    ip = (ip_address or "").strip()
+    if not ip or not re.match(r"^[\da-f.:]+$", ip, re.I):
+        return "Error: Invalid IP address."
+    token = _get_ipinfo_token()
+    try:
+        import requests
+        url = f"{_BASE_IPINFO}/{quote(ip)}"
+        if token:
+            url += f"?token={quote(token)}"
+        r = requests.get(url, timeout=15, headers={"User-Agent": "OSINT-CrewAI-Tool/1.0"})
+        r.raise_for_status()
+        return json.dumps(r.json(), indent=2)
+    except Exception as e:
+        logger.warning("IPinfo request failed: %s", e)
+        return f"Error: {e}"
+
+
 # Export lists
 VIRUSTOTAL_TOOLS = [
     virustotal_domain_report,
@@ -388,6 +469,15 @@ VIRUSTOTAL_TOOLS = [
 
 ABUSEIPDB_TOOLS = [
     abuseipdb_check,
+]
+
+HYBRID_ANALYSIS_TOOLS = [
+    hybrid_analysis_hash_search,
+    hybrid_analysis_overview,
+]
+
+IPINFO_TOOLS = [
+    ipinfo_lookup,
 ]
 
 
@@ -414,6 +504,31 @@ def get_abuseipdb_crewai_tools():
         from crewai import tool
         return [
             tool("AbuseIPDB IP Check")(abuseipdb_check),
+        ]
+    except ImportError:
+        return []
+
+
+def get_hybrid_analysis_crewai_tools():
+    """Return list of CrewAI @tool-wrapped Hybrid Analysis functions for Agent(tools=...)."""
+    if not is_key_set("hybridanalysis"):
+        return []
+    try:
+        from crewai import tool
+        return [
+            tool("Hybrid Analysis Hash Search")(hybrid_analysis_hash_search),
+            tool("Hybrid Analysis Overview")(hybrid_analysis_overview),
+        ]
+    except ImportError:
+        return []
+
+
+def get_ipinfo_crewai_tools():
+    """Return list of CrewAI @tool-wrapped IPinfo functions for Agent(tools=...). Works without token (limited); IPINFO_TOKEN improves rate limits."""
+    try:
+        from crewai import tool
+        return [
+            tool("IPinfo Lookup")(ipinfo_lookup),
         ]
     except ImportError:
         return []

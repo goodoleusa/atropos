@@ -475,7 +475,7 @@ def write_investigation(
     """
     base_path = _normalize_base_path(base_path)
     today = date.today().isoformat()
-    inv_root = os.path.join(base_path, "10-Investigations", investigation_id)
+    inv_root = os.path.join(base_path, investigation_id)
     subdirs = ["domain", "asn", "organization", "person", "ip", "threat_actor", "technique", "vulnerability"]
     os.makedirs(inv_root, exist_ok=True)
     for d in subdirs:

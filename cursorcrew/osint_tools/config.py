@@ -23,6 +23,7 @@ API_KEY_ENV = {
     "shodan": "SHODAN_API_KEY",
     "ipinfo": "IPINFO_TOKEN",
     "hackertarget": "HACKERTARGET_API_KEY",
+    "hybridanalysis": "HYBRID_ANALYSIS_API_KEY",
 }
 
 # Tools that work without any key (no-op or public API)
@@ -90,7 +91,7 @@ def _normalize_path(path: str) -> str:
 
 
 def get_obsidian_base_path() -> str:
-    """Base path for writing investigation folders; default 10-Investigations in repo."""
+    """Path to the folder that directly contains investigation subfolders (e.g. .../10-Investigations). No extra segment is appended."""
     path = (os.environ.get("OBSIDIAN_INVESTIGATIONS_PATH") or "").strip()
     if path:
         return _normalize_path(path)
