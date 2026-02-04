@@ -4,9 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search } from 'lucide-react';
-import { ModmailDialog } from './ModmailDialog';
-import { MultiplayerLobby } from './MultiplayerLobby';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot } from 'lucide-react';
 
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
@@ -23,6 +21,7 @@ export default function QuickNav() {
   const navItems = [
     { path: '/', icon: Home, label: 'Home', color: 'amber' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
+    { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
@@ -31,7 +30,7 @@ export default function QuickNav() {
   if (location === '/admin' || location === '/login') return null;
 
   return (
-    <div className="hidden md:flex fixed bottom-48 left-4 z-50 flex-col items-start gap-2" data-testid="quick-nav">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2" data-testid="quick-nav">
       {expanded && (
         <div className="bg-black/90 backdrop-blur border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2">
           {currentSession && (
@@ -84,11 +83,6 @@ export default function QuickNav() {
                 <span className="text-[10px] text-amber-400">{gameState.inventory?.length || 0} clues</span>
               </div>
             </div>
-          </div>
-
-          <div className="border-t border-stone-800 pt-2 mt-2 flex gap-1">
-            <ModmailDialog />
-            <MultiplayerLobby />
           </div>
         </div>
       )}

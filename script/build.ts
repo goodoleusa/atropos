@@ -37,39 +37,17 @@ const allowlist = [
 ];
 
 async function buildAtropos(): Promise<boolean> {
-  // DISABLED: Atropos is an optional Rust tool that requires cargo
-  // Skip during deployment to prevent build hangs
-  // To enable: set ENABLE_ATROPOS_BUILD=1 environment variable
-  if (!process.env.ENABLE_ATROPOS_BUILD) {
-    console.log("⚠ Atropos build skipped (optional Rust tool - set ENABLE_ATROPOS_BUILD=1 to enable)");
-    return false;
-  }
-  
   try {
-    // Check if cargo is available with timeout
-    await Promise.race([
-      execAsync("cargo --version"),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("cargo check timeout")), 5000))
-    ]);
-    
-    // Check if atropos source exists
-    const atroposDir = path.join(process.cwd(), "tools", "atropos");
-    try {
-      await readFile(path.join(atroposDir, "Cargo.toml"));
-    } catch {
-      console.log("⚠ Atropos source not found at tools/atropos, skipping build");
-      return false;
-    }
+    // Check if cargo is available
+    await execAsync("cargo --version");
     
     console.log("building atropos tool...");
+    const atroposDir = path.join(process.cwd(), "tools", "atropos");
     const targetDir = path.join(atroposDir, "target", "release", "atropos");
     const distBinDir = path.join(process.cwd(), "dist", "bin");
     
-    // Build atropos with timeout (5 minutes max)
-    await Promise.race([
-      execAsync("cargo build --release", { cwd: atroposDir }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("Atropos build timeout (5 min)")), 300000))
-    ]);
+    // Build atropos
+    await execAsync("cargo build --release", { cwd: atroposDir });
     
     // Ensure dist/bin directory exists
     await mkdir(distBinDir, { recursive: true });
@@ -86,10 +64,6 @@ async function buildAtropos(): Promise<boolean> {
   } catch (error: any) {
     if (error.message?.includes("cargo: command not found") || error.code === "ENOENT") {
       console.log("⚠ cargo not found, skipping atropos build (install Rust to build)");
-      return false;
-    }
-    if (error.message?.includes("timeout")) {
-      console.log("⚠ Atropos build timed out, skipping");
       return false;
     }
     console.warn("⚠ Failed to build atropos:", error.message);

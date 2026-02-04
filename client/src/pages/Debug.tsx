@@ -14,24 +14,10 @@ interface SystemMetric {
 }
 
 const SYSTEM_SECRETS = [
-  { trigger: "cpu", message: "CPU cycles reveal patterns. Pattern: 7-4-2-8-1", missionHint: "Operation: THREADRIPPER" },
-  { trigger: "memory", message: "Memory fragments reassembling... The void remembers your first command.", missionHint: "Mission: GHOST PROTOCOL" },
-  { trigger: "network", message: "Packet analysis complete. Hidden endpoint: /api/whisper", missionHint: "Campaign: DARKNET RISING" },
-  { trigger: "disk", message: "Sector scan initiated. Corrupted block at 0x7F4D contains: 'TRUST NO OUTPUT'", missionHint: "Objective: DATA EXFIL" },
-];
-
-const MISSION_CODENAMES = [
-  "SHADOW PROTOCOL", "GHOST IN THE WIRE", "ZERO DAY SUNRISE", "PHOENIX REBORN",
-  "SILENT THUNDER", "CRIMSON TIDE", "BLACK ICE", "VIPER STRIKE",
-  "QUANTUM BREACH", "IRON LOTUS", "NIGHTFALL OPS", "ARCTIC FOX"
-];
-
-const CLUE_FRAGMENTS = [
-  { id: "fragment-alpha", name: "Fragment Alpha", hint: "First piece of the cipher key" },
-  { id: "fragment-beta", name: "Fragment Beta", hint: "Server logs reveal timing patterns" },
-  { id: "fragment-gamma", name: "Fragment Gamma", hint: "The admin left breadcrumbs" },
-  { id: "fragment-delta", name: "Fragment Delta", hint: "Check the response headers" },
-  { id: "fragment-omega", name: "Fragment Omega", hint: "Final piece unlocks the vault" },
+  { trigger: "cpu", message: "CPU cycles reveal patterns. Pattern: 7-4-2-8-1" },
+  { trigger: "memory", message: "Memory fragments reassembling... The void remembers your first command." },
+  { trigger: "network", message: "Packet analysis complete. Hidden endpoint: /api/whisper" },
+  { trigger: "disk", message: "Sector scan initiated. Corrupted block at 0x7F4D contains: 'TRUST NO OUTPUT'" },
 ];
 
 export default function Debug() {
@@ -94,9 +80,7 @@ export default function Debug() {
   }, []);
 
   const generateLogEntry = () => {
-    const types = ["INFO", "DEBUG", "WARN", "ERROR", "TRACE", "RECON", "INTEL"];
-    const missionRef = MISSION_CODENAMES[Math.floor(Math.random() * MISSION_CODENAMES.length)];
-    const clueRef = CLUE_FRAGMENTS[Math.floor(Math.random() * CLUE_FRAGMENTS.length)];
+    const types = ["INFO", "DEBUG", "WARN", "ERROR", "TRACE"];
     const messages = [
       "Connection pool refreshed",
       "Cache invalidation triggered",
@@ -108,18 +92,6 @@ export default function Debug() {
       "Void proximity warning",
       "Temporal anomaly logged",
       "User behavior analyzed",
-      `Mission [${missionRef}] status: ACTIVE`,
-      `Clue detected: ${clueRef.name} - ${clueRef.hint}`,
-      `Target acquired for operation ${missionRef}`,
-      "C2 beacon received from remote agent",
-      "QR payload decoded successfully",
-      `Encrypted channel opened: ${missionRef.toLowerCase().replace(/ /g, '-')}`,
-      "Atropos scan results pending review",
-      `Agent check-in: ${missionRef} operative online`,
-      "Exfiltration queue: 3 items pending",
-      "Firewall bypass successful - maintaining stealth",
-      `Intel drop received: ${clueRef.hint}`,
-      "Network pivot established through proxy chain",
     ];
     const type = types[Math.floor(Math.random() * types.length)];
     const msg = messages[Math.floor(Math.random() * messages.length)];

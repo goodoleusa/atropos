@@ -220,8 +220,7 @@ const moduleDescriptions: Record<ModuleKey, { name: string; desc: string; icon: 
   terminal_cmds: { name: 'Terminal Commands', desc: 'Unix-like commands', icon: '💻' },
   clue_system: { name: 'Clue Tracking', desc: 'Clue management', icon: '🔍' },
   crypto_puzzles: { name: 'Crypto Puzzles', desc: 'Cipher decoding', icon: '🔐' },
-  osint_recon: { name: 'OSINT Recon', desc: 'Reconnaissance', icon: '🎯' },
-  atropos_scans: { name: 'Atropos Scans', desc: 'OSINT/vuln scanning', icon: '🔬' }
+  osint_recon: { name: 'OSINT Recon', desc: 'Reconnaissance', icon: '🎯' }
 };
 
 interface BattleResult {

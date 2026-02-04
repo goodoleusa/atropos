@@ -7,7 +7,6 @@ import { GameProvider } from "@/hooks/useGameSession";
 import { ReportProvider } from "@/hooks/useReportContext";
 import DevModePanel from "@/components/DevModePanel";
 import QuickNav from "@/components/QuickNav";
-import MobileFloatingMenu from "@/components/MobileFloatingMenu";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
@@ -22,6 +21,7 @@ import Wiki from "@/pages/Wiki";
 import AILab from "@/pages/AILab";
 import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 import VideoGallery from "@/pages/VideoGallery";
+import Agents from "@/pages/Agents";
 
 function Router() {
   return (
@@ -39,6 +39,7 @@ function Router() {
       <Route path="/report" component={ReportBuilder} />
       <Route path="/wiki" component={Wiki} />
       <Route path="/videos" component={VideoGallery} />
+      <Route path="/agents" component={Agents} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -54,7 +55,6 @@ function App() {
             <Router />
             <DevModePanel />
             <QuickNav />
-            <MobileFloatingMenu />
           </ReportProvider>
         </GameProvider>
       </TooltipProvider>

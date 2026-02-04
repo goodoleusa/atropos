@@ -7,7 +7,6 @@ import { registerChatRoutes } from "./replit_integrations/chat";
 import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
 import atroposRoutes from "./routes/atropos";
-import agentsRoutes from "./routes/agents";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -81,8 +80,8 @@ export async function registerRoutes(
   // Register Behavior Analysis routes
   app.use("/api/behavior", behaviorRoutes);
   
-  // Register Multi-Agent Analysis routes
-  app.use("/api/agents", agentsRoutes);
+  // Register Atropos Scanner routes
+  app.use("/api/atropos", atroposRoutes);
   
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
@@ -1700,200 +1699,254 @@ BEHAVIOR:
     }
   });
 
-  // ============== MODMAIL ROUTES ==============
+  // ============================================
+  // THREAT INTELLIGENCE FEEDS
+  // ============================================
   
-  // Get all modmail (admin)
-  app.get("/api/admin/modmail", async (req, res) => {
-    try {
-      const mail = await storage.getAllModmail();
-      res.json(mail);
-    } catch (error) {
-      console.error("Get modmail error:", error);
-      res.status(500).json({ error: "Failed to retrieve modmail" });
-    }
-  });
-
-  // Get user's own modmail tickets
-  app.get("/api/modmail/my-tickets", async (req, res) => {
-    try {
-      const sessionToken = req.headers['x-session-token'] as string;
-      if (!sessionToken) {
-        return res.status(400).json({ error: "Session token required" });
-      }
-      const tickets = await storage.getModmailBySession(sessionToken);
-      res.json(tickets);
-    } catch (error) {
-      console.error("Get user modmail error:", error);
-      res.status(500).json({ error: "Failed to retrieve tickets" });
-    }
-  });
-
-  // Submit new modmail ticket
-  app.post("/api/modmail", rateLimit(5, 60000), async (req, res) => {
-    try {
-      const { subject, message, category, username, sessionToken } = req.body;
-      
-      if (!subject || !message || !sessionToken) {
-        return res.status(400).json({ error: "Subject, message, and session required" });
-      }
-      
-      const ticketId = `ticket-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
-      
-      const ticket = await storage.createModmail({
-        ticketId,
-        sessionToken,
-        username: username || 'Anonymous',
-        subject: sanitizeInput(subject, 200) || 'No subject',
-        message: sanitizeInput(message, 5000) || '',
-        category: category || 'general',
-        status: 'open',
-        priority: 'normal'
-      });
-      
-      res.json({ success: true, ticket });
-    } catch (error) {
-      console.error("Create modmail error:", error);
-      res.status(500).json({ error: "Failed to create ticket" });
-    }
-  });
-
-  // Admin respond to modmail
-  app.put("/api/admin/modmail/:ticketId", async (req, res) => {
-    try {
-      const { ticketId } = req.params;
-      const { adminResponse, status, priority, respondedBy } = req.body;
-      
-      const updates: any = { status, priority };
-      if (adminResponse) {
-        updates.adminResponse = sanitizeInput(adminResponse, 5000);
-        updates.respondedBy = respondedBy || 'Admin';
-        updates.respondedAt = new Date();
-      }
-      
-      const updated = await storage.updateModmail(ticketId, updates);
-      if (!updated) {
-        return res.status(404).json({ error: "Ticket not found" });
-      }
-      
-      res.json(updated);
-    } catch (error) {
-      console.error("Update modmail error:", error);
-      res.status(500).json({ error: "Failed to update ticket" });
-    }
-  });
-
-  // ============== MULTIPLAYER LOBBY ROUTES ==============
+  // Allowlist of approved threat intel feed URLs (security: prevents SSRF)
+  const THREAT_INTEL_FEEDS: Record<string, { url: string; method: 'GET' | 'POST'; body?: string }> = {
+    'abuse_ch_urlhaus': { url: 'https://urlhaus-api.abuse.ch/v1/', method: 'POST', body: 'query=get_recent&limit=25' },
+    'abuse_ch_threatfox': { url: 'https://threatfox-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_iocs&days=1' },
+    'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_recent&selector=100' },
+    'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
+    'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
+  };
   
-  // Get active lobbies
-  app.get("/api/lobbies", async (req, res) => {
+  app.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) => {
     try {
-      const lobbies = await storage.getActiveLobbies();
-      res.json(lobbies);
-    } catch (error) {
-      console.error("Get lobbies error:", error);
-      res.status(500).json({ error: "Failed to retrieve lobbies" });
+      const { feedId } = req.body;
+      
+      if (!feedId) {
+        return res.status(400).json({ error: "feedId required" });
+      }
+      
+      // Security: Only allow approved feeds from allowlist
+      const feed = THREAT_INTEL_FEEDS[feedId];
+      if (!feed) {
+        return res.status(400).json({ error: "Unknown feed. Allowed: " + Object.keys(THREAT_INTEL_FEEDS).join(', ') });
+      }
+      
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      
+      const headers: Record<string, string> = {
+        'User-Agent': 'NEXUS-Security-Platform/1.0',
+        'Accept': 'application/json'
+      };
+      
+      let response;
+      if (feed.method === 'POST') {
+        response = await fetch(feed.url, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: feed.body,
+          signal: controller.signal
+        });
+      } else {
+        response = await fetch(feed.url, { headers, signal: controller.signal });
+      }
+      
+      clearTimeout(timeout);
+      
+      if (!response.ok) {
+        throw new Error(`Feed returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Return trimmed data to avoid huge payloads
+      const trimmed = Array.isArray(data) 
+        ? data.slice(0, 50) 
+        : (data.data ? { ...data, data: data.data.slice?.(0, 50) || data.data } : data);
+      
+      res.json(trimmed);
+    } catch (error: any) {
+      console.error("Threat intel fetch error:", error);
+      res.status(500).json({ error: error.message || "Failed to fetch threat intel" });
     }
   });
 
-  // Get specific lobby
-  app.get("/api/lobbies/:lobbyId", async (req, res) => {
+  // ============================================
+  // SECURITY AGENTS ANALYSIS
+  // ============================================
+  
+  app.post("/api/agents/analyze", rateLimit(20, 60000), async (req, res) => {
     try {
-      const lobby = await storage.getLobbyById(req.params.lobbyId);
-      if (!lobby) {
-        return res.status(404).json({ error: "Lobby not found" });
-      }
-      res.json(lobby);
-    } catch (error) {
-      console.error("Get lobby error:", error);
-      res.status(500).json({ error: "Failed to retrieve lobby" });
-    }
-  });
-
-  // Create new lobby
-  app.post("/api/lobbies", rateLimit(10, 60000), async (req, res) => {
-    try {
-      const { name, mode, maxPlayers, campaignId, sessionToken, alias } = req.body;
+      const { agentId, prompt, sessionToken } = req.body;
       
-      if (!name || !sessionToken) {
-        return res.status(400).json({ error: "Name and session required" });
+      if (!agentId || !prompt) {
+        return res.status(400).json({ error: "agentId and prompt required" });
       }
       
-      const lobbyId = `lobby-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+      // Import agent definitions
+      const { SECURITY_AGENTS, getAgentById } = await import("@shared/agents");
+      const agent = getAgentById(agentId);
       
-      const lobby = await storage.createLobby({
-        lobbyId,
-        name: sanitizeInput(name, 100) || 'New Lobby',
-        mode: mode || 'coop',
-        maxPlayers: Math.min(maxPlayers || 4, 8),
-        campaignId: campaignId || null,
-        currentPlayers: [{ sessionToken, alias: alias || 'Host', score: 0 }],
-        status: 'waiting',
-        settings: {},
-        expiresAt: new Date(Date.now() + 3600000) // 1 hour expiry
+      if (!agent) {
+        return res.status(404).json({ error: "Agent not found" });
+      }
+      
+      // Get admin config for any overrides
+      const adminConfig = await storage.getAdminConfig();
+      const agentOverrides = adminConfig?.agentConfig?.[agentId] || {};
+      
+      // Combine base instructions (admin protected) with user prompt
+      const baseInstructions = agentOverrides.baseInstructions || agent.baseInstructions;
+      const model = agentOverrides.model || agent.defaultModel;
+      const temperature = agentOverrides.temperature ?? agent.defaultTemperature;
+      
+      const fullPrompt = `${baseInstructions}\n\n---\nUser Request:\n${prompt}`;
+      
+      // Call OpenRouter API
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://nexus-security.replit.app",
+          "X-Title": "NEXUS Security Platform"
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: baseInstructions },
+            { role: "user", content: prompt }
+          ],
+          temperature,
+          max_tokens: 2000
+        })
       });
       
-      res.json({ success: true, lobby });
-    } catch (error) {
-      console.error("Create lobby error:", error);
-      res.status(500).json({ error: "Failed to create lobby" });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenRouter API error: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      const analysis = data.choices?.[0]?.message?.content || "No response generated";
+      
+      res.json({
+        agentId,
+        agentName: agent.name,
+        analysis,
+        model,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error("Agent analysis error:", error);
+      res.status(500).json({ error: error.message || "Analysis failed" });
     }
   });
 
-  // Join lobby
-  app.post("/api/lobbies/:lobbyId/join", rateLimit(20, 60000), async (req, res) => {
+  // ============================================
+  // ADMIN AGENT CONFIGURATION (Admin Auth Required)
+  // ============================================
+  
+  // Helper: Check if session has admin (devMode) enabled
+  async function checkAdminAuth(req: any, res: any): Promise<boolean> {
+    const sessionToken = req.headers['x-session-token'] || req.query.sessionToken;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      res.status(401).json({ error: "Session token required" });
+      return false;
+    }
+    
+    const session = await storage.getSessionByToken(sessionToken);
+    if (!session) {
+      res.status(401).json({ error: "Invalid session" });
+      return false;
+    }
+    
+    // Check if devMode is enabled in session settings
+    const settings = session.settings as Record<string, any> || {};
+    if (!settings.devMode) {
+      res.status(403).json({ error: "Admin access required (devMode must be enabled)" });
+      return false;
+    }
+    
+    return true;
+  }
+  
+  // Get admin agent configs (base instructions) - admin only
+  app.get("/api/admin/agent-config", async (req, res) => {
     try {
-      const lobbyId = req.params.lobbyId as string;
-      const { sessionToken, alias } = req.body;
+      if (!await checkAdminAuth(req, res)) return;
       
-      if (!sessionToken || typeof sessionToken !== 'string') {
-        return res.status(400).json({ error: "Session required" });
+      const config = await storage.getAdminConfig();
+      res.json(config?.agentConfig || {});
+    } catch (error) {
+      console.error("Get agent config error:", error);
+      res.status(500).json({ error: "Failed to get agent config" });
+    }
+  });
+  
+  // Update admin agent configs (protected base instructions) - admin only
+  app.put("/api/admin/agent-config", async (req, res) => {
+    try {
+      if (!await checkAdminAuth(req, res)) return;
+      
+      const { agentId, baseInstructions, model, temperature } = req.body;
+      
+      if (!agentId) {
+        return res.status(400).json({ error: "agentId required" });
       }
       
-      const lobby = await storage.joinLobby(lobbyId, {
-        sessionToken,
-        alias: alias || `Agent-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+      const currentConfig = await storage.getAdminConfig() || { agentConfig: {} };
+      const agentConfigs = currentConfig.agentConfig || {};
+      
+      agentConfigs[agentId] = {
+        baseInstructions: baseInstructions || agentConfigs[agentId]?.baseInstructions,
+        model: model || agentConfigs[agentId]?.model,
+        temperature: temperature ?? agentConfigs[agentId]?.temperature,
+        updatedAt: new Date().toISOString()
+      };
+      
+      await storage.updateAdminConfig({ agentConfig: agentConfigs });
+      
+      res.json({ success: true, config: agentConfigs[agentId] });
+    } catch (error) {
+      console.error("Update agent config error:", error);
+      res.status(500).json({ error: "Failed to update agent config" });
+    }
+  });
+  
+  // Get W&B configuration (admin only)
+  app.get("/api/admin/wandb-config", async (req, res) => {
+    try {
+      if (!await checkAdminAuth(req, res)) return;
+      
+      const config = await storage.getAdminConfig();
+      // Only return non-sensitive info
+      res.json({
+        enabled: !!config?.wandbConfig?.enabled,
+        project: config?.wandbConfig?.project || 'nexus-agents',
+        entity: config?.wandbConfig?.entity || ''
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get W&B config" });
+    }
+  });
+  
+  // Update W&B configuration (admin only)
+  app.put("/api/admin/wandb-config", async (req, res) => {
+    try {
+      if (!await checkAdminAuth(req, res)) return;
+      
+      const { enabled, project, entity, apiKey } = req.body;
+      
+      const currentConfig = await storage.getAdminConfig() || {};
+      
+      await storage.updateAdminConfig({
+        wandbConfig: {
+          enabled: enabled ?? currentConfig.wandbConfig?.enabled ?? false,
+          project: project || currentConfig.wandbConfig?.project || 'nexus-agents',
+          entity: entity || currentConfig.wandbConfig?.entity || '',
+          apiKey: apiKey || currentConfig.wandbConfig?.apiKey
+        }
       });
       
-      if (!lobby) {
-        return res.status(400).json({ error: "Could not join lobby (full or not found)" });
-      }
-      
-      res.json({ success: true, lobby });
+      res.json({ success: true });
     } catch (error) {
-      console.error("Join lobby error:", error);
-      res.status(500).json({ error: "Failed to join lobby" });
-    }
-  });
-
-  // Leave lobby
-  app.post("/api/lobbies/:lobbyId/leave", async (req, res) => {
-    try {
-      const { lobbyId } = req.params;
-      const { sessionToken } = req.body;
-      
-      const lobby = await storage.leaveLobby(lobbyId, sessionToken);
-      res.json({ success: true, lobby });
-    } catch (error) {
-      console.error("Leave lobby error:", error);
-      res.status(500).json({ error: "Failed to leave lobby" });
-    }
-  });
-
-  // Update lobby status (start game, etc)
-  app.put("/api/lobbies/:lobbyId", async (req, res) => {
-    try {
-      const { lobbyId } = req.params;
-      const { status, settings } = req.body;
-      
-      const lobby = await storage.updateLobby(lobbyId, { status, settings });
-      if (!lobby) {
-        return res.status(404).json({ error: "Lobby not found" });
-      }
-      
-      res.json(lobby);
-    } catch (error) {
-      console.error("Update lobby error:", error);
-      res.status(500).json({ error: "Failed to update lobby" });
+      res.status(500).json({ error: "Failed to update W&B config" });
     }
   });
 

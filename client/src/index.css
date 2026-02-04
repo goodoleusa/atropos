@@ -32,8 +32,9 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 
-  --font-mono: "JetBrains Mono", monospace;
-  --font-display: "Exo 2", sans-serif;
+  --font-mono: "Share Tech Mono", monospace;
+  --font-display: "Orbitron", sans-serif;
+  --font-retro: "VT323", monospace;
   --font-sans: "Inter", sans-serif;
 
   --radius: 0rem;
@@ -75,7 +76,7 @@
     @apply border-border;
   }
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-mono antialiased bg-background text-foreground;
     background-image: 
       linear-gradient(135deg, rgba(20, 184, 166, 0.03) 0%, transparent 50%, rgba(249, 115, 22, 0.05) 100%),
       radial-gradient(ellipse at 80% 20%, rgba(217, 119, 6, 0.08), transparent 50%),
@@ -276,162 +277,15 @@
     100% { transform: skew(0deg); }
   }
 
-  .font-display {
-    font-family: 'Exo 2', sans-serif;
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
   }
 
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+  .font-share-tech {
+    font-family: 'Share Tech Mono', monospace;
   }
-
-  h1, h2, h3 {
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 600;
+  
+  .font-vt323 {
+    font-family: 'VT323', monospace;
   }
-}
-
-/* Molten Steel Border Components */
-.molten-box {
-  position: relative;
-  background: linear-gradient(135deg, rgba(15, 10, 5, 0.95) 0%, rgba(10, 8, 5, 0.98) 100%);
-  border: 1px solid transparent;
-  border-image: linear-gradient(
-    135deg,
-    hsl(30, 80%, 45%) 0%,
-    hsl(25, 70%, 35%) 25%,
-    hsl(20, 60%, 25%) 50%,
-    hsl(25, 70%, 35%) 75%,
-    hsl(30, 80%, 45%) 100%
-  ) 1;
-}
-
-.molten-box::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  right: -1px;
-  bottom: -1px;
-  background: linear-gradient(
-    135deg,
-    hsl(35, 90%, 55%) 0%,
-    hsl(30, 80%, 40%) 20%,
-    hsl(25, 60%, 20%) 50%,
-    hsl(30, 80%, 40%) 80%,
-    hsl(35, 90%, 55%) 100%
-  );
-  z-index: -1;
-  opacity: 0.8;
-}
-
-.molten-box::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 8, 5, 0.97);
-  z-index: -1;
-}
-
-/* Cutting torch edge effect */
-.molten-edge {
-  position: relative;
-  border: 2px solid transparent;
-  background: 
-    linear-gradient(rgba(10, 8, 5, 0.98), rgba(10, 8, 5, 0.98)) padding-box,
-    linear-gradient(
-      90deg,
-      hsl(35, 100%, 60%) 0%,
-      hsl(30, 90%, 50%) 5%,
-      hsl(25, 70%, 30%) 15%,
-      hsl(20, 50%, 15%) 30%,
-      hsl(20, 50%, 15%) 70%,
-      hsl(25, 70%, 30%) 85%,
-      hsl(30, 90%, 50%) 95%,
-      hsl(35, 100%, 60%) 100%
-    ) border-box;
-  box-shadow: 
-    0 0 15px rgba(217, 119, 6, 0.15),
-    inset 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-/* Glowing cut line - top edge only */
-.molten-cut-top {
-  position: relative;
-  background: rgba(10, 8, 5, 0.95);
-  border: 1px solid hsl(25, 50%, 20%);
-}
-
-.molten-cut-top::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: 10%;
-  right: 10%;
-  height: 3px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    hsl(35, 100%, 55%) 10%,
-    hsl(40, 100%, 65%) 50%,
-    hsl(35, 100%, 55%) 90%,
-    transparent 100%
-  );
-  box-shadow: 
-    0 0 10px hsl(35, 100%, 50%),
-    0 0 20px hsl(30, 90%, 45%),
-    0 0 30px hsl(25, 80%, 35%);
-  animation: molten-pulse 3s ease-in-out infinite;
-}
-
-/* Spark drip effect on corners */
-.molten-corner {
-  position: relative;
-  background: rgba(10, 8, 5, 0.95);
-  border: 1px solid hsl(25, 40%, 18%);
-}
-
-.molten-corner::before,
-.molten-corner::after {
-  content: '';
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: hsl(40, 100%, 60%);
-  border-radius: 50%;
-  box-shadow: 
-    0 0 6px hsl(35, 100%, 55%),
-    0 0 12px hsl(30, 90%, 45%);
-}
-
-.molten-corner::before {
-  top: -2px;
-  left: -2px;
-}
-
-.molten-corner::after {
-  top: -2px;
-  right: -2px;
-}
-
-@keyframes molten-pulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
-
-/* Professional paragraph box */
-.content-panel {
-  background: linear-gradient(
-    180deg,
-    rgba(15, 12, 8, 0.95) 0%,
-    rgba(10, 8, 5, 0.98) 100%
-  );
-  border: 1px solid hsl(30, 40%, 22%);
-  border-left: 3px solid hsl(30, 70%, 45%);
-  padding: 1.5rem;
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(217, 119, 6, 0.1);
 }

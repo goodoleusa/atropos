@@ -1,32 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '@/hooks/useGameSession';
-import { X, Sparkles, Star } from 'lucide-react';
+import { X } from 'lucide-react';
 import { MYSTICAL_CARDS } from '@/config/messages';
-import { toast } from '@/hooks/use-toast';
 
 const DEFAULT_TAROT = MYSTICAL_CARDS.tarot.filter(card => card.enabled !== false);
 const DEFAULT_ZODIAC = MYSTICAL_CARDS.zodiac.filter(card => card.enabled !== false);
-
-// Zodiac flavor effects - random collectibles and tips per element
-const ZODIAC_FLAVOR_ITEMS = {
-  Fire: {
-    collectibles: ['🔥 Ember Shard', '⚡ Lightning Rune', '🌋 Magma Token', '☀️ Solar Crest'],
-    tips: ['Bold moves reveal hidden paths', 'Strike first, analyze later', 'The molten core holds secrets']
-  },
-  Earth: {
-    collectibles: ['💎 Crystal Fragment', '🪨 Ancient Stone', '🌿 Root Sigil', '⛏️ Ore Sample'],
-    tips: ['Patience uncovers buried treasures', 'Stable foundations lead to victory', 'Check the infrastructure logs']
-  },
-  Air: {
-    collectibles: ['🌀 Wind Scroll', '🪶 Feather Token', '☁️ Cloud Cipher', '🎐 Chime Key'],
-    tips: ['Information flows like the wind', 'Multiple perspectives reveal truth', 'Enumerate all endpoints']
-  },
-  Water: {
-    collectibles: ['💧 Tide Pearl', '🌊 Wave Seal', '❄️ Frost Mark', '🐚 Deep Shell'],
-    tips: ['Adapt to changing currents', 'Hidden depths contain secrets', 'Flow through security gaps']
-  }
-};
 
 interface MysticalCard {
   type: 'tarot' | 'zodiac';
@@ -96,41 +75,6 @@ export const MysticalPopups = () => {
         content: activeCard.data.hint,
         foundAt: new Date().toISOString()
       });
-    }
-    
-    // Zodiac engagement bonus - random flavor items and tips
-    if (activeCard.type === 'zodiac') {
-      const zodiacData = activeCard.data as typeof DEFAULT_ZODIAC[0];
-      const element = zodiacData.element as keyof typeof ZODIAC_FLAVOR_ITEMS;
-      const flavorSet = ZODIAC_FLAVOR_ITEMS[element];
-      
-      if (flavorSet && Math.random() > 0.4) { // 60% chance for bonus
-        const bonusType = Math.random() > 0.5 ? 'collectible' : 'tip';
-        
-        if (bonusType === 'collectible') {
-          const item = flavorSet.collectibles[Math.floor(Math.random() * flavorSet.collectibles.length)];
-          const bonusClueId = `zodiac-bonus-${Date.now()}`;
-          
-          collectClue({
-            id: bonusClueId,
-            name: item,
-            description: `A ${element} element bonus from ${zodiacData.name}`,
-            content: `Collected through zodiac engagement. Element: ${element}`,
-            foundAt: new Date().toISOString()
-          });
-          
-          toast({
-            title: `✨ Zodiac Bonus!`,
-            description: `You found: ${item}`,
-          });
-        } else {
-          const tip = flavorSet.tips[Math.floor(Math.random() * flavorSet.tips.length)];
-          toast({
-            title: `💫 ${zodiacData.name} Whispers...`,
-            description: tip,
-          });
-        }
-      }
     }
     
     setActiveCard(null);
