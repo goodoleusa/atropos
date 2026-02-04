@@ -657,108 +657,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         { id: 'l8', source: 'n7', target: 'n8', color: 'teal' }
       ]
     },
-    { id: 'blank', name: 'Blank Canvas', icon: '📝', difficulty: 'any', description: 'Start from scratch', nodes: [], links: [] },
-    // The Lonely Hacker-inspired templates
-    { id: 'openworld', name: 'Open World Mission', icon: '🌐', difficulty: 'intermediate',
-      description: 'Non-linear investigation with multiple approach paths (Lonely Hacker-style)',
-      nodes: [
-        { id: 'n1', type: 'step' as const, title: 'Mission Briefing', content: 'Client requests full assessment of target. Multiple attack vectors available.', x: 100, y: 200, width: 240, height: 110, color: 'amber',
-          metadata: { questions: ['What is the primary objective?', 'What assets are in scope?'], successIndicators: ['Clear understanding of target'] }
-        },
-        { id: 'n2', type: 'decision' as const, title: 'Choose Approach', content: 'Select your initial attack vector based on available intel.', x: 400, y: 200, width: 220, height: 110, color: 'purple',
-          metadata: { condition: 'Social = human vectors, Technical = system vectors, Physical = onsite access' }
-        },
-        { id: 'n3', type: 'tool' as const, title: 'Social Engineering Path', content: 'Phishing, pretexting, OSINT on employees', x: 700, y: 50, width: 220, height: 100, color: 'teal' },
-        { id: 'n4', type: 'tool' as const, title: 'Technical Exploitation', content: 'Network scanning, vulnerability assessment, exploit development', x: 700, y: 200, width: 220, height: 100, color: 'teal' },
-        { id: 'n5', type: 'tool' as const, title: 'Physical Access', content: 'Badge cloning, tailgating, lock picking, dropbox deployment', x: 700, y: 350, width: 220, height: 100, color: 'teal' },
-        { id: 'n6', type: 'step' as const, title: 'Pivot & Escalate', content: 'Use initial access to move laterally and escalate privileges.', x: 1000, y: 200, width: 220, height: 110, color: 'amber' },
-        { id: 'n7', type: 'output' as const, title: 'Objective Achieved', content: 'Document all access paths and recommend mitigations.', x: 1280, y: 200, width: 220, height: 110, color: 'purple' }
-      ],
-      links: [
-        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
-        { id: 'l2', source: 'n2', target: 'n3', color: 'purple', label: 'Social' },
-        { id: 'l3', source: 'n2', target: 'n4', color: 'purple', label: 'Technical' },
-        { id: 'l4', source: 'n2', target: 'n5', color: 'purple', label: 'Physical' },
-        { id: 'l5', source: 'n3', target: 'n6', color: 'teal' },
-        { id: 'l6', source: 'n4', target: 'n6', color: 'teal' },
-        { id: 'l7', source: 'n5', target: 'n6', color: 'teal' },
-        { id: 'l8', source: 'n6', target: 'n7', color: 'amber' }
-      ]
-    },
-    { id: 'tutorial', name: 'Tutorial Campaign', icon: '📚', difficulty: 'beginner',
-      description: 'Guided learning path with hints and skill unlocks (Lonely Hacker-style)',
-      nodes: [
-        { id: 'n1', type: 'step' as const, title: 'Welcome, Recruit', content: 'You have been selected for training. Your skills will be tested and honed.', x: 100, y: 150, width: 240, height: 110, color: 'amber',
-          metadata: { teachingNotes: 'Set expectations. Explain the learning path ahead.', skillLevel: 'beginner' }
-        },
-        { id: 'n2', type: 'step' as const, title: 'Lesson 1: Recon Basics', content: 'Learn to gather information without touching the target. WHOIS, DNS, public records.', x: 400, y: 150, width: 240, height: 110, color: 'amber',
-          metadata: { skills: ['recon:passive', 'osint:dns'], teachingNotes: 'Hands-on exercise with safe targets' }
-        },
-        { id: 'n3', type: 'tool' as const, title: 'Practice: DNS Lookup', content: 'Run your first DNS enumeration on a training target.', x: 700, y: 100, width: 220, height: 100, color: 'teal' },
-        { id: 'n4', type: 'decision' as const, title: 'Quiz: What Did You Find?', content: 'Identify the correct information from your scan results.', x: 700, y: 240, width: 220, height: 100, color: 'purple',
-          metadata: { condition: 'Correct = proceed. Wrong = hint and retry.' }
-        },
-        { id: 'n5', type: 'step' as const, title: 'Skill Unlocked: Passive Recon', content: 'You have mastered passive reconnaissance techniques!', x: 1000, y: 150, width: 240, height: 110, color: 'amber',
-          metadata: { successIndicators: ['Student can perform DNS lookup independently'] }
-        },
-        { id: 'n6', type: 'output' as const, title: 'Progress Saved', content: 'Your training continues in the next chapter...', x: 1300, y: 150, width: 220, height: 110, color: 'purple' }
-      ],
-      links: [
-        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
-        { id: 'l2', source: 'n2', target: 'n3', color: 'amber' },
-        { id: 'l3', source: 'n3', target: 'n4', color: 'teal' },
-        { id: 'l4', source: 'n4', target: 'n5', color: 'purple', label: 'Pass' },
-        { id: 'l5', source: 'n4', target: 'n2', color: 'red', label: 'Retry' },
-        { id: 'l6', source: 'n5', target: 'n6', color: 'amber' }
-      ]
-    },
-    { id: 'contract', name: 'Contract Job', icon: '💼', difficulty: 'advanced',
-      description: 'Time-limited professional engagement with deliverables (Lonely Hacker-style)',
-      nodes: [
-        { id: 'n1', type: 'step' as const, title: 'Contract Received', content: 'Client: [REDACTED]. Budget: $50,000. Deadline: 72 hours. Scope: Full penetration test.', x: 100, y: 180, width: 260, height: 120, color: 'amber',
-          metadata: { questions: ['What is the Rules of Engagement?', 'Emergency contacts?'], successIndicators: ['Contract signed, scope confirmed'] }
-        },
-        { id: 'n2', type: 'tool' as const, title: 'Phase 1: Reconnaissance', content: 'External footprinting. Map attack surface. Identify targets.', x: 420, y: 100, width: 220, height: 100, color: 'teal' },
-        { id: 'n3', type: 'tool' as const, title: 'Phase 2: Vulnerability Scan', content: 'Run Nuclei, Nmap, manual testing against discovered assets.', x: 420, y: 240, width: 220, height: 100, color: 'teal' },
-        { id: 'n4', type: 'decision' as const, title: 'Critical Vuln Found?', content: 'Assess severity. Client notification required for criticals.', x: 700, y: 180, width: 220, height: 100, color: 'purple',
-          metadata: { condition: 'CVSS >= 9.0 = immediate notification. Otherwise continue.' }
-        },
-        { id: 'n5', type: 'step' as const, title: 'Client Notification', content: 'STOP. Notify client of critical finding before continuing.', x: 980, y: 80, width: 220, height: 100, color: 'red' },
-        { id: 'n6', type: 'tool' as const, title: 'Phase 3: Exploitation', content: 'Attempt to exploit identified vulnerabilities. Document evidence.', x: 980, y: 240, width: 220, height: 100, color: 'teal' },
-        { id: 'n7', type: 'output' as const, title: 'Final Report', content: 'Generate executive summary, technical findings, and remediation roadmap.', x: 1260, y: 180, width: 240, height: 110, color: 'purple' }
-      ],
-      links: [
-        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
-        { id: 'l2', source: 'n1', target: 'n3', color: 'amber' },
-        { id: 'l3', source: 'n2', target: 'n4', color: 'teal' },
-        { id: 'l4', source: 'n3', target: 'n4', color: 'teal' },
-        { id: 'l5', source: 'n4', target: 'n5', color: 'red', label: 'Critical' },
-        { id: 'l6', source: 'n4', target: 'n6', color: 'purple', label: 'Continue' },
-        { id: 'l7', source: 'n5', target: 'n6', color: 'amber' },
-        { id: 'l8', source: 'n6', target: 'n7', color: 'teal' }
-      ]
-    },
-    { id: 'ctf', name: 'CTF Challenge', icon: '🏴', difficulty: 'any',
-      description: 'Capture the flag-style puzzle with hints and flags',
-      nodes: [
-        { id: 'n1', type: 'step' as const, title: 'Challenge Unlocked', content: 'Target: training.lab.local. Find the hidden flag.', x: 100, y: 150, width: 220, height: 100, color: 'amber',
-          metadata: { questions: ['What type of challenge is this?'], successIndicators: ['Player understands the objective'] }
-        },
-        { id: 'n2', type: 'decision' as const, title: 'Stuck?', content: 'Would you like a hint? (costs points)', x: 380, y: 150, width: 200, height: 100, color: 'purple',
-          metadata: { condition: 'Hint = -50 points. No hint = full points.' }
-        },
-        { id: 'n3', type: 'step' as const, title: 'Hint Revealed', content: 'Check the robots.txt file...', x: 380, y: 300, width: 200, height: 80, color: 'amber' },
-        { id: 'n4', type: 'tool' as const, title: 'Solve the Puzzle', content: 'Use your skills to find and submit the flag.', x: 640, y: 150, width: 220, height: 100, color: 'teal' },
-        { id: 'n5', type: 'output' as const, title: 'Flag Captured!', content: 'FLAG{example_flag_here}. Points added to scoreboard.', x: 920, y: 150, width: 240, height: 100, color: 'purple' }
-      ],
-      links: [
-        { id: 'l1', source: 'n1', target: 'n2', color: 'amber' },
-        { id: 'l2', source: 'n2', target: 'n3', color: 'purple', label: 'Get Hint' },
-        { id: 'l3', source: 'n2', target: 'n4', color: 'teal', label: 'Skip Hint' },
-        { id: 'l4', source: 'n3', target: 'n4', color: 'amber' },
-        { id: 'l5', source: 'n4', target: 'n5', color: 'teal' }
-      ]
-    }
+    { id: 'blank', name: 'Blank Canvas', icon: '📝', difficulty: 'any', description: 'Start from scratch', nodes: [], links: [] }
   ], []);
 
   const createFromTemplate = useCallback((templateId: string) => {
@@ -2612,7 +2511,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       <Card className="bg-stone-900/30 border-stone-800">
                         <CardHeader className="pb-2"><CardTitle className="text-sm text-amber-400">Features Used</CardTitle></CardHeader>
                         <CardContent className="flex flex-wrap gap-1">
-                          {Array.from(new Set(campaign.nodes.map(n => n.metadata?.featureType).filter(Boolean))).map(f => (
+                          {[...new Set(campaign.nodes.map(n => n.metadata?.featureType).filter(Boolean))].map(f => (
                             <Badge key={f} variant="outline" className="border-amber-700 text-amber-400 capitalize">{f}</Badge>
                           ))}
                           {campaign.nodes.every(n => !n.metadata?.featureType) && <span className="text-stone-600 text-xs">None set</span>}
@@ -2621,7 +2520,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       <Card className="bg-stone-900/30 border-stone-800">
                         <CardHeader className="pb-2"><CardTitle className="text-sm text-teal-400">Skills Covered</CardTitle></CardHeader>
                         <CardContent className="flex flex-wrap gap-1">
-                          {Array.from(new Set(campaign.nodes.flatMap(n => n.metadata?.skills || []))).slice(0, 10).map(s => (
+                          {[...new Set(campaign.nodes.flatMap(n => n.metadata?.skills || []))].slice(0, 10).map(s => (
                             <Badge key={s} variant="outline" className="border-teal-700 text-teal-400 text-[9px]">{s}</Badge>
                           ))}
                           {campaign.nodes.every(n => !n.metadata?.skills?.length) && <span className="text-stone-600 text-xs">None set</span>}
@@ -3196,8 +3095,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       <label className="text-[10px] text-stone-500 uppercase">Feature</label>
                       <Select
                         value={editingNode.metadata?.featureType || ''}
-                        onValueChange={(value) => {
-                          const featureType = value as typeof FEATURE_TYPES[number];
+                        onValueChange={(featureType) => {
                           const newMeta = { ...editingNode.metadata, featureType };
                           setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
                           updateNode(editingNode.id, { metadata: newMeta });
@@ -3217,8 +3115,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       <label className="text-[10px] text-stone-500 uppercase">Campaign Type</label>
                       <Select
                         value={editingNode.metadata?.campaignType || ''}
-                        onValueChange={(value) => {
-                          const campaignType = value as typeof CAMPAIGN_TYPES[number];
+                        onValueChange={(campaignType) => {
                           const newMeta = { ...editingNode.metadata, campaignType };
                           setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
                           updateNode(editingNode.id, { metadata: newMeta });
@@ -3272,73 +3169,40 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   {/* Linked Clues */}
                   <div>
                     <label className="text-[10px] text-stone-500 uppercase">Linked Clues (IDs)</label>
-                    <Select
-                      onValueChange={(clueId) => {
-                        const current = editingNode.metadata?.linkedClues || [];
-                        if (clueId && !current.includes(clueId)) {
-                          const newMeta = { ...editingNode.metadata, linkedClues: [...current, clueId] };
-                          setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
-                          updateNode(editingNode.id, { metadata: newMeta });
-                          toast({ title: "Clue linked", description: `Added ${sharedClues.find(c => c.id === clueId)?.name || clueId}` });
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
-                        <SelectValue placeholder="Select clue to link..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
-                        {sharedClues.length === 0 ? (
-                          <div className="p-2 text-center text-stone-500 text-xs">
-                            No clues available. Add clues in Admin → Clues tab.
-                          </div>
-                        ) : (
-                          sharedClues.map(clue => {
-                            const isLinked = editingNode.metadata?.linkedClues?.includes(clue.id);
-                            return (
-                              <SelectItem 
-                                key={clue.id} 
-                                value={clue.id} 
-                                className={`text-stone-300 ${isLinked ? 'opacity-50' : ''}`}
-                                disabled={isLinked}
-                              >
-                                <span className="flex items-center gap-2">
-                                  <span className="text-purple-400">🔗</span>
-                                  <span>{clue.name}</span>
-                                  {clue.tags?.length > 0 && (
-                                    <span className="text-[9px] text-stone-500">[{clue.tags.slice(0, 2).join(', ')}]</span>
-                                  )}
-                                  {isLinked && <span className="text-teal-400 text-[9px]">✓</span>}
-                                </span>
-                              </SelectItem>
-                            );
-                          })
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {editingNode.metadata?.linkedClues?.map((clueId, i) => {
-                        const clue = sharedClues.find(c => c.id === clueId);
-                        return (
-                          <Badge 
-                            key={i} 
-                            variant="outline" 
-                            className="text-[10px] border-purple-600 text-purple-400 cursor-pointer hover:bg-red-900/30 hover:border-red-600 transition-colors flex items-center gap-1"
-                            onClick={() => {
-                              const newClues = editingNode.metadata?.linkedClues?.filter(c => c !== clueId) || [];
-                              const newMeta = { ...editingNode.metadata, linkedClues: newClues };
+                    <Input
+                      placeholder="Enter clue ID and press Enter..."
+                      className="bg-black/50 border-stone-700 text-sm min-h-[44px]"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (val) {
+                            const current = editingNode.metadata?.linkedClues || [];
+                            if (!current.includes(val)) {
+                              const newMeta = { ...editingNode.metadata, linkedClues: [...current, val] };
                               setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
                               updateNode(editingNode.id, { metadata: newMeta });
-                              toast({ title: "Clue unlinked", description: clue?.name || clueId });
-                            }}
-                            title={`Click to remove: ${clue?.description || clueId}`}
-                          >
-                            🔗 {clue?.name || clueId} ×
-                          </Badge>
-                        );
-                      })}
-                      {(!editingNode.metadata?.linkedClues || editingNode.metadata.linkedClues.length === 0) && (
-                        <span className="text-stone-600 text-xs italic">No clues linked</span>
-                      )}
+                            }
+                            (e.target as HTMLInputElement).value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {editingNode.metadata?.linkedClues?.map((clueId, i) => (
+                        <Badge 
+                          key={i} 
+                          variant="outline" 
+                          className="text-[8px] border-purple-600 text-purple-400 cursor-pointer hover:bg-red-900/30"
+                          onClick={() => {
+                            const newClues = editingNode.metadata?.linkedClues?.filter(c => c !== clueId) || [];
+                            const newMeta = { ...editingNode.metadata, linkedClues: newClues };
+                            setEditingNode(prev => prev ? { ...prev, metadata: newMeta } : null);
+                            updateNode(editingNode.id, { metadata: newMeta });
+                          }}
+                        >
+                          🔗 {clueId} ×
+                        </Badge>
+                      ))}
                     </div>
                   </div>
 

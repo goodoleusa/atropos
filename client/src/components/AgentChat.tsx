@@ -204,13 +204,6 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
 
     setActiveCampaign(campaign);
     setShowCampaigns(false);
-    
-    // Auto-enable capture and start session when campaign is selected
-    setCaptureEnabled(true);
-    if (!currentSession) {
-      startSession(`${campaign.name} - ${new Date().toLocaleDateString()}`);
-    }
-    setContextCampaign(campaign.id);
 
     setPromptConfig((prev) => ({
       ...prev,
@@ -511,14 +504,13 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       if (result.success) {
         // Add scan result as tool output
         addToolOutput({
-          type: 'scan',
+          type: 'osint',
           source: 'atropos',
           content: JSON.stringify(result.data, null, 2),
           metadata: { 
             scanId: result.scanId,
             script: scriptPath,
             target,
-            scanType: 'osint',
             latencyMs: result.latencyMs
           }
         });

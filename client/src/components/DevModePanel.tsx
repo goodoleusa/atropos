@@ -80,13 +80,13 @@ export default function DevModePanel() {
 
   return (
     <>
-      {/* Quick Admin Access Button - Always visible when Dev Mode is ON (hidden on mobile, moved to left to avoid overlap) */}
+      {/* Quick Admin Access Button - Always visible when Dev Mode is ON */}
       {gameState.devMode && !expanded && (
         <motion.div
-          className="hidden md:flex fixed bottom-36 left-4 z-50 gap-2 flex-col"
-          initial={{ opacity: 0, x: -20 }}
+          className="fixed bottom-20 sm:bottom-4 right-16 sm:right-20 z-50 flex gap-2"
+          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
+          exit={{ opacity: 0, x: 20 }}
         >
           <Link href="/admin">
             <Button
@@ -111,9 +111,9 @@ export default function DevModePanel() {
         </motion.div>
       )}
 
-      {/* Floating Toggle Button (Desktop Only) - moved to left side to avoid overlap with Home's Agent/QR buttons */}
+      {/* Floating Toggle Button (Always Visible) - positioned to not conflict with terminal buttons */}
       <motion.div
-        className="hidden md:block fixed bottom-4 left-4 z-50"
+        className="fixed bottom-20 sm:bottom-4 right-2 sm:right-4 z-50"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5 }}

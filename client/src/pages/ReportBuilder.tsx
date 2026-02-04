@@ -22,10 +22,7 @@ import {
   TrendingUp,
   Copy,
   Check,
-  ExternalLink,
-  Bot,
-  Play,
-  Radar
+  ExternalLink
 } from 'lucide-react';
 import { 
   REPORT_SECTIONS, 
@@ -259,47 +256,22 @@ export default function ReportBuilder() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        {autoCaptureActive ? (
+        {autoCaptureActive && (
           <div className="mb-4">
             <Card className="bg-teal-950/30 border-teal-700/40">
               <CardContent className="p-4 flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-teal-900/50 flex items-center justify-center">
-                    <Radar className="w-5 h-5 text-teal-400 animate-pulse" />
-                  </div>
-                  <div>
-                    <p className="text-teal-400 text-xs uppercase font-bold">Investigation Active</p>
-                    <p className="text-stone-300 text-sm font-semibold">
-                      {activeModule?.name || currentSession?.name || 'Active Module'}
-                    </p>
-                    <p className="text-stone-500 text-xs mt-1">
-                      Targets: {targets.map(t => t.value).join(', ') || 'None'} • Findings: {pendingFindings.length}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-teal-400 text-xs uppercase">Agent Module Capture Active</p>
+                  <p className="text-stone-300 text-sm font-semibold">
+                    {activeModule?.name || 'Active Module'}
+                  </p>
+                  <p className="text-stone-500 text-xs mt-1">
+                    Targets: {targets.map(t => t.value).join(', ') || 'None'}
+                  </p>
                 </div>
-                <Badge variant="outline" className="border-teal-700 text-teal-300 animate-pulse">
-                  Auto-capturing
+                <Badge variant="outline" className="border-teal-700 text-teal-300">
+                  Auto-fill enabled
                 </Badge>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          <div className="mb-4">
-            <Card className="bg-amber-950/20 border-amber-900/40 border-dashed">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3">
-                  <Bot className="w-6 h-6 text-amber-500" />
-                </div>
-                <h3 className="text-amber-400 font-bold mb-2">No Active Investigation</h3>
-                <p className="text-stone-500 text-sm mb-4 max-w-md mx-auto">
-                  Start an investigation in the NEXUS Agent to auto-populate this report with your findings, targets, and tool outputs.
-                </p>
-                <Link href="/investigate">
-                  <Button className="bg-amber-700 hover:bg-amber-600 text-black gap-2" data-testid="start-investigation-btn">
-                    <Play className="w-4 h-4" />
-                    Start Investigation
-                  </Button>
-                </Link>
               </CardContent>
             </Card>
           </div>
