@@ -29,6 +29,7 @@ def _slug_from_seed(seed: str) -> str:
 
 
 class InvestigationInputs(TypedDict):
+    output_format: str
     seed: str
     investigation_id: str
     investigation_name: str
@@ -56,10 +57,24 @@ def run_menu() -> str:
 def run_investigation_prompts() -> InvestigationInputs | None:
     """
     Step-by-step prompts for a new investigation. Returns a dict with
-    seed, investigation_id, investigation_name, base_path, or None if user aborts.
+    output_format, seed, investigation_id, investigation_name, base_path, or None if user aborts.
     """
-    # Step 1 – Seed
-    print("\n--- Step 1: Seed ---")
+    # Step 1 – Output format (Obsidian vs Maltego)
+    print("\n--- Step 1: Output format ---")
+    print("  (1) Obsidian  – entity notes and investigation folder (chain of custody, hashing, PDF export)")
+    print("  (2) Maltego   – CSV + GraphML for Maltego import (no Obsidian structure)")
+    while True:
+        of = input("Choice [1-2]: ").strip() or "1"
+        if of == "1":
+            output_format = "obsidian"
+            break
+        if of == "2":
+            output_format = "maltego"
+            break
+        print("  Enter 1 or 2.")
+
+    # Step 2 – Seed
+    print("\n--- Step 2: Seed ---")
     while True:
         seed = input("Enter seed (domain, IP, URL, or short description) [e.g. example.com or 8.8.8.8]: ").strip()
         if seed:
@@ -68,25 +83,26 @@ def run_investigation_prompts() -> InvestigationInputs | None:
     default_inv_id = _slug_from_seed(seed)
     default_inv_name = f"Investigation: {seed}"
 
-    # Step 2 – Investigation ID
-    print("\n--- Step 2: Investigation ID ---")
+    # Step 3 – Investigation ID
+    print("\n--- Step 3: Investigation ID ---")
     inv_id = input(f"Investigation ID (kebab-case, used as folder name) [{default_inv_id}]: ").strip()
     inv_id = inv_id or default_inv_id
     inv_id = re.sub(r"[^\w-]", "-", inv_id).strip("-").lower() or default_inv_id
 
-    # Step 3 – Investigation name
-    print("\n--- Step 3: Investigation name ---")
+    # Step 4 – Investigation name
+    print("\n--- Step 4: Investigation name ---")
     inv_name = input(f"Investigation display name [{default_inv_name}]: ").strip()
     inv_name = inv_name or default_inv_name
 
-    # Step 4 – Output path
+    # Step 5 – Output path
     default_base = get_obsidian_base_path()
-    print("\n--- Step 4: Output path ---")
+    print("\n--- Step 5: Output path ---")
     base_path = input(f"Output base path (Enter = default) [{default_base}]: ").strip()
     base_path = base_path or default_base
 
-    # Step 5 – Confirm
+    # Step 6 – Confirm
     print("\n--- Confirm ---")
+    print(f"  Output:       {output_format}")
     print(f"  Seed:         {seed}")
     print(f"  Inv ID:       {inv_id}")
     print(f"  Inv name:     {inv_name}")
@@ -96,6 +112,7 @@ def run_investigation_prompts() -> InvestigationInputs | None:
         return None
 
     return InvestigationInputs(
+        output_format=output_format,
         seed=seed,
         investigation_id=inv_id,
         investigation_name=inv_name,

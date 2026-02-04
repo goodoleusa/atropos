@@ -164,13 +164,13 @@ def _entities_from_raw_findings(raw: dict, investigation_id: str) -> list[dict]:
     return entities
 
 
-def _run_investigation(seed: str, investigation_id: str, investigation_name: str, base_path: str) -> str:
+def _run_investigation(seed: str, investigation_id: str, investigation_name: str, base_path: str, *, output_format: str = "obsidian") -> str:
     """
-    Run OSINT crew (with HackerTarget tools), parse structured output, and write
-    investigation + entity notes to Obsidian folder. Returns the investigation root path.
+    Run OSINT crew, parse entities, then either:
+    - obsidian: write entity notes to Obsidian folder, chain of custody, hash manifest. Returns investigation root path.
+    - maltego: write CSV + GraphML to output folder (no Obsidian). Returns that folder path.
     """
     from osint_tools.config import get_obsidian_base_path, _normalize_path
-    import obsidian_export
 
     base = (base_path and _normalize_path(base_path.strip())) or get_obsidian_base_path()
     entities: list[dict] = []
@@ -200,6 +200,8 @@ def _run_investigation(seed: str, investigation_id: str, investigation_name: str
             get_ripestat_crewai_tools,
             get_virustotal_crewai_tools,
             get_abuseipdb_crewai_tools,
+            get_hybrid_analysis_crewai_tools,
+            get_ipinfo_crewai_tools,
         )
 
         llm = LLM(
@@ -212,10 +214,13 @@ def _run_investigation(seed: str, investigation_id: str, investigation_name: str
         # Get available tools
         ht_tools = get_hackertarget_crewai_tools()
         ripestat_tools = get_ripestat_crewai_tools()
-        infrastructure_tools = ht_tools + ripestat_tools
+        ipinfo_tools = get_ipinfo_crewai_tools()
+        infrastructure_tools = ht_tools + ripestat_tools + ipinfo_tools
         vt_tools = get_virustotal_crewai_tools()
         abuseipdb_tools = get_abuseipdb_crewai_tools()
+        hybrid_analysis_tools = get_hybrid_analysis_crewai_tools()
         threat_intel_tools = vt_tools + abuseipdb_tools
+        malware_tools = vt_tools + hybrid_analysis_tools
 
         # 1. People & Corporation OSINT Specialist
         people_corp_agent = Agent(
@@ -256,7 +261,7 @@ def _run_investigation(seed: str, investigation_id: str, investigation_name: str
             goal="Analyze malware samples, file hashes, and C2 infrastructure associated with the seed. Identify malware families, techniques (MITRE ATT&CK), and vulnerabilities exploited.",
             backstory="Malware analyst and reverse engineer. Examines samples, C2 infrastructure, and attack patterns to identify malware families, TTPs, and associated threat actors.",
             llm=llm,
-            tools=vt_tools,  # VirusTotal if key available (Hybrid Analysis, Shodan to be added)
+            tools=malware_tools,
             verbose=True,
             allow_delegation=False,
         )
@@ -426,7 +431,7 @@ Output ONLY a valid JSON array. No markdown, no explanation.""",
             entities = _entities_from_raw_findings(raw_findings, investigation_id)
         if entities:
             summary = f"Investigation seeded with: {seed}. {len(entities)} entity/entities discovered."
-        inv_root_pre = os.path.join(base, "10-Investigations", investigation_id)
+        inv_root_pre = os.path.join(base, investigation_id)
         os.makedirs(inv_root_pre, exist_ok=True)
         raw_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in seed).strip().replace(" ", "_") or "report"
         raw_path = os.path.join(inv_root_pre, f"{raw_name}_crew_output_{date.today().isoformat()}.md")
@@ -480,13 +485,82 @@ Output ONLY a valid JSON array. No markdown, no explanation.""",
         entities = _entities_from_raw_findings(raw_findings, investigation_id)
         if entities:
             summary = f"Investigation seeded with: {seed}. {len(entities)} entity/entities from API (no LLM)."
-        inv_root_pre = os.path.join(base, "10-Investigations", investigation_id)
+        inv_root_pre = os.path.join(base, investigation_id)
         os.makedirs(inv_root_pre, exist_ok=True)
         raw_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in seed).strip().replace(" ", "_") or "report"
         raw_data_path = os.path.join(inv_root_pre, f"{raw_name}_raw_osint_{date.today().isoformat()}.md")
         with open(raw_data_path, "w", encoding="utf-8") as f:
             f.write(raw_findings_str)
 
+    if output_format == "maltego":
+        coc_logger = None
+        try:
+            from osint_tools.chain_of_custody import ChainOfCustody
+            coc_logger = ChainOfCustody(inv_root_pre, investigation_id)
+            coc_logger.log_create(
+                "investigation_init",
+                comment=f"Investigation (Maltego flow): {investigation_name} (seed: {seed})"
+            )
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).debug("Chain of custody init failed: %s", e)
+        raw_name_mt = "".join(c if c.isalnum() or c in " -_" else "_" for c in seed).strip().replace(" ", "_") or "report"
+        raw_data_path_mt = os.path.join(inv_root_pre, f"{raw_name_mt}_raw_osint_{date.today().isoformat()}.md")
+        raw_path_mt = os.path.join(inv_root_pre, f"{raw_name_mt}_crew_output_{date.today().isoformat()}.md")
+        try:
+            from osint_tools.hashing import compute_file_hash
+            for path, comment in [
+                (raw_data_path_mt, "Raw OSINT data collected from APIs"),
+                (raw_path_mt, "CrewAI agent output"),
+            ]:
+                if os.path.exists(path) and coc_logger:
+                    h = compute_file_hash(path)
+                    if h:
+                        hash_file = path + ".sha256"
+                        with open(hash_file, "w", encoding="utf-8") as hf:
+                            hf.write(f"{h}  {os.path.basename(path)}\n")
+                        rel = os.path.relpath(path, inv_root_pre)
+                        coc_logger.log_create(rel, file_hash=h, comment=comment)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).debug("Maltego flow hashing failed: %s", e)
+        try:
+            import maltego_export
+            result = maltego_export.export_to_maltego(
+                entities,
+                inv_root_pre,
+                investigation_id=investigation_id,
+                investigation_name=investigation_name,
+                seed=seed,
+            )
+            if result.get("csv_path"):
+                print(f"Maltego CSV: {result['csv_path']}")
+            if result.get("graphml_path"):
+                print(f"Maltego GraphML: {result['graphml_path']}")
+            if coc_logger:
+                for key, label in [("csv_path", "Maltego CSV export"), ("graphml_path", "Maltego GraphML export")]:
+                    p = result.get(key)
+                    if p and os.path.exists(p):
+                        h = compute_file_hash(p)
+                        if h:
+                            with open(p + ".sha256", "w", encoding="utf-8") as hf:
+                                hf.write(f"{h}  {os.path.basename(p)}\n")
+                            coc_logger.log_create(os.path.relpath(p, inv_root_pre), file_hash=h, comment=label)
+            if coc_logger:
+                coc_logger.log_create(
+                    "investigation_complete",
+                    comment=f"Maltego export completed: {len(entities)} entities"
+                )
+                integrity_check = coc_logger.verify_log_integrity()
+                if integrity_check.get("valid"):
+                    print(f"Chain of custody log: {coc_logger.log_file}")
+                    print(f"  Total entries: {integrity_check.get('total_entries', 0)}")
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning("Maltego export failed: %s", e)
+        return inv_root_pre
+
+    import obsidian_export
     inv_root = obsidian_export.write_investigation(
         base,
         investigation_id,
@@ -578,6 +652,8 @@ def _parse_args():
     p.add_argument("--verify-integrity", type=str, metavar="INV_ID", help="Verify integrity of investigation files using hash manifest.")
     p.add_argument("--view-chain-of-custody", type=str, metavar="INV_ID", help="View chain of custody log for investigation.")
     p.add_argument("--export-chain-of-custody", type=str, metavar="INV_ID", help="Export chain of custody log (format: json, txt, csv).")
+    p.add_argument("--output-format", "--format", dest="output_format", type=str, choices=["obsidian", "maltego"], default="obsidian",
+                   help="Output flow: obsidian (entity notes, chain of custody, PDF) or maltego (CSV + GraphML only).")
     return p.parse_args()
 
 
@@ -591,7 +667,7 @@ def main():
         from osint_tools.config import get_obsidian_base_path, _normalize_path
         from osint_tools.hashing import verify_investigation_integrity
         base = get_obsidian_base_path()
-        inv_path = os.path.join(base, "10-Investigations", args.verify_integrity)
+        inv_path = os.path.join(base, args.verify_integrity)
         if not os.path.exists(inv_path):
             print(f"Error: Investigation folder not found: {inv_path}", file=sys.stderr)
             sys.exit(1)
@@ -612,7 +688,7 @@ def main():
         from osint_tools.config import get_obsidian_base_path
         from osint_tools.chain_of_custody import ChainOfCustody
         base = get_obsidian_base_path()
-        inv_path = os.path.join(base, "10-Investigations", args.view_chain_of_custody)
+        inv_path = os.path.join(base, args.view_chain_of_custody)
         if not os.path.exists(inv_path):
             print(f"Error: Investigation folder not found: {inv_path}", file=sys.stderr)
             sys.exit(1)
@@ -634,7 +710,7 @@ def main():
         from osint_tools.config import get_obsidian_base_path
         from osint_tools.chain_of_custody import ChainOfCustody
         base = get_obsidian_base_path()
-        inv_path = os.path.join(base, "10-Investigations", args.export_chain_of_custody)
+        inv_path = os.path.join(base, args.export_chain_of_custody)
         if not os.path.exists(inv_path):
             print(f"Error: Investigation folder not found: {inv_path}", file=sys.stderr)
             sys.exit(1)
@@ -656,10 +732,17 @@ def main():
             inv_id = _slug_from_seed(seed)
         inv_name = (args.investigation_name or "").strip() or f"Investigation: {seed}"
         base_path = (args.output or "").strip() or None
-        inv_root = _run_investigation(seed, inv_id, inv_name, base_path or "")
+        out_fmt = (args.output_format or "obsidian").strip().lower()
+        if out_fmt not in ("obsidian", "maltego"):
+            out_fmt = "obsidian"
+        inv_root = _run_investigation(seed, inv_id, inv_name, base_path or "", output_format=out_fmt)
         print(f"\nInvestigation folder: {inv_root}")
-        print("Open this folder in Obsidian to view entities.")
-        _export_to_pdf(inv_root, inv_id, inv_name, skip_pdf=args.no_pdf)
+        if out_fmt == "maltego":
+            print("Import the CSV or GraphML file in Maltego.")
+        else:
+            print("Open this folder in Obsidian to view entities.")
+        if out_fmt == "obsidian":
+            _export_to_pdf(inv_root, inv_id, inv_name, skip_pdf=args.no_pdf)
         return
 
     # Wizard (no args)
@@ -677,15 +760,21 @@ def main():
             if inputs is None:
                 print("Cancelled. Back to menu.")
                 continue
+            out_fmt = inputs.get("output_format", "obsidian") or "obsidian"
             inv_root = _run_investigation(
                 inputs["seed"],
                 inputs["investigation_id"],
                 inputs["investigation_name"],
                 inputs["base_path"],
+                output_format=out_fmt,
             )
             print(f"\nInvestigation folder: {inv_root}")
-            print("Open this folder in Obsidian to view entities.")
-            _export_to_pdf(inv_root, inputs["investigation_id"], inputs["investigation_name"], skip_pdf=False)
+            if out_fmt == "maltego":
+                print("Import the CSV or GraphML file in Maltego.")
+            else:
+                print("Open this folder in Obsidian to view entities.")
+            if out_fmt == "obsidian":
+                _export_to_pdf(inv_root, inputs["investigation_id"], inputs["investigation_name"], skip_pdf=False)
             break
 
 

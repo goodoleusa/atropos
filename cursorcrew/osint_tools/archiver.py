@@ -38,7 +38,7 @@ def archive_url(url: str, output_dir: str, investigation_id: str) -> Optional[st
         return None
     
     # Create archive directory
-    archive_dir = os.path.join(output_dir, "10-Investigations", investigation_id, "archived_content")
+    archive_dir = os.path.join(output_dir, investigation_id, "archived_content")
     os.makedirs(archive_dir, exist_ok=True)
     
     # Generate safe filename from URL
