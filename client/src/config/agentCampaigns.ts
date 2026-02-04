@@ -1,0 +1,714 @@
+export interface Campaign {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  estimatedTime: string;
+  tags: string[];
+  starterPrompt: string;
+  objectives: string[];
+  tools: string[];
+  color: string;
+  steps?: CampaignStep[];
+  adaptivePrompts?: string[];
+  targetFields?: CampaignTargetField[];
+  dummyTargets?: Record<string, string>;
+}
+
+export interface CampaignStep {
+  id: string;
+  title: string;
+  guidance: string;
+  toolsForStep: string[];
+  questions: string[];
+  redFlags: string[];
+  successIndicators: string[];
+  nextStepConditions: { condition: string; nextStep: string; rationale: string }[];
+}
+
+export interface ToolIntegration {
+  name: string;
+  purpose: string;
+  whenToUse: string;
+  exampleQuery: string;
+  outputInterpretation: string;
+  externalUrl?: string;
+}
+
+export type TargetFieldType =
+  | 'domain'
+  | 'ip'
+  | 'url'
+  | 'email'
+  | 'api'
+  | 'system'
+  | 'org'
+  | 'asn'
+  | 'hash'
+  | 'cidr'
+  | 'address'
+  | 'text'
+  | 'custom';
+
+export interface CampaignTargetField {
+  key: string;
+  label: string;
+  type: TargetFieldType;
+  required?: boolean;
+  placeholder?: string;
+  helpText?: string;
+}
+
+export const INVESTIGATION_PERSPECTIVES = [
+  { id: 'adversary', name: 'Adversary Mindset', icon: '🎯', prompt: 'Think like the attacker. What would they target first? What\'s the path of least resistance?' },
+  { id: 'defender', name: 'Defender Analysis', icon: '🛡️', prompt: 'What controls are in place? Where are the gaps? What would you recommend fixing first?' },
+  { id: 'insider', name: 'Insider Threat', icon: '🔓', prompt: 'What could a malicious employee access? What trust assumptions exist?' },
+  { id: 'supply_chain', name: 'Supply Chain Risk', icon: '🔗', prompt: 'What third parties have access? What dependencies could be compromised?' },
+  { id: 'temporal', name: 'Temporal Analysis', icon: '⏱️', prompt: 'How has this changed over time? What historical data reveals patterns?' },
+  { id: 'financial', name: 'Follow the Money', icon: '💰', prompt: 'Who profits? What are the financial relationships? Payment flows?' }
+];
+
+export const OSINT_TOOLS: ToolIntegration[] = [
+  { name: 'Shodan', purpose: 'Internet-connected device search', whenToUse: 'Finding exposed services, IoT, infrastructure', exampleQuery: 'org:"Target Corp" port:22,3389', outputInterpretation: 'Look for: unusual ports, outdated services, exposed admin panels' },
+  { name: 'Censys', purpose: 'Certificate and host search', whenToUse: 'Discovering subdomains via certs, TLS analysis', exampleQuery: 'parsed.subject.common_name: *.target.com', outputInterpretation: 'Extract SANs for subdomain enumeration' },
+  { name: 'SecurityTrails', purpose: 'Historical DNS/WHOIS', whenToUse: 'Finding old infrastructure, tracking changes', exampleQuery: 'target.com history', outputInterpretation: 'Old IPs may still be alive and less secured' },
+  { name: 'crt.sh', purpose: 'Certificate transparency logs', whenToUse: 'Subdomain discovery via SSL certificates', exampleQuery: '%.target.com', outputInterpretation: 'Wildcards and SANs reveal hidden subdomains' },
+  { name: 'Wayback Machine', purpose: 'Historical web snapshots', whenToUse: 'Finding old pages, leaked info, removed content', exampleQuery: 'web.archive.org/web/*/target.com/*', outputInterpretation: 'Check for exposed credentials, old endpoints, removed features' },
+  { name: 'Hunter.io', purpose: 'Email pattern discovery', whenToUse: 'Finding employee emails and patterns', exampleQuery: 'target.com', outputInterpretation: 'Email pattern + LinkedIn = complete employee list' },
+  { name: 'BuiltWith', purpose: 'Technology profiling', whenToUse: 'Identifying tech stack and third-party services', exampleQuery: 'target.com', outputInterpretation: 'Each technology has known vulnerabilities and attack patterns' },
+  { name: 'WHOIS/RDAP', purpose: 'Domain registration data', whenToUse: 'Registrant info, related domains', exampleQuery: 'whois target.com', outputInterpretation: 'Same registrant = related infrastructure' },
+  { name: 'theHarvester', purpose: 'Multi-source aggregation', whenToUse: 'Quick passive recon from multiple sources', exampleQuery: '-d target.com -b all', outputInterpretation: 'Aggregates emails, hosts, IPs from many sources' },
+  { name: 'Amass', purpose: 'Subdomain enumeration', whenToUse: 'Deep subdomain discovery', exampleQuery: 'amass enum -passive -d target.com', outputInterpretation: 'Compare results with crt.sh for completeness' },
+  { name: 'nmap', purpose: 'Port and service scanning', whenToUse: 'Active enumeration of discovered hosts', exampleQuery: 'nmap -sV -sC -p- target.com', outputInterpretation: 'Version info enables CVE matching' },
+  { name: 'Nuclei', purpose: 'Vulnerability scanning', whenToUse: 'Automated vuln detection on web targets', exampleQuery: 'nuclei -u https://target.com -t cves/', outputInterpretation: 'Prioritize by severity, verify manually' }
+];
+
+export const ADAPTIVE_RESPONSES: Record<string, string> = {
+  found_subdomain: `Great find! A new subdomain often reveals different attack surfaces:
+  
+**HIGH VALUE INDICATORS:**
+- dev/staging/test prefixes → Often less hardened
+- admin/portal/dashboard → Admin functionality
+- api/ws/graphql → Direct backend access
+- internal/corp/intra → Internal tools exposed
+
+**NEXT ACTIONS:**
+1. Resolve and check if it's alive
+2. Technology fingerprint (Wappalyzer, BuiltWith)
+3. Check for exposed endpoints (/robots.txt, /.well-known/)
+4. Certificate analysis for more SANs
+
+**QUESTIONS TO ASK:**
+- Why does this exist? What's its purpose?
+- Is it in the same security zone as production?
+- When was it last updated?`,
+
+  found_credential: `⚠️ STOP - Credential discovered. Handle carefully:
+
+**IMMEDIATE STEPS:**
+1. Document EXACTLY where you found it (URL, file, timestamp)
+2. DO NOT attempt to use it
+3. Check scope - is credential testing allowed?
+4. Report to program if valid/in-scope
+
+**CONTEXT TO GATHER:**
+- Is this a test/demo account?
+- When was it exposed? (Wayback, git history)
+- What systems could it access?
+
+**LEGAL NOTE:** Using credentials without authorization is illegal, even in bug bounties.`,
+
+  found_vuln_indicator: `Potential vulnerability indicator detected!
+
+**VALIDATION CHECKLIST:**
+1. Is this reproducible?
+2. Is it in scope?
+3. What's the actual impact?
+4. Is there a PoC without causing harm?
+
+**PRIORITIZATION FACTORS:**
+- Authentication bypass → HIGH VALUE
+- Data exposure → HIGH VALUE  
+- Self-XSS → LIKELY DUPLICATE
+- Missing headers only → LOW VALUE
+
+**NEXT STEPS:**
+- Document current state before testing further
+- Check program policy on this vuln type
+- Search for existing reports (avoid duplicates)`,
+
+  hit_dead_end: `Dead ends teach us too. Let's pivot strategically:
+
+**WHAT DEAD END TELLS US:**
+- This vector is likely protected
+- They've invested in security here
+- Other paths may be less guarded
+
+**PIVOT STRATEGIES:**
+1. **Change perspective** - Switch from adversary to insider mindset
+2. **Change target** - Adjacent systems/subdomains
+3. **Change technique** - If injection fails, try auth bypass
+4. **Change time** - Historical data may show old vulnerabilities
+
+**QUESTIONS:**
+- What assumption was wrong?
+- What would bypass this control?
+- Where else would this data/function be?`,
+
+  overwhelmed_by_data: `Too much data? Let's prioritize like a pro:
+
+**TRIAGE BY BOUNTY VALUE:**
+1. **Critical** ($$$$): RCE, Auth bypass, Data breach
+2. **High** ($$$): SQLi, SSRF, Privilege escalation  
+3. **Medium** ($$): XSS, IDOR, Info disclosure
+4. **Low** ($): Missing headers, Best practices
+
+**FOCUS STRATEGY:**
+- Pick the ONE most promising lead
+- Follow it to conclusion before switching
+- Document everything for later
+
+**HIGH-VALUE LEAD INDICATORS:**
+- Affects authentication/authorization
+- Touches payment/PII data
+- Affects all users, not just self
+- Chainable with other findings`,
+
+  need_perspective_shift: `Let's shift perspective to unlock new insights:
+
+**AVAILABLE PERSPECTIVES:**
+🎯 **Adversary**: What would an attacker do first?
+🛡️ **Defender**: What controls exist? Where are gaps?
+🔓 **Insider**: What could an employee abuse?
+🔗 **Supply Chain**: What third parties have access?
+⏱️ **Temporal**: How has this changed over time?
+💰 **Financial**: Who benefits? Follow the money.
+
+**TRY THIS:**
+Pick a different perspective and re-examine your findings.
+Often the breakthrough comes from asking a different question.`
+};
+
+export const GUIDED_QUESTIONS = {
+  starting: [
+    "What's the target scope? (domains, IPs, apps)",
+    "What type of program is this? (Bug bounty, VDP, pentest)",
+    "What's already been tested/reported?",
+    "What technologies do we know about?"
+  ],
+  recon: [
+    "Have we enumerated all subdomains?",
+    "Do we know the full tech stack?",
+    "Who are the key personnel?",
+    "What third-party services are in use?"
+  ],
+  testing: [
+    "What's the highest-impact thing we could find?",
+    "What auth mechanisms exist?",
+    "Where is user input processed?",
+    "What data is most sensitive?"
+  ],
+  stuck: [
+    "What perspective haven't we tried?",
+    "What assumption might be wrong?",
+    "Is there adjacent attack surface?",
+    "What would a more experienced hunter try?"
+  ]
+}
+
+export const AGENT_CAMPAIGNS: Campaign[] = [
+  {
+    id: 'shell_corp_osint',
+    name: 'Shell Corp Investigation',
+    icon: '🏢',
+    description: 'Investigate a suspicious shell corporation. Trace ownership, find hidden connections, and expose the network.',
+    difficulty: 'intermediate',
+    estimatedTime: '45-60 min',
+    tags: ['OSINT', 'Corporate Intel', 'Financial'],
+    targetFields: [
+      { key: 'org', label: 'Organization Name', type: 'org', required: true, placeholder: 'Obsidian Holdings LLC' },
+      { key: 'domain', label: 'Primary Domain', type: 'domain', required: false, placeholder: 'obsidian-holdings.com' }
+    ],
+    dummyTargets: {
+      org: 'Obsidian Holdings LLC',
+      domain: 'obsidian-holdings.com'
+    },
+    starterPrompt: `I want to investigate a shell corporation called "Obsidian Holdings LLC". 
+
+Help me build a dossier by:
+1. Identifying corporate registration patterns
+2. Finding beneficial ownership through OSINT techniques
+3. Mapping connected entities and subsidiaries
+4. Tracing financial relationships
+5. Identifying key personnel and their digital footprints
+
+Start with the basics - what sources would you check first for corporate intel?`,
+    objectives: [
+      'Identify corporate registration details',
+      'Map subsidiary relationships',
+      'Find beneficial ownership',
+      'Trace financial connections',
+      'Build personnel dossiers'
+    ],
+    tools: ['WHOIS', 'SEC EDGAR', 'OpenCorporates', 'LinkedIn OSINT', 'Domain analysis'],
+    color: 'amber'
+  },
+  {
+    id: 'bgp_trace',
+    name: 'BGP Route Tracing',
+    icon: '🌐',
+    description: 'Trace IP hops around the world via BGP relations. Understand how traffic flows through ASNs.',
+    difficulty: 'advanced',
+    estimatedTime: '30-45 min',
+    tags: ['Network', 'BGP', 'Infrastructure'],
+    targetFields: [
+      { key: 'ip', label: 'IP Address', type: 'ip', required: true, placeholder: '185.199.108.153' },
+      { key: 'asn', label: 'ASN (optional)', type: 'asn', required: false, placeholder: 'AS13335' }
+    ],
+    dummyTargets: {
+      ip: '185.199.108.153',
+      asn: 'AS13335'
+    },
+    starterPrompt: `I want to trace network routes and understand BGP peering relationships.
+
+Target: An IP address I found in the logs - 185.199.108.153
+
+Help me:
+1. Identify the origin ASN and organization
+2. Map BGP peering relationships
+3. Trace the path packets would take from different regions
+4. Identify any interesting transit providers
+5. Look for route hijacking indicators
+
+What tools and looking glasses should we use to start this investigation?`,
+    objectives: [
+      'Identify origin ASN',
+      'Map BGP relationships',
+      'Trace global routing paths',
+      'Identify transit providers',
+      'Detect anomalies'
+    ],
+    tools: ['BGP Looking Glass', 'RIPE RIS', 'RouteViews', 'Hurricane Electric BGP', 'PeeringDB'],
+    color: 'teal'
+  },
+  {
+    id: 'passive_recon',
+    name: 'Passive Reconnaissance',
+    icon: '👁️',
+    description: 'Gather intelligence without touching the target. DNS, certificates, historical data only.',
+    difficulty: 'beginner',
+    estimatedTime: '20-30 min',
+    tags: ['Recon', 'OSINT', 'DNS'],
+    targetFields: [
+      { key: 'domain', label: 'Domain', type: 'domain', required: true, placeholder: 'sysadmincorp.net' },
+      { key: 'org', label: 'Organization (optional)', type: 'org', required: false, placeholder: 'SysAdmin Corp' }
+    ],
+    dummyTargets: {
+      domain: 'sysadmincorp.net',
+      org: 'SysAdmin Corp'
+    },
+    starterPrompt: `I need to perform passive reconnaissance on target domain: sysadmincorp.net
+
+Rules: NO active scanning, NO direct connections to target infrastructure.
+
+Help me gather:
+1. DNS records (A, MX, TXT, NS, SPF, DMARC)
+2. SSL/TLS certificate history and SANs
+3. Subdomain enumeration via CT logs
+4. Historical WHOIS records
+5. Wayback Machine snapshots
+6. Email format patterns
+7. Technology fingerprinting from public sources
+
+What's our first passive recon step?`,
+    objectives: [
+      'Enumerate DNS records',
+      'Analyze certificate transparency',
+      'Find historical snapshots',
+      'Identify email patterns',
+      'Map technology stack'
+    ],
+    tools: ['SecurityTrails', 'crt.sh', 'Wayback Machine', 'Shodan', 'BuiltWith'],
+    color: 'purple'
+  },
+  {
+    id: 'active_recon',
+    name: 'Active Reconnaissance',
+    icon: '🔍',
+    description: 'Direct engagement with target systems. Port scanning, service enumeration, vulnerability probing.',
+    difficulty: 'intermediate',
+    estimatedTime: '30-45 min',
+    tags: ['Recon', 'Scanning', 'Enumeration'],
+    targetFields: [
+      { key: 'cidr', label: 'Network Range', type: 'cidr', required: true, placeholder: '10.0.0.0/24' }
+    ],
+    dummyTargets: {
+      cidr: '10.0.0.0/24'
+    },
+    starterPrompt: `Time for active reconnaissance on target: 10.0.0.0/24 (simulated lab network)
+
+Help me conduct:
+1. Host discovery and OS fingerprinting
+2. Port scanning (TCP/UDP top ports)
+3. Service version detection
+4. Banner grabbing
+5. Default credential checks
+6. Vulnerability scanning
+
+Start with host discovery - what nmap commands would you recommend and why?`,
+    objectives: [
+      'Discover live hosts',
+      'Enumerate open ports',
+      'Identify services and versions',
+      'Find potential vulnerabilities',
+      'Document attack surface'
+    ],
+    tools: ['nmap', 'masscan', 'netcat', 'nikto', 'gobuster'],
+    color: 'red'
+  },
+  {
+    id: 'network_topology',
+    name: 'Network Topology Mapping',
+    icon: '🗺️',
+    description: 'Map internal network architecture. Identify VLANs, gateways, trust relationships.',
+    difficulty: 'advanced',
+    estimatedTime: '45-60 min',
+    tags: ['Network', 'Infrastructure', 'Mapping'],
+    targetFields: [
+      { key: 'ip', label: 'Entry Host IP', type: 'ip', required: true, placeholder: '192.168.1.50' },
+      { key: 'cidr', label: 'Network Range (optional)', type: 'cidr', required: false, placeholder: '192.168.1.0/24' }
+    ],
+    dummyTargets: {
+      ip: '192.168.1.50',
+      cidr: '192.168.1.0/24'
+    },
+    starterPrompt: `I've gained access to an internal network and need to map the topology.
+
+Current position: 192.168.1.50 (workstation VLAN)
+
+Help me:
+1. Identify network segments and VLANs
+2. Find default gateways and routing
+3. Discover domain controllers and critical servers
+4. Map trust relationships
+5. Identify network appliances (firewalls, proxies)
+6. Create a network diagram
+
+What's the safest way to start mapping without triggering alerts?`,
+    objectives: [
+      'Identify network segments',
+      'Map routing topology',
+      'Find critical infrastructure',
+      'Document trust relationships',
+      'Create network diagram'
+    ],
+    tools: ['arp-scan', 'traceroute', 'nbtscan', 'enum4linux', 'BloodHound'],
+    color: 'blue'
+  },
+  {
+    id: 'threat_hunting',
+    name: 'Threat Hunting',
+    icon: '🎯',
+    description: 'Proactively search for indicators of compromise. Analyze logs, hunt for persistence.',
+    difficulty: 'expert',
+    estimatedTime: '60-90 min',
+    tags: ['Blue Team', 'DFIR', 'Detection'],
+    targetFields: [
+      { key: 'org', label: 'Organization / Environment', type: 'org', required: true, placeholder: 'SysAdmin Corp' },
+      { key: 'context', label: 'Incident Context (optional)', type: 'text', required: false, placeholder: 'Unusual outbound traffic at 3 AM' }
+    ],
+    dummyTargets: {
+      org: 'SysAdmin Corp',
+      context: 'Unusual outbound traffic at 3 AM'
+    },
+    starterPrompt: `I'm a threat hunter investigating potential compromise indicators.
+
+Available data sources:
+- Windows Event Logs (Security, System, PowerShell)
+- Firewall logs
+- DNS query logs
+- Proxy logs
+
+Suspicious activity reported: Unusual outbound traffic at 3 AM
+
+Help me:
+1. Create hunting hypotheses
+2. Identify relevant log sources
+3. Build detection queries
+4. Look for lateral movement indicators
+5. Check for persistence mechanisms
+6. Timeline the activity
+
+Where should we start the hunt?`,
+    objectives: [
+      'Formulate hunting hypotheses',
+      'Analyze log sources',
+      'Identify IOCs',
+      'Trace lateral movement',
+      'Find persistence mechanisms'
+    ],
+    tools: ['RITA', 'Sigma rules', 'YARA', 'Splunk/ELK queries', 'Velociraptor'],
+    color: 'orange'
+  },
+  {
+    id: 'malware_triage',
+    name: 'Malware Triage',
+    icon: '🦠',
+    description: 'Analyze a suspicious file. Static analysis, behavioral indicators, IOC extraction.',
+    difficulty: 'intermediate',
+    estimatedTime: '30-45 min',
+    tags: ['Malware', 'Analysis', 'Reverse Engineering'],
+    targetFields: [
+      { key: 'filename', label: 'File Name', type: 'text', required: false, placeholder: 'invoice_final.exe' },
+      { key: 'hash', label: 'File Hash', type: 'hash', required: true, placeholder: '3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c' }
+    ],
+    dummyTargets: {
+      filename: 'invoice_final.exe',
+      hash: '3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c'
+    },
+    starterPrompt: `I have a suspicious file that was flagged by our EDR: invoice_final.exe
+
+Hash: 3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c
+
+Help me triage this sample:
+1. Check hash against threat intel (VT, MalwareBazaar)
+2. Extract static indicators (strings, imports, metadata)
+3. Identify packer/obfuscation
+4. Analyze behavioral indicators
+5. Extract C2 infrastructure
+6. Create IOCs for detection
+
+What's the safe triage methodology?`,
+    objectives: [
+      'Verify file reputation',
+      'Extract static indicators',
+      'Identify obfuscation',
+      'Analyze behavior patterns',
+      'Document C2 infrastructure'
+    ],
+    tools: ['VirusTotal', 'Hybrid Analysis', 'PE-bear', 'YARA', 'strings'],
+    color: 'red'
+  },
+  {
+    id: 'social_engineering',
+    name: 'Social Engineering Recon',
+    icon: '🎭',
+    description: 'Build target profiles for social engineering. OSINT on personnel and organizational structure.',
+    difficulty: 'intermediate',
+    estimatedTime: '45-60 min',
+    tags: ['OSINT', 'Social Engineering', 'Personnel'],
+    targetFields: [
+      { key: 'org', label: 'Organization', type: 'org', required: true, placeholder: 'TechCorp Industries' },
+      { key: 'domain', label: 'Primary Domain (optional)', type: 'domain', required: false, placeholder: 'techcorp.com' }
+    ],
+    dummyTargets: {
+      org: 'TechCorp Industries',
+      domain: 'techcorp.com'
+    },
+    starterPrompt: `I need to build social engineering reconnaissance on organization: TechCorp Industries
+
+Goals:
+1. Map organizational structure
+2. Identify key personnel (executives, IT, finance)
+3. Find email naming conventions
+4. Discover personal details (social media, hobbies)
+5. Identify third-party relationships
+6. Find potential pretexting angles
+
+What OSINT sources should we mine first for personnel intelligence?`,
+    objectives: [
+      'Map org structure',
+      'Profile key personnel',
+      'Find email patterns',
+      'Gather personal details',
+      'Identify pretexting angles'
+    ],
+    tools: ['LinkedIn', 'Hunter.io', 'theHarvester', 'Social media OSINT', 'Google dorking'],
+    color: 'pink'
+  },
+  {
+    id: 'dark_web_intel',
+    name: 'Dark Web Intelligence',
+    icon: '🕸️',
+    description: 'Monitor dark web for leaked credentials, data breaches, and threat actor chatter.',
+    difficulty: 'advanced',
+    estimatedTime: '30-45 min',
+    tags: ['Dark Web', 'Threat Intel', 'Breaches'],
+    targetFields: [
+      { key: 'org', label: 'Organization', type: 'org', required: true, placeholder: 'MegaCorp' },
+      { key: 'domain', label: 'Domain (optional)', type: 'domain', required: false, placeholder: 'megacorp.com' }
+    ],
+    dummyTargets: {
+      org: 'MegaCorp',
+      domain: 'megacorp.com'
+    },
+    starterPrompt: `I need to check if our organization has exposure on the dark web.
+
+Target organization: MegaCorp (domain: megacorp.com)
+
+Help me investigate:
+1. Check for leaked credentials in breach databases
+2. Search paste sites for company data
+3. Look for mentions in hacker forums
+4. Check ransomware leak sites
+5. Monitor for insider threats
+6. Find exposed documents/data
+
+What safe OSINT methods can we use without accessing actual dark web markets?`,
+    objectives: [
+      'Check breach databases',
+      'Search paste sites',
+      'Monitor threat actor chatter',
+      'Track ransomware leaks',
+      'Document exposure'
+    ],
+    tools: ['Have I Been Pwned', 'DeHashed', 'IntelX', 'Recorded Future', 'DarkOwl'],
+    color: 'gray'
+  },
+  {
+    id: 'crypto_analysis',
+    name: 'Cryptocurrency Tracing',
+    icon: '₿',
+    description: 'Trace cryptocurrency transactions. Follow the money through blockchain analysis.',
+    difficulty: 'advanced',
+    estimatedTime: '45-60 min',
+    tags: ['Crypto', 'Financial', 'Blockchain'],
+    targetFields: [
+      { key: 'address', label: 'Wallet Address', type: 'address', required: true, placeholder: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' }
+    ],
+    dummyTargets: {
+      address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
+    },
+    starterPrompt: `I need to trace cryptocurrency associated with a suspected fraud operation.
+
+Known Bitcoin address: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+
+Help me:
+1. Analyze transaction history
+2. Cluster related addresses
+3. Identify exchange deposits/withdrawals
+4. Trace mixing service usage
+5. Find connections to known entities
+6. Build a financial timeline
+
+What blockchain analysis approach should we take?`,
+    objectives: [
+      'Analyze transaction flow',
+      'Cluster addresses',
+      'Identify exchanges',
+      'Detect mixing',
+      'Build timeline'
+    ],
+    tools: ['Blockchain explorers', 'Chainalysis', 'Elliptic', 'OXT', 'Crystal'],
+    color: 'yellow'
+  },
+  {
+    id: 'incident_response',
+    name: 'Incident Response',
+    icon: '🚨',
+    description: 'Respond to an active security incident. Contain, eradicate, recover.',
+    difficulty: 'expert',
+    estimatedTime: '60-90 min',
+    tags: ['DFIR', 'Blue Team', 'Crisis'],
+    targetFields: [
+      { key: 'context', label: 'Incident Summary', type: 'text', required: true, placeholder: 'Ransomware behavior on finance workstations' },
+      { key: 'scope', label: 'Affected Scope (optional)', type: 'text', required: false, placeholder: 'Finance department (10+ hosts)' }
+    ],
+    dummyTargets: {
+      context: 'Ransomware behavior on finance workstations',
+      scope: 'Finance department (10+ hosts)'
+    },
+    starterPrompt: `ALERT: Active incident in progress!
+
+Situation: Multiple workstations exhibiting ransomware behavior
+Timeline: Started 15 minutes ago
+Affected systems: Finance department (10+ hosts)
+
+Help me through the IR process:
+1. Initial containment actions
+2. Preservation of evidence
+3. Scope assessment
+4. Root cause analysis
+5. Eradication planning
+6. Recovery steps
+
+What's our immediate priority action?`,
+    objectives: [
+      'Contain the threat',
+      'Preserve evidence',
+      'Assess scope',
+      'Identify root cause',
+      'Plan eradication'
+    ],
+    tools: ['Network isolation', 'Memory forensics', 'Log analysis', 'Backup restoration', 'IOC hunting'],
+    color: 'red'
+  },
+  {
+    id: 'phishing_analysis',
+    name: 'Phishing Email Analysis',
+    icon: '📧',
+    description: 'Analyze a suspicious email. Extract IOCs, trace infrastructure, attribute threat actors.',
+    difficulty: 'beginner',
+    estimatedTime: '20-30 min',
+    tags: ['Phishing', 'Email', 'Analysis'],
+    targetFields: [
+      { key: 'url', label: 'Suspicious URL', type: 'url', required: true, placeholder: 'hxxp://amaz0n-verify[.]com/login' },
+      { key: 'email', label: 'Sender Email (optional)', type: 'email', required: false, placeholder: 'support@amaz0n-verify.com' },
+      { key: 'ip', label: 'Originating IP (optional)', type: 'ip', required: false, placeholder: '185.234.xxx.xxx' }
+    ],
+    dummyTargets: {
+      url: 'hxxp://amaz0n-verify[.]com/login',
+      email: 'support@amaz0n-verify.com',
+      ip: '185.234.xxx.xxx'
+    },
+    starterPrompt: `User reported a suspicious email. I have the full EML file.
+
+Headers show:
+- From: support@amaz0n-verify.com
+- Reply-To: verify@gmail.com
+- X-Originating-IP: 185.234.xxx.xxx
+- Contains link: hxxp://amaz0n-verify[.]com/login
+
+Help me analyze:
+1. Parse email headers for origin
+2. Analyze sender infrastructure
+3. Check URL reputation and history
+4. Extract all IOCs
+5. Identify phishing kit signatures
+6. Write detection rules
+
+Walk me through the analysis methodology.`,
+    objectives: [
+      'Parse email headers',
+      'Analyze infrastructure',
+      'Check URL reputation',
+      'Extract IOCs',
+      'Create detections'
+    ],
+    tools: ['MXToolbox', 'URLscan.io', 'PhishTank', 'VirusTotal', 'WHOIS'],
+    color: 'amber'
+  }
+];
+
+export const CAMPAIGN_CATEGORIES = [
+  { id: 'recon', name: 'Reconnaissance', campaigns: ['passive_recon', 'active_recon', 'network_topology'] },
+  { id: 'osint', name: 'OSINT Investigation', campaigns: ['shell_corp_osint', 'social_engineering', 'dark_web_intel'] },
+  { id: 'network', name: 'Network Analysis', campaigns: ['bgp_trace', 'network_topology'] },
+  { id: 'defense', name: 'Blue Team / Defense', campaigns: ['threat_hunting', 'incident_response', 'phishing_analysis'] },
+  { id: 'analysis', name: 'Forensics & Analysis', campaigns: ['malware_triage', 'crypto_analysis'] },
+];
+
+export const getDifficultyColor = (difficulty: Campaign['difficulty']): string => {
+  switch (difficulty) {
+    case 'beginner': return 'text-green-400';
+    case 'intermediate': return 'text-yellow-400';
+    case 'advanced': return 'text-orange-400';
+    case 'expert': return 'text-red-400';
+    default: return 'text-stone-400';
+  }
+};
+
+export const getCampaignById = (id: string): Campaign | undefined => {
+  return AGENT_CAMPAIGNS.find(c => c.id === id);
+};
