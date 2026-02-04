@@ -70,13 +70,14 @@ const SEVERITY_COLORS: Record<string, string> = {
 
 interface AtroposScannerProps {
   onAnalyzeWithNexus?: (prompt: string, scanData: any) => void;
+  initialTarget?: string;
 }
 
-export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
+export function AtroposScanner({ onAnalyzeWithNexus, initialTarget }: AtroposScannerProps) {
   const { addToolOutput } = useReportContext();
   const [scripts, setScripts] = useState<AtroposScript[]>([]);
   const [selectedScript, setSelectedScript] = useState<string>("bbot_scanner");
-  const [target, setTarget] = useState("");
+  const [target, setTarget] = useState(initialTarget || "");
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<AtroposScanResult | null>(null);
   const [importData, setImportData] = useState("");
@@ -99,6 +100,12 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
   useEffect(() => {
     loadScripts();
   }, [loadScripts]);
+
+  useEffect(() => {
+    if (initialTarget) {
+      setTarget(initialTarget);
+    }
+  }, [initialTarget]);
 
   const runSimulatedScan = async () => {
     if (!target.trim()) {
