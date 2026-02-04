@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
+import { QRCodeModal } from '@/components/QRCodeModal';
+import { AgentChat } from '@/components/AgentChat';
 import { 
   Menu, 
   X, 
@@ -16,7 +18,8 @@ import {
   QrCode,
   Search,
   Bug,
-  Sparkles
+  Sparkles,
+  Bot
 } from 'lucide-react';
 
 interface NavItem {
@@ -31,6 +34,8 @@ interface NavItem {
 export default function MobileFloatingMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [location, setLocation] = useLocation();
   const { gameState } = useGame();
   const { pendingFindings } = useReportContext();
@@ -55,6 +60,7 @@ export default function MobileFloatingMenu() {
   const navItems: NavItem[] = [
     { path: '/', icon: Home, label: 'Home', color: 'amber' },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' },
+    { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple', badge: pendingFindings.length || undefined },
@@ -170,56 +176,83 @@ export default function MobileFloatingMenu() {
         )}
       </AnimatePresence>
 
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`
-          w-14 h-14 rounded-full shadow-lg 
-          transition-all duration-200
-          ${isOpen 
-            ? 'bg-stone-800 border-stone-600' 
-            : 'bg-gradient-to-br from-amber-600 to-amber-800 border-amber-500'
-          }
-          border-2 touch-manipulation
-        `}
-        size="icon"
-        aria-expanded={isOpen}
-        aria-controls="mobile-nav-menu"
-        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-        data-testid="mobile-menu-toggle"
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <X className="w-6 h-6 text-white" aria-hidden="true" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="menu"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="relative"
-            >
-              <Menu className="w-6 h-6 text-white" aria-hidden="true" />
-              {totalBadge > 0 && (
-                <span 
-                  className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold"
-                  aria-label={`${totalBadge} notifications`}
-                >
-                  {totalBadge > 9 ? '9+' : totalBadge}
-                </span>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Button>
+      {/* Quick Action Buttons - always visible */}
+      <div className="flex flex-col gap-2">
+        <Button
+          onClick={() => setAgentChatOpen(true)}
+          className="w-12 h-12 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg border-2 border-amber-900/50 touch-manipulation"
+          size="icon"
+          aria-label="Open AI Agent"
+          data-testid="mobile-agent-button"
+        >
+          <Bot className="w-5 h-5" />
+        </Button>
+        
+        <Button
+          onClick={() => setQrModalOpen(true)}
+          className="w-12 h-12 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg border-2 border-amber-500/30 touch-manipulation"
+          size="icon"
+          aria-label="QR Scanner"
+          data-testid="mobile-qr-button"
+        >
+          <QrCode className="w-5 h-5" />
+        </Button>
+
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`
+            w-14 h-14 rounded-full shadow-lg 
+            transition-all duration-200
+            ${isOpen 
+              ? 'bg-stone-800 border-stone-600' 
+              : 'bg-gradient-to-br from-amber-600 to-amber-800 border-amber-500'
+            }
+            border-2 touch-manipulation
+          `}
+          size="icon"
+          aria-expanded={isOpen}
+          aria-controls="mobile-nav-menu"
+          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+          data-testid="mobile-menu-toggle"
+        >
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <X className="w-6 h-6 text-white" aria-hidden="true" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="relative"
+              >
+                <Menu className="w-6 h-6 text-white" aria-hidden="true" />
+                {totalBadge > 0 && (
+                  <span 
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold"
+                    aria-label={`${totalBadge} notifications`}
+                  >
+                    {totalBadge > 9 ? '9+' : totalBadge}
+                  </span>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Button>
+      </div>
+      
+      {/* Modals */}
+      <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
+      <AgentChat open={agentChatOpen} onOpenChange={setAgentChatOpen} />
     </div>
   );
 }

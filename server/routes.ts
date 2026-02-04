@@ -1897,5 +1897,160 @@ BEHAVIOR:
     }
   });
 
+  // ============================================
+  // THREAT INTELLIGENCE FEEDS
+  // ============================================
+  
+  // Allowlist of approved threat intel feed URLs (security: prevents SSRF)
+  const THREAT_INTEL_FEEDS: Record<string, { url: string; method: 'GET' | 'POST'; body?: string }> = {
+    'abuse_ch_urlhaus': { url: 'https://urlhaus-api.abuse.ch/v1/', method: 'POST', body: 'query=get_recent&limit=25' },
+    'abuse_ch_threatfox': { url: 'https://threatfox-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_iocs&days=1' },
+    'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_recent&selector=100' },
+    'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
+    'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
+  };
+  
+  app.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) => {
+    try {
+      const { feedId } = req.body;
+      
+      if (!feedId) {
+        return res.status(400).json({ error: "feedId required" });
+      }
+      
+      // Security: Only allow approved feeds from allowlist
+      const feed = THREAT_INTEL_FEEDS[feedId];
+      if (!feed) {
+        return res.status(400).json({ error: "Unknown feed. Allowed: " + Object.keys(THREAT_INTEL_FEEDS).join(', ') });
+      }
+      
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      
+      const headers: Record<string, string> = {
+        'User-Agent': 'NEXUS-Security-Platform/1.0',
+        'Accept': 'application/json'
+      };
+      
+      let response;
+      if (feed.method === 'POST') {
+        response = await fetch(feed.url, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: feed.body,
+          signal: controller.signal
+        });
+      } else {
+        response = await fetch(feed.url, { headers, signal: controller.signal });
+      }
+      
+      clearTimeout(timeout);
+      
+      if (!response.ok) {
+        throw new Error(`Feed returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Return trimmed data to avoid huge payloads
+      const trimmed = Array.isArray(data) 
+        ? data.slice(0, 50) 
+        : (data.data ? { ...data, data: data.data.slice?.(0, 50) || data.data } : data);
+      
+      res.json(trimmed);
+    } catch (error: any) {
+      console.error("Threat intel fetch error:", error);
+      res.status(500).json({ error: error.message || "Failed to fetch threat intel" });
+    }
+  });
+
+  // ============================================
+  // ADMIN AGENT CONFIGURATION
+  // ============================================
+  
+  // Get admin agent configs (base instructions)
+  app.get("/api/admin/agent-config", async (req, res) => {
+    try {
+      const config = await storage.getAdminConfig();
+      res.json(config?.agentConfig || {});
+    } catch (error) {
+      console.error("Get agent config error:", error);
+      res.status(500).json({ error: "Failed to get agent config" });
+    }
+  });
+  
+  // Update admin agent configs (protected base instructions)
+  app.put("/api/admin/agent-config", async (req, res) => {
+    try {
+      const { agentId, baseInstructions, model, temperature } = req.body;
+      
+      if (!agentId) {
+        return res.status(400).json({ error: "agentId required" });
+      }
+      
+      const currentConfig = await storage.getAdminConfig() || { agentConfig: {} };
+      const agentConfigs = currentConfig.agentConfig || {};
+      
+      agentConfigs[agentId] = {
+        baseInstructions: baseInstructions || agentConfigs[agentId]?.baseInstructions,
+        model: model || agentConfigs[agentId]?.model,
+        temperature: temperature ?? agentConfigs[agentId]?.temperature,
+        updatedAt: new Date().toISOString()
+      };
+      
+      await storage.updateAdminConfig({ agentConfig: agentConfigs });
+      
+      res.json({ success: true, config: agentConfigs[agentId] });
+    } catch (error) {
+      console.error("Update agent config error:", error);
+      res.status(500).json({ error: "Failed to update agent config" });
+    }
+  });
+  
+  // Get/Set W&B configuration (admin only)
+  app.get("/api/admin/wandb-config", async (req, res) => {
+    try {
+      const config = await storage.getAdminConfig();
+      // Only return non-sensitive info
+      res.json({
+        enabled: !!config?.wandbConfig?.enabled,
+        project: config?.wandbConfig?.project || 'nexus-agents',
+        entity: config?.wandbConfig?.entity || ''
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get W&B config" });
+    }
+  });
+  
+  app.put("/api/admin/wandb-config", async (req, res) => {
+    try {
+      const { enabled, project, entity, apiKey } = req.body;
+      
+      const currentConfig = await storage.getAdminConfig() || {};
+      
+      await storage.updateAdminConfig({
+        wandbConfig: {
+          enabled: enabled ?? currentConfig.wandbConfig?.enabled ?? false,
+          project: project || currentConfig.wandbConfig?.project || 'nexus-agents',
+          entity: entity || currentConfig.wandbConfig?.entity || '',
+          // Store API key securely (in production, use env var instead)
+          apiKeySet: !!apiKey || !!currentConfig.wandbConfig?.apiKeySet
+        }
+      });
+      
+      // If API key provided, set it in environment for orchestrator
+      if (apiKey) {
+        process.env.WANDB_API_KEY = apiKey;
+        process.env.WANDB_PROJECT = project || 'nexus-agents';
+        if (entity) process.env.WANDB_ENTITY = entity;
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Update W&B config error:", error);
+      res.status(500).json({ error: "Failed to update W&B config" });
+    }
+  });
+
   return httpServer;
 }

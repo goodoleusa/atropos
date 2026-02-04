@@ -54,6 +54,7 @@ import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
 import { QuestsSection } from "@/pages/admin/QuestsSection";
 import { QuickPushSection } from "@/pages/admin/QuickPushSection";
 import { EffectsPlaygroundSection } from "@/pages/admin/EffectsPlaygroundSection";
+import AgentConfigSection from "@/pages/admin/AgentConfigSection";
 
 interface Clue {
   id: string;
@@ -403,6 +404,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="effects" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-500" data-testid="effects-tab">
               <Sparkles className="w-4 h-4 mr-2" /> Effects
+            </TabsTrigger>
+            <TabsTrigger value="agentconfig" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500" data-testid="agentconfig-tab">
+              <Bot className="w-4 h-4 mr-2" /> Agent Config
             </TabsTrigger>
           </TabsList>
 
@@ -1119,6 +1123,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="effects">
             <EffectsPlaygroundSection />
+          </TabsContent>
+
+          <TabsContent value="agentconfig">
+            <AgentConfigSection />
           </TabsContent>
         </Tabs>
       </div>
