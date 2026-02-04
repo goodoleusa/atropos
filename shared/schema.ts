@@ -765,6 +765,54 @@ export const stateCapsules = pgTable("state_capsules", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Consent Records - GDPR-compliant consent tracking
+export const consentRecords = pgTable("consent_records", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  consentType: text("consent_type").notNull(), // 'model_training', 'research_use', 'email_contact', 'analytics'
+  granted: boolean("granted").notNull().default(false),
+  grantedAt: timestamp("granted_at"),
+  revokedAt: timestamp("revoked_at"),
+  ipAddress: text("ip_address"), // Anonymized (last octet removed)
+  userAgent: text("user_agent"),
+  version: text("version").notNull().default("1.0"), // Policy version consented to
+  metadata: jsonb("metadata").$type<{
+    source: 'banner' | 'settings' | 'api';
+    policyUrl?: string;
+    legalBasis?: string;
+  }>().notNull().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Data Subject Access Requests (DSAR) - track user data requests
+export const dsarRequests = pgTable("dsar_requests", {
+  id: serial("id").primaryKey(),
+  requestId: text("request_id").notNull().unique(),
+  sessionToken: text("session_token").notNull(),
+  requestType: text("request_type").notNull(), // 'access', 'erasure', 'portability', 'rectification', 'objection'
+  email: text("email"), // Optional contact email
+  verificationStatus: text("verification_status").notNull().default("pending"), // 'pending', 'verified', 'rejected'
+  verificationMethod: text("verification_method"), // 'session_token', 'email', 'knowledge_questions'
+  verificationDetails: jsonb("verification_details").$type<{
+    questionsAsked?: string[];
+    questionsAnswered?: number;
+    emailVerified?: boolean;
+    attemptCount?: number;
+  }>(),
+  status: text("status").notNull().default("pending"), // 'pending', 'processing', 'completed', 'rejected'
+  completedAt: timestamp("completed_at"),
+  responseData: jsonb("response_data").$type<{
+    dataExported?: boolean;
+    dataDeleted?: boolean;
+    itemsAffected?: number;
+    notes?: string;
+  }>(),
+  dueDate: timestamp("due_date").notNull(), // 30 days from request
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Exported Reports - preserves user investigation reports for company retention
 export const exportedReports = pgTable("exported_reports", {
   id: serial("id").primaryKey(),
@@ -807,6 +855,19 @@ export const exportedReports = pgTable("exported_reports", {
 });
 
 // Insert schemas
+export const insertConsentRecordSchema = createInsertSchema(consentRecords).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertDsarRequestSchema = createInsertSchema(dsarRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  completedAt: true,
+});
+
 export const insertExportedReportSchema = createInsertSchema(exportedReports).omit({
   id: true,
   createdAt: true,
@@ -850,6 +911,10 @@ export type StateCapsule = typeof stateCapsules.$inferSelect;
 export type InsertStateCapsule = z.infer<typeof insertStateCapsuleSchema>;
 export type ExportedReport = typeof exportedReports.$inferSelect;
 export type InsertExportedReport = z.infer<typeof insertExportedReportSchema>;
+export type ConsentRecord = typeof consentRecords.$inferSelect;
+export type InsertConsentRecord = z.infer<typeof insertConsentRecordSchema>;
+export type DsarRequest = typeof dsarRequests.$inferSelect;
+export type InsertDsarRequest = z.infer<typeof insertDsarRequestSchema>;
 
 // Export auth and chat models
 export * from "./models/auth";
