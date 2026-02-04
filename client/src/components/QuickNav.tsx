@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { QRCodeModal } from '@/components/QRCodeModal';
 import { AgentChat } from '@/components/AgentChat';
@@ -28,6 +28,7 @@ export default function QuickNav() {
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
+    { path: '/atropos', icon: Activity, label: 'Atropos', color: 'teal' as const },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
     ...(gameState.devMode ? [{ path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const }] : []),
