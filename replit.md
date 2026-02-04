@@ -43,7 +43,10 @@ Preferred communication style: Simple, everyday language.
 - **Shared Investigation Context**: Cross-feature state management via `useReportContext` for data flow between Agent Chat, AI Lab, and Report Builder.
 - **AI Lab (Battleground)**: Prompt engineering playground with live preview, cost tracking, model comparison, performance evaluations, and exportable summaries. Features a unified chat battleground for dual-model comparison and AI Pentesting Challenges based on 2025 arxiv research (e.g., GCG, SequentialBreak, RoleBreaker).
 - **Prompt Optimizer**: Provides quick tips for prompt engineering techniques.
-- **QuickNav Component**: Floating navigation for quick access to Terminal, AI Lab, and Report Builder with session status and progress indicators.
+- **QuickNav Component**: Floating navigation for quick access to Terminal, Agents, AI Lab, and Report Builder with session status and progress indicators.
+- **Security Agents Page**: Dedicated page (`/agents`) with 6 specialized security agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis). Features user prompt playground (adds to admin base instructions), threat intel feeds integration (abuse.ch, ThreatFox, CISA KEV, ransomware.live), and framework exports (CrewAI, LangChain).
+- **Admin Agent Configuration**: Protected admin section for configuring agent base instructions, model overrides, and W&B monitoring. Users can add to but not override admin base instructions.
+- **Threat Intelligence Feeds**: Server-side proxied threat intel feeds with security allowlist preventing SSRF attacks. Supports abuse.ch URLhaus, ThreatFox, MalwareBazaar, CISA KEV, and ransomware.live feeds.
 - **API Playground**: Educational quest-based system for learning API requests through CTF exercises.
 - **Interactive Campaign System**: Adaptive investigation flows responding to user discoveries, offering perspective shifts and tool guidance.
 - **Investigation Workspace**: Unified hub for Agent Chat, AI Lab quick testing, and Learning Profile configuration.
