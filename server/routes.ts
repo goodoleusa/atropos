@@ -6,6 +6,8 @@ import { generateSessionExportCode, generateSecretCode, decodeQRPayload } from "
 import { registerChatRoutes } from "./replit_integrations/chat";
 import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
+import atroposRoutes from "./routes/atropos";
+import securityAdvisorRoutes from "./routes/securityAdvisor";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -43,6 +45,12 @@ export async function registerRoutes(
   
   // Register Behavior Analysis routes
   app.use("/api/behavior", behaviorRoutes);
+  
+  // Register Atropos scanning routes
+  app.use("/api/atropos", atroposRoutes);
+  
+  // Register Security Advisor routes (behavior + Atropos integration)
+  app.use("/api/security", securityAdvisorRoutes);
   
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {

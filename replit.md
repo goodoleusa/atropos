@@ -69,6 +69,28 @@ Preferred communication style: Simple, everyday language.
 - **Unified Learning Store** (`useLearningStore.ts`): Zustand-based centralized state management for learning preferences (style, goals, skill level, pace). Persists to localStorage and provides prompt modifiers for AI interactions. Used by PromptBuilder, Campaign Designer, and Investigation Workspace.
 - **Campaign Designer Learning Integration**: Nodes support learning goals, skill levels, and teaching notes metadata for educational campaign development.
 - **Mobile Node Ordering**: Campaign Designer includes 3x3 button grid for node hierarchy management (up/down/indent/outdent) with visual depth indicators, plus keyboard navigation support (arrow keys, Tab for indentation).
+- **Atropos OSINT Scanner**: Rust-based security scanning tool integrated via REST API (`/api/atropos`). Supports script execution, scan history, remote Atropos server connections, and AI-assisted analysis prompt generation. Findings auto-integrate with investigation contexts.
+
+## Dual-System Architecture: NEXUS + Atropos
+
+The platform operates as a dual-system security investigation platform:
+
+| System | Purpose | Technology | Load Profile |
+|--------|---------|------------|--------------|
+| **NEXUS** | AI assistant for analysis, reporting, investigation guidance | OpenRouter LLMs | Light API calls |
+| **Atropos** | OSINT scanner, vulnerability detection, tool orchestration | Rust CLI binary | Heavy scanning workloads |
+
+### Atropos Integration Files
+- `server/routes/atropos.ts` - REST API endpoints for scanning
+- `server/services/atropos.ts` - Binary execution and result parsing
+- `tools/atropos/` - Atropos source (Rust/Cargo project)
+
+### Atropos API Endpoints
+- `GET /api/atropos/health` - Binary availability check
+- `GET /api/atropos/scripts` - List available scan scripts
+- `POST /api/atropos/scan` - Execute a scan
+- `GET /api/atropos/scans/:sessionToken` - Scan history by session
+- `POST /api/atropos/remote/scan` - Proxy to remote Atropos server
 
 ## External Dependencies
 
@@ -84,3 +106,33 @@ Preferred communication style: Simple, everyday language.
 - **TanStack Query**: Server state management.
 - **Drizzle ORM**: Type-safe database queries.
 - **date-fns**: Date utilities.
+
+## Git Branch Strategy
+
+### Current Branches
+| Branch | Purpose | Status |
+|--------|---------|--------|
+| `main` | Production-ready code with full Atropos integration | Primary |
+| `cursor2` | Active development branch (video/session work) | Active |
+
+### Cursor + Replit Workflow Best Practices
+When working across both Cursor and Replit Agent:
+
+1. **Use separate branches** - Work on `cursor-dev` in Cursor, `main` for Replit Agent
+2. **Pull before switching** - Always `git pull` before starting work in either tool
+3. **Commit frequently** - Small commits = easier conflict resolution
+4. **Avoid same-file edits** - Don't edit same files in both tools simultaneously
+5. **Sync before Agent requests** - Push Cursor changes before asking Agent to make changes
+6. **Use GitHub as source of truth** - Both tools push/pull from the same remote
+
+### Merge Command (when needed)
+```bash
+git merge main --no-edit
+# Resolve conflicts if any
+git add . && git commit -m "Merge main"
+```
+
+## Recent Changes
+- **2025-02-04**: Integrated Atropos OSINT scanner routes and services
+- **2025-02-04**: Added homepage video with tumbling tarot card animation
+- **2025-02-03**: Fixed React infinite loop in GameProvider (useRef for learningProfile)

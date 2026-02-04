@@ -765,7 +765,55 @@ export const stateCapsules = pgTable("state_capsules", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Exported Reports - preserves user investigation reports for company retention
+export const exportedReports = pgTable("exported_reports", {
+  id: serial("id").primaryKey(),
+  reportId: text("report_id").notNull().unique(),
+  sessionToken: text("session_token").notNull(),
+  investigationId: text("investigation_id"),
+  title: text("title").notNull(),
+  reportType: text("report_type").notNull().default("investigation"), // 'investigation', 'vulnerability', 'osint', 'incident'
+  summary: text("summary"),
+  content: jsonb("content").$type<{
+    sections: Array<{
+      title: string;
+      content: string;
+      type: 'text' | 'findings' | 'recommendations' | 'evidence';
+    }>;
+    findings: Array<{
+      id: string;
+      severity: string;
+      title: string;
+      description: string;
+      evidence?: any;
+    }>;
+    recommendations: string[];
+    toolsUsed: string[];
+    targetsInvestigated: string[];
+  }>().notNull(),
+  metadata: jsonb("metadata").$type<{
+    exportFormat: 'json' | 'markdown' | 'pdf';
+    version: number;
+    learningProfile?: Record<string, any>;
+    riskScore?: number;
+    atroposScansRun?: number;
+  }>().notNull().default({}),
+  status: text("status").notNull().default("submitted"), // 'draft', 'submitted', 'reviewed', 'archived'
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at"),
+  retentionPriority: text("retention_priority").notNull().default("normal"), // 'low', 'normal', 'high', 'critical'
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Insert schemas
+export const insertExportedReportSchema = createInsertSchema(exportedReports).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  reviewedAt: true,
+});
+
 export const insertOsintToolSchema = createInsertSchema(osintTools).omit({
   id: true,
   createdAt: true,
@@ -800,6 +848,8 @@ export type InteractionLog = typeof interactionLogs.$inferSelect;
 export type InsertInteractionLog = z.infer<typeof insertInteractionLogSchema>;
 export type StateCapsule = typeof stateCapsules.$inferSelect;
 export type InsertStateCapsule = z.infer<typeof insertStateCapsuleSchema>;
+export type ExportedReport = typeof exportedReports.$inferSelect;
+export type InsertExportedReport = z.infer<typeof insertExportedReportSchema>;
 
 // Export auth and chat models
 export * from "./models/auth";
