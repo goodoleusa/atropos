@@ -552,6 +552,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="agent" className="data-[state=active]:bg-cyan-900/30 data-[state=active]:text-cyan-500" data-testid="agent-tab">
               <Bot className="w-4 h-4 mr-2" /> Agent
             </TabsTrigger>
+            <TabsTrigger value="admin-tasks" className="data-[state=active]:bg-orange-900/30 data-[state=active]:text-orange-500" data-testid="admin-tasks-tab">
+              <FileText className="w-4 h-4 mr-2" /> Admin Tasks
+            </TabsTrigger>
           </TabsList>
 
           {/* Clues Tab */}
@@ -1494,6 +1497,10 @@ export default function AdminDashboard() {
           <TabsContent value="agent">
             <AgentConfigPanel />
           </TabsContent>
+
+          <TabsContent value="admin-tasks">
+            <AdminTasksPanel />
+          </TabsContent>
         </Tabs>
       </div>
       
@@ -2064,6 +2071,397 @@ Context: Escape room game with hidden routes, QR mechanics, clue collection`}
             {enabledModules.map(m => `[${m.toUpperCase()}] enabled`).join('\n')}
             {customInstructions ? `\n\n## CUSTOM INSTRUCTIONS\n${customInstructions}` : ''}
           </pre>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+interface AdminTask {
+  id: string;
+  title: string;
+  description: string;
+  category: 'legal' | 'security' | 'infrastructure' | 'content' | 'other';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  status: 'pending' | 'in_progress' | 'completed' | 'blocked';
+  dueDate?: string;
+  notes?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+const DEFAULT_ADMIN_TASKS: AdminTask[] = [
+  {
+    id: 'openrouter-dpa',
+    title: 'Obtain OpenRouter Data Processing Agreement',
+    description: 'Request and sign DPA from OpenRouter for GDPR compliance. Contact: support@openrouter.ai',
+    category: 'legal',
+    priority: 'critical',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    notes: 'Required for GDPR compliance with AI processing. Without this, data transfers to OpenRouter may not be legally compliant for EU users.',
+  },
+  {
+    id: 'annual-lia-review',
+    title: 'Annual Legitimate Interest Assessment Review',
+    description: 'Review and update LIA document in docs/LEGITIMATE_INTEREST_ASSESSMENT.md',
+    category: 'legal',
+    priority: 'medium',
+    status: 'pending',
+    dueDate: '2026-02-04',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'annual-ropa-review',
+    title: 'Annual Records of Processing Review',
+    description: 'Review and update ROPA document in docs/RECORDS_OF_PROCESSING.md',
+    category: 'legal',
+    priority: 'medium',
+    status: 'pending',
+    dueDate: '2026-02-04',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'privacy-policy-publish',
+    title: 'Publish Privacy Policy Page',
+    description: 'Add frontend page displaying PRIVACY_POLICY.md content',
+    category: 'content',
+    priority: 'high',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'consent-ui',
+    title: 'Build Consent Preferences UI',
+    description: 'Add settings panel for users to manage their consent preferences',
+    category: 'content',
+    priority: 'high',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'dsar-ui',
+    title: 'Build DSAR Request Form',
+    description: 'Add UI for users to submit data access/erasure requests',
+    category: 'content',
+    priority: 'medium',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  },
+];
+
+function AdminTasksPanel() {
+  const [tasks, setTasks] = useState<AdminTask[]>(() => {
+    const saved = localStorage.getItem('admin_tasks');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return DEFAULT_ADMIN_TASKS;
+  });
+  
+  const [newTask, setNewTask] = useState<Partial<AdminTask>>({
+    category: 'other',
+    priority: 'medium',
+    status: 'pending',
+  });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<AdminTask | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('admin_tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  const addTask = () => {
+    if (!newTask.title) return;
+    const task: AdminTask = {
+      id: `task-${Date.now()}`,
+      title: newTask.title || '',
+      description: newTask.description || '',
+      category: newTask.category || 'other',
+      priority: newTask.priority || 'medium',
+      status: 'pending',
+      dueDate: newTask.dueDate,
+      notes: newTask.notes,
+      createdAt: new Date().toISOString(),
+    };
+    setTasks([...tasks, task]);
+    setNewTask({ category: 'other', priority: 'medium', status: 'pending' });
+    setDialogOpen(false);
+  };
+
+  const updateTaskStatus = (id: string, status: AdminTask['status']) => {
+    setTasks(tasks.map(t => 
+      t.id === id ? { ...t, status, completedAt: status === 'completed' ? new Date().toISOString() : undefined } : t
+    ));
+  };
+
+  const deleteTask = (id: string) => {
+    setTasks(tasks.filter(t => t.id !== id));
+  };
+
+  const getPriorityColor = (priority: AdminTask['priority']) => {
+    switch (priority) {
+      case 'critical': return 'bg-red-900/50 text-red-400 border-red-800';
+      case 'high': return 'bg-orange-900/50 text-orange-400 border-orange-800';
+      case 'medium': return 'bg-yellow-900/50 text-yellow-400 border-yellow-800';
+      case 'low': return 'bg-green-900/50 text-green-400 border-green-800';
+    }
+  };
+
+  const getCategoryColor = (category: AdminTask['category']) => {
+    switch (category) {
+      case 'legal': return 'bg-purple-900/50 text-purple-400';
+      case 'security': return 'bg-red-900/50 text-red-400';
+      case 'infrastructure': return 'bg-blue-900/50 text-blue-400';
+      case 'content': return 'bg-teal-900/50 text-teal-400';
+      case 'other': return 'bg-stone-800/50 text-stone-400';
+    }
+  };
+
+  const getStatusIcon = (status: AdminTask['status']) => {
+    switch (status) {
+      case 'pending': return '○';
+      case 'in_progress': return '◐';
+      case 'completed': return '●';
+      case 'blocked': return '◌';
+    }
+  };
+
+  const pendingTasks = tasks.filter(t => t.status !== 'completed');
+  const completedTasks = tasks.filter(t => t.status === 'completed');
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-lg font-orbitron text-orange-500">Admin Tasks</h3>
+          <p className="text-sm text-stone-500">Manual tasks that require human action (cannot be automated by agents)</p>
+        </div>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-orange-700 hover:bg-orange-600 text-black">
+              <Plus className="w-4 h-4 mr-2" /> Add Task
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-stone-900 border-orange-900/50">
+            <DialogHeader>
+              <DialogTitle className="text-orange-400">Add Admin Task</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-stone-400">Title</Label>
+                <Input
+                  value={newTask.title || ''}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  className="bg-stone-800 border-stone-700 text-stone-200"
+                  placeholder="Task title"
+                />
+              </div>
+              <div>
+                <Label className="text-stone-400">Description</Label>
+                <Textarea
+                  value={newTask.description || ''}
+                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                  className="bg-stone-800 border-stone-700 text-stone-200"
+                  placeholder="Task description"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-stone-400">Category</Label>
+                  <select
+                    value={newTask.category}
+                    onChange={(e) => setNewTask({ ...newTask, category: e.target.value as AdminTask['category'] })}
+                    className="w-full bg-stone-800 border border-stone-700 text-stone-200 rounded-md p-2"
+                  >
+                    <option value="legal">Legal</option>
+                    <option value="security">Security</option>
+                    <option value="infrastructure">Infrastructure</option>
+                    <option value="content">Content</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-stone-400">Priority</Label>
+                  <select
+                    value={newTask.priority}
+                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as AdminTask['priority'] })}
+                    className="w-full bg-stone-800 border border-stone-700 text-stone-200 rounded-md p-2"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <Label className="text-stone-400">Due Date (optional)</Label>
+                <Input
+                  type="date"
+                  value={newTask.dueDate || ''}
+                  onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                  className="bg-stone-800 border-stone-700 text-stone-200"
+                />
+              </div>
+              <div>
+                <Label className="text-stone-400">Notes (optional)</Label>
+                <Textarea
+                  value={newTask.notes || ''}
+                  onChange={(e) => setNewTask({ ...newTask, notes: e.target.value })}
+                  className="bg-stone-800 border-stone-700 text-stone-200"
+                  placeholder="Additional notes"
+                />
+              </div>
+              <Button onClick={addTask} className="w-full bg-orange-700 hover:bg-orange-600 text-black">
+                <Plus className="w-4 h-4 mr-2" /> Add Task
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-4">
+        <Card className="bg-red-950/20 border-red-900/30">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-red-400">{tasks.filter(t => t.priority === 'critical' && t.status !== 'completed').length}</div>
+            <div className="text-xs text-stone-500">Critical</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-orange-950/20 border-orange-900/30">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-orange-400">{pendingTasks.length}</div>
+            <div className="text-xs text-stone-500">Pending</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-yellow-950/20 border-yellow-900/30">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-yellow-400">{tasks.filter(t => t.status === 'in_progress').length}</div>
+            <div className="text-xs text-stone-500">In Progress</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-green-950/20 border-green-900/30">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-400">{completedTasks.length}</div>
+            <div className="text-xs text-stone-500">Completed</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Pending Tasks */}
+      <Card className="bg-stone-900/50 border-orange-900/30">
+        <CardHeader>
+          <CardTitle className="text-orange-400 text-sm flex items-center gap-2">
+            <Target className="w-4 h-4" /> Pending Tasks ({pendingTasks.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {pendingTasks.length === 0 ? (
+            <p className="text-stone-500 text-sm text-center py-4">No pending tasks</p>
+          ) : (
+            pendingTasks.map(task => (
+              <div key={task.id} className={`p-4 rounded-lg border ${getPriorityColor(task.priority)}`}>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">{getStatusIcon(task.status)}</span>
+                      <h4 className="font-semibold text-stone-200">{task.title}</h4>
+                      <Badge className={`text-[10px] ${getCategoryColor(task.category)}`}>{task.category}</Badge>
+                    </div>
+                    <p className="text-sm text-stone-400 mb-2">{task.description}</p>
+                    {task.notes && (
+                      <p className="text-xs text-stone-500 italic mb-2">Note: {task.notes}</p>
+                    )}
+                    {task.dueDate && (
+                      <p className="text-xs text-stone-500">Due: {task.dueDate}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2 ml-4">
+                    <select
+                      value={task.status}
+                      onChange={(e) => updateTaskStatus(task.id, e.target.value as AdminTask['status'])}
+                      className="bg-stone-800 border border-stone-700 text-stone-300 text-xs rounded px-2 py-1"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="completed">Completed</option>
+                      <option value="blocked">Blocked</option>
+                    </select>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteTask(task.id)}
+                      className="text-red-500 hover:text-red-400 hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Completed Tasks */}
+      {completedTasks.length > 0 && (
+        <Card className="bg-stone-900/30 border-stone-800/30">
+          <CardHeader>
+            <CardTitle className="text-stone-500 text-sm flex items-center gap-2">
+              <Target className="w-4 h-4" /> Completed ({completedTasks.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {completedTasks.map(task => (
+              <div key={task.id} className="p-3 rounded-lg border border-stone-800/30 bg-stone-900/20 opacity-60">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-green-500">●</span>
+                    <span className="text-stone-400 line-through">{task.title}</span>
+                    <Badge className={`text-[10px] ${getCategoryColor(task.category)}`}>{task.category}</Badge>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-xs text-stone-600">{task.completedAt ? new Date(task.completedAt).toLocaleDateString() : ''}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteTask(task.id)}
+                      className="text-stone-600 hover:text-red-400 hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Documentation Links */}
+      <Card className="bg-purple-950/20 border-purple-900/30">
+        <CardHeader>
+          <CardTitle className="text-purple-400 text-sm flex items-center gap-2">
+            <FileText className="w-4 h-4" /> Legal Documentation
+          </CardTitle>
+          <CardDescription className="text-stone-500">
+            GDPR compliance documentation (stored in /docs folder)
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
+            <span className="text-stone-300 text-sm">Legitimate Interest Assessment</span>
+            <span className="text-stone-500 text-xs font-mono">docs/LEGITIMATE_INTEREST_ASSESSMENT.md</span>
+          </div>
+          <div className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
+            <span className="text-stone-300 text-sm">Records of Processing Activities</span>
+            <span className="text-stone-500 text-xs font-mono">docs/RECORDS_OF_PROCESSING.md</span>
+          </div>
+          <div className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
+            <span className="text-stone-300 text-sm">Privacy Policy</span>
+            <span className="text-stone-500 text-xs font-mono">PRIVACY_POLICY.md</span>
+          </div>
         </CardContent>
       </Card>
     </div>
