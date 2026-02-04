@@ -117,15 +117,37 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
       if (res.ok) {
         const result = await res.json();
         setScanResult(result);
+        
+        // Add detailed tool output to report context
         addToolOutput({ 
           type: 'scan', 
           source: 'atropos', 
-          content: `Scan completed: ${result.summary.vulnerabilities} vulnerabilities found`,
-          metadata: { scanId: result.id, target: result.target }
+          content: `Atropos Scan [${result.scanType}] on ${result.target}\n\nSummary:\n- Subdomains: ${result.summary.subdomains}\n- Open Ports: ${result.summary.openPorts}\n- Technologies: ${result.summary.technologies}\n- Vulnerabilities: ${result.summary.vulnerabilities}\n- Risk Score: ${result.summary.riskScore}/100 [${result.summary.riskLevel.toUpperCase()}]\n\nFindings:\n${result.findings.map((f: any) => `- [${f.severity?.toUpperCase()}] ${f.type}: ${f.value}`).join('\n')}`,
+          metadata: { 
+            scanId: result.id, 
+            target: result.target,
+            category: 'recon',
+            severity: result.summary.riskLevel
+          }
         });
+
+        // Also add each vulnerability as a separate finding for the report builder
+        result.findings.filter((f: any) => f.severity === 'high' || f.severity === 'critical' || f.type === 'vulnerability').forEach((f: any) => {
+          addToolOutput({
+            type: 'finding',
+            source: 'atropos',
+            content: `Vulnerability Found: ${f.value}\nType: ${f.type}\nSeverity: ${f.severity || 'medium'}\nSource: Atropos Scanner`,
+            metadata: {
+              category: 'vulnerability',
+              severity: f.severity || 'medium',
+              target: result.target
+            }
+          });
+        });
+
         toast({ 
           title: "Scan Complete", 
-          description: `Found ${result.findings.length} findings with risk score ${result.summary.riskScore}` 
+          description: `Found ${result.findings.length} findings. High-risk items added to Report Builder.` 
         });
       } else {
         throw new Error("Scan failed");
@@ -153,9 +175,33 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
 
       if (res.ok) {
         const data = await res.json();
-        setScanResult(data.result);
+        const result = data.result;
+        setScanResult(result);
         setImportData("");
-        toast({ title: "Import Successful", description: `Imported scan with ${data.result.findings.length} findings` });
+
+        // Add detailed summary to report context
+        addToolOutput({ 
+          type: 'scan', 
+          source: 'atropos_import', 
+          content: `Imported Atropos Scan on ${result.target}\n\nSummary:\n- Vulnerabilities: ${result.summary.vulnerabilities}\n- Risk Score: ${result.summary.riskScore}/100\n\nFull findings imported to Report Builder context.`,
+          metadata: { scanId: result.id, target: result.target }
+        });
+
+        // Add findings to report builder
+        result.findings.filter((f: any) => f.severity === 'high' || f.severity === 'critical').forEach((f: any) => {
+          addToolOutput({
+            type: 'finding',
+            source: 'atropos_import',
+            content: `Imported Finding: ${f.value}\nSeverity: ${f.severity}\nSource: External Import (${importFormat})`,
+            metadata: {
+              category: 'vulnerability',
+              severity: f.severity,
+              target: result.target
+            }
+          });
+        });
+
+        toast({ title: "Import Successful", description: `Imported scan with ${result.findings.length} findings. High-risk items sent to Report Builder.` });
       } else {
         throw new Error("Import failed");
       }
