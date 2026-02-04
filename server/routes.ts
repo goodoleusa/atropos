@@ -7,6 +7,7 @@ import { registerChatRoutes } from "./replit_integrations/chat";
 import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
 import atroposRoutes from "./routes/atropos";
+import agentsRoutes from "./routes/agents";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -80,8 +81,8 @@ export async function registerRoutes(
   // Register Behavior Analysis routes
   app.use("/api/behavior", behaviorRoutes);
   
-  // Register Atropos Scanner routes
-  app.use("/api/atropos", atroposRoutes);
+  // Register Multi-Agent Analysis routes
+  app.use("/api/agents", agentsRoutes);
   
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
