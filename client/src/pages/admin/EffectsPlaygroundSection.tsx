@@ -9,7 +9,10 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Eye, Wand2, Save, RotateCcw, Layers, Zap, Copy, Check } from "lucide-react";
+import { Sparkles, Eye, Wand2, Save, RotateCcw, Layers, Zap, Copy, Check, Flame } from "lucide-react";
+import { MoltenWrapper, MoltenText, SlagParticles, MOLTEN_PRESETS, type MoltenEffect } from "@/components/MoltenEffects";
+import { LightFilters, FILTER_PRESETS } from "@/components/LightFilters";
+import { SubliminalOverlay, VideoOverlay, SUBLIMINAL_PRESETS, VIDEO_OVERLAY_PRESETS, type SubliminalMode } from "@/components/SubliminalEffects";
 import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -70,6 +73,15 @@ export function EffectsPlaygroundSection() {
   const [previewText, setPreviewText] = useState('SECRET INTEL: Operation Midnight');
   const [savedPresets, setSavedPresets] = useState<Record<string, EffectConfig>>({});
   const [copied, setCopied] = useState(false);
+  const [moltenEffect, setMoltenEffect] = useState<MoltenEffect>("ember-glow");
+  const [moltenIntensity, setMoltenIntensity] = useState(0.5);
+  const [moltenTextEffect, setMoltenTextEffect] = useState<"molten-text" | "cooling-metal" | "none">("molten-text");
+  const [lightFilter, setLightFilter] = useState<"vignette" | "film-grain" | "scan-lines" | "warm-glow" | "cool-fade" | "none">("vignette");
+  const [lightIntensity, setLightIntensity] = useState(0.25);
+  const [showParticles, setShowParticles] = useState(false);
+  const [subliminalMode, setSubliminalMode] = useState<SubliminalMode>("subtle");
+  const [videoOverlay, setVideoOverlay] = useState<"cyberpunk" | "vhs" | "film" | "clean">("cyberpunk");
+  const [videoIntensity, setVideoIntensity] = useState(0.4);
 
   useEffect(() => {
     const saved = localStorage.getItem('effects_presets');
@@ -188,6 +200,9 @@ export function EffectsPlaygroundSection() {
           </TabsTrigger>
           <TabsTrigger value="apply" className="data-[state=active]:bg-purple-900/30">
             <Layers className="w-4 h-4 mr-2" /> Bulk Apply
+          </TabsTrigger>
+          <TabsTrigger value="molten" className="data-[state=active]:bg-amber-900/30">
+            <Flame className="w-4 h-4 mr-2" /> Molten Effects
           </TabsTrigger>
         </TabsList>
 
@@ -532,6 +547,228 @@ export function EffectsPlaygroundSection() {
                 <Zap className="w-5 h-5 mr-2" />
                 Apply to {selectedClueTypes.length} Clue Type(s)
               </Button>
+            </div>
+          </ScrollArea>
+        </TabsContent>
+
+        <TabsContent value="molten">
+          <ScrollArea className="h-[calc(100vh-340px)]">
+            <div className="space-y-6 pr-4">
+              <Card className="bg-[#0a0500] border-amber-900/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-amber-500 text-sm font-mono">Border & Container Effects</CardTitle>
+                  <CardDescription className="text-stone-500 text-xs">Apply to cards, buttons, and containers</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {(["flowing-border", "ember-glow", "heat-shimmer", "forge-pulse", "crucible-ripple", "none"] as MoltenEffect[]).map((effect) => (
+                      <button
+                        key={effect}
+                        onClick={() => setMoltenEffect(effect)}
+                        className={`p-3 rounded-lg border text-left transition-all ${
+                          moltenEffect === effect
+                            ? 'border-amber-500 bg-amber-900/20'
+                            : 'border-stone-700 hover:border-stone-600'
+                        }`}
+                      >
+                        <p className="text-xs font-medium text-stone-300 capitalize">{effect.replace("-", " ")}</p>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <Label className="text-stone-400 text-xs">Intensity</Label>
+                      <span className="text-xs text-amber-400">{(moltenIntensity * 100).toFixed(0)}%</span>
+                    </div>
+                    <Slider
+                      value={[moltenIntensity]}
+                      onValueChange={([v]) => setMoltenIntensity(v)}
+                      min={0.1}
+                      max={1}
+                      step={0.1}
+                      className="py-2"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-stone-400 text-xs">Slag Particles</Label>
+                    <Switch checked={showParticles} onCheckedChange={setShowParticles} />
+                  </div>
+
+                  <div className="pt-4">
+                    <p className="text-stone-500 text-xs mb-2">Preview:</p>
+                    <MoltenWrapper effect={moltenEffect} intensity={moltenIntensity} className="rounded-lg">
+                      <div className="bg-[#0a0500] border border-stone-800 rounded-lg p-6 text-center relative">
+                        {showParticles && <SlagParticles count={6} />}
+                        <p className="text-amber-500 font-mono">Sample Container</p>
+                        <p className="text-stone-500 text-xs mt-1">With {moltenEffect} effect</p>
+                      </div>
+                    </MoltenWrapper>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-[#0a0500] border-amber-900/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-amber-500 text-sm font-mono">Text Effects</CardTitle>
+                  <CardDescription className="text-stone-500 text-xs">Apply to headings and labels</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["molten-text", "cooling-metal", "none"] as const).map((effect) => (
+                      <button
+                        key={effect}
+                        onClick={() => setMoltenTextEffect(effect)}
+                        className={`p-3 rounded-lg border text-center transition-all ${
+                          moltenTextEffect === effect
+                            ? 'border-amber-500 bg-amber-900/20'
+                            : 'border-stone-700 hover:border-stone-600'
+                        }`}
+                      >
+                        <p className="text-xs font-medium text-stone-300 capitalize">{effect.replace("-", " ")}</p>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 text-center">
+                    <MoltenText effect={moltenTextEffect} intensity={moltenIntensity} as="h2" className="text-2xl font-orbitron text-amber-500">
+                      MOLTEN HEADER
+                    </MoltenText>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-[#0a0500] border-purple-900/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-purple-500 text-sm font-mono">Subliminal Overlay</CardTitle>
+                  <CardDescription className="text-stone-500 text-xs">Global page effects - glitches, scanlines, messages</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {(["off", "subtle", "moderate", "intense"] as SubliminalMode[]).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setSubliminalMode(mode)}
+                        className={`p-3 rounded-lg border text-center transition-all ${
+                          subliminalMode === mode
+                            ? 'border-purple-500 bg-purple-900/20'
+                            : 'border-stone-700 hover:border-stone-600'
+                        }`}
+                      >
+                        <p className="text-xs font-medium text-stone-300 capitalize">{mode}</p>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-stone-600">Adds occasional glitch frames and subliminal text flashes</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-[#0a0500] border-teal-900/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-teal-500 text-sm font-mono">Video Overlay</CardTitle>
+                  <CardDescription className="text-stone-500 text-xs">For hero video sections</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {(["clean", "cyberpunk", "vhs", "film"] as const).map((variant) => (
+                      <button
+                        key={variant}
+                        onClick={() => setVideoOverlay(variant)}
+                        className={`p-3 rounded-lg border text-center transition-all ${
+                          videoOverlay === variant
+                            ? 'border-teal-500 bg-teal-900/20'
+                            : 'border-stone-700 hover:border-stone-600'
+                        }`}
+                      >
+                        <p className="text-xs font-medium text-stone-300 capitalize">{variant}</p>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <Label className="text-stone-400 text-xs">Intensity</Label>
+                      <span className="text-xs text-teal-400">{(videoIntensity * 100).toFixed(0)}%</span>
+                    </div>
+                    <Slider
+                      value={[videoIntensity]}
+                      onValueChange={([v]) => setVideoIntensity(v)}
+                      min={0.1}
+                      max={0.8}
+                      step={0.1}
+                      className="py-2"
+                    />
+                  </div>
+
+                  <div className="pt-4 relative h-32 bg-gradient-to-br from-stone-900 to-stone-800 rounded-lg overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center text-stone-600 text-xs">Video Preview Area</div>
+                    <VideoOverlay variant={videoOverlay} intensity={videoIntensity} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-[#0a0500] border-stone-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-stone-400 text-sm font-mono">Light Filters</CardTitle>
+                  <CardDescription className="text-stone-500 text-xs">Global page filters</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {(["vignette", "film-grain", "scan-lines", "warm-glow", "cool-fade", "none"] as const).map((filter) => (
+                      <button
+                        key={filter}
+                        onClick={() => setLightFilter(filter)}
+                        className={`p-3 rounded-lg border text-center transition-all ${
+                          lightFilter === filter
+                            ? 'border-stone-400 bg-stone-800/50'
+                            : 'border-stone-700 hover:border-stone-600'
+                        }`}
+                      >
+                        <p className="text-xs font-medium text-stone-300 capitalize">{filter.replace("-", " ")}</p>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <Label className="text-stone-400 text-xs">Intensity</Label>
+                      <span className="text-xs text-stone-400">{(lightIntensity * 100).toFixed(0)}%</span>
+                    </div>
+                    <Slider
+                      value={[lightIntensity]}
+                      onValueChange={([v]) => setLightIntensity(v)}
+                      min={0.1}
+                      max={0.6}
+                      step={0.05}
+                      className="py-2"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-4">
+                <h4 className="text-amber-500 font-mono text-sm mb-2">Usage Examples</h4>
+                <pre className="text-[10px] text-stone-400 overflow-x-auto">
+{`// Border effect on a card
+<MoltenWrapper effect="${moltenEffect}" intensity={${moltenIntensity}}>
+  <Card>...</Card>
+</MoltenWrapper>
+
+// Text effect
+<MoltenText effect="${moltenTextEffect}" as="h1">
+  Title
+</MoltenText>
+
+// Video overlay
+<VideoOverlay variant="${videoOverlay}" intensity={${videoIntensity}} />
+
+// Global subliminal (wrap App or page)
+<SubliminalOverlay config={{ mode: "${subliminalMode}" }}>
+  <App />
+</SubliminalOverlay>`}
+                </pre>
+              </div>
             </div>
           </ScrollArea>
         </TabsContent>
