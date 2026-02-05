@@ -1,5 +1,12 @@
 # NEXUS Security Platform
 
+## Agent Coordination
+
+For cross-agent communication between Replit and Cursor:
+- **[docs/AGENT_LOG.md](docs/AGENT_LOG.md)** — Message stream between agents (add entries at TOP)
+- **[docs/WIKI.md](docs/WIKI.md)** — Architecture reference and decision log
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** — Future features and ideas parking lot
+
 ## Overview
 NEXUS is an AI-powered security investigation platform comprising the **NEXUS Agent** (AI assistant for analysis, reporting, and guidance) and the **Atropos Scanner** (Rust-based OSINT & vulnerability scanner). Atropos collects data, which NEXUS then intelligently analyzes, helps interpret, and aids in report generation and strategic planning. The platform features a unique molten bronze/industrial aesthetic with a custom terminal interface, investigation campaigns, and atmospheric visual effects. Key capabilities include AI-powered investigation workflows, a visual campaign designer, a report builder, and gamified CTF-style security training. The project aims to provide a comprehensive, AI-driven solution for security professionals, enhancing investigation efficiency and offering unique training opportunities.
 
