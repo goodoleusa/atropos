@@ -819,6 +819,158 @@ BEHAVIOR:
     }
   });
 
+  // ===== CAMPAIGN VERSIONS (Draft/Publish Workflow) =====
+  
+  // Save campaign as draft
+  app.post("/api/campaigns/:campaignId/drafts", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      const { name, description, nodes, links, rootNodes, effects, clueRefs, artifactRefs, learningGoals, changelog, createdBy } = req.body;
+      
+      // Get latest version number for this campaign
+      const existingVersions = await storage.getCampaignVersions(campaignId);
+      const latestVersion = existingVersions.length > 0 
+        ? Math.max(...existingVersions.map(v => v.version)) 
+        : 0;
+      
+      const draft = await storage.createCampaignVersion({
+        campaignId,
+        version: latestVersion + 1,
+        name: name || `Draft v${latestVersion + 1}`,
+        description,
+        status: 'draft',
+        nodes: nodes || [],
+        links: links || [],
+        rootNodes: rootNodes || [],
+        effects: effects || {},
+        clueRefs: clueRefs || [],
+        artifactRefs: artifactRefs || [],
+        learningGoals: learningGoals || [],
+        metadata: { savedAt: new Date().toISOString() },
+        changelog,
+        createdBy
+      });
+      
+      res.json(draft);
+    } catch (error) {
+      console.error("Save draft error:", error);
+      res.status(500).json({ error: "Failed to save draft" });
+    }
+  });
+
+  // Get all versions for a campaign
+  app.get("/api/campaigns/:campaignId/versions", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      const versions = await storage.getCampaignVersions(campaignId);
+      res.json(versions);
+    } catch (error) {
+      console.error("Get versions error:", error);
+      res.status(500).json({ error: "Failed to get versions" });
+    }
+  });
+
+  // Get specific version
+  app.get("/api/campaigns/:campaignId/versions/:versionId", async (req, res) => {
+    try {
+      const { versionId } = req.params;
+      const version = await storage.getCampaignVersion(parseInt(versionId));
+      if (!version) {
+        return res.status(404).json({ error: 'Version not found' });
+      }
+      res.json(version);
+    } catch (error) {
+      console.error("Get version error:", error);
+      res.status(500).json({ error: "Failed to get version" });
+    }
+  });
+
+  // Publish a version (makes it live)
+  app.post("/api/campaigns/:campaignId/versions/:versionId/publish", async (req, res) => {
+    try {
+      const { campaignId, versionId } = req.params;
+      const { changelog } = req.body;
+      
+      // Archive any currently published version
+      const versions = await storage.getCampaignVersions(campaignId);
+      for (const v of versions) {
+        if (v.status === 'published') {
+          await storage.updateCampaignVersion(v.id, { status: 'archived' });
+        }
+      }
+      
+      // Publish this version
+      const published = await storage.updateCampaignVersion(parseInt(versionId), {
+        status: 'published',
+        publishedAt: new Date(),
+        changelog: changelog || 'Published'
+      });
+      
+      res.json({ success: true, version: published });
+    } catch (error) {
+      console.error("Publish version error:", error);
+      res.status(500).json({ error: "Failed to publish version" });
+    }
+  });
+
+  // Get published version for a campaign
+  app.get("/api/campaigns/:campaignId/published", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      const published = await storage.getPublishedCampaignVersion(campaignId);
+      if (!published) {
+        return res.status(404).json({ error: 'No published version' });
+      }
+      res.json(published);
+    } catch (error) {
+      console.error("Get published error:", error);
+      res.status(500).json({ error: "Failed to get published version" });
+    }
+  });
+
+  // Compare two versions (diff)
+  app.get("/api/campaigns/:campaignId/compare", async (req, res) => {
+    try {
+      const { v1, v2 } = req.query;
+      if (!v1 || !v2) {
+        return res.status(400).json({ error: 'Provide v1 and v2 version IDs' });
+      }
+      
+      const version1 = await storage.getCampaignVersion(parseInt(v1 as string));
+      const version2 = await storage.getCampaignVersion(parseInt(v2 as string));
+      
+      if (!version1 || !version2) {
+        return res.status(404).json({ error: 'Version not found' });
+      }
+      
+      // Simple diff: count changes
+      const nodesAdded = (version2.nodes as any[]).filter(n2 => 
+        !(version1.nodes as any[]).find(n1 => n1.id === n2.id)
+      ).length;
+      const nodesRemoved = (version1.nodes as any[]).filter(n1 => 
+        !(version2.nodes as any[]).find(n2 => n2.id === n1.id)
+      ).length;
+      const nodesModified = (version2.nodes as any[]).filter(n2 => {
+        const n1 = (version1.nodes as any[]).find(n => n.id === n2.id);
+        return n1 && JSON.stringify(n1) !== JSON.stringify(n2);
+      }).length;
+      
+      res.json({
+        v1: { id: version1.id, version: version1.version, status: version1.status },
+        v2: { id: version2.id, version: version2.version, status: version2.status },
+        diff: {
+          nodesAdded,
+          nodesRemoved,
+          nodesModified,
+          linksAdded: (version2.links as any[]).length - (version1.links as any[]).length
+        }
+      });
+    } catch (error) {
+      console.error("Compare versions error:", error);
+      res.status(500).json({ error: "Failed to compare versions" });
+    }
+  });
+
   // ===== FLOW NODES =====
   
   // Get all flow nodes
