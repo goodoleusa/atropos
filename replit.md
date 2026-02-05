@@ -45,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **Shared Investigation Context**: Cross-feature state management via `useReportContext` for data flow between Agent Chat, AI Lab, and Report Builder.
 - **AI Lab (Battleground)**: Prompt engineering playground with live preview, cost tracking, model comparison, performance evaluations, and exportable summaries. Features a unified chat battleground for dual-model comparison and AI Pentesting Challenges based on 2025 arxiv research (e.g., GCG, SequentialBreak, RoleBreaker).
 - **Prompt Optimizer**: Provides quick tips for prompt engineering techniques.
-- **QuickNav Component**: Floating navigation for quick access to Terminal, AI Lab, and Report Builder with session status and progress indicators.
+- **QuickNav Component**: Floating navigation for quick access to Terminal, AI Lab, Report Builder, Campaign Designer, and Bounties with session status and progress indicators.
 - **API Playground**: Educational quest-based system for learning API requests through CTF exercises.
 - **Interactive Campaign System**: Adaptive investigation flows responding to user discoveries, offering perspective shifts and tool guidance.
 - **Investigation Workspace**: Unified hub for Agent Chat, AI Lab quick testing, and Learning Profile configuration.
@@ -60,6 +60,9 @@ Preferred communication style: Simple, everyday language.
   - **QR Labs**: 6 hands-on QR-in-QR hijacking exercises based on academic research (finder pattern confusion, quiet zone attacks, physical overlays, barcode inception, split QR, PDF vector drawing).
   - **Challenge Modes**: Dead Drop, Stego Hunter, Temporal Ghost (TPVM), QR Hijacker, Breadcrumb Trail, QR Inception.
 - **Design Philosophy**: TPVM-inspired aesthetic - looks normal with brief subliminal disruptions (concept noted for future implementation).
+- **Threat Intelligence Feeds**: Live data from URLhaus (malware URLs), ThreatFox (IOCs), MalwareBazaar (samples), CISA KEV (exploited vulns), NVD CVE (database), Ransomware.live (groups). Specialized parsers for JSON and CSV formats.
+- **Campaign Version Control**: Draft/publish workflow with version history, changelog tracking, and diff comparison. API: `/api/campaigns/:id/drafts`, `/api/campaigns/:id/versions`.
+- **AI Observability**: W&B-style experiment tracking for LLM calls with token counting, cost estimation, latency metrics, and trace logging via `server/observability.ts`.
 
 ### Atropos Scanner Integration
 - **Capabilities**: OSINT (BBOT, Amass, theHarvester), Vulnerability Scanning (Nuclei, httpx, nmap), Secret Detection (Gitleaks, TruffleHog), Threat Intelligence (Shodan, VirusTotal), Network Analysis (DNSMonster, RITA, Zeek).
