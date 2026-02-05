@@ -3,6 +3,27 @@
 ## Overview
 NEXUS is an AI-powered security investigation platform comprising the **NEXUS Agent** (AI assistant for analysis, reporting, and guidance) and the **Atropos Scanner** (Rust-based OSINT & vulnerability scanner). Atropos collects data, which NEXUS then intelligently analyzes, helps interpret, and aids in report generation and strategic planning. The platform features a unique molten bronze/industrial aesthetic with a custom terminal interface, investigation campaigns, and atmospheric visual effects. Key capabilities include AI-powered investigation workflows, a visual campaign designer, a report builder, and gamified CTF-style security training. The project aims to provide a comprehensive, AI-driven solution for security professionals, enhancing investigation efficiency and offering unique training opportunities.
 
+## Atropos Scanner & Integration
+
+### Capabilities
+Atropos is a high-performance Rust-based OSINT and vulnerability scanner integrated into the NEXUS platform.
+- **OSINT**: Domain enumeration, BGP tracing, sub-domain discovery.
+- **Vulnerability Scanning**: Passive and active reconnaissance patterns.
+- **Scriptable**: Supports custom Lua scripts for extensible scanning logic.
+- **NEXUS Integration**: Hand-off results to NEXUS AI for deeper analysis and reporting.
+
+### API Reference
+- `GET /api/atropos/health`: Returns binary availability and path status.
+- `GET /api/atropos/scripts`: Lists all available Lua scanning scripts.
+- `GET /api/atropos/scripts/:scriptId`: Retrieves content of a specific scanning script.
+- `POST /api/atropos/scan`: Initiates a scan with parameters (Requires authenticated session).
+
+### Lessons Learned: Rust Build Cycle (2026-02-05)
+1. **MSRV Management**: Dependency version pinning is critical when working with specific Rust toolchains (e.g., `native-tls` MSRV requirements).
+2. **Binary Persistence**: Pre-building the Rust binary and placing it in `dist/bin/` ensures stable deployment without requiring a full Rust toolchain at runtime.
+3. **Build Optimization**: For heavy Rust compilation, pinning deep dependencies (like `indexmap`) to compatible versions prevents build failure on older `rustc` versions.
+4. **Proxy Pattern**: Using a Node.js API proxy to interact with a Rust CLI binary provides a secure and unified interface for the frontend.
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
