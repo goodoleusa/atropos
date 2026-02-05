@@ -97,6 +97,62 @@ export type InsertQuest = z.infer<typeof insertQuestSchema>;
 export type CommandLog = typeof commandLogs.$inferSelect;
 export type InsertCommandLog = z.infer<typeof insertCommandLogSchema>;
 
+// Campaign Pages - dynamically created pages from the campaign designer
+export const campaignPages = pgTable("campaign_pages", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  campaignId: text("campaign_id"),
+  nodeId: text("node_id"),
+  status: text("status").notNull().default("draft"), // draft, published, archived
+  layout: text("layout").notNull().default("default"), // default, terminal, investigation, report
+  content: jsonb("content").$type<Record<string, any>>().notNull().default({}),
+  components: jsonb("components").$type<any[]>().notNull().default([]),
+  navigation: jsonb("navigation").$type<{prev?: string; next?: string; branches?: string[]}>().notNull().default({}),
+  metadata: jsonb("metadata").$type<Record<string, any>>().notNull().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertCampaignPageSchema = createInsertSchema(campaignPages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type CampaignPage = typeof campaignPages.$inferSelect;
+export type InsertCampaignPage = z.infer<typeof insertCampaignPageSchema>;
+
+// Campaign Versions - tracks draft/published versions of campaigns
+export const campaignVersions = pgTable("campaign_versions", {
+  id: serial("id").primaryKey(),
+  campaignId: text("campaign_id").notNull(),
+  version: integer("version").notNull().default(1),
+  name: text("name").notNull(),
+  description: text("description"),
+  status: text("status").notNull().default("draft"), // draft, review, published, archived
+  nodes: jsonb("nodes").$type<any[]>().notNull().default([]),
+  links: jsonb("links").$type<any[]>().notNull().default([]),
+  rootNodes: jsonb("root_nodes").$type<string[]>().notNull().default([]),
+  effects: jsonb("effects").$type<Record<string, any>>().notNull().default({}),
+  clueRefs: jsonb("clue_refs").$type<string[]>().notNull().default([]),
+  artifactRefs: jsonb("artifact_refs").$type<string[]>().notNull().default([]),
+  learningGoals: jsonb("learning_goals").$type<string[]>().notNull().default([]),
+  metadata: jsonb("metadata").$type<Record<string, any>>().notNull().default({}),
+  changelog: text("changelog"),
+  createdBy: text("created_by"),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertCampaignVersionSchema = createInsertSchema(campaignVersions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type CampaignVersion = typeof campaignVersions.$inferSelect;
+export type InsertCampaignVersion = z.infer<typeof insertCampaignVersionSchema>;
+
 // Bug Bounty Sources - tracks bug bounty programs and feeds
 export const bountyFeeds = pgTable("bounty_feeds", {
   id: serial("id").primaryKey(),
