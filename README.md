@@ -129,6 +129,15 @@ The corporate facade isn't just aesthetic — it's training for real-world engag
 
 ---
 
+## Documentation
+
+```
+docs/
+├── AGENT_LOG.md   → Message stream between Replit & Cursor agents
+├── WIKI.md        → Architecture reference, API docs, decision log
+└── ROADMAP.md     → Future features and ideas parking lot
+```
+
 ## Contributing
 
 Find a bug? Submit a clue. Break something? That might be the point.
