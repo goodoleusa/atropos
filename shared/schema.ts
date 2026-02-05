@@ -476,6 +476,55 @@ export const insertCampaignTemplateSchema = createInsertSchema(campaignTemplates
 export type CampaignTemplate = typeof campaignTemplates.$inferSelect;
 export type InsertCampaignTemplate = z.infer<typeof insertCampaignTemplateSchema>;
 
+// Agent Modules - editable investigation campaigns for NEXUS agent
+export const agentModules = pgTable("agent_modules", {
+  id: serial("id").primaryKey(),
+  moduleId: text("module_id").notNull().unique(),
+  name: text("name").notNull(),
+  icon: text("icon").notNull().default("🎯"),
+  description: text("description").notNull(),
+  difficulty: text("difficulty").notNull().default("intermediate"), // beginner, intermediate, advanced, expert
+  estimatedTime: text("estimated_time").notNull().default("30-60 min"),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  color: text("color").notNull().default("amber"),
+  starterPrompt: text("starter_prompt").notNull(),
+  objectives: jsonb("objectives").$type<string[]>().notNull().default([]),
+  tools: jsonb("tools").$type<string[]>().notNull().default([]),
+  targetFields: jsonb("target_fields").$type<{
+    key: string;
+    label: string;
+    type: string;
+    required?: boolean;
+    placeholder?: string;
+    helpText?: string;
+  }[]>().notNull().default([]),
+  dummyTargets: jsonb("dummy_targets").$type<Record<string, string>>().notNull().default({}),
+  steps: jsonb("steps").$type<{
+    id: string;
+    title: string;
+    guidance: string;
+    toolsForStep: string[];
+    questions: string[];
+    redFlags: string[];
+    successIndicators: string[];
+    nextStepConditions: { condition: string; nextStep: string; rationale: string }[];
+  }[]>().notNull().default([]),
+  adaptivePrompts: jsonb("adaptive_prompts").$type<string[]>().notNull().default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertAgentModuleSchema = createInsertSchema(agentModules).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type AgentModule = typeof agentModules.$inferSelect;
+export type InsertAgentModule = z.infer<typeof insertAgentModuleSchema>;
+
 // Content Flow Nodes - visual editor nodes
 export const flowNodes = pgTable("flow_nodes", {
   id: serial("id").primaryKey(),
