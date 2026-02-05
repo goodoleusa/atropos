@@ -164,6 +164,11 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [viewMode, setViewMode] = useState<'canvas' | 'story' | 'tree' | 'clues' | 'overview'>('canvas');
   const [breadcrumbTrail, setBreadcrumbTrail] = useState<string[]>([]);
+  const [showMobileToolbar, setShowMobileToolbar] = useState(true);
+  const [showMiniMap, setShowMiniMap] = useState(false);
+  const [showQuickJump, setShowQuickJump] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Wikilink parsing - extract [[Node Title]] links from content
   const parseWikilinks = useCallback((content: string): string[] => {
@@ -222,6 +227,45 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       setViewMode('story');
     }
   }, [open]);
+
+  // Auto-save with 2 second debounce - only triggers when unsaved and not already syncing
+  useEffect(() => {
+    if (!isUnsaved || !open || isSyncing) return;
+    
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      if (!isSyncing) {
+        saveCampaign();
+      }
+    }, 2000);
+    
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [campaign.nodes.length, campaign.links.length, campaign.name, isUnsaved, open, isSyncing]);
+
+  // Quick jump to node
+  const jumpToNode = useCallback((nodeId: string) => {
+    const node = campaign.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+    
+    // Center the view on this node
+    const centerX = -node.x + window.innerWidth / 4;
+    const centerY = -node.y + 200;
+    setPanOffset({ x: centerX, y: centerY });
+    setSelectedNode(nodeId);
+    setShowQuickJump(false);
+    
+    // Switch to canvas view if not already
+    if (viewMode !== 'canvas') {
+      setViewMode('canvas');
+    }
+  }, [campaign.nodes, viewMode]);
 
   const startTestRun = useCallback(async (startNodeId: string) => {
     if (!startNodeId) return;
@@ -480,6 +524,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         setSavedCampaigns(updated);
         localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
         setIsUnsaved(false);
+        setLastSavedAt(new Date());
         toast({ title: 'Campaign Saved', description: `"${campaign.name}" synced to database` });
       } else {
         throw new Error('Failed to save');
@@ -767,13 +812,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
     if (!template) return;
     const newId = `campaign-${Date.now()}`;
 
-    const withLearningDefaults = (node: CampaignNode) => {
-      const meta = { ...(node.metadata || {}) };
+    const withLearningDefaults = (node: CampaignNode): CampaignNode => {
+      const meta: CampaignNode['metadata'] = { ...(node.metadata || {}) };
       if (!meta.learningGoals || meta.learningGoals.length === 0) {
         meta.learningGoals = learningProfile.goals;
       }
       if (!meta.skillLevel) {
-        meta.skillLevel = learningProfile.skillLevel;
+        meta.skillLevel = learningProfile.skillLevel as 'beginner' | 'intermediate' | 'advanced' | 'expert';
       }
       if (!meta.teachingNotes) {
         meta.teachingNotes = `Style: ${learningProfile.style} • Pace: ${learningProfile.preferredPace}`;
@@ -785,7 +830,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       id: newId,
       name: `${template.name} Campaign`,
       description: template.description,
-      nodes: template.nodes.map(n => withLearningDefaults({ ...n, id: `${newId}-${n.id}` })),
+      nodes: template.nodes.map(n => withLearningDefaults({ ...n, id: `${newId}-${n.id}` } as CampaignNode)),
       links: template.links.map(l => ({ 
         ...l, 
         id: `${newId}-${l.id}`,
@@ -1743,6 +1788,17 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         {isSelected && (
           <div className="absolute -top-2 -left-2 bg-amber-500 text-black text-[10px] px-1.5 py-0.5 rounded font-bold">
             SELECTED
+          </div>
+        )}
+        
+        {/* Clue badge indicator */}
+        {node.metadata?.linkedClues && node.metadata.linkedClues.length > 0 && (
+          <div 
+            className="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold flex items-center gap-0.5"
+            data-testid={`clue-badge-${node.id}`}
+          >
+            <Key className="w-2.5 h-2.5" />
+            {node.metadata.linkedClues.length}
           </div>
         )}
         
@@ -3545,6 +3601,158 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             )}
           </div>
         </div>
+
+        {/* Mobile Floating Action Bar */}
+        {showMobileToolbar && (
+          <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0a0500]/95 backdrop-blur border-t border-amber-900/50 p-2 z-50 safe-area-inset-bottom" data-testid="mobile-campaign-toolbar">
+            <div className="flex items-center justify-around gap-1 max-w-lg mx-auto">
+              {/* Add Node Quick Actions */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" className="h-12 w-12 rounded-full bg-amber-700 hover:bg-amber-600 text-black" data-testid="mobile-add-node-btn">
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-stone-900 border-stone-700 mb-2">
+                  <DropdownMenuLabel className="text-amber-500">Add Node</DropdownMenuLabel>
+                  {NODE_TYPES.map(nt => (
+                    <DropdownMenuItem
+                      key={nt.type}
+                      onClick={() => addNode(nt.type)}
+                      className="text-stone-300 min-h-[44px]"
+                      data-testid={`mobile-add-${nt.type}-btn`}
+                    >
+                      {nt.icon}
+                      <span className="ml-2">{nt.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Link Mode */}
+              <Button
+                size="sm"
+                onClick={() => selectedNode ? setLinkingFrom(selectedNode) : null}
+                disabled={!selectedNode}
+                className={`h-12 w-12 rounded-full ${
+                  linkingFrom 
+                    ? 'bg-teal-600 text-white' 
+                    : 'bg-stone-800 border border-teal-700 text-teal-400'
+                }`}
+                data-testid="mobile-link-btn"
+              >
+                <Link2 className="w-5 h-5" />
+              </Button>
+
+              {/* Quick Jump */}
+              <DropdownMenu open={showQuickJump} onOpenChange={setShowQuickJump}>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" className="h-12 w-12 rounded-full bg-stone-800 border border-purple-700 text-purple-400" data-testid="mobile-quick-jump-btn">
+                    <Target className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-stone-900 border-stone-700 mb-2 max-h-[300px] overflow-y-auto w-56">
+                  <DropdownMenuLabel className="text-purple-400">Jump to Node</DropdownMenuLabel>
+                  {campaign.nodes.length === 0 ? (
+                    <div className="p-2 text-stone-500 text-xs">No nodes yet</div>
+                  ) : (
+                    campaign.nodes.map(node => (
+                      <DropdownMenuItem
+                        key={node.id}
+                        onClick={() => jumpToNode(node.id)}
+                        className={`text-stone-300 min-h-[40px] ${selectedNode === node.id ? 'bg-amber-900/30' : ''}`}
+                        data-testid={`quick-jump-item-${node.id}`}
+                      >
+                        <span className={`w-2 h-2 rounded-full mr-2 bg-${node.color}-500`} />
+                        <span className="truncate flex-1">{node.title}</span>
+                        <span className="text-[10px] text-stone-500">@{node.type}</span>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Save Button with Status */}
+              <Button
+                size="sm"
+                onClick={saveCampaign}
+                disabled={isSyncing}
+                className={`h-12 px-4 rounded-full ${
+                  isSyncing
+                    ? 'bg-teal-700 text-white'
+                    : isUnsaved
+                      ? 'bg-amber-600 text-black animate-pulse'
+                      : 'bg-stone-800 border border-stone-600 text-stone-400'
+                }`}
+                data-testid="mobile-save-btn"
+              >
+                {isSyncing ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Save className="w-5 h-5" />
+                )}
+                <span className="ml-1 text-xs">{isSyncing ? '' : isUnsaved ? '*' : '✓'}</span>
+              </Button>
+
+              {/* View Toggle */}
+              <Button
+                size="sm"
+                onClick={() => setViewMode(viewMode === 'canvas' ? 'story' : 'canvas')}
+                className="h-12 w-12 rounded-full bg-stone-800 border border-stone-600 text-stone-400"
+                data-testid="mobile-view-toggle-btn"
+              >
+                {viewMode === 'canvas' ? <FileText className="w-5 h-5" /> : <GitBranch className="w-5 h-5" />}
+              </Button>
+            </div>
+
+            {/* Sync Status Indicator */}
+            <div className="text-center mt-1">
+              <span className={`text-[10px] ${isSyncing ? 'text-teal-400' : isUnsaved ? 'text-amber-400' : 'text-stone-600'}`} data-testid="mobile-sync-status">
+                {isSyncing ? 'Saving...' : isUnsaved ? 'Unsaved changes' : lastSavedAt ? `Saved ${lastSavedAt.toLocaleTimeString()}` : 'Ready'}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Mini-map Toggle (shown on canvas view) */}
+        {viewMode === 'canvas' && campaign.nodes.length > 3 && (
+          <Button
+            size="sm"
+            onClick={() => setShowMiniMap(!showMiniMap)}
+            className="fixed bottom-20 right-4 sm:bottom-4 z-40 h-10 w-10 rounded-full bg-stone-800/90 border border-stone-600 text-stone-400"
+            data-testid="minimap-toggle-btn"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        )}
+
+        {/* Mini-map Overlay */}
+        {showMiniMap && viewMode === 'canvas' && (
+          <div className="fixed bottom-32 right-4 sm:bottom-16 z-40 w-40 h-32 bg-stone-900/95 border border-stone-700 rounded-lg p-2 shadow-xl" data-testid="minimap-overlay">
+            <div className="relative w-full h-full overflow-hidden">
+              {campaign.nodes.map(node => {
+                const scale = 0.05;
+                const x = Math.max(0, Math.min(120, node.x * scale));
+                const y = Math.max(0, Math.min(100, node.y * scale));
+                return (
+                  <button
+                    key={node.id}
+                    onClick={() => jumpToNode(node.id)}
+                    className={`absolute w-3 h-2 rounded-sm transition-all ${
+                      selectedNode === node.id 
+                        ? 'bg-amber-400 ring-2 ring-amber-300' 
+                        : `bg-${node.color}-600 hover:ring-1 hover:ring-white`
+                    }`}
+                    style={{ left: `${x}px`, top: `${y}px` }}
+                    title={node.title}
+                    data-testid={`minimap-node-${node.id}`}
+                  />
+                );
+              })}
+            </div>
+            <p className="text-[8px] text-stone-500 text-center mt-1" data-testid="minimap-node-count">{campaign.nodes.length} nodes</p>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
