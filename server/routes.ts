@@ -819,6 +819,106 @@ BEHAVIOR:
     }
   });
 
+  // ===== AGENT MODULES (Editable Investigation Campaigns) =====
+  
+  // Get all agent modules
+  app.get("/api/agent-modules", async (req, res) => {
+    try {
+      const modules = await storage.getAllAgentModules();
+      res.json(modules);
+    } catch (error) {
+      console.error("Get agent modules error:", error);
+      res.status(500).json({ error: "Failed to get agent modules" });
+    }
+  });
+
+  // Get active agent modules only
+  app.get("/api/agent-modules/active", async (req, res) => {
+    try {
+      const modules = await storage.getActiveAgentModules();
+      res.json(modules);
+    } catch (error) {
+      console.error("Get active agent modules error:", error);
+      res.status(500).json({ error: "Failed to get active agent modules" });
+    }
+  });
+
+  // Get single agent module
+  app.get("/api/agent-modules/:moduleId", async (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      const module = await storage.getAgentModuleById(moduleId);
+      if (!module) {
+        return res.status(404).json({ error: "Agent module not found" });
+      }
+      res.json(module);
+    } catch (error) {
+      console.error("Get agent module error:", error);
+      res.status(500).json({ error: "Failed to get agent module" });
+    }
+  });
+
+  // Create or update agent module
+  app.put("/api/agent-modules/:moduleId", async (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      const module = await storage.upsertAgentModule(moduleId, req.body);
+      res.json(module);
+    } catch (error) {
+      console.error("Upsert agent module error:", error);
+      res.status(500).json({ error: "Failed to save agent module" });
+    }
+  });
+
+  // Delete agent module
+  app.delete("/api/agent-modules/:moduleId", async (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      await storage.deleteAgentModule(moduleId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete agent module error:", error);
+      res.status(500).json({ error: "Failed to delete agent module" });
+    }
+  });
+
+  // Seed agent modules from hardcoded config (one-time migration)
+  app.post("/api/agent-modules/seed", async (req, res) => {
+    try {
+      const { AGENT_CAMPAIGNS } = await import("../client/src/config/agentCampaigns");
+      let seeded = 0;
+      for (const campaign of AGENT_CAMPAIGNS) {
+        const existing = await storage.getAgentModuleById(campaign.id);
+        if (!existing) {
+          await storage.upsertAgentModule(campaign.id, {
+            moduleId: campaign.id,
+            name: campaign.name,
+            icon: campaign.icon,
+            description: campaign.description,
+            difficulty: campaign.difficulty,
+            estimatedTime: campaign.estimatedTime,
+            tags: campaign.tags,
+            color: campaign.color,
+            starterPrompt: campaign.starterPrompt,
+            objectives: campaign.objectives,
+            tools: campaign.tools,
+            targetFields: campaign.targetFields || [],
+            dummyTargets: campaign.dummyTargets || {},
+            steps: campaign.steps || [],
+            adaptivePrompts: campaign.adaptivePrompts || [],
+            isActive: true,
+            sortOrder: seeded
+          });
+          seeded++;
+        }
+      }
+      res.json({ success: true, seeded, total: AGENT_CAMPAIGNS.length });
+    } catch (error) {
+      console.error("Seed agent modules error:", error);
+      res.status(500).json({ error: "Failed to seed agent modules" });
+    }
+  });
+
   // ===== FLOW NODES =====
   
   // Get all flow nodes

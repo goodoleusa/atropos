@@ -129,13 +129,27 @@ export default function AgentConfigSection() {
 
   return (
     <div className="space-y-6">
+      {/* Prominent Header */}
+      <div className="bg-gradient-to-r from-amber-950/50 to-teal-950/30 border border-amber-700/50 rounded-lg p-4" data-testid="agent-config-header">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-amber-500 rounded-lg">
+            <Brain className="w-6 h-6 text-black" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-amber-400 font-orbitron">AI Agent Configuration</h2>
+            <p className="text-sm text-stone-400">Edit system prompts, models, and monitoring for all 6 security agents</p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid lg:grid-cols-2 gap-6">
-        <Card className="bg-stone-900/50 border-amber-900/30">
-          <CardHeader>
-            <CardTitle className="text-amber-500 flex items-center gap-2">
-              <Bot className="w-5 h-5" /> Agent Base Instructions
+        <Card className="bg-stone-900/50 border-amber-700/50 ring-1 ring-amber-500/20">
+          <CardHeader className="bg-amber-950/20 border-b border-amber-900/30">
+            <CardTitle className="text-amber-400 flex items-center gap-2">
+              <Bot className="w-5 h-5" /> Agent System Prompts
+              <Badge className="bg-amber-500 text-black text-xs ml-2">EDITABLE</Badge>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-stone-400">
               Configure protected base instructions for each agent. Users can add to these but not override.
             </CardDescription>
           </CardHeader>
@@ -177,13 +191,13 @@ export default function AgentConfigSection() {
               <label className="text-sm text-stone-400 mb-2 block">Model Override</label>
               <Select 
                 value={localConfig.model || ''} 
-                onValueChange={(v) => setLocalConfig(prev => ({ ...prev, model: v }))}
+                onValueChange={(v) => setLocalConfig(prev => ({ ...prev, model: v === '__default__' ? undefined : v }))}
               >
                 <SelectTrigger className="bg-stone-800 border-stone-700">
                   <SelectValue placeholder="Use default model" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Use default</SelectItem>
+                  <SelectItem value="__default__">Use default</SelectItem>
                   {FREE_MODELS.map(model => (
                     <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
                   ))}
@@ -246,6 +260,9 @@ export default function AgentConfigSection() {
             <CardHeader>
               <CardTitle className="text-amber-500 flex items-center gap-2">
                 <Activity className="w-5 h-5" /> W&B Monitoring
+                {wandbConfig?.enabled && wandbConfig?.apiKeySet && (
+                  <Badge className="bg-teal-500 text-black text-xs animate-pulse">LIVE</Badge>
+                )}
               </CardTitle>
               <CardDescription>
                 Connect Weights & Biases to monitor agent performance and run evals
@@ -258,6 +275,40 @@ export default function AgentConfigSection() {
                 </div>
               ) : (
                 <>
+                  {/* Status Banner */}
+                  <div className={`p-3 rounded-lg border ${
+                    wandbConfig?.enabled && wandbConfig?.apiKeySet 
+                      ? 'bg-teal-950/30 border-teal-700' 
+                      : 'bg-stone-800/30 border-stone-700'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        wandbConfig?.enabled && wandbConfig?.apiKeySet 
+                          ? 'bg-teal-500 animate-pulse' 
+                          : 'bg-stone-600'
+                      }`} />
+                      <div>
+                        <p className={`text-sm font-medium ${
+                          wandbConfig?.enabled && wandbConfig?.apiKeySet 
+                            ? 'text-teal-400' 
+                            : 'text-stone-400'
+                        }`}>
+                          {wandbConfig?.enabled && wandbConfig?.apiKeySet 
+                            ? 'Connected to W&B' 
+                            : wandbConfig?.enabled 
+                              ? 'W&B Enabled - API Key Required' 
+                              : 'W&B Disabled'}
+                        </p>
+                        {wandbConfig?.enabled && wandbConfig?.apiKeySet && wandbConfig?.project && (
+                          <p className="text-xs text-stone-500">
+                            Project: <span className="text-teal-400">{wandbConfig.project}</span>
+                            {wandbConfig.entity && <> | Entity: <span className="text-teal-400">{wandbConfig.entity}</span></>}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="flex items-center justify-between p-3 rounded-lg bg-stone-800/50 border border-stone-700">
                     <div className="flex items-center gap-2">
                       <BarChart3 className="w-5 h-5 text-teal-400" />
