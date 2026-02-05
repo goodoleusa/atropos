@@ -55,6 +55,7 @@ import { QuestsSection } from "@/pages/admin/QuestsSection";
 import { QuickPushSection } from "@/pages/admin/QuickPushSection";
 import { EffectsPlaygroundSection } from "@/pages/admin/EffectsPlaygroundSection";
 import AgentConfigSection from "@/pages/admin/AgentConfigSection";
+import { AgentModulesSection } from "@/pages/admin/AgentModulesSection";
 
 interface Clue {
   id: string;
@@ -407,6 +408,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="agentconfig" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500" data-testid="agentconfig-tab">
               <Bot className="w-4 h-4 mr-2" /> Agent Config
+            </TabsTrigger>
+            <TabsTrigger value="agentmodules" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500" data-testid="agentmodules-tab">
+              <Target className="w-4 h-4 mr-2" /> Investigation Modules
             </TabsTrigger>
           </TabsList>
 
@@ -1127,6 +1131,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="agentconfig">
             <AgentConfigSection />
+          </TabsContent>
+
+          <TabsContent value="agentmodules">
+            <AgentModulesSection />
           </TabsContent>
         </Tabs>
       </div>

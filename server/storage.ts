@@ -18,6 +18,7 @@ import {
   quantumMessages,
   campaignLinks,
   learningPaths,
+  agentModules,
   osintTools,
   osintToolCalls,
   investigationContexts,
@@ -61,6 +62,8 @@ import {
   type InsertCampaignLink,
   type LearningPath,
   type InsertLearningPath,
+  type AgentModule,
+  type InsertAgentModule,
   type OsintTool,
   type InsertOsintTool,
   type OsintToolCall,
@@ -183,6 +186,13 @@ export interface IStorage {
   updateLearningPath(id: number, updates: Partial<LearningPath>): Promise<LearningPath | undefined>;
   deleteLearningPath(id: number): Promise<boolean>;
   
+  // Agent Modules (editable investigation campaigns)
+  getAllAgentModules(): Promise<AgentModule[]>;
+  getAgentModuleById(moduleId: string): Promise<AgentModule | undefined>;
+  getActiveAgentModules(): Promise<AgentModule[]>;
+  upsertAgentModule(moduleId: string, data: Partial<InsertAgentModule>): Promise<AgentModule>;
+  deleteAgentModule(moduleId: string): Promise<boolean>;
+
   // OSINT Tools
   getAllOsintTools(): Promise<OsintTool[]>;
   getOsintToolByKey(key: string): Promise<OsintTool | undefined>;
@@ -880,6 +890,39 @@ export class DatabaseStorage implements IStorage {
 
   async deleteLearningPath(id: number): Promise<boolean> {
     await db.delete(learningPaths).where(eq(learningPaths.id, id));
+    return true;
+  }
+
+  // Agent Modules
+  async getAllAgentModules(): Promise<AgentModule[]> {
+    return await db.select().from(agentModules).orderBy(agentModules.sortOrder);
+  }
+
+  async getAgentModuleById(moduleId: string): Promise<AgentModule | undefined> {
+    const [module] = await db.select().from(agentModules).where(eq(agentModules.moduleId, moduleId)).limit(1);
+    return module;
+  }
+
+  async getActiveAgentModules(): Promise<AgentModule[]> {
+    return await db.select().from(agentModules).where(eq(agentModules.isActive, true)).orderBy(agentModules.sortOrder);
+  }
+
+  async upsertAgentModule(moduleId: string, data: Partial<InsertAgentModule>): Promise<AgentModule> {
+    const existing = await this.getAgentModuleById(moduleId);
+    if (existing) {
+      const [updated] = await db
+        .update(agentModules)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(agentModules.moduleId, moduleId))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(agentModules).values({ moduleId, ...data } as any).returning();
+    return created;
+  }
+
+  async deleteAgentModule(moduleId: string): Promise<boolean> {
+    await db.delete(agentModules).where(eq(agentModules.moduleId, moduleId));
     return true;
   }
 
