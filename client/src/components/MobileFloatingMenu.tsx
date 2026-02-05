@@ -19,8 +19,11 @@ import {
   Search,
   Bug,
   Sparkles,
-  Bot
+  Bot,
+  Eye,
+  EyeOff
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface NavItem {
   path: string;
@@ -37,7 +40,7 @@ export default function MobileFloatingMenu() {
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [location, setLocation] = useLocation();
-  const { gameState } = useGame();
+  const { gameState, toggleDevMode } = useGame();
   const { pendingFindings } = useReportContext();
 
   useEffect(() => {
@@ -169,6 +172,22 @@ export default function MobileFloatingMenu() {
                   <span className="text-stone-600 font-mono text-[10px]">
                     {gameState.sessionToken?.slice(0, 8)}...
                   </span>
+                </div>
+                <div className="flex items-center justify-between px-2 py-2 mt-1 border-t border-stone-800">
+                  <div className="flex items-center gap-2">
+                    {gameState.devMode ? (
+                      <Eye className="w-4 h-4 text-teal-400" />
+                    ) : (
+                      <EyeOff className="w-4 h-4 text-stone-500" />
+                    )}
+                    <span className="text-xs text-stone-400">Dev Mode</span>
+                  </div>
+                  <Switch
+                    checked={gameState.devMode}
+                    onCheckedChange={toggleDevMode}
+                    className="data-[state=checked]:bg-teal-600"
+                    data-testid="mobile-dev-mode-toggle"
+                  />
                 </div>
               </div>
             </motion.nav>
