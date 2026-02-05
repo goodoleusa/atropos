@@ -1,0 +1,8 @@
+weave
+crewai
+fastapi
+requests
+python-dotenv
+beautifulsoup4
+markdown
+weasyprint
