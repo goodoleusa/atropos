@@ -86,7 +86,7 @@ const THREAT_INTEL_FEEDS: ThreatIntelFeed[] = [
     id: 'abuse_ch_urlhaus',
     name: 'URLhaus',
     description: 'Malicious URLs database from abuse.ch',
-    url: 'https://urlhaus-api.abuse.ch/v1/',
+    url: 'https://urlhaus.abuse.ch/downloads/json_recent/',
     icon: <Globe className="w-4 h-4" />,
     category: 'malware',
     free: true,
@@ -95,7 +95,7 @@ const THREAT_INTEL_FEEDS: ThreatIntelFeed[] = [
     id: 'abuse_ch_threatfox',
     name: 'ThreatFox',
     description: 'IOCs from malware and botnets',
-    url: 'https://threatfox-api.abuse.ch/api/v1/',
+    url: 'https://threatfox.abuse.ch/export/json/recent/',
     icon: <Skull className="w-4 h-4" />,
     category: 'ioc',
     free: true,
@@ -104,7 +104,7 @@ const THREAT_INTEL_FEEDS: ThreatIntelFeed[] = [
     id: 'abuse_ch_malwarebazaar',
     name: 'MalwareBazaar',
     description: 'Malware sample sharing platform',
-    url: 'https://mb-api.abuse.ch/api/v1/',
+    url: 'https://bazaar.abuse.ch/export/json/recent/',
     icon: <Bug className="w-4 h-4" />,
     category: 'malware',
     free: true,
@@ -146,6 +146,14 @@ const FREE_MODELS = [
   { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', name: 'Nemotron 70B', strength: 'Technical' },
 ];
 
+interface LoadedFeedInfo {
+  feedId: string;
+  feedName: string;
+  source: string;
+  type: string;
+  count: number;
+}
+
 export default function Agents() {
   const [activeTab, setActiveTab] = useState('agents');
   const [selectedAgent, setSelectedAgent] = useState<SecurityAgent | null>(null);
@@ -159,6 +167,8 @@ export default function Agents() {
   const [copied, setCopied] = useState(false);
   const [agentRuns, setAgentRuns] = useState<AgentRun[]>([]);
   const [enabledFeeds, setEnabledFeeds] = useState<string[]>(['abuse_ch_threatfox', 'cisa_kev']);
+  const [loadedFeed, setLoadedFeed] = useState<LoadedFeedInfo | null>(null);
+  const [isLoadingFeed, setIsLoadingFeed] = useState(false);
 
   const { data: agents = [], isLoading: agentsLoading } = useQuery<SecurityAgent[]>({
     queryKey: ['/api/agents'],
@@ -260,6 +270,7 @@ export default function Agents() {
     const feed = THREAT_INTEL_FEEDS.find(f => f.id === feedId);
     if (!feed) return;
     
+    setIsLoadingFeed(true);
     toast({ title: 'Fetching Intel', description: `Loading data from ${feed.name}...` });
     
     try {
@@ -276,10 +287,45 @@ export default function Agents() {
       
       const data = await res.json();
       setTestInput(JSON.stringify(data, null, 2).slice(0, 5000));
-      toast({ title: 'Intel Loaded', description: `${feed.name} data ready for analysis` });
+      setLoadedFeed({
+        feedId,
+        feedName: feed.name,
+        source: data.source || feed.name,
+        type: data.type || feed.category,
+        count: data.count || data.data?.length || 0
+      });
+      toast({ title: 'Intel Loaded', description: `${data.count || 'Data'} items ready for analysis` });
     } catch (error: any) {
+      setLoadedFeed(null);
       toast({ title: 'Feed Error', description: error.message || 'Could not fetch threat intel', variant: 'destructive' });
+    } finally {
+      setIsLoadingFeed(false);
     }
+  };
+
+  const goToPlaygroundWithAgent = (agentId: string) => {
+    const agent = agents.find(a => a.id === agentId);
+    if (agent) {
+      setSelectedAgent(agent);
+      setActiveTab('playground');
+    }
+  };
+
+  const analyzeWithBestAgent = () => {
+    if (!loadedFeed) return;
+    
+    // Select best agent based on feed type
+    const agentMap: Record<string, string> = {
+      'malicious_urls': 'threat_intel',
+      'iocs': 'threat_intel',
+      'malware_samples': 'vuln_analyst',
+      'known_exploited_vulnerabilities': 'vuln_analyst',
+      'cve_database': 'vuln_analyst',
+      'ransomware_victims': 'threat_intel',
+    };
+    
+    const bestAgentId = agentMap[loadedFeed.type] || 'threat_intel';
+    goToPlaygroundWithAgent(bestAgentId);
   };
 
   const toggleAgentForExport = (agentId: string) => {
@@ -550,12 +596,91 @@ export default function Agents() {
           </TabsContent>
 
           <TabsContent value="intel" className="space-y-4">
+            {/* Data Loaded - Next Steps Panel */}
+            {loadedFeed && (
+              <Card className="bg-gradient-to-r from-teal-900/30 to-amber-900/20 border-teal-500/40">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-teal-400 flex items-center gap-2">
+                    <Check className="w-5 h-5" /> Data Loaded Successfully
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    <Badge className="bg-teal-500/20 text-teal-300 border-teal-500/30">
+                      {loadedFeed.source}
+                    </Badge>
+                    <span className="text-stone-300">
+                      <strong>{loadedFeed.count.toLocaleString()}</strong> {loadedFeed.type.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  
+                  <div className="bg-stone-900/50 rounded-lg p-4 border border-stone-700">
+                    <h4 className="text-amber-400 font-medium mb-3 flex items-center gap-2">
+                      <Zap className="w-4 h-4" /> What to do next:
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-xs font-bold shrink-0">1</div>
+                        <div>
+                          <p className="text-white font-medium">Analyze with AI Agent</p>
+                          <p className="text-stone-400 text-sm">Let an AI agent identify threats, patterns, and actionable insights</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-xs font-bold shrink-0">2</div>
+                        <div>
+                          <p className="text-white font-medium">Add to Report</p>
+                          <p className="text-stone-400 text-sm">Include findings in your security investigation report</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    <Button 
+                      onClick={analyzeWithBestAgent}
+                      className="bg-amber-600 hover:bg-amber-500 text-white"
+                      data-testid="analyze-with-agent-btn"
+                    >
+                      <Brain className="w-4 h-4 mr-2" />
+                      Analyze with Best Agent
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setActiveTab('playground')}
+                      className="border-stone-600 hover:border-amber-500"
+                      data-testid="go-to-playground-btn"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Choose Agent Manually
+                    </Button>
+                    <Button 
+                      variant="ghost"
+                      onClick={() => {
+                        navigator.clipboard.writeText(testInput);
+                        toast({ title: 'Copied', description: 'Data copied to clipboard' });
+                      }}
+                      className="text-stone-400 hover:text-white"
+                      data-testid="copy-data-btn"
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy Raw Data
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="bg-stone-900/50 border-amber-900/30">
               <CardHeader>
                 <CardTitle className="text-amber-500 flex items-center gap-2">
                   <Radar className="w-5 h-5" /> Threat Intelligence Feeds
                 </CardTitle>
-                <CardDescription>Free threat intel sources - click to load data for agent analysis</CardDescription>
+                <CardDescription>
+                  {loadedFeed 
+                    ? 'Load another feed or analyze your current data above' 
+                    : 'Click any feed below to load threat intelligence data for analysis'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -563,16 +688,22 @@ export default function Agents() {
                     <Card 
                       key={feed.id}
                       className={`bg-stone-800/50 border-stone-700 hover:border-amber-500/50 cursor-pointer transition-colors ${
-                        enabledFeeds.includes(feed.id) ? 'border-teal-500/50' : ''
-                      }`}
+                        loadedFeed?.feedId === feed.id ? 'border-teal-500 ring-1 ring-teal-500/30' : ''
+                      } ${isLoadingFeed ? 'pointer-events-none opacity-70' : ''}`}
                       onClick={() => fetchThreatIntel(feed.id)}
                       data-testid={`feed-${feed.id}`}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <div className="p-2 rounded bg-stone-700/50 text-amber-400">
-                              {feed.icon}
+                            <div className={`p-2 rounded ${loadedFeed?.feedId === feed.id ? 'bg-teal-500/20 text-teal-400' : 'bg-stone-700/50 text-amber-400'}`}>
+                              {isLoadingFeed && loadedFeed?.feedId !== feed.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : loadedFeed?.feedId === feed.id ? (
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                feed.icon
+                              )}
                             </div>
                             <div>
                               <h4 className="font-medium text-white">{feed.name}</h4>

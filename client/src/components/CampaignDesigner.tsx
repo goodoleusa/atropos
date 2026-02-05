@@ -1966,7 +1966,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] bg-[#0a0500] border-amber-900/50 p-0 overflow-hidden rounded-none sm:rounded-lg">
+      <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] bg-[#0a0500] border-amber-900/50 p-0 overflow-y-auto sm:overflow-hidden rounded-none sm:rounded-lg">
         <div className="flex flex-col h-full">
           <DialogHeader className="p-3 sm:p-4 border-b border-amber-900/30 shrink-0">
             <DialogTitle className="text-amber-500 font-orbitron flex items-center gap-2 text-sm sm:text-base">
@@ -2084,7 +2084,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             </div>
           </DialogHeader>
 
-          <div className="flex flex-col sm:flex-row flex-1 overflow-hidden min-h-0">
+          <div className="flex flex-col sm:flex-row flex-1 overflow-y-auto sm:overflow-hidden min-h-0">
             {/* Mobile File Tree Toggle */}
             <button
               onClick={() => setShowFileTree(!showFileTree)}
