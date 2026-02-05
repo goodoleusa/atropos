@@ -18,6 +18,7 @@ import {
   ZoomIn, ZoomOut, Wand2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, GraduationCap
 } from 'lucide-react';
 import { useLearningStore } from '@/stores/useLearningStore';
+import { useShallow } from 'zustand/react/shallow';
 import { LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS, type LearningGoal } from '@/config/learningConfig';
 
 // Feature types available in the game
@@ -124,12 +125,12 @@ interface Props {
 }
 
 export default function CampaignDesigner({ open, onOpenChange, sessionToken }: Props) {
-  const learningProfile = useLearningStore(state => ({
+  const learningProfile = useLearningStore(useShallow(state => ({
     goals: state.goals,
     skillLevel: state.skillLevel,
     style: state.style,
     preferredPace: state.preferredPace
-  }));
+  })));
   const [mode, setMode] = useState<'tree' | 'graph'>('tree');
   const [campaign, setCampaign] = useState<Campaign>({
     id: `campaign-${Date.now()}`,
