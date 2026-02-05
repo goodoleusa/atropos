@@ -819,158 +819,6 @@ BEHAVIOR:
     }
   });
 
-  // ===== CAMPAIGN VERSIONS (Draft/Publish Workflow) =====
-  
-  // Save campaign as draft
-  app.post("/api/campaigns/:campaignId/drafts", async (req, res) => {
-    try {
-      const { campaignId } = req.params;
-      const { name, description, nodes, links, rootNodes, effects, clueRefs, artifactRefs, learningGoals, changelog, createdBy } = req.body;
-      
-      // Get latest version number for this campaign
-      const existingVersions = await storage.getCampaignVersions(campaignId);
-      const latestVersion = existingVersions.length > 0 
-        ? Math.max(...existingVersions.map(v => v.version)) 
-        : 0;
-      
-      const draft = await storage.createCampaignVersion({
-        campaignId,
-        version: latestVersion + 1,
-        name: name || `Draft v${latestVersion + 1}`,
-        description,
-        status: 'draft',
-        nodes: nodes || [],
-        links: links || [],
-        rootNodes: rootNodes || [],
-        effects: effects || {},
-        clueRefs: clueRefs || [],
-        artifactRefs: artifactRefs || [],
-        learningGoals: learningGoals || [],
-        metadata: { savedAt: new Date().toISOString() },
-        changelog,
-        createdBy
-      });
-      
-      res.json(draft);
-    } catch (error) {
-      console.error("Save draft error:", error);
-      res.status(500).json({ error: "Failed to save draft" });
-    }
-  });
-
-  // Get all versions for a campaign
-  app.get("/api/campaigns/:campaignId/versions", async (req, res) => {
-    try {
-      const { campaignId } = req.params;
-      const versions = await storage.getCampaignVersions(campaignId);
-      res.json(versions);
-    } catch (error) {
-      console.error("Get versions error:", error);
-      res.status(500).json({ error: "Failed to get versions" });
-    }
-  });
-
-  // Get specific version
-  app.get("/api/campaigns/:campaignId/versions/:versionId", async (req, res) => {
-    try {
-      const { versionId } = req.params;
-      const version = await storage.getCampaignVersion(parseInt(versionId));
-      if (!version) {
-        return res.status(404).json({ error: 'Version not found' });
-      }
-      res.json(version);
-    } catch (error) {
-      console.error("Get version error:", error);
-      res.status(500).json({ error: "Failed to get version" });
-    }
-  });
-
-  // Publish a version (makes it live)
-  app.post("/api/campaigns/:campaignId/versions/:versionId/publish", async (req, res) => {
-    try {
-      const { campaignId, versionId } = req.params;
-      const { changelog } = req.body;
-      
-      // Archive any currently published version
-      const versions = await storage.getCampaignVersions(campaignId);
-      for (const v of versions) {
-        if (v.status === 'published') {
-          await storage.updateCampaignVersion(v.id, { status: 'archived' });
-        }
-      }
-      
-      // Publish this version
-      const published = await storage.updateCampaignVersion(parseInt(versionId), {
-        status: 'published',
-        publishedAt: new Date(),
-        changelog: changelog || 'Published'
-      });
-      
-      res.json({ success: true, version: published });
-    } catch (error) {
-      console.error("Publish version error:", error);
-      res.status(500).json({ error: "Failed to publish version" });
-    }
-  });
-
-  // Get published version for a campaign
-  app.get("/api/campaigns/:campaignId/published", async (req, res) => {
-    try {
-      const { campaignId } = req.params;
-      const published = await storage.getPublishedCampaignVersion(campaignId);
-      if (!published) {
-        return res.status(404).json({ error: 'No published version' });
-      }
-      res.json(published);
-    } catch (error) {
-      console.error("Get published error:", error);
-      res.status(500).json({ error: "Failed to get published version" });
-    }
-  });
-
-  // Compare two versions (diff)
-  app.get("/api/campaigns/:campaignId/compare", async (req, res) => {
-    try {
-      const { v1, v2 } = req.query;
-      if (!v1 || !v2) {
-        return res.status(400).json({ error: 'Provide v1 and v2 version IDs' });
-      }
-      
-      const version1 = await storage.getCampaignVersion(parseInt(v1 as string));
-      const version2 = await storage.getCampaignVersion(parseInt(v2 as string));
-      
-      if (!version1 || !version2) {
-        return res.status(404).json({ error: 'Version not found' });
-      }
-      
-      // Simple diff: count changes
-      const nodesAdded = (version2.nodes as any[]).filter(n2 => 
-        !(version1.nodes as any[]).find(n1 => n1.id === n2.id)
-      ).length;
-      const nodesRemoved = (version1.nodes as any[]).filter(n1 => 
-        !(version2.nodes as any[]).find(n2 => n2.id === n1.id)
-      ).length;
-      const nodesModified = (version2.nodes as any[]).filter(n2 => {
-        const n1 = (version1.nodes as any[]).find(n => n.id === n2.id);
-        return n1 && JSON.stringify(n1) !== JSON.stringify(n2);
-      }).length;
-      
-      res.json({
-        v1: { id: version1.id, version: version1.version, status: version1.status },
-        v2: { id: version2.id, version: version2.version, status: version2.status },
-        diff: {
-          nodesAdded,
-          nodesRemoved,
-          nodesModified,
-          linksAdded: (version2.links as any[]).length - (version1.links as any[]).length
-        }
-      });
-    } catch (error) {
-      console.error("Compare versions error:", error);
-      res.status(500).json({ error: "Failed to compare versions" });
-    }
-  });
-
   // ===== FLOW NODES =====
   
   // Get all flow nodes
@@ -2053,235 +1901,14 @@ BEHAVIOR:
   // THREAT INTELLIGENCE FEEDS
   // ============================================
   
-  interface ThreatFeedConfig {
-    url: string;
-    method: 'GET' | 'POST';
-    contentType?: string;
-    body?: string | object;
-    parser: 'json' | 'csv' | 'rss' | 'custom';
-    headers?: Record<string, string>;
-  }
-  
   // Allowlist of approved threat intel feed URLs (security: prevents SSRF)
-  // Using public export endpoints that don't require authentication
-  const THREAT_INTEL_FEEDS: Record<string, ThreatFeedConfig> = {
-    'abuse_ch_urlhaus': { 
-      url: 'https://urlhaus.abuse.ch/downloads/json_recent/', 
-      method: 'GET',
-      parser: 'json'
-    },
-    'abuse_ch_threatfox': { 
-      // ThreatFox CSV export - simpler parsing, no auth required
-      url: 'https://threatfox.abuse.ch/export/csv/recent/',
-      method: 'GET',
-      parser: 'csv'
-    },
-    'abuse_ch_malwarebazaar': { 
-      // MalwareBazaar CSV export - no auth required
-      url: 'https://bazaar.abuse.ch/export/csv/recent/',
-      method: 'GET',
-      parser: 'csv'
-    },
-    'cisa_kev': { 
-      url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', 
-      method: 'GET',
-      parser: 'json'
-    },
-    'nvd_cve': {
-      // NVD CVE 2.0 API - get recent CVEs sorted by last modified
-      url: 'https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=20',
-      method: 'GET',
-      parser: 'custom'
-    },
-    'ransomware_live': { 
-      url: 'https://api.ransomware.live/recentvictims', 
-      method: 'GET',
-      parser: 'json'
-    },
+  const THREAT_INTEL_FEEDS: Record<string, { url: string; method: 'GET' | 'POST'; body?: string }> = {
+    'abuse_ch_urlhaus': { url: 'https://urlhaus-api.abuse.ch/v1/', method: 'POST', body: 'query=get_recent&limit=25' },
+    'abuse_ch_threatfox': { url: 'https://threatfox-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_iocs&days=1' },
+    'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_recent&selector=100' },
+    'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
+    'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
   };
-  
-  // Parse different feed formats into a normalized structure
-  function parseThreatFeed(feedId: string, rawData: any): any {
-    try {
-      switch (feedId) {
-        case 'abuse_ch_urlhaus': {
-          // URLhaus JSON format: object with date keys containing arrays
-          const entries: any[] = [];
-          if (typeof rawData === 'object' && !Array.isArray(rawData)) {
-            Object.values(rawData).forEach((dateGroup: any) => {
-              if (Array.isArray(dateGroup)) {
-                entries.push(...dateGroup.slice(0, 10));
-              }
-            });
-          }
-          return {
-            source: 'URLhaus',
-            type: 'malicious_urls',
-            count: entries.length,
-            data: entries.slice(0, 25).map((e: any) => ({
-              id: e.id || e.urlhaus_reference,
-              url: e.url,
-              threat: e.threat || e.url_status,
-              dateAdded: e.dateadded || e.date_added,
-              tags: e.tags || []
-            }))
-          };
-        }
-        
-        case 'abuse_ch_threatfox': {
-          // ThreatFox CSV format: first_seen_utc,ioc_id,ioc_value,ioc_type,threat_type,fk_malware,malware_alias,malware_printable,last_seen_utc,confidence_level,reference,tags,anonymous,reporter
-          if (typeof rawData === 'string') {
-            const lines = rawData.split('\n').filter(l => l.trim() && !l.startsWith('#'));
-            const iocs = lines.slice(0, 25).map(line => {
-              const parts = line.split(',').map(p => p.replace(/^"|"$/g, ''));
-              return {
-                firstSeen: parts[0],
-                id: parts[1],
-                ioc: parts[2],
-                iocType: parts[3],
-                threat: parts[4],
-                malware: parts[7] || parts[5],
-                confidence: parts[9]
-              };
-            });
-            return {
-              source: 'ThreatFox',
-              type: 'iocs',
-              count: lines.length,
-              data: iocs
-            };
-          }
-          // Fallback for JSON format
-          const iocs = Array.isArray(rawData) ? rawData : 
-            (rawData.data ? Object.values(rawData.data).flat() : []);
-          return {
-            source: 'ThreatFox',
-            type: 'iocs',
-            count: (iocs as any[]).length,
-            data: (iocs as any[]).slice(0, 25).map((ioc: any) => ({
-              id: ioc.id,
-              ioc: ioc.ioc || ioc.ioc_value,
-              iocType: ioc.ioc_type,
-              threat: ioc.threat_type || ioc.malware,
-              confidence: ioc.confidence_level,
-              firstSeen: ioc.first_seen
-            }))
-          };
-        }
-        
-        case 'abuse_ch_malwarebazaar': {
-          // MalwareBazaar CSV format: first_seen_utc,sha256_hash,md5_hash,sha1_hash,reporter,file_name,file_type_guess,mime_type,signature,clamav,vtpercent,imphash,ssdeep,tlsh
-          if (typeof rawData === 'string') {
-            const lines = rawData.split('\n').filter(l => l.trim() && !l.startsWith('#'));
-            const samples = lines.slice(0, 25).map(line => {
-              const parts = line.split(',').map(p => p.replace(/^"|"$/g, ''));
-              return {
-                firstSeen: parts[0],
-                sha256: parts[1],
-                md5: parts[2],
-                sha1: parts[3],
-                reporter: parts[4],
-                filename: parts[5],
-                fileType: parts[6],
-                signature: parts[8]
-              };
-            });
-            return {
-              source: 'MalwareBazaar',
-              type: 'malware_samples',
-              count: lines.length,
-              data: samples
-            };
-          }
-          // Fallback for JSON format
-          const samples = Array.isArray(rawData) ? rawData :
-            (rawData.data ? rawData.data : []);
-          return {
-            source: 'MalwareBazaar',
-            type: 'malware_samples',
-            count: samples.length,
-            data: samples.slice(0, 25).map((s: any) => ({
-              sha256: s.sha256_hash,
-              sha1: s.sha1_hash,
-              md5: s.md5_hash,
-              filename: s.file_name,
-              fileType: s.file_type,
-              signature: s.signature,
-              firstSeen: s.first_seen
-            }))
-          };
-        }
-        
-        case 'cisa_kev': {
-          // CISA KEV - already working
-          const vulns = rawData.vulnerabilities || [];
-          return {
-            source: 'CISA KEV',
-            type: 'known_exploited_vulnerabilities',
-            catalogVersion: rawData.catalogVersion,
-            count: vulns.length,
-            data: vulns.slice(0, 25).map((v: any) => ({
-              cveID: v.cveID,
-              vendor: v.vendorProject,
-              product: v.product,
-              name: v.vulnerabilityName,
-              dateAdded: v.dateAdded,
-              dueDate: v.dueDate,
-              ransomware: v.knownRansomwareCampaignUse,
-              description: v.shortDescription?.slice(0, 200)
-            }))
-          };
-        }
-        
-        case 'nvd_cve': {
-          // NVD CVE 2.0 API format
-          const cves = rawData.vulnerabilities || [];
-          return {
-            source: 'NVD',
-            type: 'cve_database',
-            totalResults: rawData.totalResults,
-            count: cves.length,
-            data: cves.slice(0, 25).map((item: any) => {
-              const cve = item.cve || item;
-              const metrics = cve.metrics?.cvssMetricV31?.[0] || cve.metrics?.cvssMetricV30?.[0] || {};
-              return {
-                id: cve.id,
-                description: cve.descriptions?.find((d: any) => d.lang === 'en')?.value?.slice(0, 200),
-                published: cve.published,
-                lastModified: cve.lastModified,
-                cvssScore: metrics.cvssData?.baseScore,
-                severity: metrics.cvssData?.baseSeverity
-              };
-            })
-          };
-        }
-        
-        case 'ransomware_live': {
-          // Ransomware.live API - array of recent victims
-          const victims = Array.isArray(rawData) ? rawData : [];
-          return {
-            source: 'Ransomware.live',
-            type: 'ransomware_victims',
-            count: victims.length,
-            data: victims.slice(0, 25).map((v: any) => ({
-              group: v.group_name || v.group,
-              victim: v.post_title || v.victim,
-              discovered: v.discovered,
-              published: v.published,
-              country: v.country,
-              website: v.website
-            }))
-          };
-        }
-        
-        default:
-          return rawData;
-      }
-    } catch (parseError) {
-      console.error(`Parser error for ${feedId}:`, parseError);
-      return { source: feedId, error: 'Parse failed', rawData: rawData };
-    }
-  }
   
   app.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) => {
     try {
@@ -2298,70 +1925,39 @@ BEHAVIOR:
       }
       
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 20000);
+      const timeout = setTimeout(() => controller.abort(), 15000);
       
       const headers: Record<string, string> = {
-        'User-Agent': 'NEXUS-Security-Platform/1.0 (Educational Security Tool)',
-        'Accept': 'application/json, text/plain, */*',
-        ...feed.headers
+        'User-Agent': 'NEXUS-Security-Platform/1.0',
+        'Accept': 'application/json'
       };
       
       let response;
-      try {
-        if (feed.method === 'POST') {
-          const contentType = feed.contentType || 'application/x-www-form-urlencoded';
-          const body = typeof feed.body === 'object' ? JSON.stringify(feed.body) : feed.body;
-          response = await fetch(feed.url, {
-            method: 'POST',
-            headers: { ...headers, 'Content-Type': contentType },
-            body,
-            signal: controller.signal
-          });
-        } else {
-          response = await fetch(feed.url, { headers, signal: controller.signal });
-        }
-      } catch (fetchError: any) {
-        clearTimeout(timeout);
-        if (fetchError.name === 'AbortError') {
-          throw new Error('Feed request timed out after 20s');
-        }
-        throw fetchError;
+      if (feed.method === 'POST') {
+        response = await fetch(feed.url, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: feed.body,
+          signal: controller.signal
+        });
+      } else {
+        response = await fetch(feed.url, { headers, signal: controller.signal });
       }
       
       clearTimeout(timeout);
       
       if (!response.ok) {
-        // Provide helpful error messages for common issues
-        if (response.status === 401) {
-          throw new Error(`Feed requires authentication (${response.status})`);
-        } else if (response.status === 403) {
-          throw new Error(`Access forbidden - rate limit or IP block (${response.status})`);
-        } else if (response.status === 429) {
-          throw new Error(`Rate limited - try again later (${response.status})`);
-        }
         throw new Error(`Feed returned ${response.status}`);
       }
       
-      // Handle different content types
-      const contentType = response.headers.get('content-type') || '';
-      let rawData: any;
+      const data = await response.json();
       
-      if (contentType.includes('application/json') || feed.parser === 'json' || feed.parser === 'custom') {
-        const text = await response.text();
-        try {
-          rawData = JSON.parse(text);
-        } catch {
-          // Some feeds return JSON without proper content-type
-          rawData = { raw: text.slice(0, 5000) };
-        }
-      } else {
-        rawData = await response.text();
-      }
+      // Return trimmed data to avoid huge payloads
+      const trimmed = Array.isArray(data) 
+        ? data.slice(0, 50) 
+        : (data.data ? { ...data, data: data.data.slice?.(0, 50) || data.data } : data);
       
-      // Parse and normalize the feed data
-      const parsed = parseThreatFeed(feedId, rawData);
-      
-      res.json(parsed);
+      res.json(trimmed);
     } catch (error: any) {
       console.error("Threat intel fetch error:", error);
       res.status(500).json({ error: error.message || "Failed to fetch threat intel" });

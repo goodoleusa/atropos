@@ -25,7 +25,6 @@ import {
   stateCapsules,
   modmail,
   multiplayerLobbies,
-  campaignVersions,
   type GameSession, 
   type InsertGameSession,
   type CampaignRun,
@@ -75,9 +74,7 @@ import {
   type Modmail,
   type InsertModmail,
   type MultiplayerLobby,
-  type InsertMultiplayerLobby,
-  type CampaignVersion,
-  type InsertCampaignVersion
+  type InsertMultiplayerLobby
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -247,14 +244,6 @@ export interface IStorage {
   // Admin Configuration
   getAdminConfig(): Promise<AdminConfig | undefined>;
   updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig>;
-  
-  // Campaign Versions
-  createCampaignVersion(version: InsertCampaignVersion): Promise<CampaignVersion>;
-  getCampaignVersions(campaignId: string): Promise<CampaignVersion[]>;
-  getCampaignVersion(id: number): Promise<CampaignVersion | undefined>;
-  updateCampaignVersion(id: number, updates: Partial<CampaignVersion>): Promise<CampaignVersion | undefined>;
-  getPublishedCampaignVersion(campaignId: string): Promise<CampaignVersion | undefined>;
-  deleteCampaignVersion(id: number): Promise<boolean>;
 }
 
 // Admin configuration type (stored in memory/file, not DB)
@@ -1360,60 +1349,6 @@ export class DatabaseStorage implements IStorage {
     };
     await this.saveAdminConfig();
     return this.adminConfig;
-  }
-
-  // Campaign Versions
-  async createCampaignVersion(version: InsertCampaignVersion): Promise<CampaignVersion> {
-    const [created] = await db
-      .insert(campaignVersions)
-      .values(version)
-      .returning();
-    return created;
-  }
-
-  async getCampaignVersions(campaignId: string): Promise<CampaignVersion[]> {
-    return db
-      .select()
-      .from(campaignVersions)
-      .where(eq(campaignVersions.campaignId, campaignId))
-      .orderBy(desc(campaignVersions.version));
-  }
-
-  async getCampaignVersion(id: number): Promise<CampaignVersion | undefined> {
-    const [version] = await db
-      .select()
-      .from(campaignVersions)
-      .where(eq(campaignVersions.id, id))
-      .limit(1);
-    return version;
-  }
-
-  async updateCampaignVersion(id: number, updates: Partial<CampaignVersion>): Promise<CampaignVersion | undefined> {
-    const [updated] = await db
-      .update(campaignVersions)
-      .set(updates)
-      .where(eq(campaignVersions.id, id))
-      .returning();
-    return updated;
-  }
-
-  async getPublishedCampaignVersion(campaignId: string): Promise<CampaignVersion | undefined> {
-    const [published] = await db
-      .select()
-      .from(campaignVersions)
-      .where(and(
-        eq(campaignVersions.campaignId, campaignId),
-        eq(campaignVersions.status, 'published')
-      ))
-      .limit(1);
-    return published;
-  }
-
-  async deleteCampaignVersion(id: number): Promise<boolean> {
-    await db
-      .delete(campaignVersions)
-      .where(eq(campaignVersions.id, id));
-    return true;
   }
 }
 

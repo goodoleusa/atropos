@@ -4,11 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, Settings, Bug, Sparkles, Eye, EyeOff, DollarSign, Layers } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, Settings, Bug, Sparkles, Eye, EyeOff } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { Switch } from '@/components/ui/switch';
-import CampaignDesigner from './CampaignDesigner';
 
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
@@ -18,7 +17,6 @@ const NAV_STYLES = {
 
 export default function QuickNav() {
   const [expanded, setExpanded] = useState(false);
-  const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
   const [location] = useLocation();
   const { gameState, toggleDevMode } = useGame();
   const { pendingFindings, currentSession, targets } = useReportContext();
@@ -30,7 +28,6 @@ export default function QuickNav() {
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
-    { path: '/wiki', icon: DollarSign, label: 'Bounties', color: 'amber' as const },
   ];
 
   const devNavItems: typeof baseNavItems = gameState.devMode ? [
@@ -83,21 +80,6 @@ export default function QuickNav() {
               </Link>
             );
           })}
-
-          {/* Campaign Designer Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start min-h-[44px] text-stone-400 hover:text-stone-200 hover:bg-purple-900/30"
-            onClick={() => {
-              setCampaignDesignerOpen(true);
-              setExpanded(false);
-            }}
-            data-testid="nav-campaign-designer"
-          >
-            <Layers className="w-4 h-4 mr-2 text-purple-500" />
-            Campaigns
-          </Button>
 
           <div className="border-t border-stone-800 pt-2 mt-2">
             <div className="px-3 py-1">
@@ -161,12 +143,6 @@ export default function QuickNav() {
           </div>
         )}
       </Button>
-
-      {/* Campaign Designer Dialog */}
-      <CampaignDesigner 
-        open={campaignDesignerOpen} 
-        onOpenChange={setCampaignDesignerOpen} 
-      />
     </div>
   );
 }

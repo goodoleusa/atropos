@@ -1,149 +1,138 @@
 # NEXUS Security Platform
 
-> *"On the surface, a corporate network solutions company. Underneath, a sprawling cybersecurity escape room."*
+A comprehensive AI-powered security investigation platform featuring two core systems:
 
-**NEXUS** is a dual-layer security training platform disguised as a mundane business website. Visitors see "SysAdmin Corp" — a boring enterprise IT company. But scratch beneath the surface and you'll find hidden terminals, encrypted clues, AI-powered investigation campaigns, and a full CTF training ground.
+1. **NEXUS Agent** - AI assistant for analysis, reporting, and campaign management
+2. **Atropos Scanner** - Rust-based OSINT & vulnerability scanning tool
 
-## The Concept
+The platform features a molten bronze/industrial aesthetic with custom terminal interface,
+investigation campaigns, visual campaign designer, and atmospheric effects.
 
-**Layer 1: The Facade**
-A pixel-perfect corporate site. Network diagrams, service pages, contact forms. Nothing suspicious here. Move along.
-
-**Layer 2: The Playground**
-Hidden commands in the terminal. QR codes that execute C2 payloads. Threat intelligence feeds from real sources. Six specialized AI agents ready to analyze your findings. An investigation campaign system that adapts to your discoveries.
-
-The platform teaches security through *experience* — not lectures. Find the entry points. Collect the clues. Complete the quests. Level up.
-
----
-
-## Core Systems
+## Features
 
 ### NEXUS Agent
-AI-powered investigation assistant with 6 specialized agents:
-- **VulnAnalyst** — Vulnerability assessment and prioritization
-- **OSINTAnalyst** — Open source intelligence gathering
-- **ThreatIntel** — IOC analysis and threat correlation
-- **SecretHunter** — Credential and secret detection
-- **NetworkRecon** — Infrastructure mapping
-- **Synthesis** — Multi-source analysis coordination
+- AI-powered investigation assistant (OpenRouter LLMs)
+- Pre-built security campaigns (Shell Corp, BGP tracing, Threat Hunting)
+- Report Builder for structured bug bounty writeups
+- AI Lab for prompt engineering and model comparison
+- Campaign Designer with wikilinks and conditional decision trees
 
 ### Atropos Scanner
-Rust-based OSINT toolkit integrating:
-- Recon: BBOT, Amass, theHarvester, Subfinder
-- Scanning: Nuclei, httpx, nmap
-- Secrets: Gitleaks, TruffleHog
-- Intel: Shodan, VirusTotal, SecurityTrails
-- Custom: Lua scripting engine
+- OSINT reconnaissance (BBOT, Amass, theHarvester, Subfinder)
+- Vulnerability scanning (Nuclei, httpx, nmap)
+- Secret detection (Gitleaks, TruffleHog)
+- Threat intelligence (Shodan, VirusTotal, SecurityTrails)
+- Lua scripting for custom automation
 
-### Threat Intelligence Feeds
-Live data from real sources:
-- **URLhaus** — Malware URLs
-- **ThreatFox** — IOCs (IPs, domains, hashes)
-- **MalwareBazaar** — Malware samples
-- **CISA KEV** — Known exploited vulnerabilities
-- **NVD CVE** — CVE database
-- **Ransomware.live** — Active ransomware groups
+### Platform
+- Custom terminal emulator with command parsing
+- Clue + quest system with configurable campaigns
+- Atmospheric overlays (Chaos, Glitch, Quantum field)
+- Admin dashboard for content and UX management
+- Mobile-responsive with 48px+ touch targets
 
-### Campaign Designer
-Visual flow editor for creating investigation scenarios:
-- Twine-style wikilinks and branching
-- Draft/publish workflow with version control
-- Learning goals and skill tracking
-- Connect to clues, artifacts, and effects
+## Architecture
 
-### QR C2 Framework
-Educational command-and-control system:
-- Generate QR codes that simulate C2 commands
-- 13 real-world attack vector simulations
-- 6 hands-on QR hijacking labs
-- Challenge modes: Dead Drop, Stego Hunter, QR Inception
+### Frontend
 
----
+- React + TypeScript (Vite)
+- Wouter for routing
+- Tailwind CSS v4 + Framer Motion
+- shadcn/ui (Radix primitives)
+- Zustand for learning preferences
 
-## Tech Stack
+### Backend
 
-| Layer | Stack |
-|-------|-------|
-| Frontend | React 18 + TypeScript, Vite, Tailwind v4, Framer Motion |
-| Backend | Express + TypeScript (ESM), REST APIs |
-| Database | PostgreSQL via Drizzle ORM |
-| AI | OpenRouter (free tier models) |
-| Auth | Replit OIDC |
+- Express + TypeScript (ESM)
+- REST JSON APIs under `/api/`
+- PostgreSQL via Drizzle ORM
 
----
+### Data
 
-## Quick Start
+- Schema: `shared/schema.ts`
+- Tables: `game_sessions`, `clues`, `quests`, `command_logs`
 
-```bash
-# Install
+## Running locally
+
+### 1) Install dependencies
+
+```
 npm install
+```
 
-# Dev mode (client + server on :5000)
+### 2) Start the app (dev)
+
+```
 npm run dev
-
-# Production build
-npm run build && npm start
-
-# Push schema changes
-npm run db:push
 ```
 
-## Environment
+The server and client are served from the same port.
+Default: `http://localhost:5000`
 
-| Variable | Purpose |
-|----------|---------|
-| `DATABASE_URL` | Postgres connection |
-| `OPENROUTER_API_KEY` | AI model access |
-| `ISSUER_URL` | Replit Auth (auto-configured) |
-
----
-
-## Structure
+### 3) Build for production
 
 ```
-client/     → React UI (the facade + the playground)
-server/     → Express API, AI agents, threat feeds
-shared/     → Drizzle schema, shared types
+npm run build
+npm start
 ```
 
-## Key Files
+## Environment variables
 
-- `server/routes.ts` — API endpoints
-- `server/observability.ts` — W&B-style AI tracing
-- `shared/schema.ts` — Database models
-- `client/src/components/CampaignDesigner.tsx` — Visual campaign editor
-- `client/src/pages/admin/EffectsPlaygroundSection.tsx` — Visual effects lab
+Some features require these environment variables:
 
----
+- `PORT` (defaults to 5000)
+- `DATABASE_URL` (Postgres connection)
+- `ISSUER_URL` and related Replit Auth envs when using Replit OIDC
 
-## Philosophy
+## Replit integration
 
-Security is learned by *doing*, not reading. NEXUS creates a safe sandbox where:
+This repo includes Replit integrations and defaults:
 
-1. **Discovery is rewarded** — Hidden commands, secret pages, encrypted clues
-2. **AI assists, not replaces** — Agents help analyze, you make the decisions
-3. **Real data, fake targets** — Live threat feeds, simulated infrastructure
-4. **Progression matters** — Quests, levels, unlockable content
+- `.replit` defines Node 20, port 5000, and `npm run dev`
+- Replit Auth and OpenRouter integrations under `server/replit_integrations/`
+- Vite plugins for Replit dev tooling
 
-The corporate facade isn't just aesthetic — it's training for real-world engagements where attackers hide in plain sight.
+If you host on Replit, the app runs on port 5000 and Replit maps it to port 80.
 
----
+## Cursor + Replit workflow (same repo)
 
-## Documentation
+To keep Replit and Cursor in sync, use GitHub as the source of truth:
+
+1. In Replit, connect the project to GitHub and push changes.
+2. In Cursor, clone the same repo:
+
+   ```
+   git clone https://github.com/goodoleusa/atropos
+   cd atropos
+   ```
+
+3. Make edits in Cursor, then commit + push:
+
+   ```
+   git add .
+   git commit -m "Describe change"
+   git push -u origin <branch>
+   ```
+
+4. In Replit, pull the latest changes.
+
+Tip: use separate branches (e.g., `cursor-experiments` vs `replit-experiments`)
+to compare agent results safely.
+
+## Scripts
+
+- `npm run dev` - start server in development (serves client too)
+- `npm run dev:client` - start Vite dev server only
+- `npm run build` - build client + server for production
+- `npm run start` - run production build
+- `npm run check` - TypeScript check
+- `npm run db:push` - push Drizzle schema to DB
+
+## Repo structure
 
 ```
-docs/
-├── AGENT_LOG.md   → Message stream between Replit & Cursor agents
-├── WIKI.md        → Architecture reference, API docs, decision log
-└── ROADMAP.md     → Future features and ideas parking lot
+client/     React app (UI)
+server/     Express API + integrations
+shared/     Shared schema and models
+script/     Build scripts
 ```
-
-## Contributing
-
-Find a bug? Submit a clue. Break something? That might be the point.
-
-PRs welcome. Just don't patch the intentional vulnerabilities.
-
----
-
-*Built for security researchers who learn by breaking things.*
