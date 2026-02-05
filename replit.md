@@ -54,6 +54,12 @@ Preferred communication style: Simple, everyday language.
 - **Multiplayer Lobbies**: Anonymous real-time session system for co-op, versus, or race modes. Players join/create lobbies with aliases, max 8 players per lobby, 1-hour expiry. API: `/api/lobbies`.
 - **Zodiac Engagement Effects**: 60% chance bonus collectibles/tips when collecting zodiac cards, element-based rewards (Fire, Earth, Air, Water).
 - **Mystical Cards Admin**: Full editing capabilities for tarot and zodiac cards in Admin Dashboard CollectiblesSection.
+- **QR C2 Framework**: Educational QR-based command & control system with three sections:
+  - **Encode**: Generate C2 command QR codes with realistic target machine simulation (Linux Server, Windows Workstation, IoT Camera, Docker Container). Simulates authentic command outputs.
+  - **Attack Vectors**: 13 real-world QR ingestion techniques (parking meters, restaurant menus, phishing emails, EV chargers, etc.) with documented cases and lab scenarios.
+  - **QR Labs**: 6 hands-on QR-in-QR hijacking exercises based on academic research (finder pattern confusion, quiet zone attacks, physical overlays, barcode inception, split QR, PDF vector drawing).
+  - **Challenge Modes**: Dead Drop, Stego Hunter, Temporal Ghost (TPVM), QR Hijacker, Breadcrumb Trail, QR Inception.
+- **Design Philosophy**: TPVM-inspired aesthetic - looks normal with brief subliminal disruptions (concept noted for future implementation).
 
 ### Atropos Scanner Integration
 - **Capabilities**: OSINT (BBOT, Amass, theHarvester), Vulnerability Scanning (Nuclei, httpx, nmap), Secret Detection (Gitleaks, TruffleHog), Threat Intelligence (Shodan, VirusTotal), Network Analysis (DNSMonster, RITA, Zeek).
