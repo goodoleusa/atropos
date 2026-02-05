@@ -6,6 +6,12 @@ NEXUS is an AI-powered security investigation platform comprising the **NEXUS Ag
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+### Git Workflow
+- **replit-agent**: Replit Agent working branch → merge to main for alpha/releases
+- **cursor2**: Cursor working branch → merge to main for alpha/releases  
+- **main**: Production-ready code
+- All other branches can be pruned
+
 ## System Architecture
 
 ### Frontend
