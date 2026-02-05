@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,12 +9,58 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Eye, Wand2, Save, RotateCcw, Layers, Zap, Copy, Check } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Sparkles, Eye, Wand2, Save, RotateCcw, Layers, Zap, Copy, Check, Clock, MousePointer, Globe, FileText, Play, Pause, Timer, Ghost, Shuffle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
 type RevealType = 'hover' | 'hold' | 'scratch' | 'tilt' | 'spotlight' | 'quantum' | 'glitch' | 'scanline';
 type EffectIntensity = 'subtle' | 'medium' | 'intense';
+type EffectScope = 'global' | 'page-specific';
+type MouseoverBehavior = 'reveal' | 'glitch' | 'shake' | 'pulse' | 'chromatic' | 'invert' | 'scramble' | 'ghost';
+
+interface GlitchTemplate {
+  id: string;
+  name: string;
+  description: string;
+  duration: number;
+  interval: number;
+  intensity: number;
+  chromaticSplit: boolean;
+  scanlines: boolean;
+  flickerRate: number;
+  distortion: number;
+}
+
+interface SubliminalReveal {
+  id: string;
+  name: string;
+  message: string;
+  duration: number;
+  delay: number;
+  opacity: number;
+  position: 'center' | 'top' | 'bottom' | 'random';
+  trigger: 'timed' | 'random' | 'scroll' | 'click';
+  pages: string[];
+}
+
+interface MouseoverEffect {
+  id: string;
+  behavior: MouseoverBehavior;
+  intensity: number;
+  duration: number;
+  sound?: string;
+  color?: string;
+}
+
+interface PageEffect {
+  pageSlug: string;
+  pageName: string;
+  enabled: boolean;
+  effects: string[];
+  subliminals: string[];
+  glitchTemplates: string[];
+}
 
 interface EffectConfig {
   revealType: RevealType;
