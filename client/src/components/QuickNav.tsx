@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, Settings, Bug, Sparkles, Eye, EyeOff } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
+import { Switch } from '@/components/ui/switch';
 
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
@@ -17,10 +18,10 @@ const NAV_STYLES = {
 export default function QuickNav() {
   const [expanded, setExpanded] = useState(false);
   const [location] = useLocation();
-  const { gameState } = useGame();
+  const { gameState, toggleDevMode } = useGame();
   const { pendingFindings, currentSession, targets } = useReportContext();
 
-  const navItems = [
+  const baseNavItems = [
     { path: '/', icon: Home, label: 'Home', color: 'amber' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
@@ -28,6 +29,14 @@ export default function QuickNav() {
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
   ];
+
+  const devNavItems: typeof baseNavItems = gameState.devMode ? [
+    { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const, badge: undefined },
+    { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const, badge: undefined },
+    { path: '/void', icon: Sparkles, label: 'Void', color: 'purple' as const, badge: undefined },
+  ] : [];
+
+  const navItems = [...baseNavItems, ...devNavItems];
 
   if (location === '/admin' || location === '/login') return null;
 
@@ -87,9 +96,27 @@ export default function QuickNav() {
             </div>
           </div>
 
-          <div className="border-t border-stone-800 pt-2 mt-2 flex gap-1">
-            <ModmailDialog />
-            <MultiplayerLobby />
+          <div className="border-t border-stone-800 pt-2 mt-2">
+            <div className="flex items-center justify-between px-3 py-2 bg-black/30 rounded mb-2">
+              <div className="flex items-center gap-2">
+                {gameState.devMode ? (
+                  <Eye className="w-4 h-4 text-teal-400" />
+                ) : (
+                  <EyeOff className="w-4 h-4 text-stone-500" />
+                )}
+                <span className="text-xs text-stone-400">Dev Mode</span>
+              </div>
+              <Switch
+                checked={gameState.devMode}
+                onCheckedChange={toggleDevMode}
+                className="data-[state=checked]:bg-teal-600"
+                data-testid="quicknav-dev-mode-toggle"
+              />
+            </div>
+            <div className="flex gap-1">
+              <ModmailDialog />
+              <MultiplayerLobby />
+            </div>
           </div>
         </div>
       )}
