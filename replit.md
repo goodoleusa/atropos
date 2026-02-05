@@ -6,12 +6,6 @@ NEXUS is an AI-powered security investigation platform comprising the **NEXUS Ag
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-### Git Workflow
-- **replit-agent**: Replit Agent working branch → merge to main for alpha/releases
-- **cursor2**: Cursor working branch → merge to main for alpha/releases  
-- **main**: Production-ready code
-- All other branches can be pruned
-
 ## System Architecture
 
 ### Frontend
@@ -42,6 +36,8 @@ Preferred communication style: Simple, everyday language.
 - **Dynamic Content**: Centralized message and campaign configuration for terminal messages, toasts, and overlays. Campaigns switch themes and narratives.
 - **Security Design (Intentionally Vulnerable)**: Designed as an "escape room" CTF; allows enumeration and simulated hacking, preventing real attacks with input sanitization, rate limiting, CSP, and session validation.
 - **NEXUS Agent System**: AI assistant for security investigation analysis and guidance, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns. Admin configurable system prompt. Works with Atropos Scanner results.
+- **Multi-Agent Orchestration**: 6 specialized security agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis) with category-based routing. Supports parallel analysis, W&B experiment tracking, and CrewAI/LangChain export. API: `/api/agents/*`.
+- **Mobile Floating Menu**: Consolidated mobile navigation (MobileFloatingMenu.tsx) with proper ARIA accessibility, touch-friendly 48px targets, and keyboard escape handling.
 - **Admin Dashboard**: Content management for game elements, player sessions, and a UX Playground for visual effect tweaking.
 - **Campaign Designer**: Twine-inspired visual flow editor with wikilinks, backlinks, breadcrumb trail, and multiple view modes. Nodes support feature type, campaign type, skills, linked clues, and branch conditions. Includes quick-start templates.
 - **Global Attack Map**: Animated real-time threat visualization on the homepage.
@@ -49,14 +45,15 @@ Preferred communication style: Simple, everyday language.
 - **Shared Investigation Context**: Cross-feature state management via `useReportContext` for data flow between Agent Chat, AI Lab, and Report Builder.
 - **AI Lab (Battleground)**: Prompt engineering playground with live preview, cost tracking, model comparison, performance evaluations, and exportable summaries. Features a unified chat battleground for dual-model comparison and AI Pentesting Challenges based on 2025 arxiv research (e.g., GCG, SequentialBreak, RoleBreaker).
 - **Prompt Optimizer**: Provides quick tips for prompt engineering techniques.
-- **QuickNav Component**: Floating navigation for quick access to Terminal, Agents, AI Lab, and Report Builder with session status and progress indicators.
-- **Security Agents Page**: Dedicated page (`/agents`) with 6 specialized security agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis). Features user prompt playground (adds to admin base instructions), threat intel feeds integration (abuse.ch, ThreatFox, CISA KEV, ransomware.live), and framework exports (CrewAI, LangChain).
-- **Admin Agent Configuration**: Protected admin section for configuring agent base instructions, model overrides, and W&B monitoring. Users can add to but not override admin base instructions.
-- **Threat Intelligence Feeds**: Server-side proxied threat intel feeds with security allowlist preventing SSRF attacks. Supports abuse.ch URLhaus, ThreatFox, MalwareBazaar, CISA KEV, and ransomware.live feeds.
+- **QuickNav Component**: Floating navigation for quick access to Terminal, AI Lab, and Report Builder with session status and progress indicators.
 - **API Playground**: Educational quest-based system for learning API requests through CTF exercises.
 - **Interactive Campaign System**: Adaptive investigation flows responding to user discoveries, offering perspective shifts and tool guidance.
 - **Investigation Workspace**: Unified hub for Agent Chat, AI Lab quick testing, and Learning Profile configuration.
 - **Unified Learning Store**: Zustand-based centralized state for learning preferences (style, goals, skill level, pace), persisting to localStorage and providing prompt modifiers for AI interactions. Integrated with Campaign Designer nodes.
+- **Modmail System**: User support ticket system for questions and admin responses. Users submit tickets via ModmailDialog, admins respond via Admin Dashboard Modmail tab. Categories: general, bug, feature, question, help. API: `/api/modmail`, `/api/admin/modmail`.
+- **Multiplayer Lobbies**: Anonymous real-time session system for co-op, versus, or race modes. Players join/create lobbies with aliases, max 8 players per lobby, 1-hour expiry. API: `/api/lobbies`.
+- **Zodiac Engagement Effects**: 60% chance bonus collectibles/tips when collecting zodiac cards, element-based rewards (Fire, Earth, Air, Water).
+- **Mystical Cards Admin**: Full editing capabilities for tarot and zodiac cards in Admin Dashboard CollectiblesSection.
 
 ### Atropos Scanner Integration
 - **Capabilities**: OSINT (BBOT, Amass, theHarvester), Vulnerability Scanning (Nuclei, httpx, nmap), Secret Detection (Gitleaks, TruffleHog), Threat Intelligence (Shodan, VirusTotal), Network Analysis (DNSMonster, RITA, Zeek).

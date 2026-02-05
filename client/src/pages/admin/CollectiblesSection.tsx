@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Key, Sparkles, Zap, Edit, Trash2, Database } from "lucide-react";
+import { Plus, Key, Sparkles, Zap, Edit, Trash2, Database, Star, Moon, Lightbulb } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { MYSTICAL_CARDS } from "@/config/messages";
 import { QUANTUM_EVENTS, QUANTUM_MESSAGES } from "@/config/quantumConfig";
@@ -69,6 +69,24 @@ export function CollectiblesSection() {
   const [newArtifact, setNewArtifact] = useState<Partial<Artifact>>({});
   const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null);
   const [newQuantumMessage, setNewQuantumMessage] = useState("");
+  const [editingMysticalCard, setEditingMysticalCard] = useState<MysticalCard | null>(null);
+  
+  // Zodiac flavor effects - random items/tips when users engage with zodiac
+  const [zodiacEffects, setZodiacEffects] = useState<Record<string, { collectibles: string[]; tips: string[] }>>({});
+  
+  // Load zodiac effects from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('zodiac_effects');
+    if (saved) {
+      setZodiacEffects(JSON.parse(saved));
+    }
+  }, []);
+  
+  const saveZodiacEffects = (effects: Record<string, { collectibles: string[]; tips: string[] }>) => {
+    setZodiacEffects(effects);
+    localStorage.setItem('zodiac_effects', JSON.stringify(effects));
+    toast({ title: "Zodiac effects saved" });
+  };
 
   const { data: clues = [] } = useQuery<Clue[]>({
     queryKey: ["/api/clues"],
@@ -569,17 +587,27 @@ export function CollectiblesSection() {
               <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
                 {tarotCards.map((card) => (
                   <div key={card.cardId} className="flex items-center justify-between gap-2 bg-black/40 p-2 rounded border border-amber-900/20">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-lg">{card.icon}</span>
-                      <div>
-                        <p className="text-amber-500 text-xs font-bold">{card.name}</p>
-                        <p className="text-stone-600 text-[10px] line-clamp-2">{card.hint}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-amber-500 text-xs font-bold">{card.name} <span className="text-stone-600">({card.symbol})</span></p>
+                        <p className="text-stone-600 text-[10px] line-clamp-1">{card.hint}</p>
                       </div>
                     </div>
-                    <Switch
-                      checked={card.enabled}
-                      onCheckedChange={(enabled) => updateMysticalCard.mutate({ ...card, enabled })}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => setEditingMysticalCard(card)}
+                        className="text-amber-400 h-7 w-7 p-0"
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Switch
+                        checked={card.enabled}
+                        onCheckedChange={(enabled) => updateMysticalCard.mutate({ ...card, enabled })}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -590,17 +618,27 @@ export function CollectiblesSection() {
               <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
                 {zodiacCards.map((card) => (
                   <div key={card.cardId} className="flex items-center justify-between gap-2 bg-black/40 p-2 rounded border border-purple-900/20">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-xl text-purple-400">{card.symbol}</span>
-                      <div>
-                        <p className="text-purple-400 text-xs font-bold">{card.name}</p>
-                        <p className="text-stone-600 text-[10px] line-clamp-2">{card.hint}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-purple-400 text-xs font-bold">{card.name} <span className="text-stone-600">({card.element})</span></p>
+                        <p className="text-stone-600 text-[10px] line-clamp-1">{card.hint}</p>
                       </div>
                     </div>
-                    <Switch
-                      checked={card.enabled}
-                      onCheckedChange={(enabled) => updateMysticalCard.mutate({ ...card, enabled })}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => setEditingMysticalCard(card)}
+                        className="text-purple-400 h-7 w-7 p-0"
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Switch
+                        checked={card.enabled}
+                        onCheckedChange={(enabled) => updateMysticalCard.mutate({ ...card, enabled })}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -730,6 +768,86 @@ export function CollectiblesSection() {
               <Button onClick={() => updateArtifact.mutate(editingArtifact)} className="w-full bg-purple-700 hover:bg-purple-600 text-black">
                 Save Artifact
               </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Mystical Card Dialog */}
+      <Dialog open={!!editingMysticalCard} onOpenChange={(open) => !open && setEditingMysticalCard(null)}>
+        <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
+          <DialogHeader>
+            <DialogTitle className={`font-orbitron ${editingMysticalCard?.type === 'tarot' ? 'text-amber-500' : 'text-purple-400'}`}>
+              Edit {editingMysticalCard?.type === 'tarot' ? 'Tarot Card' : 'Zodiac Sign'}
+            </DialogTitle>
+          </DialogHeader>
+          {editingMysticalCard && (
+            <div className="space-y-3">
+              <div>
+                <Label className="text-[10px] text-stone-500 uppercase">Name</Label>
+                <Input 
+                  value={editingMysticalCard.name} 
+                  onChange={(e) => setEditingMysticalCard({ ...editingMysticalCard, name: e.target.value })}
+                  className="bg-black/50 border-stone-700"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] text-stone-500 uppercase">Symbol</Label>
+                <Input 
+                  value={editingMysticalCard.symbol || ''} 
+                  onChange={(e) => setEditingMysticalCard({ ...editingMysticalCard, symbol: e.target.value })}
+                  className="bg-black/50 border-stone-700"
+                />
+              </div>
+              {editingMysticalCard.type === 'tarot' && (
+                <div>
+                  <Label className="text-[10px] text-stone-500 uppercase">Icon (emoji)</Label>
+                  <Input 
+                    value={editingMysticalCard.icon || ''} 
+                    onChange={(e) => setEditingMysticalCard({ ...editingMysticalCard, icon: e.target.value })}
+                    className="bg-black/50 border-stone-700"
+                  />
+                </div>
+              )}
+              {editingMysticalCard.type === 'zodiac' && (
+                <div>
+                  <Label className="text-[10px] text-stone-500 uppercase">Element</Label>
+                  <Input 
+                    value={editingMysticalCard.element || ''} 
+                    onChange={(e) => setEditingMysticalCard({ ...editingMysticalCard, element: e.target.value })}
+                    className="bg-black/50 border-stone-700"
+                    placeholder="Fire, Water, Earth, Air"
+                  />
+                </div>
+              )}
+              <div>
+                <Label className="text-[10px] text-stone-500 uppercase">Hint / Clue Text</Label>
+                <Textarea 
+                  value={editingMysticalCard.hint} 
+                  onChange={(e) => setEditingMysticalCard({ ...editingMysticalCard, hint: e.target.value })}
+                  className="bg-black/50 border-stone-700 min-h-[80px]"
+                  placeholder="The mystical message or game hint..."
+                />
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={editingMysticalCard.enabled}
+                    onCheckedChange={(enabled) => setEditingMysticalCard({ ...editingMysticalCard, enabled })}
+                  />
+                  <Label className="text-xs text-stone-400">Enabled</Label>
+                </div>
+                <Button 
+                  onClick={() => {
+                    updateMysticalCard.mutate(editingMysticalCard);
+                    setEditingMysticalCard(null);
+                    toast({ title: "Card updated" });
+                  }} 
+                  className={`${editingMysticalCard.type === 'tarot' ? 'bg-amber-700 hover:bg-amber-600' : 'bg-purple-700 hover:bg-purple-600'} text-black`}
+                >
+                  Save Changes
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>

@@ -1,0 +1,26 @@
+# Obsidian ignore file - exclude hash files and other non-markdown files from indexing
+
+# Exclude cryptographic hash files
+*.sha256
+*.md5
+*.sha1
+*.sha512
+
+# Exclude JSON/TXT chain of custody and manifest files (keep them but don't index)
+*_chain_of_custody.json
+*_chain_of_custody.txt
+*_hash_manifest.json
+*_hash_manifest.txt
+
+# Exclude PDF exports (keep them but don't index)
+*.pdf
+
+# Exclude ZIP archives
+*.zip
+
+# Exclude archived HTML content (keep but don't index)
+archived_content/
+
+# Exclude raw OSINT data files (optional - uncomment if you don't want them indexed)
+# *_raw_osint_*.md
+# *_crew_output_*.md

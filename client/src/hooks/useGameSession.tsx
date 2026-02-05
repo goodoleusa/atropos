@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useLearningStore } from "@/stores/useLearningStore";
+import { useShallow } from 'zustand/react/shallow';
 
 interface Clue {
   id: string;
@@ -42,7 +43,7 @@ export const useGame = () => {
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const style = useLearningStore(state => state.style);
-  const goals = useLearningStore(state => state.goals);
+  const goals = useLearningStore(useShallow(state => state.goals));
   const skillLevel = useLearningStore(state => state.skillLevel);
   const preferredPace = useLearningStore(state => state.preferredPace);
   

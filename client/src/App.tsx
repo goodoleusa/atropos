@@ -7,7 +7,7 @@ import { GameProvider } from "@/hooks/useGameSession";
 import { ReportProvider } from "@/hooks/useReportContext";
 import DevModePanel from "@/components/DevModePanel";
 import QuickNav from "@/components/QuickNav";
-import { GlobalEffects } from "@/components/GlobalEffects";
+import MobileFloatingMenu from "@/components/MobileFloatingMenu";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
@@ -53,10 +53,10 @@ function App() {
         <GameProvider>
           <ReportProvider>
             <Toaster />
-            <GlobalEffects />
             <Router />
             <DevModePanel />
             <QuickNav />
+            <MobileFloatingMenu />
           </ReportProvider>
         </GameProvider>
       </TooltipProvider>
