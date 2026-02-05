@@ -52,8 +52,9 @@ import { ApiPlayground } from "@/components/ApiPlayground";
 import CampaignDesigner from "@/components/CampaignDesigner";
 import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
 import { QuestsSection } from "@/pages/admin/QuestsSection";
-import { useEffectsStore, EFFECT_PRESETS } from "@/stores/useEffectsStore";
-import { EFFECT_SUGGESTIONS } from "@/components/GlobalEffects";
+import { QuickPushSection } from "@/pages/admin/QuickPushSection";
+import { EffectsPlaygroundSection } from "@/pages/admin/EffectsPlaygroundSection";
+import AgentConfigSection from "@/pages/admin/AgentConfigSection";
 
 interface Clue {
   id: string;
@@ -75,18 +76,6 @@ interface Quest {
 
 export default function AdminDashboard() {
   const { gameState, toggleDevMode } = useGame();
-  
-  // Use individual selectors to avoid re-render loops
-  const background = useEffectsStore((s) => s.background);
-  const mouse = useEffectsStore((s) => s.mouse);
-  const glitch = useEffectsStore((s) => s.glitch);
-  const ambient = useEffectsStore((s) => s.ambient);
-  const setBackground = useEffectsStore((s) => s.setBackground);
-  const setMouse = useEffectsStore((s) => s.setMouse);
-  const setGlitch = useEffectsStore((s) => s.setGlitch);
-  const setAmbient = useEffectsStore((s) => s.setAmbient);
-  const resetToDefaults = useEffectsStore((s) => s.resetToDefaults);
-  
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
   const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
@@ -94,19 +83,6 @@ export default function AdminDashboard() {
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
   const [clueTrail, setClueTrail] = useState<string[]>([]);
   const [showGraphView, setShowGraphView] = useState(false);
-
-  const applyPreset = (presetKey: keyof typeof EFFECT_PRESETS) => {
-    const preset = EFFECT_PRESETS[presetKey];
-    Object.entries(preset.settings.background).forEach(([key, value]) => {
-      setBackground(key as any, value);
-    });
-    Object.entries(preset.settings.mouse).forEach(([key, value]) => {
-      setMouse(key as any, value);
-    });
-    Object.entries(preset.settings.glitch).forEach(([key, value]) => {
-      setGlitch(key as any, value);
-    });
-  };
 
   const toggleNode = (id: string) => {
     setExpandedNodes(prev => ({ ...prev, [id]: !prev[id] }));
@@ -420,6 +396,18 @@ export default function AdminDashboard() {
             <TabsTrigger value="agent" className="data-[state=active]:bg-cyan-900/30 data-[state=active]:text-cyan-500" data-testid="agent-tab">
               <Bot className="w-4 h-4 mr-2" /> Agent
             </TabsTrigger>
+            <TabsTrigger value="modmail" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500" data-testid="modmail-tab">
+              <MessageSquare className="w-4 h-4 mr-2" /> Modmail
+            </TabsTrigger>
+            <TabsTrigger value="quickpush" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500" data-testid="quickpush-tab">
+              <Zap className="w-4 h-4 mr-2" /> Quick Push
+            </TabsTrigger>
+            <TabsTrigger value="effects" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-500" data-testid="effects-tab">
+              <Sparkles className="w-4 h-4 mr-2" /> Effects
+            </TabsTrigger>
+            <TabsTrigger value="agentconfig" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-500" data-testid="agentconfig-tab">
+              <Bot className="w-4 h-4 mr-2" /> Agent Config
+            </TabsTrigger>
           </TabsList>
 
           {/* Collectibles Tab */}
@@ -559,42 +547,6 @@ export default function AdminDashboard() {
                 <Settings className="w-5 h-5" /> UX Playground - Visual Effects
               </h3>
 
-              {/* Quick Presets */}
-              <Card className="bg-gradient-to-r from-amber-900/20 to-teal-900/20 border-amber-700/30">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-amber-400 font-mono text-sm">Quick Presets</CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">One-click theme configurations</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(EFFECT_PRESETS).map(([key, preset]) => (
-                      <Button 
-                        key={key}
-                        size="sm"
-                        variant="outline"
-                        onClick={() => applyPreset(key as keyof typeof EFFECT_PRESETS)}
-                        className="border-amber-700/50 hover:bg-amber-900/30 text-xs"
-                        data-testid={`preset-${key}`}
-                      >
-                        {preset.name}
-                      </Button>
-                    ))}
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      onClick={() => resetToDefaults()}
-                      className="border-red-700/50 hover:bg-red-900/30 text-red-400 text-xs"
-                      data-testid="preset-reset"
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                  <p className="text-stone-600 text-xs mt-2">
-                    Presets: Minimal (clean) • Cyberpunk (neon) • Glitchcore (chaos) • Retro CRT • Matrix
-                  </p>
-                </CardContent>
-              </Card>
-
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Background Effects */}
                 <Card className="bg-[#0a0500] border-amber-900/30">
@@ -604,31 +556,19 @@ export default function AdminDashboard() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Gradient Overlay</Label>
-                      <Switch checked={background.gradientOverlay} onCheckedChange={(v) => setBackground('gradientOverlay', v)} data-testid="gradient-toggle" />
+                      <Switch defaultChecked data-testid="gradient-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Scanlines</Label>
-                      <Switch checked={background.scanlines} onCheckedChange={(v) => setBackground('scanlines', v)} data-testid="scanlines-toggle" />
+                      <Switch defaultChecked data-testid="scanlines-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Noise Texture</Label>
-                      <Switch checked={background.noiseTexture} onCheckedChange={(v) => setBackground('noiseTexture', v)} data-testid="noise-toggle" />
+                      <Switch data-testid="noise-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Vignette</Label>
-                      <Switch checked={background.vignette} onCheckedChange={(v) => setBackground('vignette', v)} data-testid="vignette-toggle" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">CRT Curvature</Label>
-                      <Switch checked={background.crtCurvature} onCheckedChange={(v) => setBackground('crtCurvature', v)} data-testid="crt-toggle" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Matrix Rain</Label>
-                      <Switch checked={background.matrixRain} onCheckedChange={(v) => setBackground('matrixRain', v)} data-testid="matrix-toggle" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Grid Pulse</Label>
-                      <Switch checked={background.gridPulse} onCheckedChange={(v) => setBackground('gridPulse', v)} data-testid="grid-toggle" />
+                      <Switch defaultChecked data-testid="vignette-toggle" />
                     </div>
                   </CardContent>
                 </Card>
@@ -641,23 +581,19 @@ export default function AdminDashboard() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Lens Distortion</Label>
-                      <Switch checked={mouse.lensDistortion} onCheckedChange={(v) => setMouse('lensDistortion', v)} data-testid="lens-toggle" />
+                      <Switch defaultChecked data-testid="lens-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Glow Follow</Label>
-                      <Switch checked={mouse.glowFollow} onCheckedChange={(v) => setMouse('glowFollow', v)} data-testid="glow-follow-toggle" />
+                      <Switch data-testid="glow-follow-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Cursor Trail</Label>
-                      <Switch checked={mouse.cursorTrail} onCheckedChange={(v) => setMouse('cursorTrail', v)} data-testid="cursor-trail-toggle" />
+                      <Switch data-testid="cursor-trail-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Magnetic Buttons</Label>
-                      <Switch checked={mouse.magneticButtons} onCheckedChange={(v) => setMouse('magneticButtons', v)} data-testid="magnetic-toggle" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Click Ripple</Label>
-                      <Switch checked={mouse.rippleClick} onCheckedChange={(v) => setMouse('rippleClick', v)} data-testid="ripple-toggle" />
+                      <Switch data-testid="magnetic-toggle" />
                     </div>
                   </CardContent>
                 </Card>
@@ -670,81 +606,19 @@ export default function AdminDashboard() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Text Glitch</Label>
-                      <Switch checked={glitch.textGlitch} onCheckedChange={(v) => setGlitch('textGlitch', v)} data-testid="text-glitch-toggle" />
+                      <Switch defaultChecked data-testid="text-glitch-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">RGB Split</Label>
-                      <Switch checked={glitch.rgbSplit} onCheckedChange={(v) => setGlitch('rgbSplit', v)} data-testid="rgb-split-toggle" />
+                      <Switch data-testid="rgb-split-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Screen Shake</Label>
-                      <Switch checked={glitch.screenShake} onCheckedChange={(v) => setGlitch('screenShake', v)} data-testid="shake-toggle" />
+                      <Switch data-testid="shake-toggle" />
                     </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-stone-400 text-xs">Flicker</Label>
-                      <Switch checked={glitch.flicker} onCheckedChange={(v) => setGlitch('flicker', v)} data-testid="flicker-toggle" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Corrupted Pixels</Label>
-                      <Switch checked={glitch.corruptedPixels} onCheckedChange={(v) => setGlitch('corruptedPixels', v)} data-testid="corrupted-toggle" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Data Mosh</Label>
-                      <Switch checked={glitch.dataMosh} onCheckedChange={(v) => setGlitch('dataMosh', v)} data-testid="datamosh-toggle" />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Ambient Atmospherics */}
-                <Card className="bg-[#0a0500] border-cyan-900/30">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-cyan-400 font-mono text-sm">Ambient Atmospherics</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Terminal Narrative</Label>
-                      <Switch checked={ambient.terminalMessages} onCheckedChange={(v) => setAmbient('terminalMessages', v)} data-testid="narrative-toggle" />
-                    </div>
-                    <div>
-                      <Label className="text-stone-400 text-xs block mb-2">Message Interval (sec)</Label>
-                      <Input 
-                        type="number" 
-                        value={ambient.messageInterval} 
-                        onChange={(e) => setAmbient('messageInterval', parseInt(e.target.value) || 45)}
-                        className="bg-black/50 border-cyan-900/30 text-cyan-400 w-20" 
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-stone-400 text-xs block mb-2">Chaos Flash Chance (%)</Label>
-                      <Input 
-                        type="number" 
-                        value={ambient.chaosFlashChance}
-                        onChange={(e) => setAmbient('chaosFlashChance', parseInt(e.target.value) || 3)}
-                        min="0" max="100" 
-                        className="bg-black/50 border-cyan-900/30 text-cyan-400 w-20" 
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Zone Suggestions */}
-                <Card className="bg-[#0a0500] border-stone-700/30 lg:col-span-2">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-stone-400 font-mono text-sm">Recommended Effects by Zone</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-                      {Object.entries(EFFECT_SUGGESTIONS).map(([zone, config]) => (
-                        <div key={zone} className="p-2 bg-stone-900/50 rounded border border-stone-800">
-                          <p className="text-amber-400 font-bold capitalize">{zone}</p>
-                          <p className="text-stone-500 text-[10px] mb-1">{config.description}</p>
-                          <div className="flex flex-wrap gap-1">
-                            {config.recommended.slice(0, 4).map(effect => (
-                              <Badge key={effect} variant="outline" className="text-[9px] border-stone-700">{effect}</Badge>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
+                      <Switch data-testid="flicker-toggle" />
                     </div>
                   </CardContent>
                 </Card>
@@ -1237,6 +1111,22 @@ export default function AdminDashboard() {
 
           <TabsContent value="agent">
             <AgentConfigPanel />
+          </TabsContent>
+
+          <TabsContent value="modmail">
+            <ModmailPanel />
+          </TabsContent>
+
+          <TabsContent value="quickpush">
+            <QuickPushSection />
+          </TabsContent>
+
+          <TabsContent value="effects">
+            <EffectsPlaygroundSection />
+          </TabsContent>
+
+          <TabsContent value="agentconfig">
+            <AgentConfigSection />
           </TabsContent>
         </Tabs>
       </div>
@@ -1810,6 +1700,161 @@ Context: Escape room game with hidden routes, QR mechanics, clue collection`}
           </pre>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function ModmailPanel() {
+  const { data: tickets, isLoading, refetch } = useQuery<any[]>({
+    queryKey: ['/api/admin/modmail'],
+    queryFn: () => fetch('/api/admin/modmail').then(r => r.ok ? r.json() : [])
+  });
+
+  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+  const [response, setResponse] = useState('');
+  const [status, setStatus] = useState('open');
+
+  const handleRespond = async () => {
+    if (!selectedTicket) return;
+    
+    const res = await fetch(`/api/admin/modmail/${selectedTicket.ticketId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adminResponse: response,
+        status,
+        respondedBy: 'Admin'
+      })
+    });
+
+    if (res.ok) {
+      refetch();
+      setSelectedTicket(null);
+      setResponse('');
+    }
+  };
+
+  if (isLoading) {
+    return <div className="text-stone-500 p-4">Loading modmail...</div>;
+  }
+
+  const openTickets = tickets?.filter(t => t.status === 'open' || t.status === 'in_progress') || [];
+  const closedTickets = tickets?.filter(t => t.status === 'resolved' || t.status === 'closed') || [];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+          <MessageSquare className="w-5 h-5" /> Modmail Inbox
+        </h3>
+        <div className="flex gap-2">
+          <Badge className="bg-amber-900/50 text-amber-400">{openTickets.length} Open</Badge>
+          <Badge className="bg-stone-800 text-stone-400">{closedTickets.length} Closed</Badge>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card className="bg-[#0a0500] border-amber-900/30">
+          <CardHeader>
+            <CardTitle className="text-amber-400 text-sm">Tickets</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 max-h-[400px] overflow-y-auto">
+            {tickets?.length === 0 && (
+              <p className="text-stone-500 text-sm text-center py-4">No tickets yet</p>
+            )}
+            {tickets?.map(ticket => (
+              <div
+                key={ticket.ticketId}
+                onClick={() => setSelectedTicket(ticket)}
+                className={`p-3 rounded-md cursor-pointer border transition-colors ${
+                  selectedTicket?.ticketId === ticket.ticketId
+                    ? 'bg-amber-900/30 border-amber-600/50'
+                    : 'bg-black/30 border-stone-800 hover:border-stone-700'
+                }`}
+                data-testid={`admin-ticket-${ticket.ticketId}`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-mono text-stone-500">{ticket.ticketId}</span>
+                  <Badge variant="outline" className={`text-[10px] ${
+                    ticket.status === 'open' ? 'border-amber-600 text-amber-400' :
+                    ticket.status === 'in_progress' ? 'border-blue-600 text-blue-400' :
+                    'border-stone-600 text-stone-400'
+                  }`}>
+                    {ticket.status}
+                  </Badge>
+                </div>
+                <h4 className="text-sm font-medium text-stone-200 truncate">{ticket.subject}</h4>
+                <p className="text-xs text-stone-500">From: {ticket.username}</p>
+                <p className="text-[10px] text-stone-600 mt-1">
+                  {new Date(ticket.createdAt).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-amber-900/30">
+          <CardHeader>
+            <CardTitle className="text-amber-400 text-sm">
+              {selectedTicket ? `Ticket: ${selectedTicket.ticketId}` : 'Select a ticket'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {selectedTicket ? (
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-[10px] text-stone-500 uppercase">Subject</Label>
+                  <p className="text-sm text-stone-200">{selectedTicket.subject}</p>
+                </div>
+                <div>
+                  <Label className="text-[10px] text-stone-500 uppercase">Message</Label>
+                  <p className="text-sm text-stone-300 bg-black/30 p-2 rounded">{selectedTicket.message}</p>
+                </div>
+                <div>
+                  <Label className="text-[10px] text-stone-500 uppercase">Category</Label>
+                  <Badge variant="outline" className="ml-2">{selectedTicket.category}</Badge>
+                </div>
+
+                <div className="border-t border-stone-800 pt-3">
+                  <Label className="text-[10px] text-stone-500 uppercase">Your Response</Label>
+                  <Textarea
+                    value={response}
+                    onChange={(e) => setResponse(e.target.value)}
+                    placeholder="Type your response..."
+                    className="bg-black/50 border-stone-700 min-h-[80px] mt-1"
+                    data-testid="input-admin-response"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="bg-black/50 border border-stone-700 rounded px-2 py-1 text-sm text-stone-300"
+                    data-testid="select-ticket-status"
+                  >
+                    <option value="open">Open</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
+                  </select>
+                  <Button
+                    onClick={handleRespond}
+                    className="flex-1 bg-amber-700 hover:bg-amber-600"
+                    data-testid="button-send-response"
+                  >
+                    Send Response
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-stone-500 text-sm text-center py-8">
+                Click on a ticket to view details and respond
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { QRCodeModal } from "@/components/QRCodeModal";
 import { AgentChat } from "@/components/AgentChat";
-import { LiveBountyFeed } from "@/components/LiveBountyFeed";
 import { useGame } from "@/hooks/useGameSession";
 import { Button } from "@/components/ui/button";
 import { 
@@ -339,55 +338,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Live Bounty Feed Section */}
-      <section className="bg-[#080405] py-16 px-4 border-t border-amber-900/20">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-10">
-            <h2 className="font-orbitron text-2xl md:text-3xl text-stone-200 mb-3">
-              <span className="text-amber-500">Live</span> Intelligence Feed
-            </h2>
-            <p className="text-stone-500 max-w-2xl mx-auto">
-              Real-time bounty programs, vulnerabilities, and cybercrime rewards. Start investigating today.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <LiveBountyFeed />
-            <div className="space-y-4">
-              <div className="p-6 bg-zinc-900/50 border border-amber-900/30 rounded-lg">
-                <h3 className="font-orbitron text-lg text-amber-300 mb-3">Investigation Workflow</h3>
-                <ol className="space-y-3 text-sm text-stone-400">
-                  <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-amber-900/50 text-amber-400 flex items-center justify-center text-xs shrink-0">1</span>
-                    <span>Select a bounty program or target from the live feed</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-amber-900/50 text-amber-400 flex items-center justify-center text-xs shrink-0">2</span>
-                    <span>Run reconnaissance with Atropos scanner</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-teal-900/50 text-teal-400 flex items-center justify-center text-xs shrink-0">3</span>
-                    <span>Analyze findings with NEXUS AI agents</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-teal-900/50 text-teal-400 flex items-center justify-center text-xs shrink-0">4</span>
-                    <span>Generate professional report and submit</span>
-                  </li>
-                </ol>
-                <Link href="/investigate">
-                  <Button className="w-full mt-6 bg-gradient-to-r from-amber-700 to-teal-700 hover:from-amber-600 hover:to-teal-600" data-testid="start-investigation-btn">
-                    Start Investigation
-                  </Button>
-                </Link>
-              </div>
-              <div className="p-4 bg-zinc-900/30 border border-stone-800 rounded-lg text-xs text-stone-500">
-                <strong className="text-amber-400">Legal Notice:</strong> Only investigate targets where you have explicit permission. 
-                Bug bounty programs define scope and rules of engagement.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="bg-[#0a0500] py-20 px-4 border-t border-amber-900/20">
         <div className="container mx-auto max-w-4xl text-center">
@@ -447,17 +397,18 @@ export default function Home() {
       </footer>
 
       {/* Floating Action Buttons - Mobile Optimized */}
+      {/* Floating buttons - hidden on mobile to avoid overlap with MobileFloatingMenu */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.3 }}
-        className={`fixed bottom-6 right-6 z-50 hidden md:flex flex-col gap-3 transition-opacity duration-500 ${
+        className={`hidden md:flex fixed bottom-6 right-6 z-50 flex-col gap-3 transition-opacity duration-500 ${
           scrolledPastVideo ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
         <Button
           onClick={() => setAgentChatOpen(true)}
-          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50 touch-target"
+          className="w-14 h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50"
           data-testid="floating-agent-button"
         >
           <Bot className="w-6 h-6" />
@@ -465,7 +416,7 @@ export default function Home() {
         
         <Button
           onClick={() => setQrModalOpen(true)}
-          className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30 touch-target"
+          className="w-14 h-14 rounded-full bg-amber-700 hover:bg-amber-600 text-black shadow-lg shadow-amber-900/50 border-2 border-amber-500/30"
           data-testid="floating-qr-button"
         >
           <QrCode className="w-6 h-6" />

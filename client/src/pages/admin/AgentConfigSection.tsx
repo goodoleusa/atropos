@@ -1,27 +1,20 @@
-import { useState, useEffect } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useGame } from "@/hooks/useGameSession";
-import { SECURITY_AGENTS, type SecurityAgent } from "@shared/agents";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { toast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
-  Bot, Shield, Globe, AlertTriangle, Key, Network, FileText,
-  Save, Loader2, Settings, AlertCircle, Lock
-} from "lucide-react";
-
-const iconMap: Record<string, React.ComponentType<any>> = {
-  Shield, Globe, AlertTriangle, Key, Network, FileText
-};
+  Bot, Shield, Eye, Lock, Bug, Network, Brain, Save, RefreshCw,
+  Settings, Activity, BarChart3, AlertTriangle, Check, Loader2
+} from 'lucide-react';
 
 interface AgentConfig {
   baseInstructions?: string;
@@ -30,303 +23,357 @@ interface AgentConfig {
   updatedAt?: string;
 }
 
-interface WandbConfig {
+interface WandBConfig {
   enabled: boolean;
   project: string;
   entity: string;
+  apiKeySet?: boolean;
 }
 
-const AVAILABLE_MODELS = [
-  { id: "meta-llama/llama-3.3-70b-instruct:free", name: "Llama 3.3 70B (Free)" },
-  { id: "google/gemini-2.0-flash-001", name: "Gemini 2.0 Flash" },
-  { id: "anthropic/claude-3.5-sonnet", name: "Claude 3.5 Sonnet" },
-  { id: "openai/gpt-4o", name: "GPT-4o" },
+const AGENT_INFO = [
+  { id: 'vuln_analyst', name: 'VulnAnalyst', icon: Bug, description: 'Vulnerability analysis and CVE research' },
+  { id: 'osint_analyst', name: 'OSINTAnalyst', icon: Eye, description: 'Attack surface mapping and recon' },
+  { id: 'threat_intel', name: 'ThreatIntel', icon: Shield, description: 'Threat actor TTPs and IOC correlation' },
+  { id: 'secret_hunter', name: 'SecretHunter', icon: Lock, description: 'Credential and secret exposure' },
+  { id: 'network_recon', name: 'NetworkRecon', icon: Network, description: 'Network infrastructure analysis' },
+  { id: 'synthesis', name: 'Synthesis', icon: Brain, description: 'Executive synthesis and prioritization' },
+];
+
+const FREE_MODELS = [
+  { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B' },
+  { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1' },
+  { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'Qwen 2.5 Coder' },
+  { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash' },
+  { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', name: 'Nemotron 70B' },
 ];
 
 export default function AgentConfigSection() {
-  const { gameState } = useGame();
-  const { toast } = useToast();
-  const [configs, setConfigs] = useState<Record<string, AgentConfig>>({});
-  const [wandbConfig, setWandbConfig] = useState<WandbConfig>({
-    enabled: false,
-    project: "nexus-agents",
-    entity: ""
+  const queryClient = useQueryClient();
+  const [selectedAgent, setSelectedAgent] = useState(AGENT_INFO[0].id);
+  const [localConfig, setLocalConfig] = useState<AgentConfig>({});
+  const [wandbApiKey, setWandbApiKey] = useState('');
+  
+  const { data: agentConfigs = {}, isLoading: configLoading } = useQuery<Record<string, AgentConfig>>({
+    queryKey: ['/api/admin/agent-config'],
   });
-  const [wandbApiKey, setWandbApiKey] = useState("");
-
-  const headers = { 'x-session-token': gameState.sessionToken };
-
-  const { data: savedConfigs, isLoading, refetch } = useQuery({
-    queryKey: ["admin-agent-config"],
-    queryFn: async () => {
-      const response = await fetch("/api/admin/agent-config", { headers });
-      if (!response.ok) throw new Error("Failed to load config");
-      return response.json();
-    },
-    enabled: gameState.devMode
+  
+  const { data: wandbConfig, isLoading: wandbLoading } = useQuery<WandBConfig>({
+    queryKey: ['/api/admin/wandb-config'],
   });
-
-  const { data: savedWandBConfig } = useQuery({
-    queryKey: ["admin-wandb-config"],
-    queryFn: async () => {
-      const response = await fetch("/api/admin/wandb-config", { headers });
-      if (!response.ok) throw new Error("Failed to load W&B config");
-      return response.json();
-    },
-    enabled: gameState.devMode
-  });
-
+  
   useEffect(() => {
-    if (savedConfigs) {
-      setConfigs(savedConfigs);
+    if (agentConfigs[selectedAgent]) {
+      setLocalConfig(agentConfigs[selectedAgent]);
+    } else {
+      setLocalConfig({});
     }
-  }, [savedConfigs]);
-
-  useEffect(() => {
-    if (savedWandBConfig) {
-      setWandbConfig(savedWandBConfig);
-    }
-  }, [savedWandBConfig]);
-
-  const updateAgentConfig = useMutation({
-    mutationFn: async ({ agentId, config }: { agentId: string; config: AgentConfig }) => {
-      const response = await apiRequest("PUT", "/api/admin/agent-config", {
-        agentId,
-        ...config
-      }, { 'x-session-token': gameState.sessionToken });
-      return response.json();
-    },
-    onSuccess: (_, { agentId }) => {
-      toast({ title: "Config Saved", description: `${agentId} configuration updated` });
-      refetch();
-    },
-    onError: (error: Error) => {
-      toast({ title: "Save Failed", description: error.message, variant: "destructive" });
-    }
-  });
-
-  const updateWandbConfig = useMutation({
-    mutationFn: async (config: WandbConfig & { apiKey?: string }) => {
-      const response = await apiRequest("PUT", "/api/admin/wandb-config", config, {
-        'x-session-token': gameState.sessionToken
+  }, [selectedAgent, agentConfigs]);
+  
+  const saveAgentMutation = useMutation({
+    mutationFn: async (config: { agentId: string } & AgentConfig) => {
+      const res = await fetch('/api/admin/agent-config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
       });
-      return response.json();
+      if (!res.ok) throw new Error('Failed to save');
+      return res.json();
     },
     onSuccess: () => {
-      toast({ title: "W&B Config Saved", description: "Weights & Biases configuration updated" });
-      setWandbApiKey("");
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/agent-config'] });
+      toast({ title: 'Saved', description: 'Agent configuration updated' });
     },
-    onError: (error: Error) => {
-      toast({ title: "Save Failed", description: error.message, variant: "destructive" });
-    }
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to save configuration', variant: 'destructive' });
+    },
   });
-
-  if (!gameState.devMode) {
-    return (
-      <Card className="border-red-900/50 bg-red-950/20">
-        <CardContent className="flex items-center gap-4 p-6">
-          <Lock className="w-8 h-8 text-red-400" />
-          <div>
-            <h3 className="font-semibold text-red-400">Admin Access Required</h3>
-            <p className="text-stone-400">Enable DevMode to access agent configuration.</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
-      </div>
-    );
-  }
-
-  const getAgentConfig = (agentId: string): AgentConfig => {
-    return configs[agentId] || {};
+  
+  const saveWandBMutation = useMutation({
+    mutationFn: async (config: Partial<WandBConfig> & { apiKey?: string }) => {
+      const res = await fetch('/api/admin/wandb-config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/wandb-config'] });
+      setWandbApiKey('');
+      toast({ title: 'Saved', description: 'W&B configuration updated' });
+    },
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to save W&B config', variant: 'destructive' });
+    },
+  });
+  
+  const handleSaveAgent = () => {
+    saveAgentMutation.mutate({
+      agentId: selectedAgent,
+      ...localConfig,
+    });
   };
-
-  const updateLocalConfig = (agentId: string, updates: Partial<AgentConfig>) => {
-    setConfigs(prev => ({
-      ...prev,
-      [agentId]: { ...prev[agentId], ...updates }
-    }));
+  
+  const handleSaveWandB = () => {
+    saveWandBMutation.mutate({
+      enabled: wandbConfig?.enabled,
+      project: wandbConfig?.project || 'nexus-agents',
+      entity: wandbConfig?.entity || '',
+      apiKey: wandbApiKey || undefined,
+    });
   };
+  
+  const selectedAgentInfo = AGENT_INFO.find(a => a.id === selectedAgent);
+  const Icon = selectedAgentInfo?.icon || Bot;
 
   return (
     <div className="space-y-6">
-      <Card className="border-amber-900/50 bg-black/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-amber-400">
-            <Settings className="w-5 h-5" />
-            Agent Base Instructions
-          </CardTitle>
-          <CardDescription className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-500" />
-            Protected configuration - users can add to these but cannot override
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Accordion type="single" collapsible className="space-y-2">
-            {SECURITY_AGENTS.map((agent) => {
-              const IconComponent = iconMap[agent.icon] || Bot;
-              const config = getAgentConfig(agent.id);
-              
-              return (
-                <AccordionItem key={agent.id} value={agent.id} className="border border-stone-800 rounded-lg px-4">
-                  <AccordionTrigger className="hover:no-underline">
-                    <div className="flex items-center gap-3">
-                      <IconComponent className="w-5 h-5 text-amber-400" />
-                      <span className="font-medium">{agent.name}</span>
-                      <Badge variant="outline" className="text-xs border-stone-600">
-                        {agent.role}
-                      </Badge>
-                      {config.updatedAt && (
-                        <Badge className="text-xs bg-teal-900/30 text-teal-400 border-teal-700">
-                          Modified
-                        </Badge>
-                      )}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-4">
-                    <div>
-                      <Label className="text-stone-400">Base Instructions</Label>
-                      <Textarea
-                        value={config.baseInstructions || agent.baseInstructions}
-                        onChange={(e) => updateLocalConfig(agent.id, { baseInstructions: e.target.value })}
-                        className="mt-2 min-h-[200px] bg-black/50 border-stone-700 font-mono text-sm"
-                        data-testid={`config-instructions-${agent.id}`}
-                      />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-stone-400">Model Override</Label>
-                        <Select 
-                          value={config.model || agent.defaultModel}
-                          onValueChange={(v) => updateLocalConfig(agent.id, { model: v })}
-                        >
-                          <SelectTrigger className="mt-2 bg-black/50 border-stone-700">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {AVAILABLE_MODELS.map((model) => (
-                              <SelectItem key={model.id} value={model.id}>
-                                {model.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <Label className="text-stone-400">
-                          Temperature: {(config.temperature ?? agent.defaultTemperature).toFixed(2)}
-                        </Label>
-                        <Slider
-                          value={[config.temperature ?? agent.defaultTemperature]}
-                          onValueChange={([v]) => updateLocalConfig(agent.id, { temperature: v })}
-                          min={0}
-                          max={1}
-                          step={0.05}
-                          className="mt-4"
-                        />
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={() => updateAgentConfig.mutate({ agentId: agent.id, config: config })}
-                      disabled={updateAgentConfig.isPending}
-                      className="bg-amber-600 hover:bg-amber-700"
-                      data-testid={`save-config-${agent.id}`}
-                    >
-                      {updateAgentConfig.isPending ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <Save className="w-4 h-4 mr-2" />
-                      )}
-                      Save Configuration
-                    </Button>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
-        </CardContent>
-      </Card>
-
-      <Card className="border-purple-900/50 bg-black/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-400">
-            <Bot className="w-5 h-5" />
-            Weights & Biases Monitoring
-          </CardTitle>
-          <CardDescription>Track agent performance and model metrics (admin only)</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label className="text-stone-300">Enable W&B Logging</Label>
-            <Switch
-              checked={wandbConfig.enabled}
-              onCheckedChange={(enabled) => setWandbConfig(prev => ({ ...prev, enabled }))}
-              data-testid="wandb-toggle"
-            />
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Card className="bg-stone-900/50 border-amber-900/30">
+          <CardHeader>
+            <CardTitle className="text-amber-500 flex items-center gap-2">
+              <Bot className="w-5 h-5" /> Agent Base Instructions
+            </CardTitle>
+            <CardDescription>
+              Configure protected base instructions for each agent. Users can add to these but not override.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <Label className="text-stone-400">Project Name</Label>
-              <Input
-                value={wandbConfig.project}
-                onChange={(e) => setWandbConfig(prev => ({ ...prev, project: e.target.value }))}
-                className="mt-2 bg-black/50 border-stone-700"
-                placeholder="nexus-agents"
-                data-testid="wandb-project"
+              <label className="text-sm text-stone-400 mb-2 block">Select Agent</label>
+              <Select value={selectedAgent} onValueChange={setSelectedAgent}>
+                <SelectTrigger className="bg-stone-800 border-stone-700">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {AGENT_INFO.map(agent => {
+                    const AgentIcon = agent.icon;
+                    return (
+                      <SelectItem key={agent.id} value={agent.id}>
+                        <div className="flex items-center gap-2">
+                          <AgentIcon className="w-4 h-4" />
+                          <span>{agent.name}</span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="p-3 rounded-lg bg-stone-800/50 border border-stone-700">
+              <div className="flex items-center gap-2 mb-2">
+                <Icon className="w-5 h-5 text-amber-500" />
+                <span className="font-medium text-white">{selectedAgentInfo?.name}</span>
+                <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-400">
+                  Admin Protected
+                </Badge>
+              </div>
+              <p className="text-xs text-stone-400">{selectedAgentInfo?.description}</p>
+            </div>
+            
+            <div>
+              <label className="text-sm text-stone-400 mb-2 block">Model Override</label>
+              <Select 
+                value={localConfig.model || ''} 
+                onValueChange={(v) => setLocalConfig(prev => ({ ...prev, model: v }))}
+              >
+                <SelectTrigger className="bg-stone-800 border-stone-700">
+                  <SelectValue placeholder="Use default model" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Use default</SelectItem>
+                  {FREE_MODELS.map(model => (
+                    <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-sm text-stone-400 mb-2 block">
+                Temperature: {localConfig.temperature?.toFixed(1) || '0.5'}
+              </label>
+              <Slider
+                value={[localConfig.temperature || 0.5]}
+                onValueChange={([v]) => setLocalConfig(prev => ({ ...prev, temperature: v }))}
+                min={0}
+                max={1}
+                step={0.1}
+                className="w-full"
               />
             </div>
+            
             <div>
-              <Label className="text-stone-400">Entity (Team/Username)</Label>
-              <Input
-                value={wandbConfig.entity}
-                onChange={(e) => setWandbConfig(prev => ({ ...prev, entity: e.target.value }))}
-                className="mt-2 bg-black/50 border-stone-700"
-                placeholder="your-wandb-username"
-                data-testid="wandb-entity"
+              <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                <Lock className="w-4 h-4 text-red-400" />
+                Base Instructions (Protected)
+              </label>
+              <Textarea
+                value={localConfig.baseInstructions || ''}
+                onChange={(e) => setLocalConfig(prev => ({ ...prev, baseInstructions: e.target.value }))}
+                placeholder="Enter base instructions that users cannot override. These will be prepended to all agent prompts."
+                className="bg-stone-800 border-stone-700 min-h-[150px] font-mono text-sm"
               />
+              <p className="text-xs text-stone-500 mt-1">
+                These instructions are always included first and cannot be removed by users.
+              </p>
             </div>
-          </div>
-
-          <div>
-            <Label className="text-stone-400">API Key (leave blank to keep existing)</Label>
-            <Input
-              type="password"
-              value={wandbApiKey}
-              onChange={(e) => setWandbApiKey(e.target.value)}
-              className="mt-2 bg-black/50 border-stone-700"
-              placeholder="••••••••••••••••"
-              data-testid="wandb-apikey"
-            />
-          </div>
-
-          <Button
-            onClick={() => updateWandbConfig.mutate({ 
-              ...wandbConfig, 
-              apiKey: wandbApiKey || undefined 
-            })}
-            disabled={updateWandbConfig.isPending}
-            className="bg-purple-600 hover:bg-purple-700"
-            data-testid="save-wandb-config"
-          >
-            {updateWandbConfig.isPending ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4 mr-2" />
+            
+            <Button 
+              onClick={handleSaveAgent}
+              disabled={saveAgentMutation.isPending}
+              className="w-full bg-amber-600 hover:bg-amber-700"
+            >
+              {saveAgentMutation.isPending ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+              ) : (
+                <><Save className="w-4 h-4 mr-2" /> Save Agent Config</>
+              )}
+            </Button>
+            
+            {localConfig.updatedAt && (
+              <p className="text-xs text-stone-500 text-center">
+                Last updated: {new Date(localConfig.updatedAt).toLocaleString()}
+              </p>
             )}
-            Save W&B Configuration
-          </Button>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        
+        <div className="space-y-6">
+          <Card className="bg-stone-900/50 border-amber-900/30">
+            <CardHeader>
+              <CardTitle className="text-amber-500 flex items-center gap-2">
+                <Activity className="w-5 h-5" /> W&B Monitoring
+              </CardTitle>
+              <CardDescription>
+                Connect Weights & Biases to monitor agent performance and run evals
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {wandbLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-stone-800/50 border border-stone-700">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5 text-teal-400" />
+                      <span className="text-sm text-white">Enable W&B Logging</span>
+                    </div>
+                    <Switch
+                      checked={wandbConfig?.enabled || false}
+                      onCheckedChange={(checked) => {
+                        saveWandBMutation.mutate({ ...wandbConfig, enabled: checked });
+                      }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm text-stone-400 mb-2 block">Project Name</label>
+                    <Input
+                      value={wandbConfig?.project || 'nexus-agents'}
+                      onChange={(e) => {
+                        queryClient.setQueryData(['/api/admin/wandb-config'], {
+                          ...wandbConfig,
+                          project: e.target.value,
+                        });
+                      }}
+                      placeholder="nexus-agents"
+                      className="bg-stone-800 border-stone-700"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm text-stone-400 mb-2 block">Entity (Optional)</label>
+                    <Input
+                      value={wandbConfig?.entity || ''}
+                      onChange={(e) => {
+                        queryClient.setQueryData(['/api/admin/wandb-config'], {
+                          ...wandbConfig,
+                          entity: e.target.value,
+                        });
+                      }}
+                      placeholder="Your W&B username or team"
+                      className="bg-stone-800 border-stone-700"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-amber-400" />
+                      API Key {wandbConfig?.apiKeySet && <Badge className="bg-teal-500/20 text-teal-400 text-xs">Set</Badge>}
+                    </label>
+                    <Input
+                      type="password"
+                      value={wandbApiKey}
+                      onChange={(e) => setWandbApiKey(e.target.value)}
+                      placeholder={wandbConfig?.apiKeySet ? '••••••••••••' : 'Enter your W&B API key'}
+                      className="bg-stone-800 border-stone-700"
+                    />
+                    <p className="text-xs text-stone-500 mt-1">
+                      Get your key from wandb.ai/authorize
+                    </p>
+                  </div>
+                  
+                  <Button 
+                    onClick={handleSaveWandB}
+                    disabled={saveWandBMutation.isPending}
+                    className="w-full bg-teal-600 hover:bg-teal-700"
+                  >
+                    {saveWandBMutation.isPending ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                    ) : (
+                      <><Save className="w-4 h-4 mr-2" /> Save W&B Config</>
+                    )}
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-stone-900/50 border-amber-900/30">
+            <CardHeader>
+              <CardTitle className="text-amber-500 flex items-center gap-2">
+                <Settings className="w-5 h-5" /> Agent Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {AGENT_INFO.map(agent => {
+                  const AgentIcon = agent.icon;
+                  const hasCustomConfig = !!agentConfigs[agent.id]?.baseInstructions;
+                  return (
+                    <div 
+                      key={agent.id}
+                      className="flex items-center justify-between p-2 rounded bg-stone-800/50 border border-stone-700"
+                    >
+                      <div className="flex items-center gap-2">
+                        <AgentIcon className="w-4 h-4 text-stone-400" />
+                        <span className="text-sm text-white">{agent.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {hasCustomConfig ? (
+                          <Badge className="bg-amber-500/20 text-amber-400 text-xs">Custom</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs border-stone-600 text-stone-500">Default</Badge>
+                        )}
+                        {agentConfigs[agent.id]?.model && (
+                          <Badge variant="outline" className="text-xs border-teal-600 text-teal-400">
+                            Model Override
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

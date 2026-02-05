@@ -23,6 +23,8 @@ import {
   investigationContexts,
   interactionLogs,
   stateCapsules,
+  modmail,
+  multiplayerLobbies,
   type GameSession, 
   type InsertGameSession,
   type CampaignRun,
@@ -68,7 +70,11 @@ import {
   type InteractionLog,
   type InsertInteractionLog,
   type StateCapsule,
-  type InsertStateCapsule
+  type InsertStateCapsule,
+  type Modmail,
+  type InsertModmail,
+  type MultiplayerLobby,
+  type InsertMultiplayerLobby
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -218,12 +224,29 @@ export interface IStorage {
   }[]>;
   getSessionsByIpPattern(ipPrefix: string): Promise<string[]>;
   
+  // Modmail
+  getAllModmail(): Promise<Modmail[]>;
+  getModmailBySession(sessionToken: string): Promise<Modmail[]>;
+  getModmailByTicket(ticketId: string): Promise<Modmail | undefined>;
+  createModmail(mail: InsertModmail): Promise<Modmail>;
+  updateModmail(ticketId: string, updates: Partial<Modmail>): Promise<Modmail | undefined>;
+  
+  // Multiplayer Lobbies
+  getAllLobbies(): Promise<MultiplayerLobby[]>;
+  getActiveLobbies(): Promise<MultiplayerLobby[]>;
+  getLobbyById(lobbyId: string): Promise<MultiplayerLobby | undefined>;
+  createLobby(lobby: InsertMultiplayerLobby): Promise<MultiplayerLobby>;
+  updateLobby(lobbyId: string, updates: Partial<MultiplayerLobby>): Promise<MultiplayerLobby | undefined>;
+  joinLobby(lobbyId: string, player: { sessionToken: string; alias: string }): Promise<MultiplayerLobby | undefined>;
+  leaveLobby(lobbyId: string, sessionToken: string): Promise<MultiplayerLobby | undefined>;
+  deleteLobby(lobbyId: string): Promise<boolean>;
+  
   // Admin Configuration
-  getAdminConfig(): Promise<AdminConfig | null>;
+  getAdminConfig(): Promise<AdminConfig | undefined>;
   updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig>;
 }
 
-// Admin configuration type for agents and W&B
+// Admin configuration type (stored in memory/file, not DB)
 export interface AdminConfig {
   agentConfig?: Record<string, {
     baseInstructions?: string;
@@ -232,10 +255,10 @@ export interface AdminConfig {
     updatedAt?: string;
   }>;
   wandbConfig?: {
-    enabled: boolean;
-    project: string;
-    entity: string;
-    apiKey?: string;
+    enabled?: boolean;
+    project?: string;
+    entity?: string;
+    apiKeySet?: boolean;
   };
 }
 
@@ -1168,48 +1191,164 @@ export class DatabaseStorage implements IStorage {
     return [];
   }
 
-  // Admin Configuration - file-based storage with memory cache
-  private adminConfigCache: AdminConfig | null = null;
-  private adminConfigPath = '.admin-config.json';
+  // Modmail Methods
+  async getAllModmail(): Promise<Modmail[]> {
+    return await db.select().from(modmail).orderBy(desc(modmail.createdAt)).limit(100);
+  }
 
-  async getAdminConfig(): Promise<AdminConfig | null> {
-    if (this.adminConfigCache) {
-      return this.adminConfigCache;
+  async getModmailBySession(sessionToken: string): Promise<Modmail[]> {
+    return await db
+      .select()
+      .from(modmail)
+      .where(eq(modmail.sessionToken, sessionToken))
+      .orderBy(desc(modmail.createdAt));
+  }
+
+  async getModmailByTicket(ticketId: string): Promise<Modmail | undefined> {
+    const [mail] = await db
+      .select()
+      .from(modmail)
+      .where(eq(modmail.ticketId, ticketId))
+      .limit(1);
+    return mail;
+  }
+
+  async createModmail(mail: InsertModmail): Promise<Modmail> {
+    const [created] = await db.insert(modmail).values(mail).returning();
+    return created;
+  }
+
+  async updateModmail(ticketId: string, updates: Partial<Modmail>): Promise<Modmail | undefined> {
+    const [updated] = await db
+      .update(modmail)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(modmail.ticketId, ticketId))
+      .returning();
+    return updated;
+  }
+
+  // Multiplayer Lobby Methods
+  async getAllLobbies(): Promise<MultiplayerLobby[]> {
+    return await db.select().from(multiplayerLobbies).orderBy(desc(multiplayerLobbies.createdAt));
+  }
+
+  async getActiveLobbies(): Promise<MultiplayerLobby[]> {
+    return await db
+      .select()
+      .from(multiplayerLobbies)
+      .where(or(
+        eq(multiplayerLobbies.status, 'waiting'),
+        eq(multiplayerLobbies.status, 'active')
+      ))
+      .orderBy(desc(multiplayerLobbies.createdAt));
+  }
+
+  async getLobbyById(lobbyId: string): Promise<MultiplayerLobby | undefined> {
+    const [lobby] = await db
+      .select()
+      .from(multiplayerLobbies)
+      .where(eq(multiplayerLobbies.lobbyId, lobbyId))
+      .limit(1);
+    return lobby;
+  }
+
+  async createLobby(lobby: InsertMultiplayerLobby): Promise<MultiplayerLobby> {
+    const [created] = await db.insert(multiplayerLobbies).values(lobby).returning();
+    return created;
+  }
+
+  async updateLobby(lobbyId: string, updates: Partial<MultiplayerLobby>): Promise<MultiplayerLobby | undefined> {
+    const [updated] = await db
+      .update(multiplayerLobbies)
+      .set(updates)
+      .where(eq(multiplayerLobbies.lobbyId, lobbyId))
+      .returning();
+    return updated;
+  }
+
+  async joinLobby(lobbyId: string, player: { sessionToken: string; alias: string }): Promise<MultiplayerLobby | undefined> {
+    const lobby = await this.getLobbyById(lobbyId);
+    if (!lobby) return undefined;
+    
+    const currentPlayers = (lobby.currentPlayers || []) as { sessionToken: string; alias: string; score: number }[];
+    
+    // Check if already in lobby
+    if (currentPlayers.some(p => p.sessionToken === player.sessionToken)) {
+      return lobby;
     }
     
+    // Check max players
+    if (currentPlayers.length >= lobby.maxPlayers) {
+      return undefined;
+    }
+    
+    const newPlayers = [...currentPlayers, { ...player, score: 0 }];
+    return this.updateLobby(lobbyId, { currentPlayers: newPlayers });
+  }
+
+  async leaveLobby(lobbyId: string, sessionToken: string): Promise<MultiplayerLobby | undefined> {
+    const lobby = await this.getLobbyById(lobbyId);
+    if (!lobby) return undefined;
+    
+    const currentPlayers = (lobby.currentPlayers || []) as { sessionToken: string; alias: string; score: number }[];
+    const newPlayers = currentPlayers.filter(p => p.sessionToken !== sessionToken);
+    
+    return this.updateLobby(lobbyId, { currentPlayers: newPlayers });
+  }
+
+  async deleteLobby(lobbyId: string): Promise<boolean> {
+    const result = await db
+      .delete(multiplayerLobbies)
+      .where(eq(multiplayerLobbies.lobbyId, lobbyId));
+    return true;
+  }
+
+  // Admin Configuration (in-memory with file persistence)
+  private adminConfig: AdminConfig = {};
+  private adminConfigLoaded = false;
+
+  private async loadAdminConfig(): Promise<void> {
+    if (this.adminConfigLoaded) return;
     try {
       const fs = await import('fs/promises');
-      const data = await fs.readFile(this.adminConfigPath, 'utf-8');
-      this.adminConfigCache = JSON.parse(data);
-      return this.adminConfigCache;
-    } catch (error) {
-      // File doesn't exist yet
-      return null;
+      const data = await fs.readFile('.admin-config.json', 'utf-8');
+      this.adminConfig = JSON.parse(data);
+    } catch {
+      this.adminConfig = {};
+    }
+    this.adminConfigLoaded = true;
+  }
+
+  private async saveAdminConfig(): Promise<void> {
+    try {
+      const fs = await import('fs/promises');
+      await fs.writeFile('.admin-config.json', JSON.stringify(this.adminConfig, null, 2));
+    } catch (e) {
+      console.error('Failed to save admin config:', e);
     }
   }
 
+  async getAdminConfig(): Promise<AdminConfig | undefined> {
+    await this.loadAdminConfig();
+    return this.adminConfig;
+  }
+
   async updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig> {
-    const current = await this.getAdminConfig() || {};
-    const updated: AdminConfig = {
-      ...current,
+    await this.loadAdminConfig();
+    this.adminConfig = {
+      ...this.adminConfig,
       ...updates,
-      agentConfig: updates.agentConfig 
-        ? { ...current.agentConfig, ...updates.agentConfig }
-        : current.agentConfig,
-      wandbConfig: updates.wandbConfig 
-        ? { ...current.wandbConfig, ...updates.wandbConfig }
-        : current.wandbConfig
+      agentConfig: {
+        ...this.adminConfig.agentConfig,
+        ...updates.agentConfig,
+      },
+      wandbConfig: {
+        ...this.adminConfig.wandbConfig,
+        ...updates.wandbConfig,
+      },
     };
-    
-    try {
-      const fs = await import('fs/promises');
-      await fs.writeFile(this.adminConfigPath, JSON.stringify(updated, null, 2));
-      this.adminConfigCache = updated;
-      return updated;
-    } catch (error) {
-      console.error('Failed to save admin config:', error);
-      throw error;
-    }
+    await this.saveAdminConfig();
+    return this.adminConfig;
   }
 }
 

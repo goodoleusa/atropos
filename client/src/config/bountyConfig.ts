@@ -66,201 +66,50 @@ export const BOUNTY_RSS_FEEDS = [
 ];
 
 export const CYBERCRIME_REWARD_PROGRAMS = [
-  // US Federal Law Enforcement
   {
-    id: "rewards-for-justice",
-    name: "Rewards for Justice",
-    organization: "US Department of State",
-    rewards: "Up to $10,000,000",
-    url: "https://rewardsforjustice.net/",
-    category: "cybercrime",
-    icon: "🎯",
-    description: "Foreign state-sponsored cyberattacks, ransomware gangs, election interference"
-  },
-  {
-    id: "fbi-most-wanted-cyber",
-    name: "FBI Cyber Most Wanted",
+    id: "fbi-most-wanted",
+    name: "FBI Most Wanted Cyber",
     organization: "FBI",
     rewards: "Up to $5,000,000",
     url: "https://www.fbi.gov/wanted/cyber",
-    category: "cybercrime",
-    icon: "🔍",
-    description: "Most wanted cybercriminals and nation-state hackers"
+    category: "international",
+    icon: "🇺🇸"
   },
   {
-    id: "fbi-cryptoqueen",
-    name: "Cryptoqueen Bounty",
-    organization: "FBI",
-    rewards: "$5,000,000",
-    url: "https://www.fbi.gov/wanted/topten",
-    category: "crypto_fraud",
-    icon: "👸",
-    description: "Ruja Ignatova - OneCoin cryptocurrency fraud"
-  },
-  {
-    id: "secret-service-tocrp",
-    name: "Transnational Organized Crime",
-    organization: "Secret Service + State Dept",
+    id: "doj-rewards",
+    name: "DOJ Rewards for Justice",
+    organization: "US Department of Justice",
     rewards: "Up to $10,000,000",
-    url: "https://www.secretservice.gov/investigations/mostwanted",
-    category: "financial_crime",
-    icon: "💳",
-    description: "Card fraud, money laundering, transnational cybercrime"
+    url: "https://rewardsforjustice.net/topics/cybercrime/",
+    category: "international",
+    icon: "⚖️"
   },
   {
-    id: "cisa-vulnerabilities",
-    name: "CISA Known Exploited Vulnerabilities",
-    organization: "CISA",
-    rewards: "Recognition + Disclosure",
-    url: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
-    category: "vulnerability",
-    icon: "🛡️",
-    description: "Report actively exploited vulnerabilities affecting US infrastructure"
+    id: "secret-service",
+    name: "Secret Service Cyber Fraud",
+    organization: "US Secret Service",
+    rewards: "Varies",
+    url: "https://www.secretservice.gov/investigation/cyber",
+    category: "financial",
+    icon: "💳"
   },
-  // Treasury & Financial Crime
-  {
-    id: "treasury-ofac-sanctions",
-    name: "OFAC Sanctions Evasion",
-    organization: "US Treasury OFAC",
-    rewards: "Up to $5,000,000",
-    url: "https://ofac.treasury.gov/",
-    category: "sanctions",
-    icon: "🏦",
-    description: "Sanctions evasion, crypto mixing services, financial crime"
-  },
-  {
-    id: "fincen-money-laundering",
-    name: "FinCEN Money Laundering Tips",
-    organization: "Financial Crimes Enforcement Network",
-    rewards: "Whistleblower percentage",
-    url: "https://www.fincen.gov/",
-    category: "money_laundering",
-    icon: "💰",
-    description: "Bank Secrecy Act violations, money laundering schemes"
-  },
-  {
-    id: "doj-kleptocapture",
-    name: "KleptoCapture Task Force",
-    organization: "Department of Justice",
-    rewards: "Asset forfeiture share",
-    url: "https://www.justice.gov/opa/pr/attorney-general-merrick-b-garland-announces-launch-task-force-kleptocapture",
-    category: "sanctions",
-    icon: "⚖️",
-    description: "Russian oligarch assets, sanctions evasion, kleptocracy"
-  },
-  {
-    id: "sec-whistleblower",
-    name: "SEC Whistleblower Program",
-    organization: "Securities and Exchange Commission",
-    rewards: "10-30% of sanctions over $1M",
-    url: "https://www.sec.gov/whistleblower",
-    category: "securities_fraud",
-    icon: "📈",
-    description: "Securities fraud, insider trading, crypto fraud"
-  },
-  // Crypto-Specific Bounties
-  {
-    id: "chainalysis-reactor",
-    name: "Chainalysis Crime Intel",
-    organization: "Chainalysis",
-    rewards: "Intelligence sharing",
-    url: "https://www.chainalysis.com/",
-    category: "crypto_crime",
-    icon: "⛓️",
-    description: "Crypto tracing, ransomware payments, mixer services"
-  },
-  {
-    id: "immunefi-web3",
-    name: "Immunefi Web3 Bounties",
-    organization: "Immunefi",
-    rewards: "Up to $10,000,000+",
-    url: "https://immunefi.com/",
-    category: "web3",
-    icon: "🔐",
-    description: "DeFi protocol bugs, smart contract vulnerabilities"
-  },
-  {
-    id: "elliptic-intel",
-    name: "Elliptic Crypto Investigations",
-    organization: "Elliptic",
-    rewards: "Intelligence bounties",
-    url: "https://www.elliptic.co/",
-    category: "crypto_crime",
-    icon: "🔬",
-    description: "Crypto compliance, sanctions screening, dark web markets"
-  },
-  // International Law Enforcement
   {
     id: "interpol-cyber",
     name: "INTERPOL Cybercrime",
     organization: "INTERPOL",
-    rewards: "International cooperation",
+    rewards: "International Cooperation",
     url: "https://www.interpol.int/Crimes/Cybercrime",
     category: "international",
-    icon: "🌐",
-    description: "Cross-border cybercrime investigations"
-  },
-  {
-    id: "europol-ec3",
-    name: "Europol European Cybercrime Centre",
-    organization: "Europol EC3",
-    rewards: "Coordination support",
-    url: "https://www.europol.europa.eu/",
-    category: "international",
-    icon: "🇪🇺",
-    description: "European cybercrime operations, ransomware takedowns"
+    icon: "🌐"
   },
   {
     id: "ncsc-uk",
     name: "UK NCSC Vulnerability Disclosure",
     organization: "UK National Cyber Security Centre",
-    rewards: "Recognition + CVE credit",
-    url: "https://www.ncsc.gov.uk/",
+    rewards: "Recognition",
+    url: "https://www.ncsc.gov.uk/information/vulnerability-disclosure",
     category: "government",
-    icon: "🇬🇧",
-    description: "UK critical infrastructure vulnerabilities"
-  },
-  // Ransomware-Specific
-  {
-    id: "conti-ransomware",
-    name: "Conti Ransomware Leaders",
-    organization: "Rewards for Justice",
-    rewards: "Up to $10,000,000",
-    url: "https://rewardsforjustice.net/rewards/conti-ransomware/",
-    category: "ransomware",
-    icon: "🔒",
-    description: "Conti/Ryuk ransomware gang leadership"
-  },
-  {
-    id: "darkside-ransomware",
-    name: "DarkSide Ransomware",
-    organization: "Rewards for Justice",
-    rewards: "Up to $10,000,000",
-    url: "https://rewardsforjustice.net/",
-    category: "ransomware",
-    icon: "⚫",
-    description: "DarkSide ransomware (Colonial Pipeline attack)"
-  },
-  {
-    id: "lockbit-ransomware",
-    name: "LockBit Ransomware",
-    organization: "FBI + International",
-    rewards: "Up to $15,000,000",
-    url: "https://www.fbi.gov/wanted/cyber",
-    category: "ransomware",
-    icon: "🔓",
-    description: "LockBit ransomware-as-a-service operation"
-  },
-  // Commerce & Trade
-  {
-    id: "bis-export-violations",
-    name: "BIS Export Violations",
-    organization: "Bureau of Industry and Security",
-    rewards: "Whistleblower rewards",
-    url: "https://www.bis.doc.gov/",
-    category: "export_control",
-    icon: "📦",
-    description: "Export control violations, technology transfer to adversaries"
+    icon: "🇬🇧"
   }
 ];
 
