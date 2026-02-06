@@ -77,7 +77,13 @@ import {
   type Modmail,
   type InsertModmail,
   type MultiplayerLobby,
-  type InsertMultiplayerLobby
+  type InsertMultiplayerLobby,
+  achievementDefinitions,
+  gameEvents,
+  type AchievementDefinition,
+  type InsertAchievementDefinition,
+  type GameEvent,
+  type InsertGameEvent
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -252,6 +258,40 @@ export interface IStorage {
   leaveLobby(lobbyId: string, sessionToken: string): Promise<MultiplayerLobby | undefined>;
   deleteLobby(lobbyId: string): Promise<boolean>;
   
+  // Achievement Definitions
+  getAllAchievementDefinitions(): Promise<AchievementDefinition[]>;
+  getActiveAchievementDefinitions(): Promise<AchievementDefinition[]>;
+  getAchievementById(achievementId: string): Promise<AchievementDefinition | undefined>;
+  upsertAchievementDefinition(achievementId: string, data: Partial<InsertAchievementDefinition>): Promise<AchievementDefinition>;
+  deleteAchievementDefinition(achievementId: string): Promise<boolean>;
+
+  // Game Events
+  logGameEvent(event: InsertGameEvent): Promise<GameEvent>;
+  getGameEventsBySession(sessionToken: string, limit?: number): Promise<GameEvent[]>;
+  getRecentGameEvents(limit?: number): Promise<GameEvent[]>;
+
+  // XP and Leveling
+  awardXP(sessionToken: string, amount: number, reason: string): Promise<{ newXP: number; newLevel: number; leveledUp: boolean }>;
+
+  // Leaderboard
+  getLeaderboard(limit?: number): Promise<{ sessionToken: string; username: string; xp: number; level: number; clueCount: number; questCount: number }[]>;
+
+  // Gameplay Analytics (Admin)
+  getGameplayAnalytics(): Promise<{
+    totalPlayers: number;
+    activePlayers24h: number;
+    activePlayers7d: number;
+    avgCluesPerPlayer: number;
+    avgQuestsPerPlayer: number;
+    totalCampaignRuns: number;
+    campaignCompletionRate: number;
+    topCampaigns: { campaignId: string; runCount: number }[];
+    recentEvents: GameEvent[];
+  }>;
+
+  // Quest Auto-Completion Check
+  checkAndCompleteQuests(sessionToken: string): Promise<{ newlyCompleted: string[]; xpAwarded: number }>;
+
   // Admin Configuration
   getAdminConfig(): Promise<AdminConfig | undefined>;
   updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig>;
@@ -1399,6 +1439,224 @@ export class DatabaseStorage implements IStorage {
     };
     await this.saveAdminConfig();
     return this.adminConfig;
+  }
+
+  // Achievement Definitions
+  async getAllAchievementDefinitions(): Promise<AchievementDefinition[]> {
+    return await db.select().from(achievementDefinitions).orderBy(achievementDefinitions.sortOrder);
+  }
+
+  async getActiveAchievementDefinitions(): Promise<AchievementDefinition[]> {
+    return await db.select().from(achievementDefinitions)
+      .where(eq(achievementDefinitions.isActive, true))
+      .orderBy(achievementDefinitions.sortOrder);
+  }
+
+  async getAchievementById(achievementId: string): Promise<AchievementDefinition | undefined> {
+    const [result] = await db.select().from(achievementDefinitions)
+      .where(eq(achievementDefinitions.achievementId, achievementId))
+      .limit(1);
+    return result;
+  }
+
+  async upsertAchievementDefinition(achievementId: string, data: Partial<InsertAchievementDefinition>): Promise<AchievementDefinition> {
+    const existing = await this.getAchievementById(achievementId);
+    if (existing) {
+      const [updated] = await db.update(achievementDefinitions)
+        .set(data)
+        .where(eq(achievementDefinitions.achievementId, achievementId))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(achievementDefinitions)
+      .values({ ...data, achievementId } as any)
+      .returning();
+    return created;
+  }
+
+  async deleteAchievementDefinition(achievementId: string): Promise<boolean> {
+    const result = await db.delete(achievementDefinitions)
+      .where(eq(achievementDefinitions.achievementId, achievementId));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Game Events
+  async logGameEvent(event: InsertGameEvent): Promise<GameEvent> {
+    const [created] = await db.insert(gameEvents).values(event).returning();
+    return created;
+  }
+
+  async getGameEventsBySession(sessionToken: string, limit = 50): Promise<GameEvent[]> {
+    return await db.select().from(gameEvents)
+      .where(eq(gameEvents.sessionToken, sessionToken))
+      .orderBy(desc(gameEvents.timestamp))
+      .limit(limit);
+  }
+
+  async getRecentGameEvents(limit = 100): Promise<GameEvent[]> {
+    return await db.select().from(gameEvents)
+      .orderBy(desc(gameEvents.timestamp))
+      .limit(limit);
+  }
+
+  // XP and Leveling
+  async awardXP(sessionToken: string, amount: number, reason: string): Promise<{ newXP: number; newLevel: number; leveledUp: boolean }> {
+    const session = await this.getSessionByToken(sessionToken);
+    if (!session) throw new Error('Session not found');
+
+    const { getLevelForXP } = await import("@shared/schema");
+    const oldLevel = session.level;
+    const newXP = (session.xp || 0) + amount;
+    const levelInfo = getLevelForXP(newXP);
+    const leveledUp = levelInfo.level > oldLevel;
+
+    await db.update(gameSessions)
+      .set({ xp: newXP, level: levelInfo.level, lastActive: new Date() })
+      .where(eq(gameSessions.sessionToken, sessionToken));
+
+    await this.logGameEvent({
+      sessionToken,
+      eventType: 'xp_gained',
+      eventData: { amount, reason, newTotal: newXP },
+      xpAwarded: amount,
+    });
+
+    if (leveledUp) {
+      await this.logGameEvent({
+        sessionToken,
+        eventType: 'level_up',
+        eventData: { oldLevel, newLevel: levelInfo.level, title: levelInfo.title },
+        xpAwarded: 0,
+      });
+    }
+
+    return { newXP, newLevel: levelInfo.level, leveledUp };
+  }
+
+  // Leaderboard
+  async getLeaderboard(limit = 20): Promise<{ sessionToken: string; username: string; xp: number; level: number; clueCount: number; questCount: number }[]> {
+    const sessions = await db.select().from(gameSessions)
+      .orderBy(desc(gameSessions.xp))
+      .limit(limit);
+
+    return sessions.map(s => ({
+      sessionToken: s.sessionToken,
+      username: s.username,
+      xp: s.xp || 0,
+      level: s.level || 1,
+      clueCount: s.collectedClues?.length || 0,
+      questCount: s.completedQuests?.length || 0,
+    }));
+  }
+
+  // Gameplay Analytics
+  async getGameplayAnalytics(): Promise<{
+    totalPlayers: number;
+    activePlayers24h: number;
+    activePlayers7d: number;
+    avgCluesPerPlayer: number;
+    avgQuestsPerPlayer: number;
+    totalCampaignRuns: number;
+    campaignCompletionRate: number;
+    topCampaigns: { campaignId: string; runCount: number }[];
+    recentEvents: GameEvent[];
+  }> {
+    const now = new Date();
+    const h24Ago = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const d7Ago = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const allSessions = await db.select().from(gameSessions);
+    const totalPlayers = allSessions.length;
+    const activePlayers24h = allSessions.filter(s => s.lastActive >= h24Ago).length;
+    const activePlayers7d = allSessions.filter(s => s.lastActive >= d7Ago).length;
+
+    const totalClues = allSessions.reduce((sum, s) => sum + (s.collectedClues?.length || 0), 0);
+    const totalQuests = allSessions.reduce((sum, s) => sum + (s.completedQuests?.length || 0), 0);
+    const avgCluesPerPlayer = totalPlayers > 0 ? totalClues / totalPlayers : 0;
+    const avgQuestsPerPlayer = totalPlayers > 0 ? totalQuests / totalPlayers : 0;
+
+    const allRuns = await db.select().from(campaignRuns);
+    const totalCampaignRuns = allRuns.length;
+    const completedRuns = allRuns.filter(r => r.status === 'completed').length;
+    const campaignCompletionRate = totalCampaignRuns > 0 ? completedRuns / totalCampaignRuns : 0;
+
+    const campaignCounts: Record<string, number> = {};
+    allRuns.forEach(r => {
+      campaignCounts[r.campaignId] = (campaignCounts[r.campaignId] || 0) + 1;
+    });
+    const topCampaigns = Object.entries(campaignCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([campaignId, runCount]) => ({ campaignId, runCount }));
+
+    const recentEvents = await this.getRecentGameEvents(20);
+
+    return {
+      totalPlayers,
+      activePlayers24h,
+      activePlayers7d,
+      avgCluesPerPlayer: Math.round(avgCluesPerPlayer * 100) / 100,
+      avgQuestsPerPlayer: Math.round(avgQuestsPerPlayer * 100) / 100,
+      totalCampaignRuns,
+      campaignCompletionRate: Math.round(campaignCompletionRate * 100) / 100,
+      topCampaigns,
+      recentEvents,
+    };
+  }
+
+  // Quest Auto-Completion Check
+  async checkAndCompleteQuests(sessionToken: string): Promise<{ newlyCompleted: string[]; xpAwarded: number }> {
+    const session = await this.getSessionByToken(sessionToken);
+    if (!session) return { newlyCompleted: [], xpAwarded: 0 };
+
+    const allQuests = await this.getAllQuests();
+    const playerClues = new Set(session.collectedClues || []);
+    const alreadyCompleted = new Set(session.completedQuests || []);
+    const newlyCompleted: string[] = [];
+    let totalXP = 0;
+
+    for (const quest of allQuests) {
+      if (!quest.isActive) continue;
+      if (alreadyCompleted.has(quest.id)) continue;
+
+      const required = quest.requiredClues || [];
+      if (required.length === 0) continue;
+
+      const allCollected = required.every(clueId => playerClues.has(clueId));
+      if (allCollected) {
+        newlyCompleted.push(quest.id);
+        totalXP += 200;
+
+        await this.logGameEvent({
+          sessionToken,
+          eventType: 'quest_completed',
+          eventData: { questId: quest.id, questName: quest.name },
+          xpAwarded: 200,
+        });
+      }
+    }
+
+    if (newlyCompleted.length > 0) {
+      const updatedQuests = [...(session.completedQuests || []), ...newlyCompleted];
+      const updatedStats = {
+        ...(session.stats || {}),
+        missionsCompleted: ((session.stats as any)?.missionsCompleted || 0) + newlyCompleted.length,
+      };
+
+      await db.update(gameSessions)
+        .set({
+          completedQuests: updatedQuests,
+          stats: updatedStats,
+          lastActive: new Date()
+        })
+        .where(eq(gameSessions.sessionToken, sessionToken));
+
+      if (totalXP > 0) {
+        await this.awardXP(sessionToken, totalXP, `Completed ${newlyCompleted.length} quest(s)`);
+      }
+    }
+
+    return { newlyCompleted, xpAwarded: totalXP };
   }
 }
 
