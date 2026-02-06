@@ -38,6 +38,9 @@ interface CampaignNode {
   type: 'step' | 'decision' | 'tool' | 'output' | 'folder';
   title: string;
   content: string;
+  htmlContent?: string;
+  pageLayout?: 'card' | 'full-page' | 'terminal' | 'dossier' | 'split';
+  customCss?: string;
   x: number;
   y: number;
   width: number;
@@ -1892,6 +1895,18 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           </div>
         )}
         
+        {/* HTML page indicator */}
+        {(node as any).htmlContent && (
+          <div className="absolute -top-2 -left-2">
+            <span
+              className="w-5 h-5 rounded bg-teal-600 border border-teal-400 flex items-center justify-center text-[7px] text-black font-bold"
+              title="Has HTML web page content"
+            >
+              {'</>'}
+            </span>
+          </div>
+        )}
+
         {/* Hidden clue indicators */}
         {campaign.hiddenClues?.some(c => c.nodeId === node.id) && (
           <div className="absolute -top-2 -right-2 flex gap-0.5">
@@ -3328,6 +3343,71 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         })}
                       </div>
                     )}
+                  </div>
+
+                  {/* Page Layout & HTML Content - Makes real web pages */}
+                  <div className="border border-amber-900/30 rounded p-3 space-y-3 bg-amber-950/5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] text-amber-500 uppercase font-bold">Web Page Mode</label>
+                      <a
+                        href={campaign.isPublished ? `/api/campaigns/${campaign.id}/page/${editingNode.id}` : '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-[10px] ${campaign.isPublished ? 'text-teal-400 hover:underline' : 'text-stone-600 pointer-events-none'}`}
+                      >
+                        {campaign.isPublished ? 'Preview as page ↗' : 'Publish to preview'}
+                      </a>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-stone-500 uppercase">Page Layout</label>
+                      <Select
+                        value={(editingNode as any).pageLayout || 'card'}
+                        onValueChange={(val) => {
+                          setEditingNode(prev => prev ? { ...prev, pageLayout: val } as any : null);
+                          updateNode(editingNode.id, { pageLayout: val } as any);
+                        }}
+                      >
+                        <SelectTrigger className="bg-black/50 border-stone-700 text-xs h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#0a0500] border-stone-700">
+                          <SelectItem value="card">Card (default)</SelectItem>
+                          <SelectItem value="full-page">Full Page</SelectItem>
+                          <SelectItem value="terminal">Terminal Style</SelectItem>
+                          <SelectItem value="dossier">Classified Dossier</SelectItem>
+                          <SelectItem value="split">Split Layout</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-stone-500 uppercase">HTML Content <span className="text-amber-600">(renders as real web page)</span></label>
+                      <Textarea
+                        value={(editingNode as any).htmlContent || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setEditingNode(prev => prev ? { ...prev, htmlContent: val } as any : null);
+                          updateNode(editingNode.id, { htmlContent: val } as any);
+                        }}
+                        className="bg-black/50 border-stone-700 text-xs min-h-[100px] font-mono text-amber-400"
+                        placeholder={'<div class="mission-brief">\n  <h2>Operation Nightfall</h2>\n  <p>Your mission, should you accept...</p>\n  <!-- Hidden clues go in source -->\n</div>'}
+                      />
+                      <p className="text-[9px] text-stone-600 mt-1">
+                        Write real HTML/CSS. Hidden clues are auto-injected. Published campaigns serve at /api/campaigns/{'{id}'}/page/{'{nodeId}'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-stone-500 uppercase">Custom CSS <span className="text-stone-600">(scoped to this node)</span></label>
+                      <Textarea
+                        value={(editingNode as any).customCss || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setEditingNode(prev => prev ? { ...prev, customCss: val } as any : null);
+                          updateNode(editingNode.id, { customCss: val } as any);
+                        }}
+                        className="bg-black/50 border-stone-700 text-xs min-h-[60px] font-mono text-teal-400"
+                        placeholder={'.mission-brief { border: 1px solid #d97706; padding: 2rem; }\n.mission-brief h2 { color: #d97706; }'}
+                      />
+                    </div>
                   </div>
 
                   {/* Backlinks Panel - Obsidian-style */}

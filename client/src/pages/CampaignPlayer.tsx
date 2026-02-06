@@ -19,6 +19,9 @@ interface CampaignNode {
   type: 'step' | 'decision' | 'tool' | 'output' | 'folder';
   title: string;
   content: string;
+  htmlContent?: string;
+  pageLayout?: 'card' | 'full-page' | 'terminal' | 'dossier' | 'split';
+  customCss?: string;
   x: number; y: number; width: number; height: number;
   color: string;
   children?: string[];
@@ -500,31 +503,56 @@ export default function CampaignPlayer() {
                 </div>
               </div>
 
-              <Card className="bg-stone-950/50 border-stone-800 mb-6">
-                <CardContent className="p-6">
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    {currentNode.content.split('\n').map((line, i) => {
-                      if (line.startsWith('**') && line.endsWith('**')) {
-                        return <h3 key={i} className="text-amber-500 font-mono text-lg mb-2">{line.replace(/\*\*/g, '')}</h3>;
-                      }
-                      if (line.startsWith('> ')) {
-                        return <blockquote key={i} className="border-l-2 border-amber-700 pl-3 text-stone-500 italic my-2">{line.slice(2)}</blockquote>;
-                      }
-                      if (line.startsWith('- ') || line.startsWith('→ ')) {
-                        return <li key={i} className="text-stone-300 ml-4 list-disc my-1">{line.slice(2)}</li>;
-                      }
-                      if (line.match(/^\d+\./)) {
-                        return <li key={i} className="text-stone-300 ml-4 list-decimal my-1">{line.replace(/^\d+\.\s*/, '')}</li>;
-                      }
-                      if (line.startsWith('⚠️')) {
-                        return <p key={i} className="text-amber-400 bg-amber-900/10 border border-amber-900/30 rounded p-2 my-2 text-xs">{line}</p>;
-                      }
-                      if (line.trim() === '') return <br key={i} />;
-                      return <p key={i} className="text-stone-300 my-1">{line}</p>;
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+              {currentNode.htmlContent ? (
+                <div className={`mb-6 ${
+                  currentNode.pageLayout === 'full-page' ? '' :
+                  currentNode.pageLayout === 'terminal' ? 'bg-black border border-amber-900/40 rounded-lg font-mono text-sm' :
+                  currentNode.pageLayout === 'dossier' ? 'bg-stone-950 border-2 border-amber-800/50 rounded-none' :
+                  currentNode.pageLayout === 'split' ? 'grid md:grid-cols-2 gap-4' :
+                  'bg-stone-950/50 border border-stone-800 rounded-lg'
+                }`}>
+                  {currentNode.customCss && (
+                    <style dangerouslySetInnerHTML={{ __html: currentNode.customCss }} />
+                  )}
+                  <div
+                    className={`campaign-page-content ${
+                      currentNode.pageLayout === 'terminal' ? 'p-4 text-amber-400' :
+                      currentNode.pageLayout === 'dossier' ? 'p-6' :
+                      currentNode.pageLayout === 'full-page' ? '' :
+                      'p-6'
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: currentNode.htmlContent }}
+                    data-campaign-node={currentNode.id}
+                    data-page-layout={currentNode.pageLayout || 'card'}
+                  />
+                </div>
+              ) : (
+                <Card className="bg-stone-950/50 border-stone-800 mb-6">
+                  <CardContent className="p-6">
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      {currentNode.content.split('\n').map((line, i) => {
+                        if (line.startsWith('**') && line.endsWith('**')) {
+                          return <h3 key={i} className="text-amber-500 font-mono text-lg mb-2">{line.replace(/\*\*/g, '')}</h3>;
+                        }
+                        if (line.startsWith('> ')) {
+                          return <blockquote key={i} className="border-l-2 border-amber-700 pl-3 text-stone-500 italic my-2">{line.slice(2)}</blockquote>;
+                        }
+                        if (line.startsWith('- ') || line.startsWith('→ ')) {
+                          return <li key={i} className="text-stone-300 ml-4 list-disc my-1">{line.slice(2)}</li>;
+                        }
+                        if (line.match(/^\d+\./)) {
+                          return <li key={i} className="text-stone-300 ml-4 list-decimal my-1">{line.replace(/^\d+\.\s*/, '')}</li>;
+                        }
+                        if (line.startsWith('⚠️')) {
+                          return <p key={i} className="text-amber-400 bg-amber-900/10 border border-amber-900/30 rounded p-2 my-2 text-xs">{line}</p>;
+                        }
+                        if (line.trim() === '') return <br key={i} />;
+                        return <p key={i} className="text-stone-300 my-1">{line}</p>;
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {currentNode.metadata?.toolsForStep && currentNode.metadata.toolsForStep.length > 0 && (
                 <Card className="bg-teal-950/10 border-teal-900/30 mb-6">
