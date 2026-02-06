@@ -12,6 +12,7 @@ import {
   Terminal, Globe, Search, Flag, Award, ArrowRight, Lightbulb,
   FileCode, Network, Code2, Bug, Shield, Zap, Sparkles
 } from 'lucide-react';
+import { useGame } from '@/hooks/useGameSession';
 
 interface CampaignNode {
   id: string;
@@ -91,6 +92,7 @@ export default function CampaignPlayer() {
   const params = useParams<{ campaignId: string }>();
   const campaignId = params.campaignId;
   const [, navigate] = useLocation();
+  const { gameState, awardXP } = useGame();
   const [campaign, setCampaign] = useState<CampaignData | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentNodeId, setCurrentNodeId] = useState<string | null>(null);
@@ -99,6 +101,7 @@ export default function CampaignPlayer() {
   const [clueInput, setClueInput] = useState('');
   const [showHints, setShowHints] = useState<Record<string, boolean>>({});
   const [beaconFired, setBeaconFired] = useState<Set<string>>(new Set());
+  const [runId, setRunId] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [clueRevealEffect, setClueRevealEffect] = useState<{ type: string; id: string } | null>(null);
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; angle: number; speed: number; size: number; color: string; delay: number }>>([]);
@@ -149,12 +152,45 @@ export default function CampaignPlayer() {
   const totalClues = campaign?.hiddenClues?.length || 0;
   const progress = campaign ? (visitedNodes.size / campaign.nodes.length) * 100 : 0;
 
+  const syncCheckpoint = useCallback(async (nodeId: string, visited: string[], clues: string[], isComplete = false) => {
+    if (!campaignId) return;
+    try {
+      const progressPct = campaign ? (visited.length / campaign.nodes.length) * 100 : 0;
+      const res = await fetch('/api/gameplay/campaign-checkpoint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionToken: gameState.sessionToken,
+          campaignId,
+          runId,
+          currentNodeId: nodeId,
+          visitedNodes: visited,
+          foundClues: clues,
+          progress: Math.round(progressPct),
+          isComplete,
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.run?.runId && !runId) {
+          setRunId(data.run.runId);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to sync campaign checkpoint:', err);
+    }
+  }, [campaignId, campaign, gameState.sessionToken, runId]);
+
   const navigateToNode = useCallback((nodeId: string) => {
     setCurrentNodeId(nodeId);
-    setVisitedNodes(prev => new Set([...prev, nodeId]));
+    setVisitedNodes(prev => {
+      const next = new Set([...prev, nodeId]);
+      syncCheckpoint(nodeId, Array.from(next), Array.from(foundClues));
+      return next;
+    });
     setClueInput('');
     contentRef.current?.scrollTo(0, 0);
-  }, []);
+  }, [syncCheckpoint, foundClues]);
 
   const fireBeacon = useCallback(async () => {
     if (!campaignId || !currentNodeId || beaconFired.has(currentNodeId)) return;
@@ -261,6 +297,12 @@ export default function CampaignPlayer() {
   }
 
   const isComplete = currentNode.type === 'output' && nextNodes.length === 0;
+
+  useEffect(() => {
+    if (isComplete && campaignId && currentNodeId) {
+      syncCheckpoint(currentNodeId, Array.from(visitedNodes), Array.from(foundClues), true);
+    }
+  }, [isComplete, campaignId, currentNodeId, visitedNodes, foundClues, syncCheckpoint]);
 
   return (
     <div className="min-h-screen bg-[#0a0500] text-stone-300">
