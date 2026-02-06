@@ -12,12 +12,16 @@ import {
   Terminal, Globe, Search, Flag, Award, ArrowRight, Lightbulb,
   FileCode, Network, Code2, Bug, Shield, Zap, Sparkles
 } from 'lucide-react';
+import { useGame } from '@/hooks/useGameSession';
 
 interface CampaignNode {
   id: string;
   type: 'step' | 'decision' | 'tool' | 'output' | 'folder';
   title: string;
   content: string;
+  htmlContent?: string;
+  pageLayout?: 'card' | 'full-page' | 'terminal' | 'dossier' | 'split';
+  customCss?: string;
   x: number; y: number; width: number; height: number;
   color: string;
   children?: string[];
@@ -91,6 +95,7 @@ export default function CampaignPlayer() {
   const params = useParams<{ campaignId: string }>();
   const campaignId = params.campaignId;
   const [, navigate] = useLocation();
+  const { gameState, awardXP } = useGame();
   const [campaign, setCampaign] = useState<CampaignData | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentNodeId, setCurrentNodeId] = useState<string | null>(null);
@@ -99,6 +104,7 @@ export default function CampaignPlayer() {
   const [clueInput, setClueInput] = useState('');
   const [showHints, setShowHints] = useState<Record<string, boolean>>({});
   const [beaconFired, setBeaconFired] = useState<Set<string>>(new Set());
+  const [runId, setRunId] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [clueRevealEffect, setClueRevealEffect] = useState<{ type: string; id: string } | null>(null);
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; angle: number; speed: number; size: number; color: string; delay: number }>>([]);
@@ -149,12 +155,45 @@ export default function CampaignPlayer() {
   const totalClues = campaign?.hiddenClues?.length || 0;
   const progress = campaign ? (visitedNodes.size / campaign.nodes.length) * 100 : 0;
 
+  const syncCheckpoint = useCallback(async (nodeId: string, visited: string[], clues: string[], isComplete = false) => {
+    if (!campaignId) return;
+    try {
+      const progressPct = campaign ? (visited.length / campaign.nodes.length) * 100 : 0;
+      const res = await fetch('/api/gameplay/campaign-checkpoint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionToken: gameState.sessionToken,
+          campaignId,
+          runId,
+          currentNodeId: nodeId,
+          visitedNodes: visited,
+          foundClues: clues,
+          progress: Math.round(progressPct),
+          isComplete,
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.run?.runId && !runId) {
+          setRunId(data.run.runId);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to sync campaign checkpoint:', err);
+    }
+  }, [campaignId, campaign, gameState.sessionToken, runId]);
+
   const navigateToNode = useCallback((nodeId: string) => {
     setCurrentNodeId(nodeId);
-    setVisitedNodes(prev => new Set([...prev, nodeId]));
+    setVisitedNodes(prev => {
+      const next = new Set([...prev, nodeId]);
+      syncCheckpoint(nodeId, Array.from(next), Array.from(foundClues));
+      return next;
+    });
     setClueInput('');
     contentRef.current?.scrollTo(0, 0);
-  }, []);
+  }, [syncCheckpoint, foundClues]);
 
   const fireBeacon = useCallback(async () => {
     if (!campaignId || !currentNodeId || beaconFired.has(currentNodeId)) return;
@@ -262,6 +301,12 @@ export default function CampaignPlayer() {
 
   const isComplete = currentNode.type === 'output' && nextNodes.length === 0;
 
+  useEffect(() => {
+    if (isComplete && campaignId && currentNodeId) {
+      syncCheckpoint(currentNodeId, Array.from(visitedNodes), Array.from(foundClues), true);
+    }
+  }, [isComplete, campaignId, currentNodeId, visitedNodes, foundClues, syncCheckpoint]);
+
   return (
     <div className="min-h-screen bg-[#0a0500] text-stone-300">
       {nodeClues.filter(c => c.type === 'source-code').map(clue => (
@@ -350,23 +395,23 @@ export default function CampaignPlayer() {
       </AnimatePresence>
 
       <div className="sticky top-0 z-30 bg-[#0a0500]/95 border-b border-amber-900/30 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => navigate('/campaigns')}
-                className="text-stone-500 hover:text-amber-400 shrink-0"
+                className="text-stone-500 hover:text-amber-400 shrink-0 min-h-[44px] min-w-[44px] touch-manipulation"
                 data-testid="back-to-campaigns"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5" />
               </Button>
               <div className="min-w-0">
-                <h1 className="text-amber-500 font-mono text-sm font-bold truncate" data-testid="campaign-title">{campaign.name}</h1>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[10px]">{campaign.category}</Badge>
-                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[10px]">{campaign.difficulty}</Badge>
+                <h1 className="text-amber-500 font-mono text-xs sm:text-sm font-bold truncate" data-testid="campaign-title">{campaign.name}</h1>
+                <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
+                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[9px] sm:text-[10px]">{campaign.category}</Badge>
+                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[9px] sm:text-[10px]">{campaign.difficulty}</Badge>
                 </div>
               </div>
             </div>
@@ -438,7 +483,7 @@ export default function CampaignPlayer() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="p-4 md:p-8 max-w-3xl mx-auto"
+              className="p-3 sm:p-4 md:p-8 max-w-3xl mx-auto pb-20"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className={`p-2 rounded-lg border ${COLOR_ACCENTS[currentNode.color] || COLOR_ACCENTS.stone}`}>
@@ -458,31 +503,56 @@ export default function CampaignPlayer() {
                 </div>
               </div>
 
-              <Card className="bg-stone-950/50 border-stone-800 mb-6">
-                <CardContent className="p-6">
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    {currentNode.content.split('\n').map((line, i) => {
-                      if (line.startsWith('**') && line.endsWith('**')) {
-                        return <h3 key={i} className="text-amber-500 font-mono text-lg mb-2">{line.replace(/\*\*/g, '')}</h3>;
-                      }
-                      if (line.startsWith('> ')) {
-                        return <blockquote key={i} className="border-l-2 border-amber-700 pl-3 text-stone-500 italic my-2">{line.slice(2)}</blockquote>;
-                      }
-                      if (line.startsWith('- ') || line.startsWith('→ ')) {
-                        return <li key={i} className="text-stone-300 ml-4 list-disc my-1">{line.slice(2)}</li>;
-                      }
-                      if (line.match(/^\d+\./)) {
-                        return <li key={i} className="text-stone-300 ml-4 list-decimal my-1">{line.replace(/^\d+\.\s*/, '')}</li>;
-                      }
-                      if (line.startsWith('⚠️')) {
-                        return <p key={i} className="text-amber-400 bg-amber-900/10 border border-amber-900/30 rounded p-2 my-2 text-xs">{line}</p>;
-                      }
-                      if (line.trim() === '') return <br key={i} />;
-                      return <p key={i} className="text-stone-300 my-1">{line}</p>;
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+              {currentNode.htmlContent ? (
+                <div className={`mb-6 ${
+                  currentNode.pageLayout === 'full-page' ? '' :
+                  currentNode.pageLayout === 'terminal' ? 'bg-black border border-amber-900/40 rounded-lg font-mono text-sm' :
+                  currentNode.pageLayout === 'dossier' ? 'bg-stone-950 border-2 border-amber-800/50 rounded-none' :
+                  currentNode.pageLayout === 'split' ? 'grid md:grid-cols-2 gap-4' :
+                  'bg-stone-950/50 border border-stone-800 rounded-lg'
+                }`}>
+                  {currentNode.customCss && (
+                    <style dangerouslySetInnerHTML={{ __html: currentNode.customCss }} />
+                  )}
+                  <div
+                    className={`campaign-page-content ${
+                      currentNode.pageLayout === 'terminal' ? 'p-4 text-amber-400' :
+                      currentNode.pageLayout === 'dossier' ? 'p-6' :
+                      currentNode.pageLayout === 'full-page' ? '' :
+                      'p-6'
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: currentNode.htmlContent }}
+                    data-campaign-node={currentNode.id}
+                    data-page-layout={currentNode.pageLayout || 'card'}
+                  />
+                </div>
+              ) : (
+                <Card className="bg-stone-950/50 border-stone-800 mb-6">
+                  <CardContent className="p-6">
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      {currentNode.content.split('\n').map((line, i) => {
+                        if (line.startsWith('**') && line.endsWith('**')) {
+                          return <h3 key={i} className="text-amber-500 font-mono text-lg mb-2">{line.replace(/\*\*/g, '')}</h3>;
+                        }
+                        if (line.startsWith('> ')) {
+                          return <blockquote key={i} className="border-l-2 border-amber-700 pl-3 text-stone-500 italic my-2">{line.slice(2)}</blockquote>;
+                        }
+                        if (line.startsWith('- ') || line.startsWith('→ ')) {
+                          return <li key={i} className="text-stone-300 ml-4 list-disc my-1">{line.slice(2)}</li>;
+                        }
+                        if (line.match(/^\d+\./)) {
+                          return <li key={i} className="text-stone-300 ml-4 list-decimal my-1">{line.replace(/^\d+\.\s*/, '')}</li>;
+                        }
+                        if (line.startsWith('⚠️')) {
+                          return <p key={i} className="text-amber-400 bg-amber-900/10 border border-amber-900/30 rounded p-2 my-2 text-xs">{line}</p>;
+                        }
+                        if (line.trim() === '') return <br key={i} />;
+                        return <p key={i} className="text-stone-300 my-1">{line}</p>;
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {currentNode.metadata?.toolsForStep && currentNode.metadata.toolsForStep.length > 0 && (
                 <Card className="bg-teal-950/10 border-teal-900/30 mb-6">
@@ -601,14 +671,14 @@ export default function CampaignPlayer() {
                           onChange={(e) => setClueInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && checkClueAnswer()}
                           placeholder="Enter discovered value..."
-                          className="bg-black/30 border-stone-700 text-stone-300 text-xs flex-1"
+                          className="bg-black/30 border-stone-700 text-stone-300 text-xs sm:text-sm flex-1 min-h-[44px]"
                           data-testid="clue-input"
                         />
                         <Button
                           size="sm"
                           onClick={checkClueAnswer}
                           disabled={!clueInput.trim()}
-                          className="bg-amber-700 hover:bg-amber-600 text-xs"
+                          className="bg-amber-700 hover:bg-amber-600 text-xs min-h-[44px] min-w-[44px] touch-manipulation"
                           data-testid="submit-clue"
                         >
                           <Flag className="w-3 h-3 mr-1" /> Submit
@@ -666,7 +736,7 @@ export default function CampaignPlayer() {
                     <button
                       key={link.id}
                       onClick={() => navigateToNode(node.id)}
-                      className={`w-full text-left p-4 rounded-lg border transition-all hover:scale-[1.01] active:scale-[0.99] ${
+                      className={`w-full text-left p-4 rounded-lg border transition-all hover:scale-[1.01] active:scale-[0.99] min-h-[56px] touch-manipulation ${
                         COLOR_ACCENTS[node.color] || COLOR_ACCENTS.stone
                       } hover:brightness-125`}
                       data-testid={`next-node-${node.id}`}

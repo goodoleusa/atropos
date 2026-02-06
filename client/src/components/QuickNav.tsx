@@ -7,6 +7,7 @@ import { useReportContext } from '@/hooks/useReportContext';
 import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, Settings, Bug, Sparkles, Eye, EyeOff, Shield } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
+import { PlayerStatsPanel } from './PlayerStatsPanel';
 import { Switch } from '@/components/ui/switch';
 
 const NAV_STYLES = {
@@ -94,6 +95,13 @@ export default function QuickNav() {
                 </div>
                 <span className="text-[10px] text-amber-400">{gameState.inventory?.length || 0} clues</span>
               </div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[10px] text-stone-500">Lv.{gameState.level || 1}</span>
+                <span className="text-[10px] text-amber-500">{(gameState.xp || 0).toLocaleString()} XP</span>
+              </div>
+            </div>
+            <div className="px-1 mt-1">
+              <PlayerStatsPanel />
             </div>
           </div>
 

@@ -11,6 +11,18 @@ interface Clue {
   foundAt: string;
 }
 
+interface PlayerStats {
+  commandsRun: number;
+  campaignsStarted: number;
+  campaignsCompleted: number;
+  cluesFound: number;
+  missionsCompleted: number;
+  totalPlayTimeMinutes: number;
+  longestStreak: number;
+  currentStreak: number;
+  lastPlayDate: string | null;
+}
+
 interface GameState {
   inventory: Clue[];
   sessionToken: string;
@@ -18,6 +30,10 @@ interface GameState {
   synced: boolean;
   devMode: boolean;
   settings: Record<string, any>;
+  xp: number;
+  level: number;
+  achievements: string[];
+  stats: PlayerStats;
 }
 
 interface GameContextType {
@@ -28,6 +44,10 @@ interface GameContextType {
   syncSession: () => Promise<void>;
   importSession: (token: string) => Promise<boolean>;
   toggleDevMode: () => void;
+  awardXP: (amount: number, reason: string) => Promise<void>;
+  checkAchievements: () => Promise<void>;
+  checkQuestCompletion: () => Promise<void>;
+  incrementStat: (stat: keyof PlayerStats, amount?: number) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -38,6 +58,18 @@ export const useGame = () => {
     throw new Error('useGame must be used within a GameProvider');
   }
   return context;
+};
+
+const DEFAULT_STATS: PlayerStats = {
+  commandsRun: 0,
+  campaignsStarted: 0,
+  campaignsCompleted: 0,
+  cluesFound: 0,
+  missionsCompleted: 0,
+  totalPlayTimeMinutes: 0,
+  longestStreak: 0,
+  currentStreak: 0,
+  lastPlayDate: null,
 };
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
@@ -55,7 +87,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return { ...parsed, synced: false, devMode: parsed.devMode || false, settings: parsed.settings || {} };
+        return {
+          ...parsed,
+          synced: false,
+          devMode: parsed.devMode || false,
+          settings: parsed.settings || {},
+          xp: parsed.xp || 0,
+          level: parsed.level || 1,
+          achievements: parsed.achievements || [],
+          stats: { ...DEFAULT_STATS, ...(parsed.stats || {}) },
+        };
       } catch (e) {
         console.error("Corrupted save file", e);
       }
@@ -66,7 +107,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       username: 'Guest',
       synced: false,
       devMode: false,
-      settings: {}
+      settings: {},
+      xp: 0,
+      level: 1,
+      achievements: [],
+      stats: { ...DEFAULT_STATS },
     };
   });
 
@@ -82,7 +127,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [gameState.sessionToken]);
 
-  // Sync session with server
   const syncSession = useCallback(async () => {
     try {
       const response = await fetch('/api/session', {
@@ -97,20 +141,20 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         const serverSession = await response.json();
         
-        // Merge server clues with local inventory
         const serverClueIds = serverSession.collectedClues || [];
         const localClueIds = gameState.inventory.map(c => c.id);
         const allClueIds = Array.from(new Set([...serverClueIds, ...localClueIds]));
         
-        // If there are clues on server that we don't have locally, we can't restore full data
-        // But at least mark synced
         setGameState(prev => ({
           ...prev,
           synced: true,
-          settings: serverSession.settings || prev.settings || {}
+          settings: serverSession.settings || prev.settings || {},
+          xp: serverSession.xp || prev.xp || 0,
+          level: serverSession.level || prev.level || 1,
+          achievements: serverSession.achievements || prev.achievements || [],
+          stats: { ...DEFAULT_STATS, ...(serverSession.stats || prev.stats || {}) },
         }));
         
-        // Update server with any local clues it doesn't have
         const settings = {
           learningProfile: learningProfileRef.current,
           devMode: gameState.devMode
@@ -142,12 +186,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [gameState.sessionToken, gameState.username, gameState.inventory, gameState.devMode, persistSessionMetadata]);
 
-  // Sync on mount
   useEffect(() => {
     syncSession();
   }, []);
 
-  // Persist settings changes to server
   useEffect(() => {
     if (!gameState.synced) return;
     const settings = { learningProfile: learningProfileRef.current, devMode: gameState.devMode };
@@ -159,10 +201,116 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     persistSessionMetadata({ settings, progress });
   }, [style, goals, skillLevel, preferredPace, gameState.devMode, gameState.inventory.length, persistSessionMetadata, gameState.synced]);
 
-  // Persist to localStorage on change
   useEffect(() => {
     localStorage.setItem('sysadmin_session', JSON.stringify(gameState));
   }, [gameState]);
+
+  // Track play time every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGameState(prev => ({
+        ...prev,
+        stats: {
+          ...prev.stats,
+          totalPlayTimeMinutes: prev.stats.totalPlayTimeMinutes + 5,
+        }
+      }));
+    }, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const awardXP = useCallback(async (amount: number, reason: string) => {
+    try {
+      const res = await fetch('/api/gameplay/award-xp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionToken: gameState.sessionToken, amount, reason })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const leveledUp = data.leveledUp;
+        setGameState(prev => ({
+          ...prev,
+          xp: data.newXP,
+          level: data.newLevel,
+        }));
+        if (leveledUp) {
+          toast({
+            title: "LEVEL UP!",
+            description: `You are now Level ${data.newLevel}: ${data.title}`,
+            className: "border-amber-500 text-amber-400 bg-black/90 font-mono",
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to award XP:', error);
+    }
+  }, [gameState.sessionToken, toast]);
+
+  const checkAchievements = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/gameplay/check-achievements/${gameState.sessionToken}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.newUnlocks?.length > 0) {
+          for (const unlock of data.newUnlocks) {
+            toast({
+              title: "ACHIEVEMENT UNLOCKED",
+              description: `${unlock.name} (+${unlock.xpReward} XP)`,
+              className: "border-amber-500 text-amber-400 bg-black/90 font-mono",
+            });
+          }
+          setGameState(prev => ({
+            ...prev,
+            achievements: [...new Set([...prev.achievements, ...data.newUnlocks.map((u: any) => u.achievementId)])],
+            xp: prev.xp + data.totalXPAwarded,
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check achievements:', error);
+    }
+  }, [gameState.sessionToken, toast]);
+
+  const checkQuestCompletion = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/gameplay/check-quests/${gameState.sessionToken}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.newlyCompleted?.length > 0) {
+          for (const questId of data.newlyCompleted) {
+            toast({
+              title: "QUEST COMPLETED",
+              description: `Mission accomplished: ${questId}`,
+              className: "border-teal-500 text-teal-400 bg-black/90 font-mono",
+            });
+          }
+          setGameState(prev => ({
+            ...prev,
+            xp: prev.xp + data.xpAwarded,
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check quests:', error);
+    }
+  }, [gameState.sessionToken, toast]);
+
+  const incrementStat = useCallback((stat: keyof PlayerStats, amount = 1) => {
+    setGameState(prev => ({
+      ...prev,
+      stats: {
+        ...prev.stats,
+        [stat]: (prev.stats[stat] as number || 0) + amount,
+      }
+    }));
+  }, []);
 
   const collectClue = async (clue: Clue) => {
     if (gameState.inventory.some(c => c.id === clue.id)) return;
@@ -171,10 +319,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     
     setGameState(prev => ({
       ...prev,
-      inventory: newInventory
+      inventory: newInventory,
+      stats: {
+        ...prev.stats,
+        cluesFound: prev.stats.cluesFound + 1,
+      }
     }));
 
-    // Sync with server
     try {
       await fetch(`/api/session/${gameState.sessionToken}`, {
         method: 'PATCH',
@@ -192,11 +343,18 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       console.error('Failed to sync clue:', error);
     }
 
+    await awardXP(100, `Found clue: ${clue.name}`);
+
     toast({
       title: "DATA FRAGMENT ACQUIRED",
-      description: `Archived: ${clue.name}`,
+      description: `Archived: ${clue.name} (+100 XP)`,
       className: "border-primary text-primary bg-black/90 font-mono",
     });
+
+    setTimeout(() => {
+      checkQuestCompletion();
+      checkAchievements();
+    }, 500);
   };
 
   const hasClue = (id: string) => {
@@ -206,7 +364,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const setSessionUsername = (name: string) => {
     setGameState(prev => ({ ...prev, username: name }));
     
-    // Sync with server
     fetch(`/api/session/${gameState.sessionToken}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -222,13 +379,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   const importSession = async (token: string): Promise<boolean> => {
     try {
-      // Try to fetch the session from server
       const response = await fetch(`/api/session/${token}`);
       if (!response.ok) return false;
       
       const serverSession = await response.json();
       
-      // Update local state with imported session
       setGameState(prev => ({
         ...prev,
         sessionToken: token,
@@ -240,7 +395,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           content: 'Restored from server',
           foundAt: new Date().toISOString()
         })) || [],
-        synced: true
+        synced: true,
+        xp: serverSession.xp || 0,
+        level: serverSession.level || 1,
+        achievements: serverSession.achievements || [],
+        stats: { ...DEFAULT_STATS, ...(serverSession.stats || {}) },
       }));
       
       toast({
@@ -261,7 +420,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <GameContext.Provider value={{ gameState, collectClue, hasClue, setSessionUsername, syncSession, importSession, toggleDevMode }}>
+    <GameContext.Provider value={{
+      gameState,
+      collectClue,
+      hasClue,
+      setSessionUsername,
+      syncSession,
+      importSession,
+      toggleDevMode,
+      awardXP,
+      checkAchievements,
+      checkQuestCompletion,
+      incrementStat,
+    }}>
       {children}
     </GameContext.Provider>
   );
