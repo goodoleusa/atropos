@@ -23,6 +23,13 @@ import {
   investigationContexts,
   interactionLogs,
   stateCapsules,
+  playerProgression,
+  achievements,
+  playerAchievements,
+  leaderboardEntries,
+  dailyChallenges,
+  challengeCompletions,
+  campaignStats,
   type GameSession, 
   type InsertGameSession,
   type CampaignRun,
@@ -68,7 +75,21 @@ import {
   type InteractionLog,
   type InsertInteractionLog,
   type StateCapsule,
-  type InsertStateCapsule
+  type InsertStateCapsule,
+  type PlayerProgression,
+  type InsertPlayerProgression,
+  type Achievement,
+  type InsertAchievement,
+  type PlayerAchievement,
+  type InsertPlayerAchievement,
+  type LeaderboardEntry,
+  type InsertLeaderboardEntry,
+  type DailyChallenge,
+  type InsertDailyChallenge,
+  type ChallengeCompletion,
+  type InsertChallengeCompletion,
+  type CampaignStats,
+  type InsertCampaignStats
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -221,6 +242,46 @@ export interface IStorage {
   // Admin Configuration
   getAdminConfig(): Promise<AdminConfig | null>;
   updateAdminConfig(updates: Partial<AdminConfig>): Promise<AdminConfig>;
+  
+  // Player Progression
+  getPlayerProgression(sessionToken: string): Promise<PlayerProgression | undefined>;
+  createPlayerProgression(progression: InsertPlayerProgression): Promise<PlayerProgression>;
+  updatePlayerProgression(sessionToken: string, updates: Partial<PlayerProgression>): Promise<PlayerProgression | undefined>;
+  addXP(sessionToken: string, xp: number, source?: string): Promise<{ progression: PlayerProgression; leveledUp: boolean; newLevel?: number }>;
+  addCurrency(sessionToken: string, amount: number): Promise<PlayerProgression | undefined>;
+  updateSkill(sessionToken: string, skill: 'osint' | 'network' | 'malware' | 'social', points: number): Promise<PlayerProgression | undefined>;
+  
+  // Achievements
+  getAllAchievements(): Promise<Achievement[]>;
+  getAchievementById(achievementId: string): Promise<Achievement | undefined>;
+  createAchievement(achievement: InsertAchievement): Promise<Achievement>;
+  updateAchievement(achievementId: string, updates: Partial<Achievement>): Promise<Achievement | undefined>;
+  deleteAchievement(achievementId: string): Promise<boolean>;
+  
+  // Player Achievements
+  getPlayerAchievements(sessionToken: string): Promise<PlayerAchievement[]>;
+  unlockAchievement(sessionToken: string, achievementId: string, metadata?: any): Promise<{ achievement: PlayerAchievement; rewards: { xp: number; currency: number; unlocks: string[] } }>;
+  checkAchievementProgress(sessionToken: string, achievementId: string): Promise<{ unlocked: boolean; progress: number }>;
+  
+  // Leaderboards
+  getLeaderboard(type: string, limit?: number): Promise<LeaderboardEntry[]>;
+  updateLeaderboardEntry(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry>;
+  getPlayerRank(sessionToken: string, type: string): Promise<{ rank: number; entry: LeaderboardEntry } | null>;
+  recalculateLeaderboard(type: string): Promise<void>;
+  
+  // Daily Challenges
+  getDailyChallenges(includeExpired?: boolean): Promise<DailyChallenge[]>;
+  getTodayChallenge(): Promise<DailyChallenge | undefined>;
+  createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge>;
+  getChallengeCompletions(sessionToken: string): Promise<ChallengeCompletion[]>;
+  completeChallenge(completion: InsertChallengeCompletion): Promise<{ completion: ChallengeCompletion; rewards: { xp: number; currency: number } }>;
+  hasChallengeCompleted(sessionToken: string, challengeId: string): Promise<boolean>;
+  
+  // Campaign Stats
+  getCampaignStats(campaignId: string): Promise<CampaignStats | undefined>;
+  updateCampaignStats(campaignId: string, updates: Partial<CampaignStats>): Promise<CampaignStats>;
+  recordCampaignAttempt(campaignId: string, sessionToken: string): Promise<void>;
+  recordCampaignCompletion(campaignId: string, sessionToken: string, timeMinutes: number, rating?: number): Promise<void>;
 }
 
 // Admin configuration type for agents and W&B
@@ -1210,6 +1271,474 @@ export class DatabaseStorage implements IStorage {
       console.error('Failed to save admin config:', error);
       throw error;
     }
+  }
+
+  // Player Progression
+  async getPlayerProgression(sessionToken: string): Promise<PlayerProgression | undefined> {
+    const [progression] = await db
+      .select()
+      .from(playerProgression)
+      .where(eq(playerProgression.sessionToken, sessionToken))
+      .limit(1);
+    return progression;
+  }
+
+  async createPlayerProgression(progression: InsertPlayerProgression): Promise<PlayerProgression> {
+    const [created] = await db.insert(playerProgression).values(progression).returning();
+    return created;
+  }
+
+  async updatePlayerProgression(sessionToken: string, updates: Partial<PlayerProgression>): Promise<PlayerProgression | undefined> {
+    const [updated] = await db
+      .update(playerProgression)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(playerProgression.sessionToken, sessionToken))
+      .returning();
+    return updated;
+  }
+
+  async addXP(sessionToken: string, xp: number, source?: string): Promise<{ progression: PlayerProgression; leveledUp: boolean; newLevel?: number }> {
+    // Get or create progression
+    let prog = await this.getPlayerProgression(sessionToken);
+    if (!prog) {
+      prog = await this.createPlayerProgression({ sessionToken, xp: 0, totalXp: 0, level: 1 });
+    }
+
+    const newXP = (prog.xp || 0) + xp;
+    const newTotalXP = (prog.totalXp || 0) + xp;
+    const currentLevel = prog.level || 1;
+    
+    // Calculate level: 100 XP for level 1->2, then +100 per level (level 2->3 = 200, etc.)
+    const xpForNextLevel = currentLevel * 100;
+    let leveledUp = false;
+    let newLevel = currentLevel;
+    let remainingXP = newXP;
+
+    if (remainingXP >= xpForNextLevel) {
+      newLevel++;
+      remainingXP -= xpForNextLevel;
+      leveledUp = true;
+    }
+
+    const updated = await this.updatePlayerProgression(sessionToken, {
+      xp: remainingXP,
+      totalXp: newTotalXP,
+      level: newLevel
+    });
+
+    return {
+      progression: updated!,
+      leveledUp,
+      newLevel: leveledUp ? newLevel : undefined
+    };
+  }
+
+  async addCurrency(sessionToken: string, amount: number): Promise<PlayerProgression | undefined> {
+    const prog = await this.getPlayerProgression(sessionToken);
+    if (!prog) return undefined;
+
+    return await this.updatePlayerProgression(sessionToken, {
+      currency: (prog.currency || 0) + amount
+    });
+  }
+
+  async updateSkill(sessionToken: string, skill: 'osint' | 'network' | 'malware' | 'social', points: number): Promise<PlayerProgression | undefined> {
+    const prog = await this.getPlayerProgression(sessionToken);
+    if (!prog) return undefined;
+
+    const skills = prog.skills || { osint: 0, network: 0, malware: 0, social: 0 };
+    skills[skill] = (skills[skill] || 0) + points;
+
+    return await this.updatePlayerProgression(sessionToken, { skills });
+  }
+
+  // Achievements
+  async getAllAchievements(): Promise<Achievement[]> {
+    return await db.select().from(achievements).where(eq(achievements.isActive, true)).orderBy(achievements.sortOrder);
+  }
+
+  async getAchievementById(achievementId: string): Promise<Achievement | undefined> {
+    const [achievement] = await db
+      .select()
+      .from(achievements)
+      .where(eq(achievements.achievementId, achievementId))
+      .limit(1);
+    return achievement;
+  }
+
+  async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
+    const [created] = await db.insert(achievements).values(achievement).returning();
+    return created;
+  }
+
+  async updateAchievement(achievementId: string, updates: Partial<Achievement>): Promise<Achievement | undefined> {
+    const [updated] = await db
+      .update(achievements)
+      .set(updates)
+      .where(eq(achievements.achievementId, achievementId))
+      .returning();
+    return updated;
+  }
+
+  async deleteAchievement(achievementId: string): Promise<boolean> {
+    const result = await db.delete(achievements).where(eq(achievements.achievementId, achievementId));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Player Achievements
+  async getPlayerAchievements(sessionToken: string): Promise<PlayerAchievement[]> {
+    return await db
+      .select()
+      .from(playerAchievements)
+      .where(eq(playerAchievements.sessionToken, sessionToken))
+      .orderBy(desc(playerAchievements.unlockedAt));
+  }
+
+  async unlockAchievement(sessionToken: string, achievementId: string, metadata?: any): Promise<{ achievement: PlayerAchievement; rewards: { xp: number; currency: number; unlocks: string[] } }> {
+    // Check if already unlocked
+    const [existing] = await db
+      .select()
+      .from(playerAchievements)
+      .where(
+        and(
+          eq(playerAchievements.sessionToken, sessionToken),
+          eq(playerAchievements.achievementId, achievementId)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      const achievement = await this.getAchievementById(achievementId);
+      return {
+        achievement: existing,
+        rewards: {
+          xp: 0,
+          currency: 0,
+          unlocks: []
+        }
+      };
+    }
+
+    // Get achievement details
+    const achievementDef = await this.getAchievementById(achievementId);
+    if (!achievementDef) {
+      throw new Error(`Achievement ${achievementId} not found`);
+    }
+
+    // Create unlock record
+    const [unlocked] = await db
+      .insert(playerAchievements)
+      .values({
+        sessionToken,
+        achievementId,
+        progress: 100,
+        metadata: metadata || {}
+      })
+      .returning();
+
+    // Award rewards
+    if (achievementDef.xpReward) {
+      await this.addXP(sessionToken, achievementDef.xpReward, `achievement:${achievementId}`);
+    }
+    if (achievementDef.currencyReward) {
+      await this.addCurrency(sessionToken, achievementDef.currencyReward);
+    }
+
+    // Handle unlocks
+    const unlocks = achievementDef.unlocks || [];
+    if (unlocks.length > 0) {
+      const prog = await this.getPlayerProgression(sessionToken);
+      if (prog) {
+        const unlockedTools = [...(prog.unlockedTools || []), ...unlocks.filter(u => u.startsWith('tool:'))];
+        const unlockedCampaigns = [...(prog.unlockedCampaigns || []), ...unlocks.filter(u => u.startsWith('campaign:'))];
+        await this.updatePlayerProgression(sessionToken, { unlockedTools, unlockedCampaigns });
+      }
+    }
+
+    return {
+      achievement: unlocked,
+      rewards: {
+        xp: achievementDef.xpReward || 0,
+        currency: achievementDef.currencyReward || 0,
+        unlocks
+      }
+    };
+  }
+
+  async checkAchievementProgress(sessionToken: string, achievementId: string): Promise<{ unlocked: boolean; progress: number }> {
+    const [unlocked] = await db
+      .select()
+      .from(playerAchievements)
+      .where(
+        and(
+          eq(playerAchievements.sessionToken, sessionToken),
+          eq(playerAchievements.achievementId, achievementId)
+        )
+      )
+      .limit(1);
+
+    return {
+      unlocked: !!unlocked,
+      progress: unlocked ? (unlocked.progress || 100) : 0
+    };
+  }
+
+  // Leaderboards
+  async getLeaderboard(type: string, limit: number = 100): Promise<LeaderboardEntry[]> {
+    return await db
+      .select()
+      .from(leaderboardEntries)
+      .where(eq(leaderboardEntries.leaderboardType, type))
+      .orderBy(desc(leaderboardEntries.score))
+      .limit(limit);
+  }
+
+  async updateLeaderboardEntry(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry> {
+    // Check if entry exists
+    const [existing] = await db
+      .select()
+      .from(leaderboardEntries)
+      .where(
+        and(
+          eq(leaderboardEntries.sessionToken, entry.sessionToken),
+          eq(leaderboardEntries.leaderboardType, entry.leaderboardType)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      // Update if new score is higher
+      if (entry.score > existing.score) {
+        const [updated] = await db
+          .update(leaderboardEntries)
+          .set({ ...entry, updatedAt: new Date() })
+          .where(eq(leaderboardEntries.id, existing.id))
+          .returning();
+        return updated;
+      }
+      return existing;
+    }
+
+    // Create new entry
+    const [created] = await db.insert(leaderboardEntries).values(entry).returning();
+    return created;
+  }
+
+  async getPlayerRank(sessionToken: string, type: string): Promise<{ rank: number; entry: LeaderboardEntry } | null> {
+    const entries = await this.getLeaderboard(type, 1000);
+    const index = entries.findIndex(e => e.sessionToken === sessionToken);
+    
+    if (index === -1) return null;
+
+    return {
+      rank: index + 1,
+      entry: entries[index]
+    };
+  }
+
+  async recalculateLeaderboard(type: string): Promise<void> {
+    // Recalculate ranks based on scores
+    const entries = await this.getLeaderboard(type, 1000);
+    
+    for (let i = 0; i < entries.length; i++) {
+      await db
+        .update(leaderboardEntries)
+        .set({ rank: i + 1 })
+        .where(eq(leaderboardEntries.id, entries[i].id));
+    }
+  }
+
+  // Daily Challenges
+  async getDailyChallenges(includeExpired: boolean = false): Promise<DailyChallenge[]> {
+    if (includeExpired) {
+      return await db
+        .select()
+        .from(dailyChallenges)
+        .where(eq(dailyChallenges.isActive, true))
+        .orderBy(desc(dailyChallenges.challengeDate));
+    }
+
+    return await db
+      .select()
+      .from(dailyChallenges)
+      .where(
+        and(
+          eq(dailyChallenges.isActive, true),
+          gte(dailyChallenges.expiresAt, new Date())
+        )
+      )
+      .orderBy(desc(dailyChallenges.challengeDate));
+  }
+
+  async getTodayChallenge(): Promise<DailyChallenge | undefined> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const [challenge] = await db
+      .select()
+      .from(dailyChallenges)
+      .where(
+        and(
+          eq(dailyChallenges.isActive, true),
+          gte(dailyChallenges.challengeDate, today),
+          between(dailyChallenges.challengeDate, today, tomorrow)
+        )
+      )
+      .limit(1);
+    return challenge;
+  }
+
+  async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> {
+    const [created] = await db.insert(dailyChallenges).values(challenge).returning();
+    return created;
+  }
+
+  async getChallengeCompletions(sessionToken: string): Promise<ChallengeCompletion[]> {
+    return await db
+      .select()
+      .from(challengeCompletions)
+      .where(eq(challengeCompletions.sessionToken, sessionToken))
+      .orderBy(desc(challengeCompletions.completedAt));
+  }
+
+  async completeChallenge(completion: InsertChallengeCompletion): Promise<{ completion: ChallengeCompletion; rewards: { xp: number; currency: number } }> {
+    // Get challenge details
+    const [challenge] = await db
+      .select()
+      .from(dailyChallenges)
+      .where(eq(dailyChallenges.challengeId, completion.challengeId))
+      .limit(1);
+
+    if (!challenge) {
+      throw new Error(`Challenge ${completion.challengeId} not found`);
+    }
+
+    // Record completion
+    const [completed] = await db.insert(challengeCompletions).values(completion).returning();
+
+    // Award rewards
+    await this.addXP(completion.sessionToken, challenge.xpReward, `challenge:${completion.challengeId}`);
+    await this.addCurrency(completion.sessionToken, challenge.currencyReward);
+
+    return {
+      completion: completed,
+      rewards: {
+        xp: challenge.xpReward,
+        currency: challenge.currencyReward
+      }
+    };
+  }
+
+  async hasChallengeCompleted(sessionToken: string, challengeId: string): Promise<boolean> {
+    const [completion] = await db
+      .select()
+      .from(challengeCompletions)
+      .where(
+        and(
+          eq(challengeCompletions.sessionToken, sessionToken),
+          eq(challengeCompletions.challengeId, challengeId)
+        )
+      )
+      .limit(1);
+    return !!completion;
+  }
+
+  // Campaign Stats
+  async getCampaignStats(campaignId: string): Promise<CampaignStats | undefined> {
+    const [stats] = await db
+      .select()
+      .from(campaignStats)
+      .where(eq(campaignStats.campaignId, campaignId))
+      .limit(1);
+    return stats;
+  }
+
+  async updateCampaignStats(campaignId: string, updates: Partial<CampaignStats>): Promise<CampaignStats> {
+    // Check if stats exist
+    const existing = await this.getCampaignStats(campaignId);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(campaignStats)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(campaignStats.campaignId, campaignId))
+        .returning();
+      return updated;
+    }
+
+    // Create new stats
+    const [created] = await db
+      .insert(campaignStats)
+      .values({ campaignId, ...updates })
+      .returning();
+    return created;
+  }
+
+  async recordCampaignAttempt(campaignId: string, sessionToken: string): Promise<void> {
+    const stats = await this.getCampaignStats(campaignId) || {
+      campaignId,
+      totalAttempts: 0,
+      totalCompletions: 0,
+      uniquePlayers: 0,
+      averageCompletionTime: 0,
+      averageRating: 0,
+      totalRatings: 0,
+      completionRate: 0,
+      dropOffPoints: []
+    };
+
+    await this.updateCampaignStats(campaignId, {
+      totalAttempts: (stats.totalAttempts || 0) + 1
+    });
+  }
+
+  async recordCampaignCompletion(campaignId: string, sessionToken: string, timeMinutes: number, rating?: number): Promise<void> {
+    const stats = await this.getCampaignStats(campaignId) || {
+      campaignId,
+      totalAttempts: 0,
+      totalCompletions: 0,
+      uniquePlayers: 0,
+      averageCompletionTime: 0,
+      averageRating: 0,
+      totalRatings: 0,
+      completionRate: 0,
+      fastestCompletionTime: undefined,
+      dropOffPoints: []
+    };
+
+    const totalCompletions = (stats.totalCompletions || 0) + 1;
+    const totalAttempts = stats.totalAttempts || 1;
+    const avgTime = stats.averageCompletionTime || 0;
+    const newAvgTime = Math.round((avgTime * (totalCompletions - 1) + timeMinutes) / totalCompletions);
+    const fastestTime = stats.fastestCompletionTime ? Math.min(stats.fastestCompletionTime, timeMinutes) : timeMinutes;
+
+    const updates: Partial<CampaignStats> = {
+      totalCompletions,
+      averageCompletionTime: newAvgTime,
+      fastestCompletionTime: fastestTime,
+      completionRate: Math.round((totalCompletions / totalAttempts) * 100)
+    };
+
+    if (rating) {
+      const totalRatings = (stats.totalRatings || 0) + 1;
+      const avgRating = stats.averageRating || 0;
+      const newAvgRating = Math.round((avgRating * (totalRatings - 1) + rating) / totalRatings);
+      updates.averageRating = newAvgRating;
+      updates.totalRatings = totalRatings;
+    }
+
+    await this.updateCampaignStats(campaignId, updates);
+
+    // Update leaderboard for campaign speed
+    await this.updateLeaderboardEntry({
+      sessionToken,
+      username: 'Player', // Should be fetched from session
+      leaderboardType: `campaign_speed_${campaignId}`,
+      score: timeMinutes * -1, // Negative so faster times rank higher
+      metadata: { campaignId, completionTime: timeMinutes }
+    });
   }
 }
 
