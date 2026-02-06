@@ -18,6 +18,7 @@ export default function Home() {
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [scrolledPastVideo, setScrolledPastVideo] = useState(false);
   
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const darkSectionRef = useRef<HTMLDivElement>(null);
   const paragraph1Ref = useRef<HTMLDivElement>(null);
@@ -56,28 +57,44 @@ export default function Home() {
         {/* Video Background */}
         <motion.div 
           style={{ opacity: videoOpacity }}
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0"
         >
+          {/* Poster image - visible until video loads */}
+          <div className={`absolute inset-0 transition-opacity duration-1000 ${videoLoaded ? 'opacity-0' : 'opacity-100'}`}>
+            <img
+              src="/videos/nexus-hero-poster.png"
+              alt=""
+              className="w-full h-full object-cover"
+              data-testid="hero-poster"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+            <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-amber-500/60 border-t-amber-400 rounded-full animate-spin" />
+              <span className="text-amber-500/70 text-xs font-mono tracking-widest uppercase">Initializing</span>
+            </div>
+          </div>
+
+          {/* Video - fades in once loaded */}
           <video
             ref={videoRef}
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-full object-cover"
-            poster="/videos/probability-poster.png"
+            onCanPlayThrough={() => setVideoLoaded(true)}
+            onPlaying={() => setVideoLoaded(true)}
+            className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
             data-testid="hero-video"
           >
             <source src="/videos/hero-one-card-sequence.mp4" type="video/mp4" />
           </video>
-          
         </motion.div>
         
         {/* Minimal Logo on Video */}
         <div className="absolute top-6 left-6 z-20">
           <div className="flex items-center gap-2">
-            <Server className="text-stone-800 w-6 h-6" />
-            <span className="font-orbitron font-bold text-xl tracking-wider text-stone-800">
+            <Server className={`w-6 h-6 transition-colors duration-1000 ${videoLoaded ? 'text-stone-800' : 'text-amber-500'}`} />
+            <span className={`font-orbitron font-bold text-xl tracking-wider transition-colors duration-1000 ${videoLoaded ? 'text-stone-800' : 'text-amber-400'}`}>
               NEXUS
             </span>
           </div>
