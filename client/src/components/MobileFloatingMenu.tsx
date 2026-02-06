@@ -21,7 +21,8 @@ import {
   Sparkles,
   Bot,
   Eye,
-  EyeOff
+  EyeOff,
+  Shield
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
@@ -67,6 +68,7 @@ export default function MobileFloatingMenu() {
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple', badge: pendingFindings.length || undefined },
+    { path: '/campaigns', icon: Shield, label: 'Campaigns', color: 'teal' },
     ...(gameState.devMode ? [
       { path: '/admin', icon: Settings, label: 'Admin', color: 'amber', devOnly: true },
       { path: '/debug', icon: Bug, label: 'Debug', color: 'red', devOnly: true },

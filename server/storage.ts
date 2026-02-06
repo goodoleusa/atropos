@@ -144,6 +144,7 @@ export interface IStorage {
   
   // Designer Campaigns
   getAllDesignerCampaigns(): Promise<DesignerCampaign[]>;
+  getPublishedDesignerCampaigns(): Promise<DesignerCampaign[]>;
   getDesignerCampaignById(campaignId: string): Promise<DesignerCampaign | undefined>;
   upsertDesignerCampaign(campaignId: string, data: Partial<InsertDesignerCampaign>): Promise<DesignerCampaign>;
   deleteDesignerCampaign(campaignId: string): Promise<boolean>;
@@ -638,6 +639,12 @@ export class DatabaseStorage implements IStorage {
   // Designer Campaigns
   async getAllDesignerCampaigns(): Promise<DesignerCampaign[]> {
     return await db.select().from(designerCampaigns).orderBy(desc(designerCampaigns.updatedAt));
+  }
+
+  async getPublishedDesignerCampaigns(): Promise<DesignerCampaign[]> {
+    return await db.select().from(designerCampaigns)
+      .where(eq(designerCampaigns.isPublished, true))
+      .orderBy(desc(designerCampaigns.updatedAt));
   }
 
   async getDesignerCampaignById(campaignId: string): Promise<DesignerCampaign | undefined> {

@@ -13,15 +13,20 @@ export interface GlobalEffectsConfig {
   glitch: boolean;
   glitchFrequency: number;
   glitchIntensity: number;
+  glitchIntervalMs: number;
+  glitchDurationMs: number;
   noise: boolean;
   noiseOpacity: number;
   subliminalFlashes: boolean;
   subliminalMessages: string[];
+  subliminalIntervalMs: number;
+  subliminalDurationMs: number;
   warmGlow: boolean;
   warmGlowIntensity: number;
   flickerEnabled: boolean;
   flickerSpeed: number;
-  // Mouse effects
+  flickerIntervalMs: number;
+  flickerDurationMs: number;
   cursorGlow: boolean;
   cursorGlowColor: string;
   cursorGlowSize: number;
@@ -29,7 +34,7 @@ export interface GlobalEffectsConfig {
   cursorTrailLength: number;
   cursorTrailColor: string;
   cursorRipple: boolean;
-  // Background effects
+  cursorRippleDurationMs: number;
   bgParticles: boolean;
   bgParticleCount: number;
   bgParticleColor: string;
@@ -40,9 +45,10 @@ export interface GlobalEffectsConfig {
   bgGridPulse: boolean;
   bgGridColor: string;
   bgGridOpacity: number;
+  bgGridPulseSpeed: number;
   bgFloatingOrbs: boolean;
   bgOrbCount: number;
-  // Page targeting
+  bgOrbSpeed: number;
   excludedPages: string[];
   preset: string;
 }
@@ -60,14 +66,20 @@ export const DEFAULT_GLOBAL_EFFECTS: GlobalEffectsConfig = {
   glitch: false,
   glitchFrequency: 0.02,
   glitchIntensity: 0.5,
+  glitchIntervalMs: 2000,
+  glitchDurationMs: 100,
   noise: false,
   noiseOpacity: 0.02,
   subliminalFlashes: false,
   subliminalMessages: ["LOOK CLOSER", "0xDEAD", "THE SIGNAL", "OBSERVE"],
+  subliminalIntervalMs: 5000,
+  subliminalDurationMs: 100,
   warmGlow: false,
   warmGlowIntensity: 0.15,
   flickerEnabled: false,
   flickerSpeed: 0.5,
+  flickerIntervalMs: 800,
+  flickerDurationMs: 50,
   cursorGlow: false,
   cursorGlowColor: "#d97706",
   cursorGlowSize: 200,
@@ -75,6 +87,7 @@ export const DEFAULT_GLOBAL_EFFECTS: GlobalEffectsConfig = {
   cursorTrailLength: 20,
   cursorTrailColor: "#d97706",
   cursorRipple: false,
+  cursorRippleDurationMs: 800,
   bgParticles: false,
   bgParticleCount: 50,
   bgParticleColor: "#d97706",
@@ -85,8 +98,10 @@ export const DEFAULT_GLOBAL_EFFECTS: GlobalEffectsConfig = {
   bgGridPulse: false,
   bgGridColor: "#d97706",
   bgGridOpacity: 0.04,
+  bgGridPulseSpeed: 4,
   bgFloatingOrbs: false,
   bgOrbCount: 5,
+  bgOrbSpeed: 20,
   excludedPages: ["/admin"],
   preset: "clean",
 };
