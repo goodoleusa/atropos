@@ -187,6 +187,9 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   const [ctfGenTemplate, setCtfGenTemplate] = useState<{id: string; name: string; icon: string} | null>(null);
   const [ctfGenTopic, setCtfGenTopic] = useState('');
   const [ctfGenSkill, setCtfGenSkill] = useState('intermediate');
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false);
+  const [templateGalleryFilter, setTemplateGalleryFilter] = useState<'all' | 'local' | 'ctf'>('all');
+  const [templatePreview, setTemplatePreview] = useState<string | null>(null);
   const [ctfGenerating, setCtfGenerating] = useState(false);
 
   // Wikilink parsing - extract [[Node Title]] links from content
@@ -2225,37 +2228,9 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   <p className="text-[10px] text-amber-500 uppercase tracking-wider font-bold flex items-center gap-1">
                     <FolderTree className="w-3 h-3" /> Campaigns
                   </p>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-400 hover:text-amber-300 touch-manipulation" data-testid="new-campaign-btn">
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-stone-900 border-amber-900/50">
-                      <DropdownMenuLabel className="text-amber-500 text-xs">Quick Start</DropdownMenuLabel>
-                      {CAMPAIGN_TEMPLATES.map(t => (
-                        <DropdownMenuItem key={t.id} onClick={() => createFromTemplate(t.id)} className="text-stone-300 hover:bg-amber-900/30 min-h-[44px] touch-manipulation" data-testid={`template-${t.id}`}>
-                          <span className="mr-2">{t.icon}</span> {t.name}
-                          <Badge variant="outline" className="ml-auto text-[9px] border-stone-700 text-stone-500">{t.difficulty}</Badge>
-                        </DropdownMenuItem>
-                      ))}
-                      <DropdownMenuSeparator className="bg-stone-800" />
-                      <DropdownMenuLabel className="text-teal-500 text-xs">CTF Generators</DropdownMenuLabel>
-                      {[
-                        { id: 'osint_recon', name: 'OSINT Recon', icon: '🕵️' },
-                        { id: 'network_forensics', name: 'Network Forensics', icon: '📡' },
-                        { id: 'web_pentest', name: 'Web Pentest', icon: '🔓' },
-                        { id: 'social_engineering', name: 'Social Engineering', icon: '🎭' },
-                        { id: 'malware_analysis', name: 'Malware Analysis', icon: '🦠' },
-                        { id: 'incident_response', name: 'Incident Response', icon: '🚨' },
-                      ].map(t => (
-                        <DropdownMenuItem key={t.id} onClick={() => setCtfGenTemplate(t)} className="text-stone-300 hover:bg-teal-900/30 min-h-[44px] touch-manipulation" data-testid={`ctf-template-${t.id}`}>
-                          <span className="mr-2">{t.icon}</span> {t.name}
-                          <Badge variant="outline" className="ml-auto text-[9px] border-teal-700 text-teal-500">CTF</Badge>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-400 hover:text-amber-300 touch-manipulation" onClick={() => setShowTemplateGallery(true)} data-testid="new-campaign-btn">
+                    <Plus className="w-4 h-4" />
+                  </Button>
                 </div>
                 <ScrollArea className="h-[120px] sm:h-[200px]">
                   <div className="space-y-1">
