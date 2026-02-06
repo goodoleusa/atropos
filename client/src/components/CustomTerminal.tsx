@@ -832,8 +832,11 @@ export const CustomTerminal = () => {
           newHistory.push({ type: 'output', content: `║     Phase: ${phase.name.padEnd(20)} Difficulty: ${m.difficulty.padEnd(12)}║` });
         });
         newHistory.push({ type: 'system', content: '╠══════════════════════════════════════════════════════════════════╣' });
-        newHistory.push({ type: 'output', content: '║  COMMANDS:                                                       ║' });
-        newHistory.push({ type: 'output', content: '║    mission <id>     - Accept and view mission briefing          ║' });
+        newHistory.push({ type: 'output', content: '║  QUICK START:                                                    ║' });
+        newHistory.push({ type: 'clue',   content: '║    mission 1        - Start mission #1 from the list above      ║' });
+        newHistory.push({ type: 'clue',   content: '║    mission 2        - Start mission #2, etc.                    ║' });
+        newHistory.push({ type: 'output', content: '║                                                                  ║' });
+        newHistory.push({ type: 'output', content: '║  OTHER COMMANDS:                                                 ║' });
         newHistory.push({ type: 'output', content: '║    mission status   - View current mission objectives           ║' });
         newHistory.push({ type: 'output', content: '║    mission abort    - Abort current mission                     ║' });
         newHistory.push({ type: 'output', content: '║    style <type>     - Set learning style (visual/reading/       ║' });
@@ -844,8 +847,23 @@ export const CustomTerminal = () => {
       case 'mission':
         const missionArg = args[0];
         if (!missionArg) {
-          newHistory.push({ type: 'error', content: 'Usage: mission <id|status|abort>' });
-          newHistory.push({ type: 'output', content: 'Try: missions (to see available assignments)' });
+          newHistory.push({ type: 'system', content: 'MISSION COMMANDS:' });
+          newHistory.push({ type: 'output', content: '  mission 1       - Start mission #1' });
+          newHistory.push({ type: 'output', content: '  mission 2       - Start mission #2 (etc.)' });
+          newHistory.push({ type: 'output', content: '  mission list    - Quick list of all missions' });
+          newHistory.push({ type: 'output', content: '  mission status  - Check current objectives' });
+          newHistory.push({ type: 'output', content: '  mission abort   - Abandon current mission' });
+          newHistory.push({ type: 'clue', content: 'Type "missions" first to see all available assignments.' });
+        } else if (missionArg === 'list') {
+          newHistory.push({ type: 'system', content: 'Redirecting to mission list...' });
+          newHistory.push({ type: 'output', content: '' });
+          SPY_MISSIONS.forEach((m, i) => {
+            const missionComplete = gameState.inventory.some(c => c.id === `mission-${m.id}-complete`);
+            const status = missionComplete ? '✓' : activeMission?.id === m.id ? '→' : ' ';
+            newHistory.push({ type: 'output', content: `  ${status} ${i + 1}. ${m.codename} [${m.difficulty}]` });
+          });
+          newHistory.push({ type: 'clue', content: '' });
+          newHistory.push({ type: 'clue', content: 'Type "mission <number>" to start. Example: mission 1' });
         } else if (missionArg === 'status') {
           if (!activeMission) {
             newHistory.push({ type: 'warning', content: 'No active mission. Type "missions" to see available assignments.' });
@@ -875,11 +893,17 @@ export const CustomTerminal = () => {
             setActiveMission(null);
           }
         } else {
-          const missionId = missionArg.toLowerCase().replace(/\s+/g, '-');
-          const mission = getMissionById(missionId) || SPY_MISSIONS.find(m => 
-            m.codename.toLowerCase().includes(missionArg.toLowerCase()) ||
-            m.id.includes(missionArg)
-          );
+          const missionNum = parseInt(missionArg);
+          let mission;
+          if (!isNaN(missionNum) && missionNum >= 1 && missionNum <= SPY_MISSIONS.length) {
+            mission = SPY_MISSIONS[missionNum - 1];
+          } else {
+            const missionId = missionArg.toLowerCase().replace(/\s+/g, '-');
+            mission = getMissionById(missionId) || SPY_MISSIONS.find(m => 
+              m.codename.toLowerCase().includes(missionArg.toLowerCase()) ||
+              m.id.includes(missionArg)
+            );
+          }
           if (mission) {
             setActiveMission(mission);
             const handler = getHandlerInfo(mission.handler);
@@ -906,7 +930,8 @@ export const CustomTerminal = () => {
             });
           } else {
             newHistory.push({ type: 'error', content: `Mission "${missionArg}" not found.` });
-            newHistory.push({ type: 'output', content: 'Try: missions (to see available assignments)' });
+            newHistory.push({ type: 'output', content: 'Type "missions" to see available assignments.' });
+            newHistory.push({ type: 'clue', content: 'Tip: Use "mission 1" or "mission 2" to pick by number.' });
           }
         }
         break;

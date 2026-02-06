@@ -605,20 +605,20 @@ export default function AdminDashboard() {
       <div className="flex h-[calc(100vh-49px)]">
         {/* Mobile sidebar overlay */}
         {sidebarOpen && (
-          <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} data-testid="sidebar-overlay" />
         )}
 
         {/* Sidebar */}
         <aside className={`
-          fixed lg:static inset-y-0 left-0 z-40 
+          fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
           w-64 bg-[#0a0500] border-r border-amber-900/30
           transform transition-transform duration-200
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           flex flex-col overflow-hidden
-          mt-[49px] lg:mt-0
+          pt-[49px] lg:pt-0
         `}>
-          {/* Quick Access Mini */}
-          <div className="p-3 border-b border-amber-900/20">
+          {/* Quick Access - hidden on mobile to save space */}
+          <div className="hidden lg:block p-3 border-b border-amber-900/20">
             <QuickAccessSection />
           </div>
 
@@ -1592,13 +1592,13 @@ function CampaignsPanel({ setSelectedCampaign, setCampaignDesignerOpen }: { setS
           <Card key={campaign.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-700/50 transition-all cursor-pointer" onClick={() => { setSelectedCampaign(campaign); setCampaignDesignerOpen(true); }}>
             <CardHeader className="pb-2">
               <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
-                <Target className="w-4 h-4" /> {campaign.title}
+                <Target className="w-4 h-4" /> {campaign.name}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-stone-500 text-xs mb-2">{campaign.description}</p>
               <div className="flex gap-2">
-                <Badge variant="outline" className="text-[9px] border-stone-700">{campaign.category}</Badge>
+                <Badge variant="outline" className="text-[9px] border-stone-700">{campaign.tags?.[0] || 'general'}</Badge>
                 <Badge variant="outline" className={`text-[9px] ${getDifficultyColor(campaign.difficulty)}`}>{campaign.difficulty}</Badge>
               </div>
             </CardContent>
@@ -1639,18 +1639,23 @@ function GraphPanel({ clues, selectedClueId, setSelectedClueId, clueTrail, setCl
         <Card className="bg-[#0a0500] border-blue-900/30">
           <CardContent className="p-4">
             <ClueGraph
-              clues={clues}
+              clues={clues.map((c: any) => ({ id: c.id, name: c.name, linkedTo: [], linkedFrom: [] }))}
               selectedClueId={selectedClueId || undefined}
-              onClueSelect={(id) => setSelectedClueId(id)}
+              onSelectClue={(id: string) => setSelectedClueId(id)}
             />
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
-          <ClueBreadcrumbs
-            trail={clueTrail}
-            onNavigate={(id) => setSelectedClueId(id)}
-          />
+          {selectedClueId && (
+            <ClueBreadcrumbs
+              currentClue={{ id: selectedClueId, name: clues.find((c: any) => c.id === selectedClueId)?.name || selectedClueId, linkedTo: [], linkedFrom: [] }}
+              allClues={clues.map((c: any) => ({ id: c.id, name: c.name, linkedTo: [], linkedFrom: [] }))}
+              trail={clueTrail}
+              onTrailChange={setClueTrail}
+              onNavigate={(id: string) => setSelectedClueId(id)}
+            />
+          )}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
             {clues.map((clue: any) => (
               <Card
