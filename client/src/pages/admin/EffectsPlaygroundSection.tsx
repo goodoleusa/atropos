@@ -784,9 +784,84 @@ export function EffectsPlaygroundSection() {
   );
 }
 
+function EffectPreviewBox({ children, label, active }: { children: React.ReactNode; label: string; active: boolean }) {
+  return (
+    <div className={`relative rounded-lg border overflow-hidden h-24 ${active ? 'border-amber-700/60' : 'border-stone-800'}`}>
+      <div className="absolute inset-0 bg-gradient-to-br from-stone-900 to-stone-950">
+        <div className="absolute inset-0 flex items-center justify-center gap-3 p-3">
+          <div className="w-10 h-10 rounded border border-stone-700 bg-stone-800/50" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-2 bg-stone-700/50 rounded w-3/4" />
+            <div className="h-2 bg-stone-700/30 rounded w-1/2" />
+            <div className="h-1.5 bg-stone-700/20 rounded w-2/3" />
+          </div>
+        </div>
+      </div>
+      {active && children}
+      <div className="absolute bottom-1 left-2">
+        <span className={`text-[9px] font-mono ${active ? 'text-amber-500' : 'text-stone-600'}`}>{label}</span>
+      </div>
+      {!active && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+          <span className="text-[10px] text-stone-600 font-mono">OFF</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TimingSlider({ label, value, onChange, min, max, step, unit }: {
+  label: string; value: number; onChange: (v: number) => void; min: number; max: number; step: number; unit: string;
+}) {
+  return (
+    <div>
+      <div className="flex justify-between mb-1">
+        <Label className="text-stone-500 text-[10px]">{label}</Label>
+        <span className="text-[10px] text-stone-400 font-mono">{value}{unit}</span>
+      </div>
+      <Slider value={[value]} onValueChange={([v]) => onChange(v)} min={min} max={max} step={step} className="py-1" />
+    </div>
+  );
+}
+
 function GlobalSiteFXTab() {
   const { config: gfx, updateConfig: setGfx, applyPreset, saveToServer } = useGlobalEffects();
   const [saving, setSaving] = useState(false);
+  const [previewGlitch, setPreviewGlitch] = useState(false);
+  const [previewFlicker, setPreviewFlicker] = useState(false);
+  const [previewFlash, setPreviewFlash] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!gfx.glitch) { setPreviewGlitch(false); return; }
+    const id = setInterval(() => {
+      if (Math.random() < gfx.glitchFrequency) {
+        setPreviewGlitch(true);
+        setTimeout(() => setPreviewGlitch(false), gfx.glitchDurationMs || 100);
+      }
+    }, gfx.glitchIntervalMs || 2000);
+    return () => clearInterval(id);
+  }, [gfx.glitch, gfx.glitchFrequency, gfx.glitchIntervalMs, gfx.glitchDurationMs]);
+
+  useEffect(() => {
+    if (!gfx.flickerEnabled) { setPreviewFlicker(false); return; }
+    const id = setInterval(() => {
+      if (Math.random() < 0.3) {
+        setPreviewFlicker(true);
+        setTimeout(() => setPreviewFlicker(false), gfx.flickerDurationMs || 50);
+      }
+    }, gfx.flickerIntervalMs || 800);
+    return () => clearInterval(id);
+  }, [gfx.flickerEnabled, gfx.flickerIntervalMs, gfx.flickerDurationMs]);
+
+  useEffect(() => {
+    if (!gfx.subliminalFlashes || gfx.subliminalMessages.length === 0) { setPreviewFlash(null); return; }
+    const id = setInterval(() => {
+      const msg = gfx.subliminalMessages[Math.floor(Math.random() * gfx.subliminalMessages.length)];
+      setPreviewFlash(msg);
+      setTimeout(() => setPreviewFlash(null), gfx.subliminalDurationMs || 100);
+    }, gfx.subliminalIntervalMs || 5000);
+    return () => clearInterval(id);
+  }, [gfx.subliminalFlashes, gfx.subliminalMessages, gfx.subliminalIntervalMs, gfx.subliminalDurationMs]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -859,109 +934,179 @@ function GlobalSiteFXTab() {
             <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
               <Monitor className="w-4 h-4" /> Screen Overlays
             </CardTitle>
+            <CardDescription className="text-stone-600 text-[10px]">These effects layer over the entire page. Previews below show each one in isolation.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+              <EffectPreviewBox label="Scanlines" active={gfx.scanlines}>
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,${gfx.scanlineOpacity}) 2px, rgba(0,0,0,${gfx.scanlineOpacity}) 4px)`,
+                }} />
+              </EffectPreviewBox>
+              <EffectPreviewBox label="Vignette" active={gfx.vignette}>
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: `radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,${gfx.vignetteIntensity * 0.6}) 60%, rgba(0,0,0,${gfx.vignetteIntensity}) 100%)`,
+                }} />
+              </EffectPreviewBox>
+              <EffectPreviewBox label="CRT" active={gfx.crt}>
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: `radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)`,
+                  boxShadow: `inset 0 0 ${gfx.crtCurvature * 4}px rgba(0,0,0,0.4)`,
+                  borderRadius: `${gfx.crtCurvature}px`,
+                }} />
+              </EffectPreviewBox>
+              <EffectPreviewBox label="Warm Glow" active={gfx.warmGlow}>
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: `radial-gradient(ellipse at 50% 0%, rgba(184,115,51,${gfx.warmGlowIntensity}) 0%, transparent 60%)`,
+                }} />
+              </EffectPreviewBox>
+              <EffectPreviewBox label="Noise" active={gfx.noise}>
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  opacity: Math.min(gfx.noiseOpacity * 8, 0.5),
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                }} />
+              </EffectPreviewBox>
+              <EffectPreviewBox label="Chromatic" active={gfx.chromaticAberration}>
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute inset-0 mix-blend-screen" style={{ background: 'rgba(255,0,0,0.06)', transform: `translateX(${gfx.chromaticOffset}px)` }} />
+                  <div className="absolute inset-0 mix-blend-screen" style={{ background: 'rgba(0,255,255,0.06)', transform: `translateX(-${gfx.chromaticOffset}px)` }} />
+                </div>
+              </EffectPreviewBox>
+              <EffectPreviewBox label="Glitch" active={gfx.glitch}>
+                {previewGlitch && (
+                  <div className="absolute inset-0 pointer-events-none" style={{ opacity: gfx.glitchIntensity }}>
+                    <div className="absolute inset-0" style={{
+                      background: `linear-gradient(${Math.random() * 360}deg, transparent 40%, rgba(184,115,51,0.1) 50%, transparent 60%)`,
+                    }} />
+                    <div className="absolute h-[2px] w-full bg-amber-700/30" style={{ top: `${Math.random() * 100}%` }} />
+                  </div>
+                )}
+              </EffectPreviewBox>
+              <EffectPreviewBox label="Flicker" active={gfx.flickerEnabled}>
+                {previewFlicker && <div className="absolute inset-0 bg-black/30 pointer-events-none" />}
+              </EffectPreviewBox>
+            </div>
+
             <div className="grid grid-cols-2 gap-x-6 gap-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">Scanlines</Label>
                 <Switch checked={gfx.scanlines} onCheckedChange={(v) => setGfx({ scanlines: v })} />
               </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <Label className="text-stone-500 text-[10px]">Opacity</Label>
-                  <span className="text-[10px] text-amber-400">{(gfx.scanlineOpacity * 100).toFixed(0)}%</span>
-                </div>
-                <Slider value={[gfx.scanlineOpacity]} onValueChange={([v]) => setGfx({ scanlineOpacity: v })} min={0.01} max={0.15} step={0.01} className="py-1" />
-              </div>
+              <TimingSlider label="Opacity" value={gfx.scanlineOpacity} onChange={(v) => setGfx({ scanlineOpacity: v })} min={0.01} max={0.15} step={0.01} unit="" />
 
               <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">Vignette</Label>
                 <Switch checked={gfx.vignette} onCheckedChange={(v) => setGfx({ vignette: v })} />
               </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <Label className="text-stone-500 text-[10px]">Intensity</Label>
-                  <span className="text-[10px] text-amber-400">{(gfx.vignetteIntensity * 100).toFixed(0)}%</span>
-                </div>
-                <Slider value={[gfx.vignetteIntensity]} onValueChange={([v]) => setGfx({ vignetteIntensity: v })} min={0.1} max={0.8} step={0.05} className="py-1" />
-              </div>
+              <TimingSlider label="Intensity" value={gfx.vignetteIntensity} onChange={(v) => setGfx({ vignetteIntensity: v })} min={0.1} max={0.8} step={0.05} unit="" />
 
               <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">CRT Curvature</Label>
                 <Switch checked={gfx.crt} onCheckedChange={(v) => setGfx({ crt: v })} />
               </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <Label className="text-stone-500 text-[10px]">Curvature</Label>
-                  <span className="text-[10px] text-amber-400">{gfx.crtCurvature}px</span>
-                </div>
-                <Slider value={[gfx.crtCurvature]} onValueChange={([v]) => setGfx({ crtCurvature: v })} min={1} max={10} step={1} className="py-1" />
-              </div>
+              <TimingSlider label="Curvature" value={gfx.crtCurvature} onChange={(v) => setGfx({ crtCurvature: v })} min={1} max={10} step={1} unit="px" />
 
               <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">Chromatic Aberration</Label>
                 <Switch checked={gfx.chromaticAberration} onCheckedChange={(v) => setGfx({ chromaticAberration: v })} />
               </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <Label className="text-stone-500 text-[10px]">Offset</Label>
-                  <span className="text-[10px] text-amber-400">{gfx.chromaticOffset}px</span>
-                </div>
-                <Slider value={[gfx.chromaticOffset]} onValueChange={([v]) => setGfx({ chromaticOffset: v })} min={0.5} max={5} step={0.5} className="py-1" />
-              </div>
+              <TimingSlider label="Offset" value={gfx.chromaticOffset} onChange={(v) => setGfx({ chromaticOffset: v })} min={0.5} max={5} step={0.5} unit="px" />
 
               <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">Warm Glow</Label>
                 <Switch checked={gfx.warmGlow} onCheckedChange={(v) => setGfx({ warmGlow: v })} />
               </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <Label className="text-stone-500 text-[10px]">Intensity</Label>
-                  <span className="text-[10px] text-amber-400">{(gfx.warmGlowIntensity * 100).toFixed(0)}%</span>
-                </div>
-                <Slider value={[gfx.warmGlowIntensity]} onValueChange={([v]) => setGfx({ warmGlowIntensity: v })} min={0.05} max={0.4} step={0.05} className="py-1" />
-              </div>
+              <TimingSlider label="Intensity" value={gfx.warmGlowIntensity} onChange={(v) => setGfx({ warmGlowIntensity: v })} min={0.05} max={0.4} step={0.05} unit="" />
 
               <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">Film Noise</Label>
                 <Switch checked={gfx.noise} onCheckedChange={(v) => setGfx({ noise: v })} />
               </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <Label className="text-stone-500 text-[10px]">Opacity</Label>
-                  <span className="text-[10px] text-amber-400">{(gfx.noiseOpacity * 100).toFixed(0)}%</span>
-                </div>
-                <Slider value={[gfx.noiseOpacity]} onValueChange={([v]) => setGfx({ noiseOpacity: v })} min={0.005} max={0.08} step={0.005} className="py-1" />
-              </div>
+              <TimingSlider label="Opacity" value={gfx.noiseOpacity} onChange={(v) => setGfx({ noiseOpacity: v })} min={0.005} max={0.08} step={0.005} unit="" />
+            </div>
+          </CardContent>
+        </Card>
 
+        <Card className="bg-[#0a0500] border-red-900/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-red-400 text-sm font-mono flex items-center gap-2">
+              <Zap className="w-4 h-4" /> Timed Effects
+            </CardTitle>
+            <CardDescription className="text-stone-600 text-[10px]">
+              These effects fire on timers. Adjust interval (how often), duration (how long each burst lasts), and probability.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="border border-stone-800 rounded-lg p-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Glitch Effects</Label>
+                <Label className="text-stone-300 text-xs font-mono">Glitch Effects</Label>
                 <Switch checked={gfx.glitch} onCheckedChange={(v) => setGfx({ glitch: v })} />
               </div>
-              <div className="space-y-2">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Frequency</Label>
-                    <span className="text-[10px] text-amber-400">{(gfx.glitchFrequency * 100).toFixed(0)}%</span>
-                  </div>
-                  <Slider value={[gfx.glitchFrequency]} onValueChange={([v]) => setGfx({ glitchFrequency: v })} min={0.01} max={0.15} step={0.01} className="py-1" />
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Intensity</Label>
-                    <span className="text-[10px] text-amber-400">{(gfx.glitchIntensity * 100).toFixed(0)}%</span>
-                  </div>
-                  <Slider value={[gfx.glitchIntensity]} onValueChange={([v]) => setGfx({ glitchIntensity: v })} min={0.1} max={1} step={0.1} className="py-1" />
-                </div>
+              <div className="grid grid-cols-2 gap-3">
+                <TimingSlider label="Check Interval" value={gfx.glitchIntervalMs || 2000} onChange={(v) => setGfx({ glitchIntervalMs: v })} min={200} max={10000} step={100} unit="ms" />
+                <TimingSlider label="Burst Duration" value={gfx.glitchDurationMs || 100} onChange={(v) => setGfx({ glitchDurationMs: v })} min={20} max={500} step={10} unit="ms" />
+                <TimingSlider label="Probability" value={gfx.glitchFrequency} onChange={(v) => setGfx({ glitchFrequency: v })} min={0.01} max={0.2} step={0.01} unit="" />
+                <TimingSlider label="Intensity" value={gfx.glitchIntensity} onChange={(v) => setGfx({ glitchIntensity: v })} min={0.1} max={1} step={0.1} unit="" />
               </div>
+              <div className="relative h-12 rounded border border-stone-800 overflow-hidden bg-gradient-to-r from-stone-900 to-stone-950">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[10px] text-stone-600 font-mono">
+                    fires every {gfx.glitchIntervalMs || 2000}ms for {gfx.glitchDurationMs || 100}ms
+                  </span>
+                </div>
+                {previewGlitch && (
+                  <motion.div className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: gfx.glitchIntensity }} exit={{ opacity: 0 }}>
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, transparent 30%, rgba(184,115,51,0.15) 50%, transparent 70%)' }} />
+                    <div className="absolute h-[2px] w-full bg-amber-600/40" style={{ top: '30%' }} />
+                    <div className="absolute h-[1px] w-full bg-amber-500/20" style={{ top: '65%' }} />
+                  </motion.div>
+                )}
+              </div>
+            </div>
 
+            <div className="border border-stone-800 rounded-lg p-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Subliminal Flashes</Label>
+                <Label className="text-stone-300 text-xs font-mono">Subliminal Flashes</Label>
                 <Switch checked={gfx.subliminalFlashes} onCheckedChange={(v) => setGfx({ subliminalFlashes: v })} />
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <TimingSlider label="Flash Interval" value={gfx.subliminalIntervalMs || 5000} onChange={(v) => setGfx({ subliminalIntervalMs: v })} min={1000} max={30000} step={500} unit="ms" />
+                <TimingSlider label="Flash Duration" value={gfx.subliminalDurationMs || 100} onChange={(v) => setGfx({ subliminalDurationMs: v })} min={30} max={500} step={10} unit="ms" />
+              </div>
+              <div className="relative h-12 rounded border border-stone-800 overflow-hidden bg-gradient-to-r from-stone-900 to-stone-950">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {previewFlash ? (
+                    <span className="text-lg font-black text-amber-500/30 tracking-widest font-mono blur-[0.5px]">{previewFlash}</span>
+                  ) : (
+                    <span className="text-[10px] text-stone-600 font-mono">flash every {gfx.subliminalIntervalMs || 5000}ms for {gfx.subliminalDurationMs || 100}ms</span>
+                  )}
+                </div>
+              </div>
+              <div>
+                <Label className="text-stone-500 text-[10px] mb-1 block">Messages (comma-separated)</Label>
+                <Input
+                  value={gfx.subliminalMessages.join(", ")}
+                  onChange={(e) => setGfx({ subliminalMessages: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
+                  className="bg-black/30 border-stone-700 text-xs text-stone-300"
+                  placeholder="LOOK CLOSER, 0xDEAD, THE SIGNAL"
+                />
+              </div>
+            </div>
+
+            <div className="border border-stone-800 rounded-lg p-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Screen Flicker</Label>
+                <Label className="text-stone-300 text-xs font-mono">Screen Flicker</Label>
                 <Switch checked={gfx.flickerEnabled} onCheckedChange={(v) => setGfx({ flickerEnabled: v })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <TimingSlider label="Flicker Interval" value={gfx.flickerIntervalMs || 800} onChange={(v) => setGfx({ flickerIntervalMs: v })} min={100} max={5000} step={50} unit="ms" />
+                <TimingSlider label="Dim Duration" value={gfx.flickerDurationMs || 50} onChange={(v) => setGfx({ flickerDurationMs: v })} min={10} max={200} step={5} unit="ms" />
+              </div>
+              <div className="relative h-12 rounded border border-stone-800 overflow-hidden bg-gradient-to-r from-stone-900 to-stone-950">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[10px] text-stone-600 font-mono">dims every {gfx.flickerIntervalMs || 800}ms for {gfx.flickerDurationMs || 50}ms</span>
+                </div>
+                {previewFlicker && <div className="absolute inset-0 bg-black/30 pointer-events-none" />}
               </div>
             </div>
           </CardContent>
@@ -990,13 +1135,7 @@ function GlobalSiteFXTab() {
                   />
                   <span className="text-[10px] text-stone-500">{gfx.cursorGlowColor}</span>
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Size</Label>
-                    <span className="text-[10px] text-purple-400">{gfx.cursorGlowSize}px</span>
-                  </div>
-                  <Slider value={[gfx.cursorGlowSize]} onValueChange={([v]) => setGfx({ cursorGlowSize: v })} min={50} max={400} step={10} className="py-1" />
-                </div>
+                <TimingSlider label="Size" value={gfx.cursorGlowSize} onChange={(v) => setGfx({ cursorGlowSize: v })} min={50} max={400} step={10} unit="px" />
               </div>
 
               <div className="flex items-center justify-between">
@@ -1013,19 +1152,14 @@ function GlobalSiteFXTab() {
                     className="w-8 h-6 p-0 border-0"
                   />
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Length</Label>
-                    <span className="text-[10px] text-purple-400">{gfx.cursorTrailLength}</span>
-                  </div>
-                  <Slider value={[gfx.cursorTrailLength]} onValueChange={([v]) => setGfx({ cursorTrailLength: v })} min={5} max={50} step={5} className="py-1" />
-                </div>
+                <TimingSlider label="Length" value={gfx.cursorTrailLength} onChange={(v) => setGfx({ cursorTrailLength: v })} min={5} max={50} step={5} unit="" />
               </div>
 
-              <div className="flex items-center justify-between col-span-2">
+              <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">Click Ripples</Label>
                 <Switch checked={gfx.cursorRipple} onCheckedChange={(v) => setGfx({ cursorRipple: v })} />
               </div>
+              <TimingSlider label="Ripple Duration" value={gfx.cursorRippleDurationMs || 800} onChange={(v) => setGfx({ cursorRippleDurationMs: v })} min={200} max={2000} step={50} unit="ms" />
             </div>
           </CardContent>
         </Card>
@@ -1052,20 +1186,8 @@ function GlobalSiteFXTab() {
                     className="w-8 h-6 p-0 border-0"
                   />
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Count</Label>
-                    <span className="text-[10px] text-teal-400">{gfx.bgParticleCount}</span>
-                  </div>
-                  <Slider value={[gfx.bgParticleCount]} onValueChange={([v]) => setGfx({ bgParticleCount: v })} min={10} max={120} step={10} className="py-1" />
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Speed</Label>
-                    <span className="text-[10px] text-teal-400">{gfx.bgParticleSpeed}x</span>
-                  </div>
-                  <Slider value={[gfx.bgParticleSpeed]} onValueChange={([v]) => setGfx({ bgParticleSpeed: v })} min={0.1} max={3} step={0.1} className="py-1" />
-                </div>
+                <TimingSlider label="Count" value={gfx.bgParticleCount} onChange={(v) => setGfx({ bgParticleCount: v })} min={10} max={120} step={10} unit="" />
+                <TimingSlider label="Speed" value={gfx.bgParticleSpeed} onChange={(v) => setGfx({ bgParticleSpeed: v })} min={0.1} max={3} step={0.1} unit="x" />
               </div>
 
               <div className="flex items-center justify-between">
@@ -1082,13 +1204,7 @@ function GlobalSiteFXTab() {
                     className="w-8 h-6 p-0 border-0"
                   />
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Speed</Label>
-                    <span className="text-[10px] text-teal-400">{gfx.bgMatrixSpeed}x</span>
-                  </div>
-                  <Slider value={[gfx.bgMatrixSpeed]} onValueChange={([v]) => setGfx({ bgMatrixSpeed: v })} min={0.3} max={3} step={0.1} className="py-1" />
-                </div>
+                <TimingSlider label="Speed" value={gfx.bgMatrixSpeed} onChange={(v) => setGfx({ bgMatrixSpeed: v })} min={0.3} max={3} step={0.1} unit="x" />
               </div>
 
               <div className="flex items-center justify-between">
@@ -1105,25 +1221,17 @@ function GlobalSiteFXTab() {
                     className="w-8 h-6 p-0 border-0"
                   />
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label className="text-stone-500 text-[10px]">Opacity</Label>
-                    <span className="text-[10px] text-teal-400">{(gfx.bgGridOpacity * 100).toFixed(0)}%</span>
-                  </div>
-                  <Slider value={[gfx.bgGridOpacity]} onValueChange={([v]) => setGfx({ bgGridOpacity: v })} min={0.01} max={0.1} step={0.005} className="py-1" />
-                </div>
+                <TimingSlider label="Opacity" value={gfx.bgGridOpacity} onChange={(v) => setGfx({ bgGridOpacity: v })} min={0.01} max={0.1} step={0.005} unit="" />
+                <TimingSlider label="Pulse Speed" value={gfx.bgGridPulseSpeed || 4} onChange={(v) => setGfx({ bgGridPulseSpeed: v })} min={1} max={15} step={0.5} unit="s" />
               </div>
 
               <div className="flex items-center justify-between">
                 <Label className="text-stone-400 text-xs">Floating Orbs</Label>
                 <Switch checked={gfx.bgFloatingOrbs} onCheckedChange={(v) => setGfx({ bgFloatingOrbs: v })} />
               </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <Label className="text-stone-500 text-[10px]">Count</Label>
-                  <span className="text-[10px] text-teal-400">{gfx.bgOrbCount}</span>
-                </div>
-                <Slider value={[gfx.bgOrbCount]} onValueChange={([v]) => setGfx({ bgOrbCount: v })} min={2} max={12} step={1} className="py-1" />
+              <div className="space-y-2">
+                <TimingSlider label="Count" value={gfx.bgOrbCount} onChange={(v) => setGfx({ bgOrbCount: v })} min={2} max={12} step={1} unit="" />
+                <TimingSlider label="Drift Speed" value={gfx.bgOrbSpeed || 20} onChange={(v) => setGfx({ bgOrbSpeed: v })} min={5} max={60} step={1} unit="s" />
               </div>
             </div>
           </CardContent>

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, Settings, Bug, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, Settings, Bug, Sparkles, Eye, EyeOff, Shield } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { Switch } from '@/components/ui/switch';
@@ -28,6 +28,7 @@ export default function QuickNav() {
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
+    { path: '/campaigns', icon: Shield, label: 'Campaigns', color: 'teal' as const },
   ];
 
   const devNavItems: typeof baseNavItems = gameState.devMode ? [

@@ -25,6 +25,8 @@ import AILab from "@/pages/AILab";
 import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 import VideoGallery from "@/pages/VideoGallery";
 import Agents from "@/pages/Agents";
+import CampaignsHub from "@/pages/CampaignsHub";
+import CampaignPlayer from "@/pages/CampaignPlayer";
 
 function Router() {
   return (
@@ -43,6 +45,8 @@ function Router() {
       <Route path="/wiki" component={Wiki} />
       <Route path="/videos" component={VideoGallery} />
       <Route path="/agents" component={Agents} />
+      <Route path="/campaigns" component={CampaignsHub} />
+      <Route path="/play/:campaignId" component={CampaignPlayer} />
       <Route component={NotFound} />
     </Switch>
   );
