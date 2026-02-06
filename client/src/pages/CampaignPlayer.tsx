@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronRight, ChevronLeft, Play, CheckCircle2, Lock, Eye, EyeOff,
   Terminal, Globe, Search, Flag, Award, ArrowRight, Lightbulb,
-  FileCode, Network, Code2, Bug, Shield, Zap
+  FileCode, Network, Code2, Bug, Shield, Zap, Sparkles
 } from 'lucide-react';
 
 interface CampaignNode {
@@ -100,6 +100,9 @@ export default function CampaignPlayer() {
   const [showHints, setShowHints] = useState<Record<string, boolean>>({});
   const [beaconFired, setBeaconFired] = useState<Set<string>>(new Set());
   const contentRef = useRef<HTMLDivElement>(null);
+  const [clueRevealEffect, setClueRevealEffect] = useState<{ type: string; id: string } | null>(null);
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; angle: number; speed: number; size: number; color: string; delay: number }>>([]);
+  const [screenFlash, setScreenFlash] = useState(false);
 
   useEffect(() => {
     if (!campaignId) return;
@@ -183,6 +186,32 @@ export default function CampaignPlayer() {
     }
   }, [currentNodeId, nodeClues, fireBeacon, currentNode]);
 
+  const triggerClueReveal = useCallback((clueType: string, clueId: string) => {
+    setClueRevealEffect({ type: clueType, id: clueId });
+    setScreenFlash(true);
+    setTimeout(() => setScreenFlash(false), 300);
+
+    const clueColors: Record<string, string> = {
+      'source-code': '#d97706', 'network-request': '#14b8a6', 'http-header': '#8b5cf6',
+      'console-log': '#f59e0b', 'css-comment': '#06b6d4', 'data-attribute': '#ec4899',
+      'meta-tag': '#10b981', 'base64': '#ef4444', 'hex-encoded': '#f97316', 'steganography': '#6366f1',
+    };
+    const color = clueColors[clueType] || '#d97706';
+    const newParticles = Array.from({ length: 24 }, (_, i) => ({
+      id: Date.now() + i,
+      x: 50 + Math.random() * 20 - 10,
+      y: 50 + Math.random() * 20 - 10,
+      angle: (i / 24) * 360 + Math.random() * 15,
+      speed: 2 + Math.random() * 4,
+      size: 3 + Math.random() * 5,
+      color,
+      delay: Math.random() * 0.15,
+    }));
+    setParticles(newParticles);
+    setTimeout(() => setParticles([]), 1500);
+    setTimeout(() => setClueRevealEffect(null), 2000);
+  }, []);
+
   const checkClueAnswer = useCallback(async () => {
     if (!clueInput.trim() || !campaignId || !currentNodeId) return;
     try {
@@ -190,8 +219,10 @@ export default function CampaignPlayer() {
       const data = await res.json();
       if (data.found) {
         setFoundClues(prev => new Set([...prev, data.clueId]));
+        const clue = nodeClues.find(c => c.id === data.clueId);
+        triggerClueReveal(clue?.type || 'source-code', data.clueId);
         toast({
-          title: "Clue Found!",
+          title: "Intelligence Captured!",
           description: `${data.flag} - ${data.hint}`,
         });
         setClueInput('');
@@ -199,7 +230,7 @@ export default function CampaignPlayer() {
         toast({ title: "Not quite...", description: "That's not the hidden value. Keep investigating!" });
       }
     } catch {}
-  }, [clueInput, campaignId, currentNodeId]);
+  }, [clueInput, campaignId, currentNodeId, nodeClues, triggerClueReveal]);
 
   if (loading) {
     return (
@@ -251,6 +282,72 @@ export default function CampaignPlayer() {
       {nodeClues.filter(c => c.type === 'hex-encoded').map(clue => (
         <div key={clue.id} data-hex-dump={clue.value} data-encoding="hex" style={{ display: 'none' }} />
       ))}
+
+      <AnimatePresence>
+        {screenFlash && (
+          <motion.div
+            className="fixed inset-0 z-[100] pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            style={{ background: 'radial-gradient(circle at 50% 50%, rgba(217,119,6,0.15) 0%, transparent 70%)' }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {clueRevealEffect && (
+          <motion.div
+            className="fixed inset-0 z-[99] pointer-events-none flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="relative"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            >
+              <div className="w-20 h-20 rounded-full bg-amber-900/30 border-2 border-amber-500/50 flex items-center justify-center backdrop-blur-sm">
+                <Sparkles className="w-8 h-8 text-amber-400" />
+              </div>
+              <motion.div
+                className="absolute inset-0 rounded-full border-2 border-amber-400/30"
+                animate={{ scale: [1, 2.5], opacity: [0.6, 0] }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              />
+              <motion.div
+                className="absolute inset-0 rounded-full border border-teal-400/20"
+                animate={{ scale: [1, 3], opacity: [0.4, 0] }}
+                transition={{ duration: 1, ease: 'easeOut', delay: 0.1 }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {particles.map(p => (
+          <motion.div
+            key={p.id}
+            className="fixed z-[101] pointer-events-none rounded-full"
+            style={{ width: p.size, height: p.size, backgroundColor: p.color, left: `${p.x}%`, top: `${p.y}%` }}
+            initial={{ opacity: 1, scale: 1 }}
+            animate={{
+              x: Math.cos(p.angle * Math.PI / 180) * p.speed * 80,
+              y: Math.sin(p.angle * Math.PI / 180) * p.speed * 80,
+              opacity: 0,
+              scale: 0,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 + Math.random() * 0.5, delay: p.delay, ease: 'easeOut' }}
+          />
+        ))}
+      </AnimatePresence>
 
       <div className="sticky top-0 z-30 bg-[#0a0500]/95 border-b border-amber-900/30 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 py-3">
@@ -412,19 +509,52 @@ export default function CampaignPlayer() {
                   <CardContent className="space-y-3">
                     {nodeClues.map(clue => {
                       const isFound = foundClues.has(clue.id);
+                      const justRevealed = clueRevealEffect?.id === clue.id;
                       const typeInfo = CLUE_TYPE_ICONS[clue.type] || CLUE_TYPE_ICONS['source-code'];
                       const showHint = showHints[clue.id];
                       return (
-                        <div
+                        <motion.div
                           key={clue.id}
-                          className={`p-3 rounded border ${isFound ? 'border-teal-700 bg-teal-950/20' : 'border-stone-800 bg-stone-950/30'}`}
+                          layout
+                          className={`p-3 rounded border relative overflow-hidden transition-colors duration-500 ${
+                            isFound
+                              ? 'border-teal-700 bg-teal-950/20'
+                              : 'border-stone-800 bg-stone-950/30'
+                          }`}
+                          animate={justRevealed ? { 
+                            borderColor: ['#d97706', '#14b8a6', '#14b8a6'],
+                            boxShadow: ['0 0 20px rgba(217,119,6,0.4)', '0 0 30px rgba(20,184,166,0.3)', '0 0 0px transparent'],
+                          } : {}}
+                          transition={justRevealed ? { duration: 1.5 } : {}}
                           data-testid={`clue-${clue.id}`}
                         >
-                          <div className="flex items-center justify-between">
+                          {justRevealed && (
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-teal-500/10 to-transparent"
+                              initial={{ x: '-100%' }}
+                              animate={{ x: '200%' }}
+                              transition={{ duration: 1, ease: 'easeOut' }}
+                            />
+                          )}
+                          <div className="flex items-center justify-between relative">
                             <div className="flex items-center gap-2">
-                              <span className={isFound ? 'text-teal-400' : 'text-amber-500'}>{typeInfo.icon}</span>
+                              <motion.span
+                                className={isFound ? 'text-teal-400' : 'text-amber-500'}
+                                animate={justRevealed ? { scale: [1, 1.4, 1], rotate: [0, 15, -15, 0] } : {}}
+                                transition={{ duration: 0.5 }}
+                              >
+                                {typeInfo.icon}
+                              </motion.span>
                               <span className={`text-xs font-mono ${isFound ? 'text-teal-400' : 'text-stone-400'}`}>{typeInfo.label}</span>
-                              {isFound && <CheckCircle2 className="w-3.5 h-3.5 text-teal-500" />}
+                              {isFound && (
+                                <motion.span
+                                  initial={justRevealed ? { scale: 0 } : { scale: 1 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
+                                >
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-500" />
+                                </motion.span>
+                              )}
                             </div>
                             {!isFound && (
                               <Button
@@ -437,16 +567,30 @@ export default function CampaignPlayer() {
                               </Button>
                             )}
                           </div>
-                          {showHint && !isFound && (
-                            <div className="mt-2 text-xs">
-                              <p className="text-amber-400/80 mb-1">{clue.hint}</p>
-                              <p className="text-stone-600">{typeInfo.tip}</p>
-                            </div>
-                          )}
+                          <AnimatePresence>
+                            {showHint && !isFound && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="mt-2 text-xs overflow-hidden"
+                              >
+                                <p className="text-amber-400/80 mb-1">{clue.hint}</p>
+                                <p className="text-stone-600">{typeInfo.tip}</p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                           {isFound && (
-                            <p className="mt-1 text-teal-400/70 text-[10px] font-mono break-all">FLAG{'{'}found{'}'}</p>
+                            <motion.p
+                              initial={justRevealed ? { opacity: 0, y: 10 } : {}}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.5 }}
+                              className="mt-1 text-teal-400/70 text-[10px] font-mono break-all"
+                            >
+                              FLAG{'{'}captured{'}'}
+                            </motion.p>
                           )}
-                        </div>
+                        </motion.div>
                       );
                     })}
 
