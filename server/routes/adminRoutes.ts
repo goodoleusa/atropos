@@ -543,4 +543,21 @@ router.get("/api/admin/activity-log", async (req, res) => {
   }
 });
 
+// ==================== Global Effects Config ====================
+
+let globalEffectsConfig: any = null;
+
+router.get("/api/admin/global-effects", (req, res) => {
+  res.json({ config: globalEffectsConfig });
+});
+
+router.post("/api/admin/global-effects", (req, res) => {
+  const { config } = req.body;
+  if (!config) {
+    return res.status(400).json({ error: "config is required" });
+  }
+  globalEffectsConfig = config;
+  res.json({ success: true, config: globalEffectsConfig });
+});
+
 export default router;

@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GameProvider } from "@/hooks/useGameSession";
 import { ReportProvider } from "@/hooks/useReportContext";
+import { GlobalEffectsProvider } from "@/hooks/useGlobalEffects";
+import GlobalEffectsOverlay from "@/components/GlobalEffectsOverlay";
 import DevModePanel from "@/components/DevModePanel";
 import QuickNav from "@/components/QuickNav";
 import MobileFloatingMenu from "@/components/MobileFloatingMenu";
@@ -52,11 +54,14 @@ function App() {
       <TooltipProvider>
         <GameProvider>
           <ReportProvider>
-            <Toaster />
-            <Router />
-            <DevModePanel />
-            <QuickNav />
-            <MobileFloatingMenu />
+            <GlobalEffectsProvider>
+              <Toaster />
+              <Router />
+              <GlobalEffectsOverlay />
+              <DevModePanel />
+              <QuickNav />
+              <MobileFloatingMenu />
+            </GlobalEffectsProvider>
           </ReportProvider>
         </GameProvider>
       </TooltipProvider>
