@@ -6,7 +6,15 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 export const appAccessGate = (req: Request, res: Response, next: NextFunction) => {
   const accessToken = process.env.APP_ACCESS_TOKEN;
   
-  if (!accessToken || process.env.NODE_ENV === 'development') {
+  if (!accessToken) {
+    return next();
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    return next();
+  }
+
+  if (req.path === '/api/access/verify') {
     return next();
   }
   
@@ -19,9 +27,11 @@ export const appAccessGate = (req: Request, res: Response, next: NextFunction) =
       httpOnly: true, 
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
-    return next();
+    const url = new URL(req.originalUrl, `http://${req.headers.host}`);
+    url.searchParams.delete('token');
+    return res.redirect(url.pathname + url.search);
   }
   
   if (tokenFromCookie === accessToken || tokenFromHeader === accessToken) {
@@ -36,30 +46,138 @@ export const appAccessGate = (req: Request, res: Response, next: NextFunction) =
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Access Required</title>
+      <title>NEXUS - Access Required</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-          background: #0a0500; 
+          background: #050200; 
           color: #d97706; 
-          font-family: monospace; 
+          font-family: 'Courier New', monospace; 
           display: flex; 
           align-items: center; 
           justify-content: center; 
           height: 100vh; 
-          margin: 0;
+          padding: 1rem;
         }
-        .container { text-align: center; }
-        h1 { font-size: 2rem; margin-bottom: 1rem; }
-        p { color: #78716c; }
-        code { background: #1c1917; padding: 0.25rem 0.5rem; border-radius: 4px; }
+        .gate {
+          width: 100%;
+          max-width: 400px;
+          text-align: center;
+        }
+        .logo {
+          font-size: 2.5rem;
+          font-weight: bold;
+          letter-spacing: 0.5rem;
+          margin-bottom: 0.5rem;
+          text-shadow: 0 0 20px rgba(217,119,6,0.3);
+        }
+        .subtitle {
+          color: #78716c;
+          font-size: 0.75rem;
+          margin-bottom: 2rem;
+          text-transform: uppercase;
+          letter-spacing: 0.2rem;
+        }
+        .form-group {
+          position: relative;
+          margin-bottom: 1rem;
+        }
+        input {
+          width: 100%;
+          padding: 0.875rem 1rem;
+          background: #0a0500;
+          border: 1px solid #78350f;
+          border-radius: 6px;
+          color: #fbbf24;
+          font-family: 'Courier New', monospace;
+          font-size: 1rem;
+          outline: none;
+          transition: border-color 0.2s;
+          min-height: 48px;
+        }
+        input:focus { border-color: #d97706; box-shadow: 0 0 0 2px rgba(217,119,6,0.2); }
+        input::placeholder { color: #44403c; }
+        button {
+          width: 100%;
+          padding: 0.875rem;
+          background: #78350f;
+          border: 1px solid #92400e;
+          border-radius: 6px;
+          color: #fbbf24;
+          font-family: 'Courier New', monospace;
+          font-size: 1rem;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-transform: uppercase;
+          letter-spacing: 0.1rem;
+          min-height: 48px;
+        }
+        button:hover { background: #92400e; }
+        button:active { transform: scale(0.98); }
+        .error {
+          color: #ef4444;
+          font-size: 0.75rem;
+          margin-top: 0.5rem;
+          min-height: 1.2em;
+        }
+        .line {
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, #78350f, transparent);
+          margin: 1.5rem 0;
+        }
+        .hint {
+          color: #57534e;
+          font-size: 0.65rem;
+        }
       </style>
     </head>
     <body>
-      <div class="container">
-        <h1>ACCESS DENIED</h1>
-        <p>This system requires authorization.</p>
-        <p>Add <code>?token=YOUR_ACCESS_TOKEN</code> to the URL.</p>
+      <div class="gate">
+        <div class="logo">NEXUS</div>
+        <div class="subtitle">Security Investigation Platform</div>
+        <div class="line"></div>
+        <form id="access-form">
+          <div class="form-group">
+            <input 
+              type="password" 
+              id="token-input" 
+              placeholder="Enter access token" 
+              autocomplete="off"
+              autofocus
+            />
+          </div>
+          <button type="submit">Authenticate</button>
+          <div class="error" id="error-msg"></div>
+        </form>
+        <div class="line"></div>
+        <div class="hint">Authorized personnel only</div>
       </div>
+      <script>
+        document.getElementById('access-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          var token = document.getElementById('token-input').value.trim();
+          if (!token) return;
+          try {
+            var res = await fetch('/api/access/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: token })
+            });
+            if (res.ok) {
+              window.location.reload();
+            } else {
+              document.getElementById('error-msg').textContent = 'Invalid access token';
+              document.getElementById('token-input').value = '';
+              document.getElementById('token-input').focus();
+            }
+          } catch(err) {
+            document.getElementById('error-msg').textContent = 'Connection error';
+          }
+        });
+      </script>
     </body>
     </html>
   `);
