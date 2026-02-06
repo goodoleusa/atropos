@@ -1703,6 +1703,84 @@ BEHAVIOR:
     }
   });
 
+  // ============== MODMAIL ROUTES ==============
+  
+  app.get("/api/admin/modmail", async (req, res) => {
+    try {
+      const mail = await storage.getAllModmail();
+      res.json(mail);
+    } catch (error) {
+      console.error("Get modmail error:", error);
+      res.status(500).json({ error: "Failed to retrieve modmail" });
+    }
+  });
+
+  app.get("/api/modmail/my-tickets", async (req, res) => {
+    try {
+      const sessionToken = req.headers['x-session-token'] as string;
+      if (!sessionToken) {
+        return res.status(400).json({ error: "Session token required" });
+      }
+      const tickets = await storage.getModmailBySession(sessionToken);
+      res.json(tickets);
+    } catch (error) {
+      console.error("Get user modmail error:", error);
+      res.status(500).json({ error: "Failed to retrieve tickets" });
+    }
+  });
+
+  app.post("/api/modmail", rateLimit(5, 60000), async (req, res) => {
+    try {
+      const { subject, message, category, username, sessionToken } = req.body;
+      
+      if (!subject || !message || !sessionToken) {
+        return res.status(400).json({ error: "Subject, message, and session required" });
+      }
+      
+      const ticketId = `ticket-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+      
+      const ticket = await storage.createModmail({
+        ticketId,
+        sessionToken,
+        username: username || 'Anonymous',
+        subject: sanitizeInput(subject, 200) || 'No subject',
+        message: sanitizeInput(message, 5000) || '',
+        category: category || 'general',
+        status: 'open',
+        priority: 'normal'
+      });
+      
+      res.json({ success: true, ticket });
+    } catch (error) {
+      console.error("Create modmail error:", error);
+      res.status(500).json({ error: "Failed to create ticket" });
+    }
+  });
+
+  app.put("/api/admin/modmail/:ticketId", async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      const { adminResponse, status, priority, respondedBy } = req.body;
+      
+      const updates: any = { status, priority };
+      if (adminResponse) {
+        updates.adminResponse = sanitizeInput(adminResponse, 5000);
+        updates.respondedBy = respondedBy || 'Admin';
+        updates.respondedAt = new Date();
+      }
+      
+      const updated = await storage.updateModmail(ticketId, updates);
+      if (!updated) {
+        return res.status(404).json({ error: "Ticket not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Update modmail error:", error);
+      res.status(500).json({ error: "Failed to update ticket" });
+    }
+  });
+
   // ============================================
   // THREAT INTELLIGENCE FEEDS
   // ============================================
