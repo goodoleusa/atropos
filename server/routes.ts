@@ -84,6 +84,21 @@ export async function registerRoutes(
   // Register Multi-Agent Analysis routes
   app.use("/api/agents", agentsRoutes);
   
+  app.post("/api/access/verify", rateLimit(10, 60000), (req, res) => {
+    const accessToken = process.env.APP_ACCESS_TOKEN;
+    const { token } = req.body;
+    if (!accessToken || token === accessToken) {
+      res.cookie('access_token', accessToken || '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+      return res.json({ success: true });
+    }
+    return res.status(401).json({ error: 'Invalid token' });
+  });
+
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
     try {
@@ -2149,6 +2164,52 @@ BEHAVIOR:
     } catch (error) {
       console.error("Update W&B config error:", error);
       res.status(500).json({ error: "Failed to update W&B config" });
+    }
+  });
+
+  app.get("/api/admin/activity-log", async (req, res) => {
+    try {
+      const limit = Math.min(parseInt(req.query.limit as string) || 50, 200);
+      const offset = parseInt(req.query.offset as string) || 0;
+      
+      const [recentSessions, recentBehaviors] = await Promise.all([
+        storage.getAllSessions(),
+        storage.getAllBehaviors(limit)
+      ]);
+
+      const activities: any[] = [];
+
+      for (const s of (recentSessions || []).slice(0, 20)) {
+        activities.push({
+          id: `session-${s.id}`,
+          type: 'session',
+          sessionToken: s.sessionToken,
+          description: `Session active: ${s.username || 'Guest'}`,
+          detail: `Clues: ${(s.collectedClues as string[])?.length || 0}, Quests: ${(s.completedQuests as string[])?.length || 0}`,
+          timestamp: s.lastActive,
+        });
+      }
+
+      for (const b of recentBehaviors) {
+        activities.push({
+          id: `behavior-${b.id}`,
+          type: 'behavior',
+          sessionToken: b.sessionToken,
+          description: `${b.actionType}: ${b.category}`,
+          detail: JSON.stringify(b.metadata).substring(0, 100),
+          timestamp: b.timestamp,
+        });
+      }
+
+      activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      res.json({
+        activities: activities.slice(offset, offset + limit),
+        total: activities.length,
+      });
+    } catch (error) {
+      console.error("Activity log error:", error);
+      res.status(500).json({ error: "Failed to load activity log" });
     }
   });
 
