@@ -952,6 +952,39 @@ export type InsertAtroposScan = z.infer<typeof insertAtroposScanSchema>;
 export type AtroposScript = typeof atroposScripts.$inferSelect;
 export type InsertAtroposScript = z.infer<typeof insertAtroposScriptSchema>;
 
+// Modmail - user questions and admin responses
+export const modmail = pgTable("modmail", {
+  id: serial("id").primaryKey(),
+  ticketId: text("ticket_id").notNull().unique(),
+  sessionToken: text("session_token").notNull(),
+  username: text("username").notNull().default("Anonymous"),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  category: text("category").notNull().default("general"), // general, bug, feature, question, help
+  status: text("status").notNull().default("open"), // open, in_progress, resolved, closed
+  priority: text("priority").notNull().default("normal"), // low, normal, high, urgent
+  adminResponse: text("admin_response"),
+  respondedBy: text("responded_by"),
+  respondedAt: timestamp("responded_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Multiplayer Lobbies - anonymous real-time sessions
+export const multiplayerLobbies = pgTable("multiplayer_lobbies", {
+  id: serial("id").primaryKey(),
+  lobbyId: text("lobby_id").notNull().unique(),
+  name: text("name").notNull(),
+  mode: text("mode").notNull().default("coop"), // coop, versus, race
+  maxPlayers: integer("max_players").notNull().default(4),
+  currentPlayers: jsonb("current_players").$type<{ sessionToken: string; alias: string; score: number }[]>().notNull().default([]),
+  campaignId: text("campaign_id"),
+  status: text("status").notNull().default("waiting"), // waiting, active, finished
+  settings: jsonb("settings").$type<Record<string, any>>().notNull().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
 // Player Progression - XP, levels, and statistics
 export const playerProgression = pgTable("player_progression", {
   id: serial("id").primaryKey(),
@@ -1199,6 +1232,24 @@ export type ChallengeCompletion = typeof challengeCompletions.$inferSelect;
 export type InsertChallengeCompletion = z.infer<typeof insertChallengeCompletionSchema>;
 export type CampaignStats = typeof campaignStats.$inferSelect;
 export type InsertCampaignStats = z.infer<typeof insertCampaignStatsSchema>;
+
+// Insert schemas for modmail and multiplayer
+export const insertModmailSchema = createInsertSchema(modmail).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  respondedAt: true,
+});
+export const insertMultiplayerLobbySchema = createInsertSchema(multiplayerLobbies).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type Modmail = typeof modmail.$inferSelect;
+export type InsertModmail = z.infer<typeof insertModmailSchema>;
+export type MultiplayerLobby = typeof multiplayerLobbies.$inferSelect;
+export type InsertMultiplayerLobby = z.infer<typeof insertMultiplayerLobbySchema>;
 
 // Export auth and chat models
 export * from "./models/auth";
