@@ -1,28 +1,7 @@
 # NEXUS Security Platform
 
 ## Overview
-NEXUS is an AI-powered security investigation platform comprising the **NEXUS Agent** (AI assistant for analysis, reporting, and guidance) and the **Atropos Scanner** (Rust-based OSINT & vulnerability scanner). Atropos collects data, which NEXUS then intelligently analyzes, helps interpret, and aids in report generation and strategic planning. The platform features a unique molten bronze/industrial aesthetic with a custom terminal interface, investigation campaigns, and atmospheric visual effects. Key capabilities include AI-powered investigation workflows, a visual campaign designer, a report builder, and gamified CTF-style security training. The project aims to provide a comprehensive, AI-driven solution for security professionals, enhancing investigation efficiency and offering unique training opportunities.
-
-## Atropos Scanner & Integration
-
-### Capabilities
-Atropos is a high-performance Rust-based OSINT and vulnerability scanner integrated into the NEXUS platform.
-- **OSINT**: Domain enumeration, BGP tracing, sub-domain discovery.
-- **Vulnerability Scanning**: Passive and active reconnaissance patterns.
-- **Scriptable**: Supports custom Lua scripts for extensible scanning logic.
-- **NEXUS Integration**: Hand-off results to NEXUS AI for deeper analysis and reporting.
-
-### API Reference
-- `GET /api/atropos/health`: Returns binary availability and path status.
-- `GET /api/atropos/scripts`: Lists all available Lua scanning scripts.
-- `GET /api/atropos/scripts/:scriptId`: Retrieves content of a specific scanning script.
-- `POST /api/atropos/scan`: Initiates a scan with parameters (Requires authenticated session).
-
-### Lessons Learned: Rust Build Cycle (2026-02-05)
-1. **MSRV Management**: Dependency version pinning is critical when working with specific Rust toolchains (e.g., `native-tls` MSRV requirements).
-2. **Binary Persistence**: Pre-building the Rust binary and placing it in `dist/bin/` ensures stable deployment without requiring a full Rust toolchain at runtime.
-3. **Build Optimization**: For heavy Rust compilation, pinning deep dependencies (like `indexmap`) to compatible versions prevents build failure on older `rustc` versions.
-4. **Proxy Pattern**: Using a Node.js API proxy to interact with a Rust CLI binary provides a secure and unified interface for the frontend.
+NEXUS is an AI-powered security investigation platform that integrates the **NEXUS Agent** (AI assistant for analysis, reporting, and guidance) and the **Atropos Scanner** (Rust-based OSINT & vulnerability scanner). The platform aims to enhance security professionals' efficiency through AI-driven workflows, a visual campaign designer, a report builder, and gamified CTF-style security training. It features a unique molten bronze/industrial aesthetic with a custom terminal interface and atmospheric visual effects.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -31,62 +10,30 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend
 - **Framework**: React 18 with TypeScript.
-- **Routing**: Wouter.
-- **State Management**: React Context API (`GameProvider`) for game state, TanStack Query for server state.
 - **Styling**: Tailwind CSS v4 (molten bronze palette) and Framer Motion for animations.
 - **UI Components**: shadcn/ui built on Radix UI.
-- **Key Patterns**: Game state persistence (localStorage, server sync), custom terminal, atmospheric overlays.
-- **Theming & Aesthetics**: Vaporwave/cassette futurism with a molten bronze/teal palette. No green elements.
-- **Mobile Responsiveness**: Touch-friendly terminal, responsive layouts, 44px+ touch targets, repositioned floating buttons.
+- **Theming & Aesthetics**: Vaporwave/cassette futurism with a molten bronze/teal palette, no green elements.
+- **Mobile Responsiveness**: Touch-friendly terminal, responsive layouts, 44px+ touch targets.
 
 ### Backend
 - **Runtime**: Node.js with Express.
 - **Language**: TypeScript with ESM modules.
-- **Build**: Vite (client), esbuild (server).
-- **API Pattern**: RESTful JSON APIs (`/api/`).
-- **Key Patterns**: Storage interface with PostgreSQL implementation, QR code generation, static file serving with SPA fallback.
+- **API Pattern**: RESTful JSON APIs.
 
 ### Data Storage
 - **Database**: PostgreSQL via Drizzle ORM.
-- **Schema**: `shared/schema.ts`.
-- **Migrations**: Drizzle Kit.
 
 ### Key Features and Design Decisions
+- **NEXUS Agent System**: AI assistant for security investigation analysis and guidance, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns, integrates with Atropos Scanner results.
+- **Multi-Agent Orchestration**: 6 specialized security agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis) with category-based routing for parallel analysis.
 - **Terminal System**: Custom command parsing, history, and secret command discovery.
-- **Game Progression**: Clue collection, quest chains, and unlockable content.
-- **Dynamic Content**: Centralized message and campaign configuration for terminal messages, toasts, and overlays. Campaigns switch themes and narratives.
-- **Security Design (Intentionally Vulnerable)**: Designed as an "escape room" CTF; allows enumeration and simulated hacking, preventing real attacks with input sanitization, rate limiting, CSP, and session validation.
-- **NEXUS Agent System**: AI assistant for security investigation analysis and guidance, powered by OpenRouter AI. Supports model selection and pre-built investigation campaigns. Admin configurable system prompt. Works with Atropos Scanner results.
-- **Multi-Agent Orchestration**: 6 specialized security agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis) with category-based routing. Supports parallel analysis, W&B experiment tracking, and CrewAI/LangChain export. API: `/api/agents/*`.
-- **Mobile Floating Menu**: Consolidated mobile navigation (MobileFloatingMenu.tsx) with proper ARIA accessibility, touch-friendly 48px targets, and keyboard escape handling.
-- **Admin Dashboard**: Content management for game elements, player sessions, and a UX Playground for visual effect tweaking.
-- **Campaign Designer**: Twine-inspired visual flow editor with wikilinks, backlinks, breadcrumb trail, and multiple view modes. Nodes support feature type, campaign type, skills, linked clues, and branch conditions. Includes quick-start templates.
-- **Global Attack Map**: Animated real-time threat visualization on the homepage.
-- **Report Builder System**: Aids in structuring bug bounty findings, analysis, vulnerability tracking, bounty estimation, and export. Integrates AI benchmarking and shared investigation context.
-- **Shared Investigation Context**: Cross-feature state management via `useReportContext` for data flow between Agent Chat, AI Lab, and Report Builder.
-- **AI Lab (Battleground)**: Prompt engineering playground with live preview, cost tracking, model comparison, performance evaluations, and exportable summaries. Features a unified chat battleground for dual-model comparison and AI Pentesting Challenges based on 2025 arxiv research (e.g., GCG, SequentialBreak, RoleBreaker).
-- **Prompt Optimizer**: Provides quick tips for prompt engineering techniques.
-- **QuickNav Component**: Floating navigation for quick access to Terminal, AI Lab, and Report Builder with session status and progress indicators.
-- **API Playground**: Educational quest-based system for learning API requests through CTF exercises.
-- **Interactive Campaign System**: Adaptive investigation flows responding to user discoveries, offering perspective shifts and tool guidance.
-- **Investigation Workspace**: Unified hub for Agent Chat, AI Lab quick testing, and Learning Profile configuration.
-- **Unified Learning Store**: Zustand-based centralized state for learning preferences (style, goals, skill level, pace), persisting to localStorage and providing prompt modifiers for AI interactions. Integrated with Campaign Designer nodes.
-- **Modmail System**: User support ticket system for questions and admin responses. Users submit tickets via ModmailDialog, admins respond via Admin Dashboard Modmail tab. Categories: general, bug, feature, question, help. API: `/api/modmail`, `/api/admin/modmail`.
-- **Multiplayer Lobbies**: Anonymous real-time session system for co-op, versus, or race modes. Players join/create lobbies with aliases, max 8 players per lobby, 1-hour expiry. API: `/api/lobbies`.
-- **Zodiac Engagement Effects**: 60% chance bonus collectibles/tips when collecting zodiac cards, element-based rewards (Fire, Earth, Air, Water).
-- **Mystical Cards Admin**: Full editing capabilities for tarot and zodiac cards in Admin Dashboard CollectiblesSection.
-- **QR C2 Framework**: Educational QR-based command & control system with three sections:
-  - **Encode**: Generate C2 command QR codes with realistic target machine simulation (Linux Server, Windows Workstation, IoT Camera, Docker Container). Simulates authentic command outputs.
-  - **Attack Vectors**: 13 real-world QR ingestion techniques (parking meters, restaurant menus, phishing emails, EV chargers, etc.) with documented cases and lab scenarios.
-  - **QR Labs**: 6 hands-on QR-in-QR hijacking exercises based on academic research (finder pattern confusion, quiet zone attacks, physical overlays, barcode inception, split QR, PDF vector drawing).
-  - **Challenge Modes**: Dead Drop, Stego Hunter, Temporal Ghost (TPVM), QR Hijacker, Breadcrumb Trail, QR Inception.
-- **Design Philosophy**: TPVM-inspired aesthetic - looks normal with brief subliminal disruptions (concept noted for future implementation).
-
-### Atropos Scanner Integration
-- **Capabilities**: OSINT (BBOT, Amass, theHarvester), Vulnerability Scanning (Nuclei, httpx, nmap), Secret Detection (Gitleaks, TruffleHog), Threat Intelligence (Shodan, VirusTotal), Network Analysis (DNSMonster, RITA, Zeek).
-- **API Integration**: Can be run via CLI, Web UI, or Node.js proxy endpoints (`/api/atropos/*`).
-- **NEXUS ↔ Atropos Handoff**: NEXUS initiates scans, Atropos returns JSON results, NEXUS analyzes findings, suggests next steps, and flags vulnerabilities.
-- **Lua Scripting**: Custom scans via Lua scripts.
+- **Campaign Designer**: Twine-inspired visual flow editor for creating investigation campaigns with features like wikilinks, backlinks, and multiple view modes.
+- **Report Builder System**: Aids in structuring bug bounty findings, analysis, vulnerability tracking, and export. Integrates AI benchmarking and shared investigation context.
+- **AI Lab (Battleground)**: Prompt engineering playground with live preview, cost tracking, model comparison, and performance evaluations. Features a unified chat battleground for dual-model comparison and AI Pentesting Challenges.
+- **QR C2 Framework**: Educational QR-based command & control system with sections for encoding, attack vectors, and hands-on labs for QR-in-QR hijacking exercises.
+- **Atropos Scanner Integration**: High-performance Rust-based OSINT and vulnerability scanner. NEXUS initiates scans, Atropos returns JSON results, and NEXUS analyzes findings. Supports custom Lua scripts for extensible scanning logic.
+- **Unified Learning Store**: Centralized state for learning preferences (style, goals, skill level, pace) that modifies AI prompt behavior.
+- **Pedagogy**: Employs Experiential and Project-Based Learning (PBL) for cybersecurity skills, structured into Paths > Tracks > Modules > Projects.
 
 ## External Dependencies
 
@@ -101,4 +48,3 @@ Preferred communication style: Simple, everyday language.
 - **Radix UI**: Accessible UI component primitives.
 - **TanStack Query**: Server state management.
 - **Drizzle ORM**: Type-safe database queries.
-- **date-fns**: Date utilities.
