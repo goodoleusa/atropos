@@ -330,6 +330,279 @@ router.get("/api/campaigns/:campaignId/play", async (req, res) => {
   }
 });
 
+router.get("/api/campaigns/:campaignId/page/:nodeId?", async (req, res) => {
+  try {
+    const { campaignId, nodeId } = req.params;
+    const campaign = await storage.getDesignerCampaignById(campaignId);
+    if (!campaign || !campaign.isPublished) {
+      return res.status(404).send("<html><body><h1>Campaign not found</h1></body></html>");
+    }
+
+    const nodes = (campaign.nodes as any[]) || [];
+    const links = (campaign.links as any[]) || [];
+    const hiddenClues = (campaign as any).hiddenClues || [];
+    const rootNode = nodeId || (campaign.rootNodes as string[])?.[0] || nodes[0]?.id;
+    const currentNode = nodes.find((n: any) => n.id === rootNode);
+
+    if (!currentNode) {
+      return res.status(404).send("<html><body><h1>Node not found</h1></body></html>");
+    }
+
+    const nodeClues = hiddenClues.filter((c: any) => c.nodeId === rootNode);
+    const outLinks = links.filter((l: any) => l.source === rootNode);
+    const nextNodes = outLinks.map((l: any) => ({
+      link: l,
+      node: nodes.find((n: any) => n.id === l.target),
+    })).filter((x: any) => x.node);
+
+    const srcClues = nodeClues.filter((c: any) => c.type === 'source-code');
+    const cssClues = nodeClues.filter((c: any) => c.type === 'css-comment');
+    const dataClues = nodeClues.filter((c: any) => c.type === 'data-attribute');
+    const metaClues = nodeClues.filter((c: any) => c.type === 'meta-tag');
+    const b64Clues = nodeClues.filter((c: any) => c.type === 'base64');
+    const hexClues = nodeClues.filter((c: any) => c.type === 'hex-encoded');
+    const consoleClues = nodeClues.filter((c: any) => c.type === 'console-log');
+
+    for (const clue of nodeClues.filter((c: any) => c.type === 'http-header')) {
+      res.set("X-NEXUS-Intel", Buffer.from(clue.value).toString('base64'));
+    }
+    for (const clue of nodeClues.filter((c: any) => c.type === 'network-request')) {
+      res.set("X-NEXUS-Beacon", "true");
+      res.set("X-NEXUS-Secret", Buffer.from(clue.value).toString('base64'));
+    }
+
+    const hasHtml = currentNode.htmlContent && currentNode.htmlContent.trim().length > 0;
+    const layout = currentNode.pageLayout || 'card';
+
+    const navHtml = nextNodes.map(({ link, node }: any) =>
+      `<a href="/api/campaigns/${campaignId}/page/${node.id}" class="nav-link" data-node-type="${node.type}">
+        <span class="nav-label">${link.label || node.title}</span>
+        <span class="nav-arrow">&rarr;</span>
+      </a>`
+    ).join('\n');
+
+    const isComplete = currentNode.type === 'output' && nextNodes.length === 0;
+
+    const bodyContent = hasHtml
+      ? currentNode.htmlContent
+      : currentNode.content.split('\n').map((line: string) => {
+          if (line.startsWith('**') && line.endsWith('**')) return `<h3>${line.replace(/\*\*/g, '')}</h3>`;
+          if (line.startsWith('> ')) return `<blockquote>${line.slice(2)}</blockquote>`;
+          if (line.startsWith('- ') || line.startsWith('→ ')) return `<li>${line.slice(2)}</li>`;
+          if (line.match(/^\d+\./)) return `<li>${line.replace(/^\d+\.\s*/, '')}</li>`;
+          if (line.startsWith('⚠️')) return `<p class="warning">${line}</p>`;
+          if (line.trim() === '') return '<br>';
+          return `<p>${line}</p>`;
+        }).join('\n');
+
+    const html = `<!DOCTYPE html>
+<html lang="en" data-campaign="${campaignId}" data-node="${rootNode}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${currentNode.title} - ${campaign.name}</title>
+  ${metaClues.map((c: any) => `<meta name="nexus-debug" content="${c.value}">`).join('\n  ')}
+  <style>
+    :root {
+      --bg: #0a0500;
+      --fg: #d6d3d1;
+      --amber: #d97706;
+      --teal: #14b8a6;
+      --muted: #57534e;
+      --surface: #1c1917;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .campaign-header {
+      border-bottom: 1px solid rgba(217,119,6,0.2);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.5);
+    }
+    .campaign-header h1 { color: var(--amber); font-size: 0.875rem; }
+    .campaign-header .meta { color: var(--muted); font-size: 0.7rem; }
+    .page-content {
+      max-width: ${layout === 'full-page' ? '100%' : '800px'};
+      margin: ${layout === 'full-page' ? '0' : '2rem auto'};
+      padding: ${layout === 'full-page' ? '0' : '2rem'};
+    }
+    .page-content.layout-terminal {
+      background: #000;
+      border: 1px solid rgba(217,119,6,0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      color: var(--amber);
+      white-space: pre-wrap;
+    }
+    .page-content.layout-dossier {
+      background: var(--surface);
+      border: 2px solid rgba(217,119,6,0.4);
+      padding: 2rem;
+      position: relative;
+    }
+    .page-content.layout-dossier::before {
+      content: 'CLASSIFIED';
+      position: absolute;
+      top: 0.5rem;
+      right: 1rem;
+      color: rgba(217,119,6,0.3);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+    }
+    .node-title {
+      color: var(--amber);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(217,119,6,0.15);
+    }
+    .node-type-badge {
+      display: inline-block;
+      color: var(--muted);
+      font-size: 0.65rem;
+      border: 1px solid var(--muted);
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    h3 { color: var(--amber); margin: 1rem 0 0.5rem; font-size: 1.1rem; }
+    p { margin: 0.5rem 0; color: var(--fg); }
+    blockquote {
+      border-left: 2px solid var(--amber);
+      padding-left: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0.75rem 0;
+    }
+    li { margin: 0.25rem 0 0.25rem 1.5rem; color: var(--fg); }
+    .warning {
+      color: var(--amber);
+      background: rgba(217,119,6,0.05);
+      border: 1px solid rgba(217,119,6,0.2);
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    .nav-section { margin-top: 2rem; border-top: 1px solid rgba(217,119,6,0.15); padding-top: 1.5rem; }
+    .nav-section-label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+    .nav-link {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(217,119,6,0.2);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+      color: var(--fg);
+      transition: all 0.2s;
+    }
+    .nav-link:hover {
+      background: rgba(217,119,6,0.08);
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+    .nav-arrow { color: var(--muted); }
+    .nav-link:hover .nav-arrow { color: var(--amber); }
+    .complete-banner {
+      text-align: center;
+      padding: 3rem 2rem;
+      border: 1px solid var(--amber);
+      border-radius: 8px;
+      margin-top: 2rem;
+      background: rgba(217,119,6,0.05);
+    }
+    .complete-banner h2 { color: var(--amber); font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .complete-banner a {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+      background: var(--amber);
+      color: #000;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .tools-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      padding: 0.75rem;
+      background: rgba(20,184,166,0.05);
+      border: 1px solid rgba(20,184,166,0.2);
+      border-radius: 6px;
+    }
+    .tool-tag {
+      font-size: 0.7rem;
+      color: var(--teal);
+      border: 1px solid rgba(20,184,166,0.3);
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+    }
+    ${cssClues.map((c: any) => c.value).join('\n    ')}
+    ${currentNode.customCss || ''}
+  </style>
+</head>
+<body>
+  ${srcClues.map((c: any) => `<!-- ${c.value} -->`).join('\n  ')}
+  ${dataClues.map((c: any) => `<div data-nexus-intel="${c.value}" style="display:none"></div>`).join('\n  ')}
+  ${b64Clues.map((c: any) => `<div data-encoded-payload="${c.value}" data-encoding="base64" style="display:none"></div>`).join('\n  ')}
+  ${hexClues.map((c: any) => `<div data-hex-dump="${c.value}" data-encoding="hex" style="display:none"></div>`).join('\n  ')}
+
+  <header class="campaign-header">
+    <div>
+      <h1>${campaign.name}</h1>
+      <span class="meta">${(campaign as any).category || 'recon'} &middot; ${(campaign as any).difficulty || 'beginner'}</span>
+    </div>
+    <a href="/play/${campaignId}" style="color:var(--muted);font-size:0.7rem;text-decoration:none;">Interactive Player &rarr;</a>
+  </header>
+
+  <main class="page-content layout-${layout}" data-campaign-node="${currentNode.id}" data-page-layout="${layout}">
+    <div class="node-type-badge">${currentNode.type}</div>
+    <h2 class="node-title">${currentNode.title}</h2>
+
+    ${bodyContent}
+
+    ${currentNode.metadata?.toolsForStep?.length ? `
+    <div class="tools-bar">
+      ${currentNode.metadata.toolsForStep.map((t: string) => `<span class="tool-tag">${t}</span>`).join('')}
+    </div>` : ''}
+
+    ${isComplete ? `
+    <div class="complete-banner">
+      <h2>Campaign Complete</h2>
+      <p style="color:var(--muted)">You've reached the end of this investigation.</p>
+      <a href="/campaigns">Browse More Campaigns</a>
+    </div>` : `
+    <div class="nav-section">
+      <div class="nav-section-label">${currentNode.type === 'decision' ? 'Choose your path' : 'Continue investigation'}</div>
+      ${navHtml}
+    </div>`}
+  </main>
+
+  ${consoleClues.length > 0 ? `<script>
+    ${consoleClues.map((c: any) => `console.log('%c${c.value.replace(/'/g, "\\'")}', 'color: #d97706; font-weight: bold; font-size: 14px; background: #0a0500; padding: 4px 8px; border-left: 3px solid #d97706;');`).join('\n    ')}
+  </script>` : ''}
+</body>
+</html>`;
+
+    res.type('html').send(html);
+  } catch (error) {
+    console.error("Get campaign page error:", error);
+    res.status(500).send("<html><body><h1>Error loading page</h1></body></html>");
+  }
+});
+
 router.get("/api/campaigns/:campaignId/clue-check", async (req, res) => {
   try {
     const { campaignId } = req.params;
