@@ -9,10 +9,11 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Eye, Wand2, Save, RotateCcw, Layers, Zap, Copy, Check, Flame } from "lucide-react";
+import { Sparkles, Eye, Wand2, Save, RotateCcw, Layers, Zap, Copy, Check, Flame, Monitor, MousePointer, Globe, Paintbrush, Power } from "lucide-react";
 import { MoltenWrapper, MoltenText, SlagParticles, MOLTEN_PRESETS, type MoltenEffect } from "@/components/MoltenEffects";
 import { LightFilters, FILTER_PRESETS } from "@/components/LightFilters";
 import { SubliminalOverlay, VideoOverlay, SUBLIMINAL_PRESETS, VIDEO_OVERLAY_PRESETS, type SubliminalMode } from "@/components/SubliminalEffects";
+import { useGlobalEffects, EFFECT_PRESETS, type GlobalEffectsConfig } from "@/hooks/useGlobalEffects";
 import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -203,6 +204,9 @@ export function EffectsPlaygroundSection() {
           </TabsTrigger>
           <TabsTrigger value="molten" className="data-[state=active]:bg-amber-900/30">
             <Flame className="w-4 h-4 mr-2" /> Molten Effects
+          </TabsTrigger>
+          <TabsTrigger value="global" className="data-[state=active]:bg-teal-900/30">
+            <Globe className="w-4 h-4 mr-2" /> Global Site FX
           </TabsTrigger>
         </TabsList>
 
@@ -772,8 +776,396 @@ export function EffectsPlaygroundSection() {
             </div>
           </ScrollArea>
         </TabsContent>
+        <TabsContent value="global">
+          <GlobalSiteFXTab />
+        </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+function GlobalSiteFXTab() {
+  const { config: gfx, updateConfig: setGfx, applyPreset, saveToServer } = useGlobalEffects();
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await saveToServer();
+      toast({ title: "Effects saved", description: "Global effects configuration saved to server." });
+    } catch {
+      toast({ title: "Save failed", variant: "destructive" });
+    }
+    setSaving(false);
+  };
+
+  const presetNames = Object.keys(EFFECT_PRESETS);
+
+  return (
+    <ScrollArea className="h-[calc(100vh-340px)]">
+      <div className="space-y-4 pr-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Switch
+              data-testid="toggle-global-fx"
+              checked={gfx.enabled}
+              onCheckedChange={(v) => setGfx({ enabled: v })}
+            />
+            <span className={`text-sm font-mono ${gfx.enabled ? "text-teal-400" : "text-stone-500"}`}>
+              {gfx.enabled ? "ACTIVE" : "DISABLED"}
+            </span>
+          </div>
+          <Button
+            data-testid="save-global-fx"
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-teal-700 hover:bg-teal-600"
+          >
+            <Save className="w-4 h-4 mr-1" /> {saving ? "Saving..." : "Save to Server"}
+          </Button>
+        </div>
+
+        <Card className="bg-[#0a0500] border-teal-900/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+              <Paintbrush className="w-4 h-4" /> Presets
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {presetNames.map((name) => (
+                <button
+                  key={name}
+                  data-testid={`preset-${name}`}
+                  onClick={() => applyPreset(name)}
+                  className={`p-3 rounded-lg border text-center transition-all ${
+                    gfx.preset === name
+                      ? "border-teal-500 bg-teal-900/20"
+                      : "border-stone-700 hover:border-stone-600"
+                  }`}
+                >
+                  <p className="text-xs font-medium text-stone-300 capitalize">
+                    {name.replace(/_/g, " ")}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-amber-900/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+              <Monitor className="w-4 h-4" /> Screen Overlays
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Scanlines</Label>
+                <Switch checked={gfx.scanlines} onCheckedChange={(v) => setGfx({ scanlines: v })} />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-stone-500 text-[10px]">Opacity</Label>
+                  <span className="text-[10px] text-amber-400">{(gfx.scanlineOpacity * 100).toFixed(0)}%</span>
+                </div>
+                <Slider value={[gfx.scanlineOpacity]} onValueChange={([v]) => setGfx({ scanlineOpacity: v })} min={0.01} max={0.15} step={0.01} className="py-1" />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Vignette</Label>
+                <Switch checked={gfx.vignette} onCheckedChange={(v) => setGfx({ vignette: v })} />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-stone-500 text-[10px]">Intensity</Label>
+                  <span className="text-[10px] text-amber-400">{(gfx.vignetteIntensity * 100).toFixed(0)}%</span>
+                </div>
+                <Slider value={[gfx.vignetteIntensity]} onValueChange={([v]) => setGfx({ vignetteIntensity: v })} min={0.1} max={0.8} step={0.05} className="py-1" />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">CRT Curvature</Label>
+                <Switch checked={gfx.crt} onCheckedChange={(v) => setGfx({ crt: v })} />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-stone-500 text-[10px]">Curvature</Label>
+                  <span className="text-[10px] text-amber-400">{gfx.crtCurvature}px</span>
+                </div>
+                <Slider value={[gfx.crtCurvature]} onValueChange={([v]) => setGfx({ crtCurvature: v })} min={1} max={10} step={1} className="py-1" />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Chromatic Aberration</Label>
+                <Switch checked={gfx.chromaticAberration} onCheckedChange={(v) => setGfx({ chromaticAberration: v })} />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-stone-500 text-[10px]">Offset</Label>
+                  <span className="text-[10px] text-amber-400">{gfx.chromaticOffset}px</span>
+                </div>
+                <Slider value={[gfx.chromaticOffset]} onValueChange={([v]) => setGfx({ chromaticOffset: v })} min={0.5} max={5} step={0.5} className="py-1" />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Warm Glow</Label>
+                <Switch checked={gfx.warmGlow} onCheckedChange={(v) => setGfx({ warmGlow: v })} />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-stone-500 text-[10px]">Intensity</Label>
+                  <span className="text-[10px] text-amber-400">{(gfx.warmGlowIntensity * 100).toFixed(0)}%</span>
+                </div>
+                <Slider value={[gfx.warmGlowIntensity]} onValueChange={([v]) => setGfx({ warmGlowIntensity: v })} min={0.05} max={0.4} step={0.05} className="py-1" />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Film Noise</Label>
+                <Switch checked={gfx.noise} onCheckedChange={(v) => setGfx({ noise: v })} />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-stone-500 text-[10px]">Opacity</Label>
+                  <span className="text-[10px] text-amber-400">{(gfx.noiseOpacity * 100).toFixed(0)}%</span>
+                </div>
+                <Slider value={[gfx.noiseOpacity]} onValueChange={([v]) => setGfx({ noiseOpacity: v })} min={0.005} max={0.08} step={0.005} className="py-1" />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Glitch Effects</Label>
+                <Switch checked={gfx.glitch} onCheckedChange={(v) => setGfx({ glitch: v })} />
+              </div>
+              <div className="space-y-2">
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Frequency</Label>
+                    <span className="text-[10px] text-amber-400">{(gfx.glitchFrequency * 100).toFixed(0)}%</span>
+                  </div>
+                  <Slider value={[gfx.glitchFrequency]} onValueChange={([v]) => setGfx({ glitchFrequency: v })} min={0.01} max={0.15} step={0.01} className="py-1" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Intensity</Label>
+                    <span className="text-[10px] text-amber-400">{(gfx.glitchIntensity * 100).toFixed(0)}%</span>
+                  </div>
+                  <Slider value={[gfx.glitchIntensity]} onValueChange={([v]) => setGfx({ glitchIntensity: v })} min={0.1} max={1} step={0.1} className="py-1" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Subliminal Flashes</Label>
+                <Switch checked={gfx.subliminalFlashes} onCheckedChange={(v) => setGfx({ subliminalFlashes: v })} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Screen Flicker</Label>
+                <Switch checked={gfx.flickerEnabled} onCheckedChange={(v) => setGfx({ flickerEnabled: v })} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-purple-900/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+              <MousePointer className="w-4 h-4" /> Cursor Effects
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Cursor Glow</Label>
+                <Switch checked={gfx.cursorGlow} onCheckedChange={(v) => setGfx({ cursorGlow: v })} />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Input
+                    type="color"
+                    value={gfx.cursorGlowColor}
+                    onChange={(e) => setGfx({ cursorGlowColor: e.target.value })}
+                    className="w-8 h-6 p-0 border-0"
+                  />
+                  <span className="text-[10px] text-stone-500">{gfx.cursorGlowColor}</span>
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Size</Label>
+                    <span className="text-[10px] text-purple-400">{gfx.cursorGlowSize}px</span>
+                  </div>
+                  <Slider value={[gfx.cursorGlowSize]} onValueChange={([v]) => setGfx({ cursorGlowSize: v })} min={50} max={400} step={10} className="py-1" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Cursor Trail</Label>
+                <Switch checked={gfx.cursorTrail} onCheckedChange={(v) => setGfx({ cursorTrail: v })} />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Input
+                    type="color"
+                    value={gfx.cursorTrailColor}
+                    onChange={(e) => setGfx({ cursorTrailColor: e.target.value })}
+                    className="w-8 h-6 p-0 border-0"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Length</Label>
+                    <span className="text-[10px] text-purple-400">{gfx.cursorTrailLength}</span>
+                  </div>
+                  <Slider value={[gfx.cursorTrailLength]} onValueChange={([v]) => setGfx({ cursorTrailLength: v })} min={5} max={50} step={5} className="py-1" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between col-span-2">
+                <Label className="text-stone-400 text-xs">Click Ripples</Label>
+                <Switch checked={gfx.cursorRipple} onCheckedChange={(v) => setGfx({ cursorRipple: v })} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-teal-900/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> Background Effects
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Particles</Label>
+                <Switch checked={gfx.bgParticles} onCheckedChange={(v) => setGfx({ bgParticles: v })} />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Input
+                    type="color"
+                    value={gfx.bgParticleColor}
+                    onChange={(e) => setGfx({ bgParticleColor: e.target.value })}
+                    className="w-8 h-6 p-0 border-0"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Count</Label>
+                    <span className="text-[10px] text-teal-400">{gfx.bgParticleCount}</span>
+                  </div>
+                  <Slider value={[gfx.bgParticleCount]} onValueChange={([v]) => setGfx({ bgParticleCount: v })} min={10} max={120} step={10} className="py-1" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Speed</Label>
+                    <span className="text-[10px] text-teal-400">{gfx.bgParticleSpeed}x</span>
+                  </div>
+                  <Slider value={[gfx.bgParticleSpeed]} onValueChange={([v]) => setGfx({ bgParticleSpeed: v })} min={0.1} max={3} step={0.1} className="py-1" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Matrix Rain</Label>
+                <Switch checked={gfx.bgMatrixRain} onCheckedChange={(v) => setGfx({ bgMatrixRain: v })} />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Input
+                    type="color"
+                    value={gfx.bgMatrixColor}
+                    onChange={(e) => setGfx({ bgMatrixColor: e.target.value })}
+                    className="w-8 h-6 p-0 border-0"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Speed</Label>
+                    <span className="text-[10px] text-teal-400">{gfx.bgMatrixSpeed}x</span>
+                  </div>
+                  <Slider value={[gfx.bgMatrixSpeed]} onValueChange={([v]) => setGfx({ bgMatrixSpeed: v })} min={0.3} max={3} step={0.1} className="py-1" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Grid Pulse</Label>
+                <Switch checked={gfx.bgGridPulse} onCheckedChange={(v) => setGfx({ bgGridPulse: v })} />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Input
+                    type="color"
+                    value={gfx.bgGridColor}
+                    onChange={(e) => setGfx({ bgGridColor: e.target.value })}
+                    className="w-8 h-6 p-0 border-0"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <Label className="text-stone-500 text-[10px]">Opacity</Label>
+                    <span className="text-[10px] text-teal-400">{(gfx.bgGridOpacity * 100).toFixed(0)}%</span>
+                  </div>
+                  <Slider value={[gfx.bgGridOpacity]} onValueChange={([v]) => setGfx({ bgGridOpacity: v })} min={0.01} max={0.1} step={0.005} className="py-1" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label className="text-stone-400 text-xs">Floating Orbs</Label>
+                <Switch checked={gfx.bgFloatingOrbs} onCheckedChange={(v) => setGfx({ bgFloatingOrbs: v })} />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-stone-500 text-[10px]">Count</Label>
+                  <span className="text-[10px] text-teal-400">{gfx.bgOrbCount}</span>
+                </div>
+                <Slider value={[gfx.bgOrbCount]} onValueChange={([v]) => setGfx({ bgOrbCount: v })} min={2} max={12} step={1} className="py-1" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-stone-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-stone-400 text-sm font-mono">Page Exclusions</CardTitle>
+            <CardDescription className="text-stone-500 text-xs">
+              Pages where effects are disabled (e.g. /admin)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {gfx.excludedPages.map((page) => (
+                <Badge
+                  key={page}
+                  variant="outline"
+                  className="border-stone-600 text-stone-400 cursor-pointer hover:border-red-500 hover:text-red-400"
+                  onClick={() => setGfx({ excludedPages: gfx.excludedPages.filter((p) => p !== page) })}
+                >
+                  {page} x
+                </Badge>
+              ))}
+              <Input
+                placeholder="Add path..."
+                className="w-32 h-7 text-xs bg-black/30 border-stone-700"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const val = (e.target as HTMLInputElement).value.trim();
+                    if (val && !gfx.excludedPages.includes(val)) {
+                      setGfx({ excludedPages: [...gfx.excludedPages, val] });
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
   );
 }
 
