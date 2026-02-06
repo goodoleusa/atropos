@@ -89,7 +89,7 @@ export function PlayerStatsPanel() {
           <span className="font-mono text-[10px] text-amber-600">{xp} XP</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 max-w-lg max-h-[85vh] overflow-hidden">
+      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-[calc(100vw-2rem)] max-w-lg max-h-[90vh] sm:max-h-[85vh] overflow-hidden rounded-xl">
         <DialogHeader>
           <DialogTitle className="text-amber-500 font-orbitron flex items-center gap-2">
             <Shield className="w-5 h-5" />
@@ -125,10 +125,10 @@ export function PlayerStatsPanel() {
               size="sm"
               variant={tab === t ? 'default' : 'outline'}
               onClick={() => setTab(t)}
-              className={tab === t
+              className={`min-h-[44px] touch-manipulation ${tab === t
                 ? 'bg-amber-700 hover:bg-amber-600 text-xs flex-1'
                 : 'border-stone-700 text-stone-500 text-xs flex-1'
-              }
+              }`}
             >
               {t === 'stats' && <BarChart3 className="w-3 h-3 mr-1" />}
               {t === 'achievements' && <Trophy className="w-3 h-3 mr-1" />}
@@ -138,7 +138,7 @@ export function PlayerStatsPanel() {
           ))}
         </div>
 
-        <ScrollArea className="h-[340px]">
+        <ScrollArea className="h-[45vh] sm:h-[340px]">
           <AnimatePresence mode="wait">
             {tab === 'stats' && (
               <motion.div
@@ -148,7 +148,7 @@ export function PlayerStatsPanel() {
                 exit={{ opacity: 0, x: 10 }}
                 className="space-y-3"
               >
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {[
                     { label: 'Clues Found', value: gameState.inventory.length, icon: Target, color: 'text-teal-400' },
                     { label: 'Quests Done', value: playerStats?.questCount || 0, icon: Trophy, color: 'text-amber-400' },
