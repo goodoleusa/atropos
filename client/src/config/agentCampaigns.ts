@@ -14,6 +14,30 @@ export interface Campaign {
   adaptivePrompts?: string[];
   targetFields?: CampaignTargetField[];
   dummyTargets?: Record<string, string>;
+  
+  // Learning Integration
+  learningObjectives?: LearningObjective[];
+  skillsRequired?: string[];
+  skillsTaught?: string[];
+  learningOutcomes?: string[];
+  industryContext?: string;
+  realWorldExamples?: string[];
+  careerPaths?: string[];
+  
+  // Teaching Adaptations per Learning Style
+  teachingAdaptations?: {
+    experiential?: string; // Hands-on guidance for experiential learners
+    visual?: string; // Visual/diagram guidance for visual learners
+    analytical?: string; // Deep theory for analytical learners
+    social?: string; // Community/collaborative aspects for social learners
+    pragmatic?: string; // Quick shortcuts for pragmatic learners
+  };
+}
+
+export interface LearningObjective {
+  goal: string; // Maps to LearningGoal type from learningConfig
+  weight: number; // 1-10, how much this campaign focuses on this goal
+  description: string;
 }
 
 export interface CampaignStep {
@@ -252,7 +276,39 @@ Start with the basics - what sources would you check first for corporate intel?`
       'Build personnel dossiers'
     ],
     tools: ['WHOIS', 'SEC EDGAR', 'OpenCorporates', 'LinkedIn OSINT', 'Domain analysis'],
-    color: 'amber'
+    color: 'amber',
+    
+    // Learning Integration
+    learningObjectives: [
+      { goal: 'financial_investigation', weight: 10, description: 'Master corporate intelligence and ownership tracing' },
+      { goal: 'osint_investigation', weight: 8, description: 'Apply multi-source OSINT techniques' },
+      { goal: 'socmint', weight: 5, description: 'Profile key personnel via social media' }
+    ],
+    skillsRequired: ['Basic OSINT', 'Search engine proficiency', 'Corporate structure basics'],
+    skillsTaught: ['Corporate registry navigation', 'Beneficial ownership analysis', 'Entity relationship mapping', 'Financial document interpretation'],
+    learningOutcomes: [
+      'Navigate international corporate registries',
+      'Trace beneficial ownership through shell companies',
+      'Map complex corporate structures',
+      'Identify red flags in business entities',
+      'Correlate entities across multiple jurisdictions'
+    ],
+    industryContext: 'Financial crime investigators, fraud analysts, compliance officers, and journalists use these techniques to expose money laundering, corruption, and criminal networks. Skills directly applicable to AML/CFT compliance roles.',
+    realWorldExamples: [
+      'Panama Papers investigation (ICIJ)',
+      'Danske Bank money laundering scandal',
+      'Wirecard fraud investigation',
+      'FinCEN Files leak analysis'
+    ],
+    careerPaths: ['Financial Crime Analyst', 'Fraud Investigator', 'AML Compliance Officer', 'Investigative Journalist', 'Corporate Intelligence Analyst'],
+    
+    teachingAdaptations: {
+      experiential: 'Jump straight into OpenCorporates. Search the target company. Click through ownership chains. Learn registries by exploring them. Make mistakes - chase dead ends - that\'s how you learn what patterns matter.',
+      visual: 'Start by drawing an org chart as you discover entities. Use Maltego or similar to visualize ownership graphs. Color-code jurisdictions. Watch relationships emerge visually as you add nodes.',
+      analytical: 'Begin with corporate law fundamentals: legal entity types, beneficial ownership definitions, jurisdiction differences. Reference FinCEN guidance on shell companies. Understand the regulatory framework before diving into investigation.',
+      social: 'Reference famous investigations: Panama Papers methodology, Bellingcat corporate tracing. Join OSINT communities discussing corporate intel techniques. Share your ownership graph discoveries with peers.',
+      pragmatic: 'Here\'s the workflow: OpenCorporates → grab all officers → LinkedIn each officer → find connections → cross-reference with other companies → map it. Done. Script it if you do this regularly.'
+    }
   },
   {
     id: 'bgp_trace',
