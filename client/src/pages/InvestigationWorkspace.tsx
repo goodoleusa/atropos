@@ -13,7 +13,7 @@ import {
   MessageSquare, Beaker, GraduationCap, Settings, Send, Loader2, ExternalLink, Copy, Radar
 } from 'lucide-react';
 import { AgentChat } from '@/components/AgentChat';
-import { AtroposScanner } from '@/components/AtroposScanner';
+import { AtroposPanel } from '@/components/AtroposPanel';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { useReportContext } from '@/hooks/useReportContext';
 import { LEARNING_STYLES, LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS } from '@/config/learningConfig';
@@ -423,12 +423,12 @@ Be concise but thorough. Focus on practical, actionable information.`;
                   Atropos Scanner
                 </CardTitle>
                 <p className="text-sm text-stone-400">
-                  Run OSINT scans, import results, and hand off to NEXUS for analysis.
+                  Run OSINT scans and hand off results to NEXUS for analysis.
                 </p>
               </CardHeader>
               <CardContent>
-                <AtroposScanner 
-                  onAnalyzeWithNexus={(prompt, data) => {
+                <AtroposPanel 
+                  onAnalyzeWithNexus={(prompt) => {
                     setAtroposPayload(prompt);
                     setActiveTab('chat');
                     setAgentChatOpen(true);
