@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,7 +15,7 @@ import {
   FolderTree, FileText, Plus, Trash2, Edit3, Link2, Eye, Save, Download, Key, Link, ExternalLink,
   Play, Pause, ChevronRight, ChevronDown, ChevronUp, ChevronLeft, Zap, Target, Shield, Search, Settings,
   Move, MousePointer, Unlink, GitBranch, Layers, Copy, MoreVertical, SkipBack, SkipForward, RotateCcw,
-  ZoomIn, ZoomOut, Wand2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, GraduationCap
+  ZoomIn, ZoomOut, Wand2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, GraduationCap, Globe
 } from 'lucide-react';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -81,6 +81,14 @@ interface SharedClue {
   usedIn: string[]; // Campaign IDs where this clue is referenced
 }
 
+interface HiddenClue {
+  id: string;
+  type: 'source-code' | 'network-request' | 'http-header' | 'console-log' | 'css-comment' | 'data-attribute' | 'meta-tag' | 'base64' | 'hex-encoded' | 'steganography';
+  nodeId: string;
+  hint: string;
+  value: string;
+}
+
 interface Campaign {
   id: string;
   name: string;
@@ -92,6 +100,8 @@ interface Campaign {
   entryPoints?: string[]; // Node IDs that can be entered from other campaigns
   exitPoints?: string[]; // Node IDs that can link to other campaigns
   clueRefs?: string[]; // Shared clue IDs referenced in this campaign
+  hiddenClues?: HiddenClue[];
+  isPublished?: boolean;
 }
 
 const NODE_TYPES = [
@@ -138,7 +148,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
     description: 'Investigation campaign',
     nodes: [],
     links: [],
-    rootNodes: []
+    rootNodes: [],
+    hiddenClues: []
   });
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [editingNode, setEditingNode] = useState<CampaignNode | null>(null);
@@ -159,6 +170,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   const [savedCampaigns, setSavedCampaigns] = useState<Campaign[]>([]);
   const [isUnsaved, setIsUnsaved] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [sharedClues, setSharedClues] = useState<SharedClue[]>([]);
   const [zoom, setZoom] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -169,6 +181,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   const [showQuickJump, setShowQuickJump] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [ctfGenTemplate, setCtfGenTemplate] = useState<{id: string; name: string; icon: string} | null>(null);
+  const [ctfGenTopic, setCtfGenTopic] = useState('');
+  const [ctfGenSkill, setCtfGenSkill] = useState('intermediate');
+  const [ctfGenerating, setCtfGenerating] = useState(false);
 
   // Wikilink parsing - extract [[Node Title]] links from content
   const parseWikilinks = useCallback((content: string): string[] => {
@@ -459,7 +475,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             isChunk: c.isChunk,
             entryPoints: c.entryPoints,
             exitPoints: c.exitPoints,
-            clueRefs: c.clueRefs
+            clueRefs: c.clueRefs,
+            isPublished: c.isPublished
           }));
           setSavedCampaigns(converted);
         }
@@ -503,7 +520,9 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         isChunk: campaign.isChunk || false,
         entryPoints: campaign.entryPoints || [],
         exitPoints: campaign.exitPoints || [],
-        clueRefs: campaign.clueRefs || []
+        clueRefs: campaign.clueRefs || [],
+        hiddenClues: campaign.hiddenClues || [],
+        isPublished: campaign.isPublished || false
       };
       
       const response = await fetch(`/api/designer/campaigns/${campaign.id}`, {
@@ -542,6 +561,77 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
     }
     setIsSyncing(false);
   }, [campaign, savedCampaigns]);
+
+  const publishCampaign = useCallback(async () => {
+    if (!campaign.id || isUnsaved) {
+      await saveCampaign();
+    }
+    setIsPublishing(true);
+    try {
+      const newState = !campaign.isPublished;
+      const endpoint = newState ? 'publish' : 'unpublish';
+      const res = await fetch(`/api/designer/campaigns/${campaign.id}/${endpoint}`, { method: 'POST' });
+      if (res.ok) {
+        setCampaign(prev => ({ ...prev, isPublished: newState }));
+        const updated = savedCampaigns.map(c => c.id === campaign.id ? { ...c, isPublished: newState } : c);
+        setSavedCampaigns(updated);
+        toast({ title: newState ? 'Campaign Published' : 'Campaign Unpublished', description: newState ? 'Players can now find and play this campaign.' : 'Campaign removed from public listings.' });
+      } else {
+        toast({ title: 'Failed', description: 'Could not update publish status.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Network error while publishing.', variant: 'destructive' });
+    }
+    setIsPublishing(false);
+  }, [campaign.id, campaign.isPublished, isUnsaved, saveCampaign, savedCampaigns]);
+
+  const generateFromCtfTemplate = useCallback(async () => {
+    if (!ctfGenTemplate || !ctfGenTopic.trim()) return;
+    setCtfGenerating(true);
+    try {
+      const res = await fetch('/api/campaign-templates/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ templateId: ctfGenTemplate.id, topic: ctfGenTopic.trim(), skill: ctfGenSkill }),
+      });
+      const data = await res.json();
+      if (data.success && data.campaign) {
+        const c = data.campaign;
+        const newCampaign: Campaign = {
+          id: c.campaignId || `campaign-${Date.now()}`,
+          name: c.name,
+          description: c.description || '',
+          nodes: (c.nodes || []).map((n: any) => ({
+            id: n.id, type: n.type || 'step', title: n.title, content: n.content,
+            x: n.x || 0, y: n.y || 0, width: n.width || 240, height: n.height || 120,
+            color: n.color || 'amber', metadata: n.metadata,
+          })),
+          links: (c.links || []).map((l: any) => ({
+            id: l.id, source: l.source, target: l.target,
+            label: l.label, color: l.color || 'amber',
+          })),
+          rootNodes: c.rootNodes || [],
+          hiddenClues: c.hiddenClues || [],
+          isPublished: true,
+        };
+        setCampaign(newCampaign);
+        const existing = savedCampaigns.findIndex(sc => sc.id === newCampaign.id);
+        const updated = [...savedCampaigns];
+        if (existing >= 0) updated[existing] = newCampaign;
+        else updated.push(newCampaign);
+        setSavedCampaigns(updated);
+        setIsUnsaved(false);
+        toast({ title: 'CTF Campaign Generated', description: `"${newCampaign.name}" with ${newCampaign.hiddenClues?.length || 0} hidden clues loaded into canvas.` });
+      } else {
+        toast({ title: 'Generation Failed', description: data.error || 'Could not generate campaign.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Network error generating campaign.', variant: 'destructive' });
+    }
+    setCtfGenerating(false);
+    setCtfGenTemplate(null);
+    setCtfGenTopic('');
+  }, [ctfGenTemplate, ctfGenTopic, ctfGenSkill, savedCampaigns]);
 
   const loadCampaign = useCallback((campaignId: string) => {
     const toLoad = savedCampaigns.find(c => c.id === campaignId);
@@ -1802,6 +1892,21 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           </div>
         )}
         
+        {/* Hidden clue indicators */}
+        {campaign.hiddenClues?.some(c => c.nodeId === node.id) && (
+          <div className="absolute -top-2 -right-2 flex gap-0.5">
+            {campaign.hiddenClues.filter(c => c.nodeId === node.id).map(clue => (
+              <span
+                key={clue.id}
+                className="w-4 h-4 rounded-full bg-amber-600 border border-amber-500 flex items-center justify-center text-[7px] text-black font-bold"
+                title={`${clue.type}: ${clue.hint}`}
+              >
+                {clue.type === 'source-code' ? 'S' : clue.type === 'network-request' ? 'N' : clue.type === 'http-header' ? 'H' : clue.type === 'console-log' ? 'C' : clue.type === 'css-comment' ? 'CS' : clue.type === 'data-attribute' ? 'D' : clue.type === 'meta-tag' ? 'M' : clue.type === 'base64' ? 'B' : clue.type === 'hex-encoded' ? 'X' : '?'}
+              </span>
+            ))}
+          </div>
+        )}
+        
         <div className="flex items-center gap-2 mb-2">
           <span className={`text-${node.color}-400`}>{nodeType?.icon}</span>
           {isInlineEditing ? (
@@ -1965,6 +2070,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] bg-[#0a0500] border-amber-900/50 p-0 overflow-hidden rounded-none sm:rounded-lg">
         <div className="flex flex-col h-full">
@@ -2118,6 +2224,21 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <Badge variant="outline" className="ml-auto text-[9px] border-stone-700 text-stone-500">{t.difficulty}</Badge>
                         </DropdownMenuItem>
                       ))}
+                      <DropdownMenuSeparator className="bg-stone-800" />
+                      <DropdownMenuLabel className="text-teal-500 text-xs">CTF Generators</DropdownMenuLabel>
+                      {[
+                        { id: 'osint_recon', name: 'OSINT Recon', icon: '🕵️' },
+                        { id: 'network_forensics', name: 'Network Forensics', icon: '📡' },
+                        { id: 'web_pentest', name: 'Web Pentest', icon: '🔓' },
+                        { id: 'social_engineering', name: 'Social Engineering', icon: '🎭' },
+                        { id: 'malware_analysis', name: 'Malware Analysis', icon: '🦠' },
+                        { id: 'incident_response', name: 'Incident Response', icon: '🚨' },
+                      ].map(t => (
+                        <DropdownMenuItem key={t.id} onClick={() => setCtfGenTemplate(t)} className="text-stone-300 hover:bg-teal-900/30 min-h-[44px] touch-manipulation" data-testid={`ctf-template-${t.id}`}>
+                          <span className="mr-2">{t.icon}</span> {t.name}
+                          <Badge variant="outline" className="ml-auto text-[9px] border-teal-700 text-teal-500">CTF</Badge>
+                        </DropdownMenuItem>
+                      ))}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -2138,6 +2259,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           data-testid={`campaign-file-${c.id}`}
                         >
                           <FileText className="w-3 h-3 shrink-0" />
+                          {c.isPublished && <Globe className="w-2.5 h-2.5 shrink-0 text-teal-500" />}
                           <span className="truncate flex-1">{c.name}</span>
                           <div className="hidden group-hover:flex gap-0.5">
                             <button 
@@ -2181,6 +2303,27 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       <Save className="w-3 h-3 mr-1.5" />
                     )}
                     {isSyncing ? 'Syncing...' : isUnsaved ? 'Save*' : 'Saved'}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={publishCampaign}
+                    disabled={isPublishing || !campaign.nodes.length}
+                    className={`w-full justify-start text-xs mt-1.5 min-h-[36px] ${
+                      campaign.isPublished
+                        ? 'border-teal-600 text-teal-400 hover:border-red-600 hover:text-red-400'
+                        : 'border-amber-700 text-amber-400'
+                    }`}
+                    data-testid="publish-campaign-btn"
+                  >
+                    {isPublishing ? (
+                      <div className="w-3 h-3 mr-1.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                    ) : campaign.isPublished ? (
+                      <Globe className="w-3 h-3 mr-1.5" />
+                    ) : (
+                      <ExternalLink className="w-3 h-3 mr-1.5" />
+                    )}
+                    {isPublishing ? 'Publishing...' : campaign.isPublished ? 'Published ✓' : 'Publish'}
                   </Button>
                 </div>
               </div>
@@ -3755,5 +3898,59 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         )}
       </DialogContent>
     </Dialog>
+
+    <Dialog open={!!ctfGenTemplate} onOpenChange={(v) => !v && setCtfGenTemplate(null)}>
+      <DialogContent className="bg-stone-950 border-teal-900/50 max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-teal-400 font-mono flex items-center gap-2">
+            {ctfGenTemplate?.icon} Generate: {ctfGenTemplate?.name}
+          </DialogTitle>
+          <DialogDescription className="text-stone-500 text-xs">
+            This will create a playable investigation with hidden clues embedded in page source, network requests, console logs, and more.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <div>
+            <Label className="text-stone-400 text-xs mb-1.5 block">Investigation Topic</Label>
+            <Input
+              value={ctfGenTopic}
+              onChange={(e) => setCtfGenTopic(e.target.value)}
+              placeholder="e.g., BGP Hijacking, API Security, Ransomware..."
+              className="bg-black/30 border-stone-700 text-stone-300"
+              data-testid="ctf-gen-topic"
+            />
+          </div>
+          <div>
+            <Label className="text-stone-400 text-xs mb-1.5 block">Skill Level</Label>
+            <div className="flex gap-2">
+              {['beginner', 'intermediate', 'advanced'].map(s => (
+                <Button
+                  key={s}
+                  size="sm"
+                  variant={ctfGenSkill === s ? 'default' : 'outline'}
+                  onClick={() => setCtfGenSkill(s)}
+                  className={ctfGenSkill === s ? 'bg-teal-700 text-white' : 'border-stone-700 text-stone-400'}
+                  data-testid={`ctf-skill-${s}`}
+                >
+                  {s}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => setCtfGenTemplate(null)} className="border-stone-700 text-stone-400">Cancel</Button>
+          <Button
+            onClick={generateFromCtfTemplate}
+            disabled={!ctfGenTopic.trim() || ctfGenerating}
+            className="bg-teal-700 hover:bg-teal-600"
+            data-testid="ctf-gen-submit"
+          >
+            {ctfGenerating ? 'Generating...' : 'Generate Campaign'}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
