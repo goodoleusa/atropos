@@ -12,6 +12,30 @@ export const gameSessions = pgTable("game_sessions", {
   discoveries: jsonb("discoveries").$type<Record<string, any>>().notNull().default({}),
   settings: jsonb("settings").$type<Record<string, any>>().notNull().default({}),
   progress: jsonb("progress").$type<Record<string, any>>().notNull().default({}),
+  xp: integer("xp").notNull().default(0),
+  level: integer("level").notNull().default(1),
+  achievements: jsonb("achievements").$type<string[]>().notNull().default([]),
+  stats: jsonb("stats").$type<{
+    commandsRun: number;
+    campaignsStarted: number;
+    campaignsCompleted: number;
+    cluesFound: number;
+    missionsCompleted: number;
+    totalPlayTimeMinutes: number;
+    longestStreak: number;
+    currentStreak: number;
+    lastPlayDate: string | null;
+  }>().notNull().default({
+    commandsRun: 0,
+    campaignsStarted: 0,
+    campaignsCompleted: 0,
+    cluesFound: 0,
+    missionsCompleted: 0,
+    totalPlayTimeMinutes: 0,
+    longestStreak: 0,
+    currentStreak: 0,
+    lastPlayDate: null
+  }),
   lastActive: timestamp("last_active").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -1062,6 +1086,80 @@ export type Modmail = typeof modmail.$inferSelect;
 export type InsertModmail = z.infer<typeof insertModmailSchema>;
 export type MultiplayerLobby = typeof multiplayerLobbies.$inferSelect;
 export type InsertMultiplayerLobby = z.infer<typeof insertMultiplayerLobbySchema>;
+
+// Achievements - definable achievement templates
+export const achievementDefinitions = pgTable("achievement_definitions", {
+  id: serial("id").primaryKey(),
+  achievementId: text("achievement_id").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull().default("🏆"),
+  category: text("category").notNull().default("general"), // general, combat, exploration, social, mastery
+  rarity: text("rarity").notNull().default("common"), // common, uncommon, rare, epic, legendary
+  xpReward: integer("xp_reward").notNull().default(100),
+  condition: jsonb("condition").$type<{
+    type: 'clue_count' | 'quest_count' | 'campaign_count' | 'command_count' | 'xp_threshold' | 'level_threshold' | 'streak' | 'specific_clue' | 'specific_quest' | 'time_played' | 'custom';
+    value: number | string;
+    comparison?: 'gte' | 'eq' | 'includes';
+  }>().notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  isHidden: boolean("is_hidden").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Game Events - audit trail of significant gameplay events
+export const gameEvents = pgTable("game_events", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  eventType: text("event_type").notNull(), // clue_found, quest_completed, achievement_unlocked, level_up, campaign_started, campaign_completed, xp_gained
+  eventData: jsonb("event_data").$type<Record<string, any>>().notNull().default({}),
+  xpAwarded: integer("xp_awarded").notNull().default(0),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+// XP Level Thresholds configuration
+export const XP_LEVELS = [
+  { level: 1, xpRequired: 0, title: 'Recruit' },
+  { level: 2, xpRequired: 250, title: 'Initiate' },
+  { level: 3, xpRequired: 600, title: 'Operative' },
+  { level: 4, xpRequired: 1200, title: 'Agent' },
+  { level: 5, xpRequired: 2000, title: 'Specialist' },
+  { level: 6, xpRequired: 3200, title: 'Veteran' },
+  { level: 7, xpRequired: 5000, title: 'Elite' },
+  { level: 8, xpRequired: 7500, title: 'Shadow' },
+  { level: 9, xpRequired: 11000, title: 'Phantom' },
+  { level: 10, xpRequired: 15000, title: 'Ghost' },
+] as const;
+
+export function getLevelForXP(xp: number): { level: number; title: string; xpForNext: number; xpProgress: number } {
+  let currentLevel = XP_LEVELS[0];
+  for (const lvl of XP_LEVELS) {
+    if (xp >= lvl.xpRequired) {
+      currentLevel = lvl;
+    } else {
+      break;
+    }
+  }
+  const nextLevel = XP_LEVELS.find(l => l.level === currentLevel.level + 1);
+  const xpForNext = nextLevel ? nextLevel.xpRequired - currentLevel.xpRequired : 0;
+  const xpProgress = nextLevel ? xp - currentLevel.xpRequired : 0;
+  return { level: currentLevel.level, title: currentLevel.title, xpForNext, xpProgress };
+}
+
+export const insertAchievementDefinitionSchema = createInsertSchema(achievementDefinitions).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertGameEventSchema = createInsertSchema(gameEvents).omit({
+  id: true,
+  timestamp: true,
+});
+
+export type AchievementDefinition = typeof achievementDefinitions.$inferSelect;
+export type InsertAchievementDefinition = z.infer<typeof insertAchievementDefinitionSchema>;
+export type GameEvent = typeof gameEvents.$inferSelect;
+export type InsertGameEvent = z.infer<typeof insertGameEventSchema>;
 
 // Export auth and chat models
 export * from "./models/auth";
