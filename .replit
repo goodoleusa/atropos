@@ -48,3 +48,6 @@ integrations = ["javascript_log_in_with_replit:2.0.0", "javascript_openrouter_ai
 [userenv.shared]
 AI_INTEGRATIONS_OPENROUTER_BASE_URL = "http://localhost:1106/modelfarm/openrouter"
 AI_INTEGRATIONS_OPENROUTER_API_KEY = "dummy"
+
+[objectStorage]
+defaultBucketID = "replit-objstore-e31faf67-b469-4ce2-9e46-6c44b8d0214f"
