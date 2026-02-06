@@ -395,23 +395,23 @@ export default function CampaignPlayer() {
       </AnimatePresence>
 
       <div className="sticky top-0 z-30 bg-[#0a0500]/95 border-b border-amber-900/30 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => navigate('/campaigns')}
-                className="text-stone-500 hover:text-amber-400 shrink-0"
+                className="text-stone-500 hover:text-amber-400 shrink-0 min-h-[44px] min-w-[44px] touch-manipulation"
                 data-testid="back-to-campaigns"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5" />
               </Button>
               <div className="min-w-0">
-                <h1 className="text-amber-500 font-mono text-sm font-bold truncate" data-testid="campaign-title">{campaign.name}</h1>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[10px]">{campaign.category}</Badge>
-                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[10px]">{campaign.difficulty}</Badge>
+                <h1 className="text-amber-500 font-mono text-xs sm:text-sm font-bold truncate" data-testid="campaign-title">{campaign.name}</h1>
+                <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
+                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[9px] sm:text-[10px]">{campaign.category}</Badge>
+                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[9px] sm:text-[10px]">{campaign.difficulty}</Badge>
                 </div>
               </div>
             </div>
@@ -483,7 +483,7 @@ export default function CampaignPlayer() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="p-4 md:p-8 max-w-3xl mx-auto"
+              className="p-3 sm:p-4 md:p-8 max-w-3xl mx-auto pb-20"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className={`p-2 rounded-lg border ${COLOR_ACCENTS[currentNode.color] || COLOR_ACCENTS.stone}`}>
@@ -671,14 +671,14 @@ export default function CampaignPlayer() {
                           onChange={(e) => setClueInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && checkClueAnswer()}
                           placeholder="Enter discovered value..."
-                          className="bg-black/30 border-stone-700 text-stone-300 text-xs flex-1"
+                          className="bg-black/30 border-stone-700 text-stone-300 text-xs sm:text-sm flex-1 min-h-[44px]"
                           data-testid="clue-input"
                         />
                         <Button
                           size="sm"
                           onClick={checkClueAnswer}
                           disabled={!clueInput.trim()}
-                          className="bg-amber-700 hover:bg-amber-600 text-xs"
+                          className="bg-amber-700 hover:bg-amber-600 text-xs min-h-[44px] min-w-[44px] touch-manipulation"
                           data-testid="submit-clue"
                         >
                           <Flag className="w-3 h-3 mr-1" /> Submit
@@ -736,7 +736,7 @@ export default function CampaignPlayer() {
                     <button
                       key={link.id}
                       onClick={() => navigateToNode(node.id)}
-                      className={`w-full text-left p-4 rounded-lg border transition-all hover:scale-[1.01] active:scale-[0.99] ${
+                      className={`w-full text-left p-4 rounded-lg border transition-all hover:scale-[1.01] active:scale-[0.99] min-h-[56px] touch-manipulation ${
                         COLOR_ACCENTS[node.color] || COLOR_ACCENTS.stone
                       } hover:brightness-125`}
                       data-testid={`next-node-${node.id}`}

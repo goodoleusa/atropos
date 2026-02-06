@@ -165,8 +165,22 @@ export default function MobileFloatingMenu() {
               </div>
               
               <div className="p-2 border-t border-stone-800 bg-black/50">
+                <div className="flex items-center justify-between px-2 py-1.5">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-amber-500 font-mono font-bold">Lv.{gameState.level || 1}</span>
+                      <span className="text-amber-400 font-mono text-[10px]">{(gameState.xp || 0).toLocaleString()} XP</span>
+                    </div>
+                    <div className="h-1 bg-stone-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-amber-700 to-amber-500 rounded-full transition-all"
+                        style={{ width: `${Math.min(100, ((gameState.xp || 0) % 250) / 250 * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-center justify-between px-2 py-1 text-xs">
-                  <span className="text-stone-500">Clues found:</span>
+                  <span className="text-stone-500">Clues:</span>
                   <span className="text-amber-500 font-mono">{gameState.inventory?.length || 0}</span>
                 </div>
                 <div className="flex items-center justify-between px-2 py-1 text-xs">
