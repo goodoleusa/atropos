@@ -9,6 +9,7 @@ import gameRoutes from "./routes/gameRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import behaviorRoutes2 from "./routes/behaviorRoutes2";
+import gameplayRoutes from "./routes/gameplayRoutes";
 import { 
   securityHeaders, 
   appAccessGate
@@ -45,6 +46,7 @@ export async function registerRoutes(
   app.use(adminRoutes);
   app.use(contentRoutes);
   app.use(behaviorRoutes2);
+  app.use(gameplayRoutes);
 
   return httpServer;
 }
