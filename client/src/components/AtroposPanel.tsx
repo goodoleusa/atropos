@@ -10,9 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { 
   Play, Loader2, CheckCircle2, XCircle, FileText, 
-  Search, Clock, Zap, AlertCircle, ExternalLink
+  Search, Clock, Zap, AlertCircle, Copy, Send, RefreshCw
 } from 'lucide-react';
 import { useGame } from '@/hooks/useGameSession';
+import { useReportContext } from '@/hooks/useReportContext';
 
 export interface AtroposScript {
   scriptId: string;
@@ -37,10 +38,12 @@ export interface AtroposScan {
 interface AtroposPanelProps {
   investigationId?: string;
   onScanComplete?: (scan: AtroposScan) => void;
+  onAnalyzeWithNexus?: (prompt: string, scanData: AtroposScan) => void;
 }
 
-export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelProps) {
+export function AtroposPanel({ investigationId, onScanComplete, onAnalyzeWithNexus }: AtroposPanelProps) {
   const { gameState } = useGame();
+  const { addToolOutput } = useReportContext();
   const [scripts, setScripts] = useState<AtroposScript[]>([]);
   const [selectedScript, setSelectedScript] = useState<string>('');
   const [target, setTarget] = useState('');
@@ -48,15 +51,11 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
   const [scans, setScans] = useState<AtroposScan[]>([]);
   const [selectedScan, setSelectedScan] = useState<AtroposScan | null>(null);
   const [healthStatus, setHealthStatus] = useState<{ available: boolean; error?: string } | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Load scripts and health status on mount
   useEffect(() => {
-    loadScripts();
-    checkHealth();
-    if (gameState?.sessionToken) {
-      loadScans();
-    }
-  }, [gameState?.sessionToken]);
+    refreshPanel();
+  }, [gameState?.sessionToken, investigationId]);
 
   const checkHealth = async () => {
     try {
@@ -77,9 +76,13 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
       if (res.ok) {
         const data = await res.json();
         setScripts(data);
-        if (data.length > 0 && !selectedScript) {
-          setSelectedScript(data[0].scriptId);
-        }
+        setSelectedScript(prev => {
+          if (!data.length) return '';
+          if (prev && data.some((script: AtroposScript) => script.scriptId === prev)) {
+            return prev;
+          }
+          return data[0].scriptId;
+        });
       }
     } catch (error) {
       console.error('Failed to load scripts:', error);
@@ -91,11 +94,23 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
     }
   };
 
-  const loadScans = async () => {
-    if (!gameState?.sessionToken) return;
+  const loadScans = async (selectActive = false) => {
+    const sessionToken = gameState?.sessionToken;
+    const endpoint = investigationId
+      ? `/api/atropos/scans/investigation/${investigationId}`
+      : sessionToken
+        ? `/api/atropos/scans/${sessionToken}`
+        : null;
+    if (!endpoint) {
+      setScans([]);
+      if (selectActive) {
+        setSelectedScan(null);
+      }
+      return [];
+    }
     
     try {
-      const res = await fetch(`/api/atropos/scans/${gameState.sessionToken}`);
+      const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
         // Transform tool calls to scan format
@@ -112,9 +127,106 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
           timestamp: tc.timestamp
         }));
         setScans(transformedScans);
+        if (selectActive) {
+          setSelectedScan(prev => {
+            if (!transformedScans.length) return null;
+            if (prev) {
+              const match = transformedScans.find(scan => scan.scanId === prev.scanId) ||
+                transformedScans.find(scan => scan.id === prev.id);
+              if (match) return match;
+            }
+            return transformedScans[0];
+          });
+        }
+        return transformedScans;
       }
     } catch (error) {
       console.error('Failed to load scans:', error);
+    }
+    return [];
+  };
+
+  const refreshPanel = async () => {
+    setRefreshing(true);
+    await Promise.all([loadScripts(), checkHealth()]);
+    await loadScans(true);
+    setRefreshing(false);
+  };
+
+  const formatResultsForPrompt = (results: unknown) => {
+    if (results === undefined || results === null) {
+      return 'No results payload.';
+    }
+    try {
+      const json = JSON.stringify(results, null, 2);
+      if (json.length > 6000) {
+        return `${json.slice(0, 6000)}\n... (truncated)`;
+      }
+      return json;
+    } catch {
+      return String(results);
+    }
+  };
+
+  const buildNexusPrompt = (scan: AtroposScan) => {
+    const script = scripts.find(s => s.path === scan.scriptPath || s.scriptId === scan.scriptPath);
+    const scriptLabel = script?.name || scan.scriptPath;
+    const resultsText = formatResultsForPrompt(scan.results);
+    const errorText = scan.error ? `\nError: ${scan.error}` : '';
+    return `Atropos scan results
+
+Target: ${scan.target}
+Script: ${scriptLabel}
+Status: ${scan.status}
+Scan ID: ${scan.scanId}
+Timestamp: ${new Date(scan.timestamp).toISOString()}
+Latency: ${scan.latencyMs ?? 'N/A'}ms
+
+Results:
+${resultsText}${errorText}
+
+Please summarize key findings, prioritize risks, and recommend next investigation steps.`;
+  };
+
+  const handleAnalyzeWithNexus = () => {
+    if (!selectedScan) return;
+    if (!onAnalyzeWithNexus) {
+      toast({
+        title: "NEXUS unavailable",
+        description: "Open the agent chat to analyze scan results",
+        variant: "destructive"
+      });
+      return;
+    }
+    const prompt = buildNexusPrompt(selectedScan);
+    onAnalyzeWithNexus(prompt, selectedScan);
+    toast({
+      title: "Sent to NEXUS",
+      description: "Scan results prepared for analysis"
+    });
+  };
+
+  const handleCopyResults = async () => {
+    if (!selectedScan?.results) {
+      toast({
+        title: "No results",
+        description: "No scan results available to copy",
+        variant: "destructive"
+      });
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(selectedScan.results, null, 2));
+      toast({
+        title: "Copied",
+        description: "Results copied to clipboard"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Copy failed",
+        description: error.message || "Unable to copy results",
+        variant: "destructive"
+      });
     }
   };
 
@@ -169,11 +281,20 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
           description: `Scan ${result.scanId} executed successfully`,
         });
 
-        // Reload scans
-        await loadScans();
+        addToolOutput({
+          type: 'scan',
+          source: 'atropos',
+          content: `Atropos scan completed: ${script.name} on ${target.trim()}`,
+          metadata: {
+            scanId: result.scanId,
+            scriptPath: script.path,
+            target: target.trim()
+          }
+        });
 
-        // Find the new scan and select it
-        const newScan = scans.find(s => s.scanId === result.scanId) || {
+        const updatedScans = await loadScans(true);
+
+        const newScan = updatedScans.find(s => s.scanId === result.scanId) || {
           id: Date.now(),
           scanId: result.scanId || 'unknown',
           target: target.trim(),
@@ -203,23 +324,23 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'osint': return 'bg-blue-500/20 text-blue-300 border-blue-500/50';
-      case 'vulnerability': return 'bg-red-500/20 text-red-300 border-red-500/50';
-      case 'secret_detection': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
+      case 'osint': return 'bg-teal-500/15 text-teal-300 border-teal-500/40';
+      case 'vulnerability': return 'bg-orange-500/15 text-orange-300 border-orange-500/40';
+      case 'secret_detection': return 'bg-amber-500/15 text-amber-300 border-amber-500/40';
+      default: return 'bg-stone-500/15 text-stone-300 border-stone-500/40';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
-        return <CheckCircle2 className="h-4 w-4 text-green-400" />;
+        return <CheckCircle2 className="h-4 w-4 text-teal-400" />;
       case 'error':
         return <XCircle className="h-4 w-4 text-red-400" />;
       case 'running':
-        return <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />;
+        return <Loader2 className="h-4 w-4 text-amber-400 animate-spin" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-400" />;
+        return <Clock className="h-4 w-4 text-stone-400" />;
     }
   };
 
@@ -227,22 +348,37 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
     <div className="space-y-4">
       {/* Health Status */}
       {healthStatus && (
-        <Card className={healthStatus.available ? "border-green-500/50" : "border-red-500/50"}>
+        <Card className={healthStatus.available ? "border-teal-500/50" : "border-red-500/50"}>
           <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               {healthStatus.available ? (
-                <>
-                  <CheckCircle2 className="h-5 w-5 text-green-400" />
-                  <span className="text-sm text-green-300">Atropos binary is available</span>
-                </>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-teal-400" />
+                  <span className="text-sm text-teal-300">Atropos binary is available</span>
+                </div>
               ) : (
-                <>
+                <div className="flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-red-400" />
                   <span className="text-sm text-red-300">
                     Atropos binary not available: {healthStatus.error || 'Unknown error'}
                   </span>
-                </>
+                </div>
               )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={refreshPanel}
+                disabled={refreshing}
+                className="border-amber-900/40 text-amber-300 hover:text-amber-200"
+                data-testid="atropos-refresh"
+              >
+                {refreshing ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-3 w-3" />
+                )}
+                <span className="ml-2">Refresh</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -250,8 +386,8 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
 
       <Tabs defaultValue="execute" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="execute">Execute Scan</TabsTrigger>
-          <TabsTrigger value="history">Scan History</TabsTrigger>
+          <TabsTrigger value="execute" data-testid="atropos-tab-execute">Execute Scan</TabsTrigger>
+          <TabsTrigger value="history" data-testid="atropos-tab-history">Scan History</TabsTrigger>
         </TabsList>
 
         <TabsContent value="execute" className="space-y-4">
@@ -269,7 +405,7 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
               <div className="space-y-2">
                 <Label htmlFor="script">Script</Label>
                 <Select value={selectedScript} onValueChange={setSelectedScript}>
-                  <SelectTrigger id="script">
+                  <SelectTrigger id="script" data-testid="atropos-script-select">
                     <SelectValue placeholder="Select a script" />
                   </SelectTrigger>
                   <SelectContent>
@@ -304,6 +440,7 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
                       executeScan();
                     }
                   }}
+                  data-testid="atropos-target-input"
                 />
                 <p className="text-xs text-muted-foreground">
                   Enter a domain, IP address, URL, or email address
@@ -314,6 +451,7 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
                 onClick={executeScan} 
                 disabled={loading || !selectedScript || !target.trim() || !healthStatus?.available}
                 className="w-full"
+                data-testid="atropos-execute"
               >
                 {loading ? (
                   <>
@@ -357,6 +495,14 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
                     </div>
                   )}
 
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                    <span>Target: {selectedScan.target}</span>
+                    <span>
+                      Script: {scripts.find(s => s.path === selectedScan.scriptPath)?.name || selectedScan.scriptPath}
+                    </span>
+                    <span>Time: {new Date(selectedScan.timestamp).toLocaleString()}</span>
+                  </div>
+
                   {selectedScan.results && (
                     <ScrollArea className="h-[400px] rounded-md border p-4">
                       <pre className="text-xs font-mono text-muted-foreground overflow-auto">
@@ -364,6 +510,28 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
                       </pre>
                     </ScrollArea>
                   )}
+
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleCopyResults}
+                      disabled={!selectedScan.results}
+                      className="border-amber-900/40 text-amber-300 hover:text-amber-200"
+                      data-testid="atropos-copy-json"
+                    >
+                      <Copy className="mr-2 h-4 w-4" />
+                      Copy JSON
+                    </Button>
+                    <Button
+                      onClick={handleAnalyzeWithNexus}
+                      disabled={!selectedScan.results || !onAnalyzeWithNexus}
+                      className="bg-amber-700 hover:bg-amber-600"
+                      data-testid="atropos-analyze"
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      Analyze with NEXUS
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -395,9 +563,10 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
                       <Card 
                         key={scan.id} 
                         className={`cursor-pointer transition-colors ${
-                          selectedScan?.id === scan.id ? 'border-primary' : ''
+                          selectedScan?.id === scan.id ? 'border-amber-500/50 bg-amber-950/10' : ''
                         }`}
                         onClick={() => setSelectedScan(scan)}
+                        data-testid={`atropos-history-${scan.id}`}
                       >
                         <CardContent className="pt-4">
                           <div className="flex items-start justify-between">
@@ -408,7 +577,7 @@ export function AtroposPanel({ investigationId, onScanComplete }: AtroposPanelPr
                                 <Badge variant="outline" className={getCategoryColor(
                                   scripts.find(s => s.path === scan.scriptPath)?.category || 'general'
                                 )}>
-                                  {scan.scriptPath}
+                                  {scripts.find(s => s.path === scan.scriptPath)?.name || scan.scriptPath}
                                 </Badge>
                               </div>
                               <p className="text-xs text-muted-foreground">
