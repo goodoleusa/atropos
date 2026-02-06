@@ -38,7 +38,7 @@ const CursorEffects = memo(function CursorEffects() {
         setRipples(prev => [...prev, { x: e.clientX, y: e.clientY, id: rippleIdRef.current }]);
         setTimeout(() => {
           setRipples(prev => prev.slice(1));
-        }, 800);
+        }, config.cursorRippleDurationMs || 800);
       }
     };
 
@@ -48,7 +48,7 @@ const CursorEffects = memo(function CursorEffects() {
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("click", handleClick);
     };
-  }, [config.cursorGlow, config.cursorTrail, config.cursorRipple, config.cursorTrailLength]);
+  }, [config.cursorGlow, config.cursorTrail, config.cursorRipple, config.cursorTrailLength, config.cursorRippleDurationMs]);
 
   return (
     <>
@@ -93,7 +93,7 @@ const CursorEffects = memo(function CursorEffects() {
           }}
           initial={{ width: 0, height: 0, x: 0, y: 0, opacity: 0.6 }}
           animate={{ width: 100, height: 100, x: -50, y: -50, opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: (config.cursorRippleDurationMs || 800) / 1000, ease: "easeOut" }}
         />
       ))}
     </>
@@ -245,12 +245,13 @@ const MatrixRain = memo(function MatrixRain() {
 const FloatingOrbs = memo(function FloatingOrbs() {
   const { config } = useGlobalEffects();
 
+  const baseSpeed = config.bgOrbSpeed || 20;
   const orbs = Array.from({ length: config.bgOrbCount }, (_, i) => ({
     id: i,
     size: 80 + Math.random() * 200,
     x: Math.random() * 100,
     y: Math.random() * 100,
-    duration: 15 + Math.random() * 25,
+    duration: baseSpeed * (0.75 + Math.random() * 0.5),
     delay: Math.random() * 10,
     color: i % 3 === 0 ? "#d97706" : i % 3 === 1 ? "#14b8a6" : "#7c3aed",
   }));
@@ -310,7 +311,7 @@ const GridPulse = memo(function GridPulse() {
           opacity: [0.3, 0.6, 0.3],
         }}
         transition={{
-          duration: 4,
+          duration: config.bgGridPulseSpeed || 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -327,37 +328,41 @@ function ScreenOverlays() {
 
   useEffect(() => {
     if (!config.glitch) return;
+    const interval = config.glitchIntervalMs || 2000;
+    const duration = config.glitchDurationMs || 100;
     const id = setInterval(() => {
       if (Math.random() < config.glitchFrequency) {
         setGlitchActive(true);
-        setTimeout(() => setGlitchActive(false), 50 + Math.random() * 100);
+        setTimeout(() => setGlitchActive(false), duration * (0.5 + Math.random()));
       }
-    }, 2000);
+    }, interval);
     return () => clearInterval(id);
-  }, [config.glitch, config.glitchFrequency]);
+  }, [config.glitch, config.glitchFrequency, config.glitchIntervalMs, config.glitchDurationMs]);
 
   useEffect(() => {
     if (!config.subliminalFlashes || config.subliminalMessages.length === 0) return;
+    const interval = config.subliminalIntervalMs || 5000;
+    const duration = config.subliminalDurationMs || 100;
     const id = setInterval(() => {
-      if (Math.random() < 0.03) {
-        const msg = config.subliminalMessages[Math.floor(Math.random() * config.subliminalMessages.length)];
-        setFlashMsg(msg);
-        setTimeout(() => setFlashMsg(null), 80 + Math.random() * 70);
-      }
-    }, 5000);
+      const msg = config.subliminalMessages[Math.floor(Math.random() * config.subliminalMessages.length)];
+      setFlashMsg(msg);
+      setTimeout(() => setFlashMsg(null), duration * (0.8 + Math.random() * 0.4));
+    }, interval);
     return () => clearInterval(id);
-  }, [config.subliminalFlashes, config.subliminalMessages]);
+  }, [config.subliminalFlashes, config.subliminalMessages, config.subliminalIntervalMs, config.subliminalDurationMs]);
 
   useEffect(() => {
     if (!config.flickerEnabled) return;
+    const interval = config.flickerIntervalMs || 800;
+    const duration = config.flickerDurationMs || 50;
     const id = setInterval(() => {
-      if (Math.random() < 0.15) {
+      if (Math.random() < 0.15 + config.flickerSpeed * 0.35) {
         setFlickerDim(true);
-        setTimeout(() => setFlickerDim(false), 30 + Math.random() * 60);
+        setTimeout(() => setFlickerDim(false), duration * (0.6 + Math.random() * 0.8));
       }
-    }, Math.max(200, 2000 - config.flickerSpeed * 1500));
+    }, interval);
     return () => clearInterval(id);
-  }, [config.flickerEnabled, config.flickerSpeed]);
+  }, [config.flickerEnabled, config.flickerSpeed, config.flickerIntervalMs, config.flickerDurationMs]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[95]" aria-hidden="true">

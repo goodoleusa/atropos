@@ -639,18 +639,29 @@ export type InsertDmMessage = z.infer<typeof insertDmMessageSchema>;
 // Designer Campaigns - full user-created investigation campaigns (modular/branching)
 export const designerCampaigns = pgTable("designer_campaigns", {
   id: serial("id").primaryKey(),
-  campaignId: text("campaign_id").notNull().unique(), // Client-generated UUID
+  campaignId: text("campaign_id").notNull().unique(),
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
+  category: text("category").notNull().default("recon"),
+  difficulty: text("difficulty").notNull().default("beginner"),
+  estimatedTime: text("estimated_time").notNull().default("15 min"),
   nodes: jsonb("nodes").$type<any[]>().notNull().default([]),
   links: jsonb("links").$type<any[]>().notNull().default([]),
   rootNodes: jsonb("root_nodes").$type<string[]>().notNull().default([]),
-  isChunk: boolean("is_chunk").notNull().default(false), // Modular chunk that can be embedded
-  entryPoints: jsonb("entry_points").$type<string[]>().notNull().default([]), // Entry node IDs
-  exitPoints: jsonb("exit_points").$type<string[]>().notNull().default([]), // Exit node IDs
-  clueRefs: jsonb("clue_refs").$type<string[]>().notNull().default([]), // Shared clue IDs
+  isChunk: boolean("is_chunk").notNull().default(false),
+  entryPoints: jsonb("entry_points").$type<string[]>().notNull().default([]),
+  exitPoints: jsonb("exit_points").$type<string[]>().notNull().default([]),
+  clueRefs: jsonb("clue_refs").$type<string[]>().notNull().default([]),
   tags: jsonb("tags").$type<string[]>().notNull().default([]),
-  sessionToken: text("session_token"), // Owner's session (null for admin campaigns)
+  hiddenClues: jsonb("hidden_clues").$type<{
+    id: string;
+    type: 'source-code' | 'network-request' | 'http-header' | 'console-log' | 'css-comment' | 'data-attribute' | 'meta-tag' | 'base64' | 'hex-encoded' | 'steganography';
+    nodeId: string;
+    hint: string;
+    value: string;
+    found?: boolean;
+  }[]>().notNull().default([]),
+  sessionToken: text("session_token"),
   isPublished: boolean("is_published").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
