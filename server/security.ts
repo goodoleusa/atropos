@@ -202,6 +202,21 @@ export const securityHeaders = (_req: Request, res: Response, next: NextFunction
   next();
 };
 
+export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
+  const expectedToken = process.env.APP_ACCESS_TOKEN;
+  const headerToken = req.headers['x-access-token'] as string;
+  const cookieToken = req.cookies?.access_token;
+  
+  const isDevMode = !expectedToken || process.env.NODE_ENV === 'development';
+  const isAuthed = isDevMode || headerToken === expectedToken || cookieToken === expectedToken;
+  
+  if (!isAuthed) {
+    return res.status(403).json({ error: "Admin access required" });
+  }
+  
+  next();
+};
+
 export const rateLimit = (maxRequests: number, windowMs: number) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const clientId = req.ip || req.headers['x-forwarded-for'] || 'unknown';

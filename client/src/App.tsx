@@ -10,6 +10,7 @@ import GlobalEffectsOverlay from "@/components/GlobalEffectsOverlay";
 import DevModePanel from "@/components/DevModePanel";
 import QuickNav from "@/components/QuickNav";
 import MobileFloatingMenu from "@/components/MobileFloatingMenu";
+import { AchievementManager } from "@/components/AchievementManager";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
@@ -27,12 +28,16 @@ import VideoGallery from "@/pages/VideoGallery";
 import Agents from "@/pages/Agents";
 import CampaignsHub from "@/pages/CampaignsHub";
 import CampaignPlayer from "@/pages/CampaignPlayer";
+import Profile from "@/pages/Profile";
+import Leaderboards from "@/pages/Leaderboards";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/terminal" component={TerminalPage} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/leaderboards" component={Leaderboards} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={AdminLogin} />
       <Route path="/void" component={TheVoid} />
@@ -62,6 +67,7 @@ function App() {
               <Toaster />
               <Router />
               <GlobalEffectsOverlay />
+              <AchievementManager />
               <DevModePanel />
               <QuickNav />
               <MobileFloatingMenu />

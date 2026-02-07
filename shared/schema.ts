@@ -1069,6 +1069,254 @@ export const multiplayerLobbies = pgTable("multiplayer_lobbies", {
   expiresAt: timestamp("expires_at"),
 });
 
+// Player Progression - XP, levels, and statistics
+export const playerProgression = pgTable("player_progression", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull().unique(),
+  level: integer("level").notNull().default(1),
+  xp: integer("xp").notNull().default(0),
+  totalXp: integer("total_xp").notNull().default(0), // Cumulative XP (never resets)
+  prestigeLevel: integer("prestige_level").notNull().default(0),
+  
+  // Skill specialization (OSINT, Network, Malware, Social Engineering)
+  skills: jsonb("skills").$type<{
+    osint: number;
+    network: number;
+    malware: number;
+    social: number;
+  }>().notNull().default({
+    osint: 0, network: 0, malware: 0, social: 0
+  }),
+  
+  // Statistics
+  stats: jsonb("stats").$type<{
+    campaignsCompleted: number;
+    cluesFound: number;
+    hiddenCluesFound: number;
+    questsCompleted: number;
+    toolsUsed: number;
+    totalPlayTimeMinutes: number;
+    fastestCampaignTime?: number;
+    longestStreak: number;
+    currentStreak: number;
+    lastLoginDate?: string;
+  }>().notNull().default({
+    campaignsCompleted: 0,
+    cluesFound: 0,
+    hiddenCluesFound: 0,
+    questsCompleted: 0,
+    toolsUsed: 0,
+    totalPlayTimeMinutes: 0,
+    longestStreak: 0,
+    currentStreak: 0
+  }),
+  
+  // Unlocks and rewards
+  unlockedTools: jsonb("unlocked_tools").$type<string[]>().notNull().default([]),
+  unlockedCampaigns: jsonb("unlocked_campaigns").$type<string[]>().notNull().default([]),
+  currency: integer("currency").notNull().default(0), // In-game credits
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Achievements - definitions
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  achievementId: text("achievement_id").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // discovery, speed, mastery, social, special
+  icon: text("icon").notNull().default("🏆"),
+  
+  // Requirements
+  requirements: jsonb("requirements").$type<{
+    type: 'stat' | 'action' | 'campaign' | 'special';
+    condition: Record<string, any>;
+  }>().notNull(),
+  
+  // Rewards
+  xpReward: integer("xp_reward").notNull().default(0),
+  currencyReward: integer("currency_reward").notNull().default(0),
+  unlocks: jsonb("unlocks").$type<string[]>().notNull().default([]),
+  
+  rarity: text("rarity").notNull().default("common"), // common, rare, epic, legendary
+  isHidden: boolean("is_hidden").notNull().default(false), // Hidden until unlocked
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Player Achievements - tracking unlocks
+export const playerAchievements = pgTable("player_achievements", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  achievementId: text("achievement_id").notNull(),
+  
+  unlockedAt: timestamp("unlocked_at").notNull().defaultNow(),
+  progress: integer("progress").notNull().default(100), // For multi-step achievements
+  
+  // Context when unlocked
+  metadata: jsonb("metadata").$type<{
+    campaignId?: string;
+    trigger?: string;
+    value?: any;
+  }>().notNull().default({}),
+});
+
+// Leaderboard Entries - denormalized for fast queries
+export const leaderboardEntries = pgTable("leaderboard_entries", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  username: text("username").notNull(),
+  
+  leaderboardType: text("leaderboard_type").notNull(), // global_xp, campaign_speed, weekly_challenge, etc.
+  score: integer("score").notNull(),
+  rank: integer("rank"),
+  
+  // Additional data for specific leaderboards
+  metadata: jsonb("metadata").$type<{
+    campaignId?: string;
+    completionTime?: number;
+    weekNumber?: number;
+    year?: number;
+  }>().notNull().default({}),
+  
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Daily Challenges - definitions
+export const dailyChallenges = pgTable("daily_challenges", {
+  id: serial("id").primaryKey(),
+  challengeId: text("challenge_id").notNull().unique(),
+  challengeDate: timestamp("challenge_date").notNull(),
+  
+  type: text("type").notNull(), // mini_investigation, speed_run, collection, skill_test
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  difficulty: text("difficulty").notNull().default("medium"), // easy, medium, hard
+  
+  // Challenge configuration
+  config: jsonb("config").$type<{
+    campaignId?: string;
+    targetTime?: number;
+    requiredClues?: string[];
+    skillFocus?: string;
+    customRules?: Record<string, any>;
+  }>().notNull().default({}),
+  
+  // Rewards
+  xpReward: integer("xp_reward").notNull().default(100),
+  currencyReward: integer("currency_reward").notNull().default(50),
+  bonusRewards: jsonb("bonus_rewards").$type<string[]>().notNull().default([]),
+  
+  expiresAt: timestamp("expires_at").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Daily Challenge Completions - tracking
+export const challengeCompletions = pgTable("challenge_completions", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  challengeId: text("challenge_id").notNull(),
+  
+  completedAt: timestamp("completed_at").notNull().defaultNow(),
+  score: integer("score").notNull().default(0),
+  timeSpent: integer("time_spent").notNull().default(0), // seconds
+  
+  // Performance metrics
+  metrics: jsonb("metrics").$type<{
+    cluesFound?: number;
+    toolsUsed?: number;
+    hintsUsed?: number;
+    perfectRun?: boolean;
+  }>().notNull().default({}),
+});
+
+// Campaign Stats - aggregated analytics
+export const campaignStats = pgTable("campaign_stats", {
+  id: serial("id").primaryKey(),
+  campaignId: text("campaign_id").notNull().unique(),
+  
+  // Participation
+  totalAttempts: integer("total_attempts").notNull().default(0),
+  totalCompletions: integer("total_completions").notNull().default(0),
+  uniquePlayers: integer("unique_players").notNull().default(0),
+  
+  // Performance
+  averageCompletionTime: integer("average_completion_time").notNull().default(0), // minutes
+  fastestCompletionTime: integer("fastest_completion_time"),
+  averageRating: integer("average_rating").notNull().default(0), // 1-5 stars
+  totalRatings: integer("total_ratings").notNull().default(0),
+  
+  // Drop-off analysis
+  dropOffPoints: jsonb("drop_off_points").$type<{
+    nodeId: string;
+    dropCount: number;
+    percentage: number;
+  }[]>().notNull().default([]),
+  
+  completionRate: integer("completion_rate").notNull().default(0), // Percentage
+  
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Insert Schemas
+export const insertPlayerProgressionSchema = createInsertSchema(playerProgression).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAchievementSchema = createInsertSchema(achievements).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPlayerAchievementSchema = createInsertSchema(playerAchievements).omit({
+  id: true,
+  unlockedAt: true,
+});
+
+export const insertLeaderboardEntrySchema = createInsertSchema(leaderboardEntries).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertChallengeCompletionSchema = createInsertSchema(challengeCompletions).omit({
+  id: true,
+  completedAt: true,
+});
+
+export const insertCampaignStatsSchema = createInsertSchema(campaignStats).omit({
+  id: true,
+  updatedAt: true,
+});
+
+// Select Types
+export type PlayerProgression = typeof playerProgression.$inferSelect;
+export type InsertPlayerProgression = z.infer<typeof insertPlayerProgressionSchema>;
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type PlayerAchievement = typeof playerAchievements.$inferSelect;
+export type InsertPlayerAchievement = z.infer<typeof insertPlayerAchievementSchema>;
+export type LeaderboardEntry = typeof leaderboardEntries.$inferSelect;
+export type InsertLeaderboardEntry = z.infer<typeof insertLeaderboardEntrySchema>;
+export type DailyChallenge = typeof dailyChallenges.$inferSelect;
+export type InsertDailyChallenge = z.infer<typeof insertDailyChallengeSchema>;
+export type ChallengeCompletion = typeof challengeCompletions.$inferSelect;
+export type InsertChallengeCompletion = z.infer<typeof insertChallengeCompletionSchema>;
+export type CampaignStats = typeof campaignStats.$inferSelect;
+export type InsertCampaignStats = z.infer<typeof insertCampaignStatsSchema>;
+
 // Insert schemas for modmail and multiplayer
 export const insertModmailSchema = createInsertSchema(modmail).omit({
   id: true,
@@ -1087,7 +1335,12 @@ export type InsertModmail = z.infer<typeof insertModmailSchema>;
 export type MultiplayerLobby = typeof multiplayerLobbies.$inferSelect;
 export type InsertMultiplayerLobby = z.infer<typeof insertMultiplayerLobbySchema>;
 
-// Achievements - definable achievement templates
+// NOTE: Two progression systems exist (need consolidation):
+// 1. achievementDefinitions + gameEvents (from main) - uses XP_LEVELS with title-based progression
+// 2. playerProgression + achievements (from cursor2) - uses linear 100 XP/level system
+// Both are functional. Recommend: Choose one system and migrate data post-merge.
+
+// Achievements - definable achievement templates (from main branch)
 export const achievementDefinitions = pgTable("achievement_definitions", {
   id: serial("id").primaryKey(),
   achievementId: text("achievement_id").notNull().unique(),
