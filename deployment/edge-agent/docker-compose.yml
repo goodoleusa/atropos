@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # Ollama - Local LLM inference (FREE)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: atropos-ollama
+    restart: unless-stopped
+    volumes:
+      - ollama-data:/root/.ollama
+    ports:
+      - "11434:11434"
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Model Downloader - Pulls required models on first run
+  model-setup:
+    image: ollama/ollama:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: /bin/bash
+    command: >
+      -c "
+      ollama pull mistral:7b &&
+      ollama pull nomic-embed-text &&
+      echo 'Models downloaded successfully'
+      "
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+
+  # Recon Agent - Network scanning and asset discovery
+  recon-agent:
+    build:
+      context: ./agents/recon
+      dockerfile: Dockerfile
+    container_name: atropos-recon
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - ATROPOS_CLOUD_API=${ATROPOS_CLOUD_API:-https://atropos-platform.vercel.app}
+      - OLLAMA_HOST=http://ollama:11434
+      - SCAN_INTERVAL=${SCAN_INTERVAL:-3600}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    network_mode: host  # Access client network directly
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+  # Vulnerability Scanner - Nuclei-based vulnerability detection
+  vuln-scanner:
+    build:
+      context: ./agents/scanner
+      dockerfile: Dockerfile
+    container_name: atropos-scanner
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - ATROPOS_CLOUD_API=${ATROPOS_CLOUD_API}
+      - OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - ./nuclei-templates:/nuclei-templates:ro
+      - ./data:/app/data
+      - ./logs:/app/logs
+    network_mode: host
+
+  # Threat Hunter - Behavioral analysis and anomaly detection
+  threat-hunter:
+    build:
+      context: ./agents/hunter
+      dockerfile: Dockerfile
+    container_name: atropos-hunter
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - ATROPOS_CLOUD_API=${ATROPOS_CLOUD_API}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - SCAN_INTERVAL=${SCAN_INTERVAL:-3600}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+
+  # Log Aggregator - Centralized logging
+  loki:
+    image: grafana/loki:latest
+    container_name: atropos-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
+  # Metrics & Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: atropos-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-dashboards:/etc/grafana/provisioning/dashboards:ro
+
+volumes:
+  ollama-data:
+  loki-data:
+  grafana-data:
+
+# Network configuration
+networks:
+  default:
+    driver: bridge
