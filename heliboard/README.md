@@ -4,29 +4,31 @@ Custom HeliBoard layouts: bigger spacebar (comma removed, period kept with @ lon
 
 ## Files
 
-- **`functional_keys_bigspace.json`** - Functional key layout (bigger spacebar)
+- **`qwerty_bigspace.txt`** - Main QWERTY layout with 2-key bottom row (defines comma/period popups)
+- **`functional_keys_bigspace.json`** - Functional key layout (bigger spacebar, no left comma)
 - **`symbols_coding.txt`** - Symbols layout reorganized for coding
 
 ## Functional Keys: Big Spacebar
 
-Removes the comma key, keeps the period (with `@` on long press). The spacebar expands to fill the freed space.
+Two files work together:
 
-**Default bottom row:**
-```
-[?123] [,] [lang] [emoji] [   space   ] [.] [enter]
-```
+1. **`qwerty_bigspace.txt`** (main layout) - Standard QWERTY with a 2-key bottom row. When the bottom row has exactly 2 keys, they replace the comma and period keys in the functional layout. The first key replaces comma (groupId 1), the second replaces period (groupId 2). Popup keys defined here go into the "Layout" popup key group.
 
-**This layout:**
+   - Key 1 (comma): `,` with `.` and `@` on long press
+   - Key 2 (period): `.` with `,` `@` `!` `?` `;` `:` `-` on long press
+
+2. **`functional_keys_bigspace.json`** (functional layout) - Removes the left comma key so the spacebar expands.
+
+**Result:**
 ```
-[?123] [lang] [emoji] [     space     ] [.] [enter]
+[?123] [lang] [emoji] [       space       ] [enter]
 ```
+Plus the comma/period replacements from the main layout.
 
 ### Install
 
-1. Go to **Settings** > **Advanced** > **Secondary Layouts**
-2. Find **Functional keys** and tap the **+** button
-3. Choose **copy existing layout**, then replace the contents with `functional_keys_bigspace.json`
-4. Save
+1. **Main layout**: Go to **Languages & Layouts** > tap your language > tap **+** next to Layouts > **Add custom layout** > paste `qwerty_bigspace.txt`
+2. **Functional keys**: Go to **Settings** > **Advanced** > **Secondary Layouts** > **Functional keys** > tap **+** > paste `functional_keys_bigspace.json`
 
 ## Symbols: Coding-Optimized
 
