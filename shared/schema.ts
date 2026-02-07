@@ -1414,6 +1414,145 @@ export type InsertAchievementDefinition = z.infer<typeof insertAchievementDefini
 export type GameEvent = typeof gameEvents.$inferSelect;
 export type InsertGameEvent = z.infer<typeof insertGameEventSchema>;
 
+// Client Security Services - Offensive security agent deployment
+export const clientOrganizations = pgTable("client_organizations", {
+  id: serial("id").primaryKey(),
+  clientId: text("client_id").notNull().unique(),
+  organizationName: text("organization_name").notNull(),
+  serviceTier: text("service_tier").notNull(), // 'small_business', 'mid_market', 'enterprise', 'ngo', 'government'
+  monthlyFee: integer("monthly_fee").notNull().default(0),
+  
+  // Service Configuration
+  slaResponseMinutes: integer("sla_response_minutes").notNull().default(240), // 4 hours default
+  hasDedicatedAnalyst: boolean("has_dedicated_analyst").notNull().default(false),
+  agentDeploymentType: text("agent_deployment_type").notNull().default("cloud"), // 'cloud', 'edge', 'hybrid'
+  
+  // Monitored Assets
+  monitoredDomains: jsonb("monitored_domains").$type<string[]>().notNull().default([]),
+  monitoredIpRanges: jsonb("monitored_ip_ranges").$type<string[]>().notNull().default([]),
+  monitoredPersonnel: jsonb("monitored_personnel").$type<{name: string; email: string; role: string}[]>().notNull().default([]),
+  
+  // Alert Configuration
+  alertEmails: jsonb("alert_emails").$type<string[]>().notNull().default([]),
+  alertSlackWebhook: text("alert_slack_webhook"),
+  alertPhones: jsonb("alert_phones").$type<string[]>().notNull().default([]),
+  
+  // Status
+  subscriptionStatus: text("subscription_status").notNull().default("active"), // 'active', 'past_due', 'cancelled', 'trial'
+  trialEndsAt: timestamp("trial_ends_at"),
+  nextBillingDate: timestamp("next_billing_date").notNull(),
+  
+  // Contact
+  primaryContactName: text("primary_contact_name").notNull(),
+  primaryContactEmail: text("primary_contact_email").notNull(),
+  primaryContactPhone: text("primary_contact_phone"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Security Findings from deployed agents
+export const agentFindings = pgTable("agent_findings", {
+  id: serial("id").primaryKey(),
+  findingId: text("finding_id").notNull().unique(),
+  clientId: text("client_id").notNull(),
+  
+  // Agent Info
+  agentId: text("agent_id").notNull(), // 'recon', 'scanner', 'hunter', 'responder'
+  agentType: text("agent_type").notNull(), // Type of agent that found this
+  
+  // Finding Details
+  severity: text("severity").notNull(), // 'critical', 'high', 'medium', 'low', 'info'
+  category: text("category").notNull(), // 'vulnerability', 'threat', 'misconfiguration', 'exposure'
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  
+  // Technical Details
+  affectedAsset: text("affected_asset"), // IP, domain, service
+  cve: text("cve"), // CVE identifier if applicable
+  cvss: integer("cvss"), // CVSS score 0-10
+  exploitability: text("exploitability"), // 'high', 'medium', 'low', 'none'
+  
+  // Evidence
+  evidence: jsonb("evidence").$type<Record<string, any>>().notNull().default({}),
+  proofOfConcept: text("proof_of_concept"),
+  
+  // Remediation
+  remediationSteps: jsonb("remediation_steps").$type<string[]>().notNull().default([]),
+  estimatedEffort: text("estimated_effort"), // 'quick', 'moderate', 'complex'
+  priority: integer("priority").notNull().default(50), // 0-100
+  
+  // Status
+  status: text("status").notNull().default("new"), // 'new', 'investigating', 'remediated', 'accepted_risk', 'false_positive'
+  assignedTo: text("assigned_to"),
+  remediatedAt: timestamp("remediated_at"),
+  
+  // Client Notification
+  clientNotified: boolean("client_notified").notNull().default(false),
+  notifiedAt: timestamp("notified_at"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Agent Deployment Records
+export const agentDeployments = pgTable("agent_deployments", {
+  id: serial("id").primaryKey(),
+  deploymentId: text("deployment_id").notNull().unique(),
+  clientId: text("client_id").notNull(),
+  
+  // Deployment Config
+  deploymentType: text("deployment_type").notNull(), // 'cloud', 'edge', 'hybrid'
+  crewConfiguration: jsonb("crew_configuration").$type<{
+    agents: string[];
+    models: Record<string, string>;
+    scanFrequency: number;
+  }>().notNull(),
+  
+  // Edge Device Info (if applicable)
+  edgeDeviceId: text("edge_device_id"),
+  edgeDeviceIp: text("edge_device_ip"),
+  edgeDeviceStatus: text("edge_device_status"), // 'online', 'offline', 'error'
+  
+  // Status
+  status: text("status").notNull().default("active"), // 'active', 'paused', 'error', 'decommissioned'
+  lastHealthCheck: timestamp("last_health_check"),
+  lastScanCompleted: timestamp("last_scan_completed"),
+  
+  // Metrics
+  totalScansRun: integer("total_scans_run").notNull().default(0),
+  totalFindingsReported: integer("total_findings_reported").notNull().default(0),
+  totalIncidentsContained: integer("total_incidents_contained").notNull().default(0),
+  
+  deployedAt: timestamp("deployed_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Insert Schemas
+export const insertClientOrganizationSchema = createInsertSchema(clientOrganizations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAgentFindingSchema = createInsertSchema(agentFindings).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAgentDeploymentSchema = createInsertSchema(agentDeployments).omit({
+  id: true,
+  deployedAt: true,
+  updatedAt: true,
+});
+
+// Types
+export type ClientOrganization = typeof clientOrganizations.$inferSelect;
+export type InsertClientOrganization = z.infer<typeof insertClientOrganizationSchema>;
+export type AgentFinding = typeof agentFindings.$inferSelect;
+export type InsertAgentFinding = z.infer<typeof insertAgentFindingSchema>;
+export type AgentDeployment = typeof agentDeployments.$inferSelect;
+export type InsertAgentDeployment = z.infer<typeof insertAgentDeploymentSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
