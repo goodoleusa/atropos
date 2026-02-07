@@ -1,0 +1,23 @@
+{
+  "hierarchyNotes": [
+    {
+      "up": ["parent"],
+      "same": ["sibling"], 
+      "down": ["child"]
+    }
+  ],
+  "userHierarchies": [],
+  "showBCs": true,
+  "showAllPathsInMatrixView": true,
+  "showRefreshNotice": false,
+  "enableAlphaSort": true,
+  "writeBCsInline": false,
+  "showWriteAccessNotice": false,
+  "respectReadableLineLength": true,
+  "showTrail": true,
+  "showGrid": true,
+  "showPrevNext": true,
+  "showUp": true,
+  "showDown": true,
+  "showSame": true
+}
