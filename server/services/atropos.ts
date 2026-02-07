@@ -77,7 +77,7 @@ export class AtroposService {
         return { 
           available: false, 
           path: this.binaryPath,
-          error: 'Atropos binary not found. Build with: bash scripts/build-atropos.sh'
+          error: 'Atropos binary not found. Build with: npm run build:atropos (takes 2-3 min once, then cached). Or set SKIP_ATROPOS_BUILD=1 to disable.'
         };
       }
       
