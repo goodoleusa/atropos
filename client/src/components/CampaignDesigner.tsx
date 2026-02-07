@@ -84,13 +84,42 @@ interface SharedClue {
   usedIn: string[]; // Campaign IDs where this clue is referenced
 }
 
+type RevealEffect = 'burst' | 'glitch' | 'scanline' | 'ripple' | 'decrypt' | 'spotlight' | 'shatter' | 'none';
+
 interface HiddenClue {
   id: string;
   type: 'source-code' | 'network-request' | 'http-header' | 'console-log' | 'css-comment' | 'data-attribute' | 'meta-tag' | 'base64' | 'hex-encoded' | 'steganography';
   nodeId: string;
   hint: string;
   value: string;
+  revealEffect?: RevealEffect;
+  revealColor?: string;
+  revealIntensity?: 'subtle' | 'medium' | 'intense';
 }
+
+const HIDDEN_CLUE_TYPES = [
+  { value: 'source-code', label: 'HTML Source', short: 'S' },
+  { value: 'network-request', label: 'Network Request', short: 'N' },
+  { value: 'http-header', label: 'HTTP Header', short: 'H' },
+  { value: 'console-log', label: 'Console Log', short: 'C' },
+  { value: 'css-comment', label: 'CSS Comment', short: 'CS' },
+  { value: 'data-attribute', label: 'Data Attribute', short: 'D' },
+  { value: 'meta-tag', label: 'Meta Tag', short: 'M' },
+  { value: 'base64', label: 'Base64', short: 'B' },
+  { value: 'hex-encoded', label: 'Hex Encoded', short: 'X' },
+  { value: 'steganography', label: 'Steganography', short: '?' },
+] as const;
+
+const REVEAL_EFFECTS: { value: RevealEffect; label: string; desc: string }[] = [
+  { value: 'burst', label: 'Particle Burst', desc: 'Explosion of colored particles' },
+  { value: 'glitch', label: 'Glitch', desc: 'Digital corruption flicker' },
+  { value: 'scanline', label: 'Scanline', desc: 'CRT monitor sweep' },
+  { value: 'ripple', label: 'Ripple', desc: 'Expanding wave ring' },
+  { value: 'decrypt', label: 'Decrypt', desc: 'Matrix-style decode cascade' },
+  { value: 'spotlight', label: 'Spotlight', desc: 'Bright radial flash' },
+  { value: 'shatter', label: 'Shatter', desc: 'Glass-breaking fragments' },
+  { value: 'none', label: 'None', desc: 'No visual effect' },
+];
 
 interface Campaign {
   id: string;
@@ -3415,6 +3444,186 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         placeholder={'.mission-brief { border: 1px solid #d97706; padding: 2rem; }\n.mission-brief h2 { color: #d97706; }'}
                       />
                     </div>
+                  </div>
+
+                  {/* Hidden Clues for this Node */}
+                  <div className="border border-amber-900/30 rounded p-3 space-y-3 bg-amber-950/5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] text-amber-500 uppercase font-bold">Hidden Clues</label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-[10px] text-amber-400"
+                        onClick={() => {
+                          const newClue: HiddenClue = {
+                            id: `clue-${Date.now()}-${Math.random().toString(36).slice(2,5)}`,
+                            type: 'source-code',
+                            nodeId: editingNode.id,
+                            hint: '',
+                            value: '',
+                            revealEffect: 'burst',
+                            revealIntensity: 'medium',
+                          };
+                          setCampaign(prev => ({
+                            ...prev,
+                            hiddenClues: [...(prev.hiddenClues || []), newClue]
+                          }));
+                          setIsUnsaved(true);
+                        }}
+                      >
+                        <Plus className="w-3 h-3 mr-1" /> Add Clue
+                      </Button>
+                    </div>
+                    {(campaign.hiddenClues || []).filter(c => c.nodeId === editingNode.id).length === 0 ? (
+                      <p className="text-[10px] text-stone-600 text-center py-2">No hidden clues on this node. Click Add Clue.</p>
+                    ) : (
+                      (campaign.hiddenClues || []).filter(c => c.nodeId === editingNode.id).map((clue, ci) => (
+                        <div key={clue.id} className="p-2 bg-black/30 rounded border border-stone-800 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-amber-400 font-mono">{clue.id.slice(0,16)}...</span>
+                            <Button
+                              size="sm" variant="ghost" className="h-5 w-5 p-0 text-stone-600 hover:text-red-400"
+                              onClick={() => {
+                                setCampaign(prev => ({
+                                  ...prev,
+                                  hiddenClues: (prev.hiddenClues || []).filter(c => c.id !== clue.id)
+                                }));
+                                setIsUnsaved(true);
+                              }}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-[9px] text-stone-500">Hide Method</label>
+                              <Select
+                                value={clue.type}
+                                onValueChange={(val) => {
+                                  setCampaign(prev => ({
+                                    ...prev,
+                                    hiddenClues: (prev.hiddenClues || []).map(c =>
+                                      c.id === clue.id ? { ...c, type: val as any } : c
+                                    )
+                                  }));
+                                  setIsUnsaved(true);
+                                }}
+                              >
+                                <SelectTrigger className="bg-black/50 border-stone-700 text-[10px] h-7">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#0a0500] border-stone-700">
+                                  {HIDDEN_CLUE_TYPES.map(t => (
+                                    <SelectItem key={t.value} value={t.value} className="text-xs">{t.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <label className="text-[9px] text-stone-500">Reveal Effect</label>
+                              <Select
+                                value={clue.revealEffect || 'burst'}
+                                onValueChange={(val) => {
+                                  setCampaign(prev => ({
+                                    ...prev,
+                                    hiddenClues: (prev.hiddenClues || []).map(c =>
+                                      c.id === clue.id ? { ...c, revealEffect: val as RevealEffect } : c
+                                    )
+                                  }));
+                                  setIsUnsaved(true);
+                                }}
+                              >
+                                <SelectTrigger className="bg-black/50 border-stone-700 text-[10px] h-7">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#0a0500] border-stone-700">
+                                  {REVEAL_EFFECTS.map(e => (
+                                    <SelectItem key={e.value} value={e.value} className="text-xs">{e.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-[9px] text-stone-500">Intensity</label>
+                              <Select
+                                value={clue.revealIntensity || 'medium'}
+                                onValueChange={(val) => {
+                                  setCampaign(prev => ({
+                                    ...prev,
+                                    hiddenClues: (prev.hiddenClues || []).map(c =>
+                                      c.id === clue.id ? { ...c, revealIntensity: val as any } : c
+                                    )
+                                  }));
+                                  setIsUnsaved(true);
+                                }}
+                              >
+                                <SelectTrigger className="bg-black/50 border-stone-700 text-[10px] h-7">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#0a0500] border-stone-700">
+                                  <SelectItem value="subtle" className="text-xs">Subtle</SelectItem>
+                                  <SelectItem value="medium" className="text-xs">Medium</SelectItem>
+                                  <SelectItem value="intense" className="text-xs">Intense</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <label className="text-[9px] text-stone-500">Glow Color</label>
+                              <Input
+                                type="color"
+                                value={clue.revealColor || '#d97706'}
+                                onChange={(e) => {
+                                  setCampaign(prev => ({
+                                    ...prev,
+                                    hiddenClues: (prev.hiddenClues || []).map(c =>
+                                      c.id === clue.id ? { ...c, revealColor: e.target.value } : c
+                                    )
+                                  }));
+                                  setIsUnsaved(true);
+                                }}
+                                className="h-7 w-full bg-black/50 border-stone-700 p-0.5"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[9px] text-stone-500">Hidden Value</label>
+                            <Input
+                              value={clue.value}
+                              onChange={(e) => {
+                                setCampaign(prev => ({
+                                  ...prev,
+                                  hiddenClues: (prev.hiddenClues || []).map(c =>
+                                    c.id === clue.id ? { ...c, value: e.target.value } : c
+                                  )
+                                }));
+                                setIsUnsaved(true);
+                              }}
+                              placeholder="FLAG{hidden_value} or secret string..."
+                              className="bg-black/50 border-stone-700 text-[10px] h-7 font-mono text-amber-400"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] text-stone-500">Player Hint</label>
+                            <Input
+                              value={clue.hint}
+                              onChange={(e) => {
+                                setCampaign(prev => ({
+                                  ...prev,
+                                  hiddenClues: (prev.hiddenClues || []).map(c =>
+                                    c.id === clue.id ? { ...c, hint: e.target.value } : c
+                                  )
+                                }));
+                                setIsUnsaved(true);
+                              }}
+                              placeholder="Check the page source..."
+                              className="bg-black/50 border-stone-700 text-[10px] h-7"
+                            />
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
 
                   {/* Backlinks Panel - Obsidian-style */}

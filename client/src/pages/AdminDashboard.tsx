@@ -55,7 +55,7 @@ import { QuickPushSection } from "@/pages/admin/QuickPushSection";
 import { EffectsPlaygroundSection } from "@/pages/admin/EffectsPlaygroundSection";
 import AgentConfigSection from "@/pages/admin/AgentConfigSection";
 import { AgentModulesSection } from "@/pages/admin/AgentModulesSection";
-import { ShieldAlert, Activity, Clock, Users, AlertTriangle } from "lucide-react";
+import { ShieldAlert, Activity, Clock, Users, AlertTriangle, BarChart3, Star, Award } from "lucide-react";
 
 function AtroposScannerSection() {
   const { data: health } = useQuery({
@@ -375,6 +375,7 @@ const NAV_GROUPS = [
     items: [
       { id: "activity", label: "Activity Log", icon: "Activity" },
       { id: "sessions", label: "Sessions", icon: "Server" },
+      { id: "gameplay", label: "Gameplay Analytics", icon: "BarChart3" },
       { id: "behavior", label: "Behavior Analytics", icon: "Eye" },
     ],
   },
@@ -535,6 +536,7 @@ export default function AdminDashboard() {
     switch (activeSection) {
       case 'activity': return <ActivityLogPanel />;
       case 'sessions': return <SessionsPanel />;
+      case 'gameplay': return <GameplayAnalyticsPanel />;
       case 'behavior': return <BehaviorAnalyticsPanel />;
       case 'collectibles': return <CollectiblesSection />;
       case 'quests': return <QuestsSection quests={quests} />;
@@ -1673,6 +1675,173 @@ function GraphPanel({ clues, selectedClueId, setSelectedClueId, clueTrail, setCl
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function GameplayAnalyticsPanel() {
+  const { data: analytics, isLoading } = useQuery({
+    queryKey: ['gameplay-analytics'],
+    queryFn: async () => {
+      const res = await fetch('/api/gameplay/analytics');
+      if (!res.ok) return null;
+      return res.json();
+    },
+    refetchInterval: 30000,
+  });
+
+  const { data: leaderboard = [] } = useQuery({
+    queryKey: ['admin-leaderboard'],
+    queryFn: async () => {
+      const res = await fetch('/api/gameplay/leaderboard?limit=10');
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  const { data: achievements = [] } = useQuery({
+    queryKey: ['admin-achievements'],
+    queryFn: async () => {
+      const res = await fetch('/api/gameplay/achievements/all');
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  if (isLoading) {
+    return <div className="text-stone-500 text-center py-12">Loading gameplay analytics...</div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+        <BarChart3 className="w-5 h-5" /> Gameplay Analytics
+      </h3>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Total Players', value: analytics?.totalPlayers || 0, color: 'text-amber-400' },
+          { label: 'Active (24h)', value: analytics?.activePlayers24h || 0, color: 'text-teal-400' },
+          { label: 'Active (7d)', value: analytics?.activePlayers7d || 0, color: 'text-purple-400' },
+          { label: 'Campaign Runs', value: analytics?.totalCampaignRuns || 0, color: 'text-orange-400' },
+          { label: 'Avg Clues/Player', value: analytics?.avgCluesPerPlayer?.toFixed(1) || '0', color: 'text-amber-500' },
+          { label: 'Avg Quests/Player', value: analytics?.avgQuestsPerPlayer?.toFixed(1) || '0', color: 'text-teal-500' },
+          { label: 'Completion Rate', value: `${Math.round((analytics?.campaignCompletionRate || 0) * 100)}%`, color: 'text-purple-500' },
+          { label: 'Achievements', value: achievements.length, color: 'text-amber-400' },
+        ].map((stat) => (
+          <Card key={stat.label} className="bg-[#0a0500] border-stone-800">
+            <CardContent className="p-3 text-center">
+              <p className={`font-mono text-xl font-bold ${stat.color}`}>{stat.value}</p>
+              <p className="text-[10px] text-stone-500 mt-0.5">{stat.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <Card className="bg-[#0a0500] border-amber-900/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+              <Star className="w-4 h-4" /> Leaderboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {leaderboard.length === 0 ? (
+              <p className="text-stone-600 text-xs text-center py-4">No players yet</p>
+            ) : (
+              <div className="space-y-1">
+                {leaderboard.map((entry: any) => (
+                  <div key={entry.rank} className="flex items-center gap-2 p-2 bg-stone-950/50 rounded text-xs">
+                    <span className={`font-mono font-bold w-6 text-center ${
+                      entry.rank === 1 ? 'text-amber-400' : entry.rank === 2 ? 'text-stone-300' : entry.rank === 3 ? 'text-orange-600' : 'text-stone-600'
+                    }`}>#{entry.rank}</span>
+                    <span className="text-stone-300 flex-1 truncate">{entry.username}</span>
+                    <span className="text-amber-400 font-mono">{entry.xp} XP</span>
+                    <Badge variant="outline" className="text-[9px] border-stone-700">Lv.{entry.level}</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-teal-900/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+              <Target className="w-4 h-4" /> Top Campaigns
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(analytics?.topCampaigns || []).length === 0 ? (
+              <p className="text-stone-600 text-xs text-center py-4">No campaign runs yet</p>
+            ) : (
+              <div className="space-y-1">
+                {(analytics?.topCampaigns || []).map((c: any) => (
+                  <div key={c.campaignId} className="flex items-center justify-between p-2 bg-stone-950/50 rounded text-xs">
+                    <span className="text-stone-400 truncate flex-1">{c.campaignId}</span>
+                    <Badge variant="outline" className="text-[9px] border-teal-700 text-teal-400">{c.runCount} runs</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {(analytics?.recentEvents || []).length > 0 && (
+        <Card className="bg-[#0a0500] border-stone-800">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-stone-400 text-sm font-mono flex items-center gap-2">
+              <Activity className="w-4 h-4" /> Recent Game Events
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-1 max-h-64 overflow-y-auto">
+              {(analytics?.recentEvents || []).map((event: any, i: number) => (
+                <div key={i} className="flex items-center justify-between p-2 bg-stone-950/30 rounded text-xs">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="text-stone-500">{event.eventType?.replace(/_/g, ' ')}</span>
+                    <span className="text-stone-600 truncate">{event.sessionToken?.slice(0, 8)}...</span>
+                  </div>
+                  {event.xpAwarded > 0 && (
+                    <Badge variant="outline" className="text-[9px] border-amber-800 text-amber-500 shrink-0">+{event.xpAwarded} XP</Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card className="bg-[#0a0500] border-purple-900/30">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+            <Award className="w-4 h-4" /> Achievement Definitions ({achievements.length})
+          </CardTitle>
+          <CardDescription className="text-stone-500 text-xs">
+            Manage achievements via POST /api/gameplay/achievements
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {achievements.length === 0 ? (
+            <p className="text-stone-600 text-xs text-center py-4">No achievements defined. Create them via the API.</p>
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-2">
+              {achievements.map((ach: any) => (
+                <div key={ach.achievementId} className="p-2 bg-stone-950/50 rounded border border-stone-800 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span>{ach.icon}</span>
+                    <span className="text-stone-300 font-bold">{ach.name}</span>
+                    <Badge variant="outline" className="text-[9px] capitalize">{ach.rarity}</Badge>
+                  </div>
+                  <p className="text-stone-500 mt-1">{ach.description}</p>
+                  <p className="text-amber-500 text-[10px] mt-1">+{ach.xpReward} XP | {ach.condition?.type}: {String(ach.condition?.value)}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

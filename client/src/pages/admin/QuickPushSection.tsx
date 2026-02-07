@@ -51,6 +51,17 @@ const HIDDEN_CLUE_TYPES = [
   { value: 'network-request', label: 'Network Request' },
 ] as const;
 
+const REVEAL_EFFECTS = [
+  { value: 'burst', label: 'Particle Burst' },
+  { value: 'glitch', label: 'Glitch' },
+  { value: 'scanline', label: 'Scanline' },
+  { value: 'ripple', label: 'Ripple' },
+  { value: 'decrypt', label: 'Decrypt' },
+  { value: 'spotlight', label: 'Spotlight' },
+  { value: 'shatter', label: 'Shatter' },
+  { value: 'none', label: 'None' },
+] as const;
+
 export function QuickPushSection() {
   const queryClient = useQueryClient();
   const [selectedTemplate, setSelectedTemplate] = useState<ClueTemplate | null>(null);
@@ -62,6 +73,9 @@ export function QuickPushSection() {
   const [hiddenClueType, setHiddenClueType] = useState<string>('source-code');
   const [hiddenClueValue, setHiddenClueValue] = useState('');
   const [hiddenClueHint, setHiddenClueHint] = useState('');
+  const [revealEffect, setRevealEffect] = useState<string>('burst');
+  const [revealIntensity, setRevealIntensity] = useState<string>('medium');
+  const [revealColor, setRevealColor] = useState('#d97706');
   const [recentPushes, setRecentPushes] = useState<Array<{id: string; name: string; status: string; timestamp: string}>>([]);
 
   const { data: clues = [] } = useQuery({
@@ -192,6 +206,9 @@ export function QuickPushSection() {
         type: hiddenClueType,
         value: hiddenClueValue,
         hint: hiddenClueHint || 'Find the hidden value',
+        revealEffect,
+        revealIntensity,
+        revealColor,
       } : null,
     };
 
@@ -365,6 +382,43 @@ export function QuickPushSection() {
                     placeholder="Check the page source..."
                     className="bg-black/50 border-stone-700 mt-1 min-h-[44px]"
                   />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label className="text-stone-400 text-xs">Reveal Effect</Label>
+                    <Select value={revealEffect} onValueChange={setRevealEffect}>
+                      <SelectTrigger className="bg-black/50 border-stone-700 mt-1 min-h-[44px] text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#0a0500] border-stone-700">
+                        {REVEAL_EFFECTS.map(e => (
+                          <SelectItem key={e.value} value={e.value} className="text-xs">{e.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-stone-400 text-xs">Intensity</Label>
+                    <Select value={revealIntensity} onValueChange={setRevealIntensity}>
+                      <SelectTrigger className="bg-black/50 border-stone-700 mt-1 min-h-[44px] text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#0a0500] border-stone-700">
+                        <SelectItem value="subtle" className="text-xs">Subtle</SelectItem>
+                        <SelectItem value="medium" className="text-xs">Medium</SelectItem>
+                        <SelectItem value="intense" className="text-xs">Intense</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-stone-400 text-xs">Color</Label>
+                    <Input
+                      type="color"
+                      value={revealColor}
+                      onChange={(e) => setRevealColor(e.target.value)}
+                      className="bg-black/50 border-stone-700 mt-1 h-[44px] p-1 cursor-pointer"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>

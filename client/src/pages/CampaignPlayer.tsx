@@ -41,12 +41,18 @@ interface CampaignLink {
   label?: string; condition?: string; color: string;
 }
 
+type RevealEffect = 'burst' | 'glitch' | 'scanline' | 'ripple' | 'decrypt' | 'spotlight' | 'shatter' | 'none';
+
 interface HiddenClue {
   id: string;
   type: 'source-code' | 'network-request' | 'http-header' | 'console-log' | 'css-comment' | 'data-attribute' | 'meta-tag' | 'base64' | 'hex-encoded' | 'steganography';
   nodeId: string;
   hint: string;
   value: string;
+  revealEffect?: RevealEffect;
+  revealColor?: string;
+  revealIntensity?: 'subtle' | 'medium' | 'intense';
+  revealSound?: boolean;
 }
 
 interface CampaignData {
@@ -226,30 +232,118 @@ export default function CampaignPlayer() {
   }, [currentNodeId, nodeClues, fireBeacon, currentNode]);
 
   const triggerClueReveal = useCallback((clueType: string, clueId: string) => {
+    const clue = (campaign?.hiddenClues || []).find(c => c.id === clueId);
+    const effect = clue?.revealEffect || 'burst';
+    const intensity = clue?.revealIntensity || 'medium';
+
     setClueRevealEffect({ type: clueType, id: clueId });
     setScreenFlash(true);
-    setTimeout(() => setScreenFlash(false), 300);
+    setTimeout(() => setScreenFlash(false), effect === 'glitch' ? 600 : 300);
 
-    const clueColors: Record<string, string> = {
+    const defaultColors: Record<string, string> = {
       'source-code': '#d97706', 'network-request': '#14b8a6', 'http-header': '#8b5cf6',
       'console-log': '#f59e0b', 'css-comment': '#06b6d4', 'data-attribute': '#ec4899',
       'meta-tag': '#10b981', 'base64': '#ef4444', 'hex-encoded': '#f97316', 'steganography': '#6366f1',
     };
-    const color = clueColors[clueType] || '#d97706';
-    const newParticles = Array.from({ length: 24 }, (_, i) => ({
-      id: Date.now() + i,
-      x: 50 + Math.random() * 20 - 10,
-      y: 50 + Math.random() * 20 - 10,
-      angle: (i / 24) * 360 + Math.random() * 15,
-      speed: 2 + Math.random() * 4,
-      size: 3 + Math.random() * 5,
-      color,
-      delay: Math.random() * 0.15,
-    }));
-    setParticles(newParticles);
-    setTimeout(() => setParticles([]), 1500);
-    setTimeout(() => setClueRevealEffect(null), 2000);
-  }, []);
+    const color = clue?.revealColor || defaultColors[clueType] || '#d97706';
+
+    const particleCount = intensity === 'subtle' ? 12 : intensity === 'intense' ? 40 : 24;
+    const speedMult = intensity === 'subtle' ? 0.6 : intensity === 'intense' ? 1.5 : 1;
+
+    if (effect === 'none') {
+      setTimeout(() => setClueRevealEffect(null), 500);
+      return;
+    }
+
+    if (effect === 'glitch') {
+      const glitchParticles = Array.from({ length: particleCount }, (_, i) => ({
+        id: Date.now() + i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        angle: Math.random() * 360,
+        speed: (1 + Math.random() * 2) * speedMult,
+        size: 2 + Math.random() * 8,
+        color: i % 3 === 0 ? '#ef4444' : i % 3 === 1 ? '#3b82f6' : color,
+        delay: Math.random() * 0.2,
+      }));
+      setParticles(glitchParticles);
+    } else if (effect === 'ripple') {
+      const rippleParticles = Array.from({ length: particleCount }, (_, i) => ({
+        id: Date.now() + i,
+        x: 50, y: 50,
+        angle: (i / particleCount) * 360,
+        speed: (3 + Math.random() * 3) * speedMult,
+        size: 2 + Math.random() * 3,
+        color,
+        delay: i * 0.02,
+      }));
+      setParticles(rippleParticles);
+    } else if (effect === 'decrypt') {
+      const decryptParticles = Array.from({ length: particleCount }, (_, i) => ({
+        id: Date.now() + i,
+        x: 30 + Math.random() * 40,
+        y: 40 + Math.random() * 20,
+        angle: -90 + Math.random() * 30 - 15,
+        speed: (1 + Math.random() * 2) * speedMult,
+        size: 4 + Math.random() * 4,
+        color: i % 2 === 0 ? color : '#14b8a6',
+        delay: i * 0.03,
+      }));
+      setParticles(decryptParticles);
+    } else if (effect === 'shatter') {
+      const shatterParticles = Array.from({ length: Math.round(particleCount * 1.5) }, (_, i) => ({
+        id: Date.now() + i,
+        x: 45 + Math.random() * 10,
+        y: 45 + Math.random() * 10,
+        angle: Math.random() * 360,
+        speed: (4 + Math.random() * 6) * speedMult,
+        size: 1 + Math.random() * 6,
+        color: i % 4 === 0 ? '#fff' : color,
+        delay: 0,
+      }));
+      setParticles(shatterParticles);
+    } else if (effect === 'spotlight') {
+      const spotParticles = Array.from({ length: 8 }, (_, i) => ({
+        id: Date.now() + i,
+        x: 50, y: 50,
+        angle: (i / 8) * 360,
+        speed: 6 * speedMult,
+        size: 6,
+        color,
+        delay: 0,
+      }));
+      setParticles(spotParticles);
+    } else if (effect === 'scanline') {
+      const scanParticles = Array.from({ length: 20 }, (_, i) => ({
+        id: Date.now() + i,
+        x: Math.random() * 100,
+        y: (i / 20) * 100,
+        angle: 0,
+        speed: 0.5 * speedMult,
+        size: 1,
+        color: i % 2 === 0 ? color : 'transparent',
+        delay: i * 0.05,
+      }));
+      setParticles(scanParticles);
+    } else {
+      // Default burst
+      const burstParticles = Array.from({ length: particleCount }, (_, i) => ({
+        id: Date.now() + i,
+        x: 50 + Math.random() * 20 - 10,
+        y: 50 + Math.random() * 20 - 10,
+        angle: (i / particleCount) * 360 + Math.random() * 15,
+        speed: (2 + Math.random() * 4) * speedMult,
+        size: 3 + Math.random() * 5,
+        color,
+        delay: Math.random() * 0.15,
+      }));
+      setParticles(burstParticles);
+    }
+
+    const clearTime = intensity === 'intense' ? 2000 : intensity === 'subtle' ? 1000 : 1500;
+    setTimeout(() => setParticles([]), clearTime);
+    setTimeout(() => setClueRevealEffect(null), clearTime + 500);
+  }, [campaign]);
 
   const checkClueAnswer = useCallback(async () => {
     if (!clueInput.trim() || !campaignId || !currentNodeId) return;
