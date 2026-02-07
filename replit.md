@@ -1,7 +1,43 @@
-# NEXUS Security Platform
+# Atropos - Cybersecurity Training & Investigation Platform
 
 ## Overview
-NEXUS is an AI-powered security investigation platform that integrates the **NEXUS Agent** (AI assistant for analysis, reporting, and guidance) and the **Atropos Scanner** (Rust-based OSINT & vulnerability scanner). The platform aims to enhance security professionals' efficiency through AI-driven workflows, a visual campaign designer, a report builder, and gamified CTF-style security training. It features a unique molten bronze/industrial aesthetic with a custom terminal interface and atmospheric visual effects.
+Atropos is a professional-grade cybersecurity training and investigation platform that combines:
+- **Player Progression System**: XP, levels, skills, achievements, leaderboards, daily challenges
+- **Experiential Learning Curriculum**: 427-line framework with 6 OSINT specialization tracks
+- **NEXUS AI Agent**: Adaptive teaching assistant with 23 investigation campaigns
+- **Atropos Scanner**: Rust-based OSINT & vulnerability scanner with Lua scripting
+
+The platform features a molten bronze/industrial aesthetic, emphasizes hands-on learning (experience > degrees), and provides portfolio-based skill assessment for career development in cybersecurity.
+
+## Latest Updates (Feb 2026) ✨
+
+### Player Progression & Gamification
+- **XP & Leveling**: Earn experience through investigations, progress from level 1 to 50+
+- **Skill Specializations**: OSINT, Network Security, Malware Analysis, Social Engineering
+- **500+ Achievements**: Common, Rare, Epic, Legendary tiers with automatic rewards
+- **Global Leaderboards**: Compete with investigators worldwide, real-time rankings
+- **Daily Challenges**: Rotating objectives with XP and currency rewards
+- **Player Profiles**: Comprehensive dashboard at `/profile` showing stats, achievements, progress
+
+### Experiential Learning Curriculum
+- **Mission-Critical Philosophy**: Experience and skills outweigh traditional degrees
+- **80/20 Learning Model**: 80% hands-on practice, 20% theory
+- **6 OSINT Specialization Tracks**: Geolocation, SOCMINT, Financial Investigation, Crypto/Blockchain, Nation-State Threat Intel, Dark Web Intelligence
+- **5 Learning Styles**: Experiential, Visual, Analytical, Social, Pragmatic - AI adapts to your preference
+- **Portfolio Assessment**: Demonstrate skills through investigations, not exams
+- **Career-Focused**: Every campaign maps to real security job roles
+
+### Enhanced Campaign System
+- **23 Investigation Campaigns**: From beginner to expert difficulty
+- **Learning Integration**: Each campaign specifies objectives, skills taught, industry context
+- **Real-World Examples**: Based on actual incidents (Panama Papers, Silk Road, APT campaigns)
+- **Teaching Adaptations**: Different guidance for each learning style
+- **Campaign Analytics**: Track completion rates, difficulty, player feedback
+
+### Smart Build System
+- **Atropos Caching**: Build Rust scanner once (2-3 min), reuse forever (~100ms)
+- **npm run build:atropos**: One-time build command
+- **Persistent Cache**: Survives dist cleanup, reduces deployment time
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
