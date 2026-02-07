@@ -13,6 +13,8 @@
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "db:push": "drizzle-kit push",
+    "db:seed": "tsx server/seed/index.ts",
+    "db:setup": "npm run db:push && npm run db:seed",
     "sync:campaigns": "tsx script/sync-obsidian.ts campaigns:from-obsidian",
     "sync:campaigns:export": "tsx script/sync-obsidian.ts campaigns:to-obsidian",
     "sync:achievements": "tsx script/sync-obsidian.ts achievements:from-obsidian",
