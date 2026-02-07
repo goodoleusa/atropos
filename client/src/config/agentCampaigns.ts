@@ -14,6 +14,30 @@ export interface Campaign {
   adaptivePrompts?: string[];
   targetFields?: CampaignTargetField[];
   dummyTargets?: Record<string, string>;
+  
+  // Learning Integration
+  learningObjectives?: LearningObjective[];
+  skillsRequired?: string[];
+  skillsTaught?: string[];
+  learningOutcomes?: string[];
+  industryContext?: string;
+  realWorldExamples?: string[];
+  careerPaths?: string[];
+  
+  // Teaching Adaptations per Learning Style
+  teachingAdaptations?: {
+    experiential?: string; // Hands-on guidance for experiential learners
+    visual?: string; // Visual/diagram guidance for visual learners
+    analytical?: string; // Deep theory for analytical learners
+    social?: string; // Community/collaborative aspects for social learners
+    pragmatic?: string; // Quick shortcuts for pragmatic learners
+  };
+}
+
+export interface LearningObjective {
+  goal: string; // Maps to LearningGoal type from learningConfig
+  weight: number; // 1-10, how much this campaign focuses on this goal
+  description: string;
 }
 
 export interface CampaignStep {
@@ -252,7 +276,39 @@ Start with the basics - what sources would you check first for corporate intel?`
       'Build personnel dossiers'
     ],
     tools: ['WHOIS', 'SEC EDGAR', 'OpenCorporates', 'LinkedIn OSINT', 'Domain analysis'],
-    color: 'amber'
+    color: 'amber',
+    
+    // Learning Integration
+    learningObjectives: [
+      { goal: 'financial_investigation', weight: 10, description: 'Master corporate intelligence and ownership tracing' },
+      { goal: 'osint_investigation', weight: 8, description: 'Apply multi-source OSINT techniques' },
+      { goal: 'socmint', weight: 5, description: 'Profile key personnel via social media' }
+    ],
+    skillsRequired: ['Basic OSINT', 'Search engine proficiency', 'Corporate structure basics'],
+    skillsTaught: ['Corporate registry navigation', 'Beneficial ownership analysis', 'Entity relationship mapping', 'Financial document interpretation'],
+    learningOutcomes: [
+      'Navigate international corporate registries',
+      'Trace beneficial ownership through shell companies',
+      'Map complex corporate structures',
+      'Identify red flags in business entities',
+      'Correlate entities across multiple jurisdictions'
+    ],
+    industryContext: 'Financial crime investigators, fraud analysts, compliance officers, and journalists use these techniques to expose money laundering, corruption, and criminal networks. Skills directly applicable to AML/CFT compliance roles.',
+    realWorldExamples: [
+      'Panama Papers investigation (ICIJ)',
+      'Danske Bank money laundering scandal',
+      'Wirecard fraud investigation',
+      'FinCEN Files leak analysis'
+    ],
+    careerPaths: ['Financial Crime Analyst', 'Fraud Investigator', 'AML Compliance Officer', 'Investigative Journalist', 'Corporate Intelligence Analyst'],
+    
+    teachingAdaptations: {
+      experiential: 'Jump straight into OpenCorporates. Search the target company. Click through ownership chains. Learn registries by exploring them. Make mistakes - chase dead ends - that\'s how you learn what patterns matter.',
+      visual: 'Start by drawing an org chart as you discover entities. Use Maltego or similar to visualize ownership graphs. Color-code jurisdictions. Watch relationships emerge visually as you add nodes.',
+      analytical: 'Begin with corporate law fundamentals: legal entity types, beneficial ownership definitions, jurisdiction differences. Reference FinCEN guidance on shell companies. Understand the regulatory framework before diving into investigation.',
+      social: 'Reference famous investigations: Panama Papers methodology, Bellingcat corporate tracing. Join OSINT communities discussing corporate intel techniques. Share your ownership graph discoveries with peers.',
+      pragmatic: 'Here\'s the workflow: OpenCorporates → grab all officers → LinkedIn each officer → find connections → cross-reference with other companies → map it. Done. Script it if you do this regularly.'
+    }
   },
   {
     id: 'bgp_trace',
@@ -290,7 +346,37 @@ What tools and looking glasses should we use to start this investigation?`,
       'Detect anomalies'
     ],
     tools: ['BGP Looking Glass', 'RIPE RIS', 'RouteViews', 'Hurricane Electric BGP', 'PeeringDB'],
-    color: 'teal'
+    color: 'teal',
+    
+    learningObjectives: [
+      { goal: 'bgp_routing', weight: 10, description: 'Master BGP protocol and autonomous system relationships' },
+      { goal: 'network_security', weight: 7, description: 'Understand network infrastructure security' }
+    ],
+    skillsRequired: ['Basic networking', 'IP addressing', 'Routing concepts'],
+    skillsTaught: ['BGP analysis', 'AS path interpretation', 'Route hijacking detection', 'Peering relationship mapping'],
+    learningOutcomes: [
+      'Read and interpret BGP routing tables',
+      'Trace packet paths through global internet',
+      'Identify suspicious routing anomalies',
+      'Use BGP looking glasses effectively',
+      'Map AS relationships and peering'
+    ],
+    industryContext: 'Network engineers, ISP security teams, and incident responders use BGP analysis to detect route hijacking, DDoS mitigation bypasses, and nation-state traffic manipulation. Critical for infrastructure defense.',
+    realWorldExamples: [
+      'Pakistan Telecom YouTube hijacking (2008)',
+      'Cloudflare route leak incident',
+      'Russia BGP hijacking incidents',
+      'China Telecom traffic misdirection'
+    ],
+    careerPaths: ['Network Security Engineer', 'ISP Security Analyst', 'Infrastructure Security', 'Incident Response'],
+    
+    teachingAdaptations: {
+      experiential: 'Pick an IP, hit a looking glass, see what comes back. Click through AS numbers. Follow the routing hops. Learn by exploring actual BGP data.',
+      visual: 'Draw the topology as you discover it. Map ASNs geographically. Visualize peering relationships as a network graph. Watch packets flow through the map.',
+      analytical: 'Study BGP RFC 4271 first. Understand path vector protocols, AS path selection, route propagation. Then analyze real-world routing with theoretical foundation.',
+      social: 'Check NANOG mailing lists for BGP incident discussions. Read Cloudflare blog posts on routing security. Join network operator communities.',
+      pragmatic: 'Use Hurricane Electric BGP Toolkit. Enter IP → get origin AS. Check peers. Done. Script it with whois and bgpq3 if you do this often.'
+    }
   },
   {
     id: 'passive_recon',
@@ -330,7 +416,37 @@ What's our first passive recon step?`,
       'Map technology stack'
     ],
     tools: ['SecurityTrails', 'crt.sh', 'Wayback Machine', 'Shodan', 'BuiltWith'],
-    color: 'purple'
+    color: 'purple',
+    
+    learningObjectives: [
+      { goal: 'osint_investigation', weight: 10, description: 'Master passive reconnaissance techniques' },
+      { goal: 'penetration_testing', weight: 5, description: 'Learn reconnaissance phase of pentesting' }
+    ],
+    skillsRequired: ['Basic web browsing', 'Understanding of DNS'],
+    skillsTaught: ['DNS enumeration', 'Certificate transparency analysis', 'Historical data mining', 'Technology fingerprinting', 'Subdomain discovery'],
+    learningOutcomes: [
+      'Extract DNS records without touching target',
+      'Mine certificate transparency logs for subdomains',
+      'Use Wayback Machine for intelligence gathering',
+      'Identify technology stack passively',
+      'Build comprehensive target dossier from public data'
+    ],
+    industryContext: 'Bug bounty hunters and penetration testers always start with passive recon to map attack surface without alerting targets. Essential first phase of any security assessment.',
+    realWorldExamples: [
+      'Bug bounty reconnaissance methodologies',
+      'Red team initial access research',
+      'Competitive intelligence gathering',
+      'Pre-engagement target profiling'
+    ],
+    careerPaths: ['Bug Bounty Hunter', 'Penetration Tester', 'Security Researcher', 'Red Team Operator'],
+    
+    teachingAdaptations: {
+      experiential: 'Start with crt.sh - enter domain, get immediate subdomain results. Then try SecurityTrails. Compare outputs. Learn by doing multiple targets.',
+      visual: 'Create a mind map of discovered assets. Draw DNS hierarchy. Map subdomains to IP addresses visually. See relationships emerge.',
+      analytical: 'Study how DNS works, certificate issuance process, web archive crawling. Understand the theory behind each passive recon technique before applying.',
+      social: 'Read Jason Haddix\'s Bug Bounty Methodology. Study Nahamsec reconnaissance techniques. Join OSINT Discord communities to see how others recon.',
+      pragmatic: 'Single command workflow: crt.sh API → subdomain list → httpx for alive hosts → aquatone for screenshots. Automate the entire passive recon pipeline.'
+    }
   },
   {
     id: 'active_recon',
@@ -564,7 +680,40 @@ What safe OSINT methods can we use without accessing actual dark web markets?`,
       'Document exposure'
     ],
     tools: ['Have I Been Pwned', 'DeHashed', 'IntelX', 'Recorded Future', 'DarkOwl'],
-    color: 'gray'
+    color: 'gray',
+    
+    learningObjectives: [
+      { goal: 'dark_web_intelligence', weight: 10, description: 'Master dark web investigation techniques' },
+      { goal: 'threat_hunting', weight: 7, description: 'Proactive threat detection from underground sources' },
+      { goal: 'osint_investigation', weight: 5, description: 'Apply OSINT to underground intelligence' }
+    ],
+    skillsRequired: ['Basic OSINT', 'Understanding of anonymity networks', 'Operational security awareness'],
+    skillsTaught: ['Breach database searching', 'Paste site monitoring', 'Dark web marketplace analysis', 'Credential exposure assessment', 'Ransomware leak tracking'],
+    learningOutcomes: [
+      'Search breach databases for organizational exposure',
+      'Monitor paste sites for leaked data',
+      'Track mentions in underground forums',
+      'Identify ransomware victim listings',
+      'Assess credential compromise risk',
+      'Maintain operational security during investigations'
+    ],
+    industryContext: 'Threat intelligence teams, fraud prevention, and security operations centers monitor dark web for early warning of attacks, stolen credentials, and data breaches. Law enforcement uses these techniques for cybercrime investigations.',
+    realWorldExamples: [
+      'Colonial Pipeline ransomware DarkSide leak',
+      'JBS Foods ransomware exposure',
+      'Silk Road investigation methodology',
+      'AlphaBay marketplace takedown',
+      'Breach notification research (Have I Been Pwned)'
+    ],
+    careerPaths: ['Threat Intelligence Analyst', 'SOC Analyst', 'Fraud Investigator', 'Law Enforcement Cyber Unit', 'CISO'],
+    
+    teachingAdaptations: {
+      experiential: 'Start with Have I Been Pwned - search your organization. Then try DeHashed for deeper breach data. Learn the tools by using them on real queries.',
+      visual: 'Create a timeline of breaches affecting target. Map which credentials were exposed when. Visualize the exposure surface over time.',
+      analytical: 'Study data breach lifecycles, underground market economics, ransomware business models. Understand the dark web ecosystem before investigating it.',
+      social: 'Read Brian Krebs reporting on dark web markets. Study Bellingcat techniques for investigating criminal forums. Join OSINT communities discussing threat intel.',
+      pragmatic: 'Breach search workflow: HIBP → DeHashed → Intelligence X. Check company domain, executive emails, common passwords. Document exposure in spreadsheet. Done.'
+    }
   },
   {
     id: 'crypto_analysis',
@@ -601,7 +750,40 @@ What blockchain analysis approach should we take?`,
       'Build timeline'
     ],
     tools: ['Blockchain explorers', 'Chainalysis', 'Elliptic', 'OXT', 'Crystal'],
-    color: 'yellow'
+    color: 'yellow',
+    
+    learningObjectives: [
+      { goal: 'crypto_blockchain_investigation', weight: 10, description: 'Master cryptocurrency tracing and blockchain analysis' },
+      { goal: 'financial_investigation', weight: 8, description: 'Follow the money through digital transactions' }
+    ],
+    skillsRequired: ['Basic cryptocurrency understanding', 'Transaction concepts', 'Address formats'],
+    skillsTaught: ['Blockchain analysis', 'Wallet clustering', 'Exchange identification', 'Mixing detection', 'Transaction graph analysis', 'UTXO tracing'],
+    learningOutcomes: [
+      'Read and interpret blockchain transactions',
+      'Cluster wallet addresses by ownership',
+      'Identify exchange deposits and withdrawals',
+      'Detect cryptocurrency mixing services',
+      'Trace funds through multiple hops',
+      'Build financial flow visualizations',
+      'Generate attribution reports'
+    ],
+    industryContext: 'Law enforcement, regulatory agencies, and cybersecurity firms trace cryptocurrency in ransomware investigations, fraud cases, sanctions enforcement, and money laundering. Blockchain analysts are in high demand for crypto compliance.',
+    realWorldExamples: [
+      'Colonial Pipeline ransomware Bitcoin recovery (FBI)',
+      'Bitfinex hack $3.6B Bitcoin seizure',
+      'Silk Road Bitcoin tracing',
+      'WannaCry ransomware tracking',
+      'North Korean Lazarus Group crypto laundering'
+    ],
+    careerPaths: ['Blockchain Analyst', 'Crypto Compliance Officer', 'Financial Crime Investigator', 'Cybercrime Investigator', 'Forensic Accountant'],
+    
+    teachingAdaptations: {
+      experiential: 'Enter the Bitcoin address into Blockchain.com explorer. See transactions flow. Click through inputs and outputs. Follow the money visually. Learn by tracing real transactions.',
+      visual: 'Use tools that generate transaction graphs. Watch money flow from address to address. Create visual maps of wallet clusters. Sankey diagrams for fund flows.',
+      analytical: 'Study Bitcoin whitepaper, UTXO model, transaction structure. Understand cryptographic signatures and address derivation. Learn blockchain fundamentals before analysis.',
+      social: 'Follow @ErgoBTC on Twitter for tracing techniques. Read Chainalysis and Elliptic blog posts. Study Lazarus Group reports. Join blockchain analysis communities.',
+      pragmatic: 'Copy address → paste in BlockChair → export CSV of transactions → analyze in Excel. Use Etherscan for Ethereum. OXT.me for advanced users. Get results fast.'
+    }
   },
   {
     id: 'incident_response',

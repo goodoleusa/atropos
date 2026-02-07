@@ -8,6 +8,12 @@ export type LearningStyle =
 export type LearningGoal = 
   | 'bgp_routing'
   | 'osint_investigation'
+  | 'geolocation_osint'
+  | 'socmint'
+  | 'financial_investigation'
+  | 'crypto_blockchain_investigation'
+  | 'nation_state_threat_intel'
+  | 'dark_web_intelligence'
   | 'threat_hunting'
   | 'malware_reverse_engineering'
   | 'incident_response'
@@ -71,10 +77,52 @@ export const LEARNING_GOALS: { id: LearningGoal; name: string; description: stri
   },
   {
     id: 'osint_investigation',
-    name: 'OSINT Investigation',
-    description: 'Open-source intelligence, target profiling, digital footprint analysis',
+    name: 'OSINT Investigation (General)',
+    description: 'Foundation: Open-source intelligence, target profiling, digital footprint analysis',
     category: 'Intelligence',
-    tools: ['Maltego', 'theHarvester', 'Shodan', 'Censys', 'SpiderFoot']
+    tools: ['Maltego', 'theHarvester', 'Shodan', 'Censys', 'SpiderFoot', 'Recon-ng']
+  },
+  {
+    id: 'geolocation_osint',
+    name: 'Geolocation & GEOINT',
+    description: 'Location tracking, geospatial analysis, imagery intelligence, physical security assessment',
+    category: 'Intelligence',
+    tools: ['Google Earth Pro', 'Sentinel Hub', 'SunCalc', 'What3Words', 'Creepy', 'GeoSetter', 'QGIS', 'Overpass Turbo']
+  },
+  {
+    id: 'socmint',
+    name: 'SOCMINT (Social Media Intelligence)',
+    description: 'Social media investigation, profile analysis, relationship mapping, online behavior patterns',
+    category: 'Intelligence',
+    tools: ['Maltego', 'Social-Analyzer', 'Twint', 'InstaLoader', 'OSINT Framework', 'Sherlock', 'Holehe', 'Maigret']
+  },
+  {
+    id: 'financial_investigation',
+    name: 'Financial Investigation',
+    description: 'Follow the money: financial crime, fraud detection, banking analysis, shell companies',
+    category: 'Intelligence',
+    tools: ['OpenCorporates', 'ICIJ Database', 'Companies House', 'OFAC SDN List', 'FinCEN', 'SEC EDGAR', 'Sayari']
+  },
+  {
+    id: 'crypto_blockchain_investigation',
+    name: 'Crypto & Blockchain Investigation',
+    description: 'Cryptocurrency tracing, blockchain analysis, wallet clustering, DeFi investigation',
+    category: 'Intelligence',
+    tools: ['Chainalysis', 'Elliptic', 'Crystal Blockchain', 'Etherscan', 'Blockchain.com', 'OXT.me', 'GraphSense', 'Bitcoin Abuse DB']
+  },
+  {
+    id: 'nation_state_threat_intel',
+    name: 'Nation-State Threat Intelligence',
+    description: 'APT tracking, geopolitical analysis, attribution, campaign monitoring, TTPs',
+    category: 'Intelligence',
+    tools: ['MITRE ATT&CK', 'ThreatConnect', 'AlienVault OTX', 'Recorded Future', 'Mandiant', 'CrowdStrike Intel', 'FireEye iSIGHT']
+  },
+  {
+    id: 'dark_web_intelligence',
+    name: 'Dark Web & Underground Intelligence',
+    description: 'Tor investigation, dark web markets, underground forums, stolen data monitoring',
+    category: 'Intelligence',
+    tools: ['Tor Browser', 'Ahmia', 'OnionScan', 'DarkSearch', 'Intelligence X', 'Have I Been Pwned', 'Dehashed']
   },
   {
     id: 'threat_hunting',
