@@ -282,7 +282,7 @@ export interface IStorage {
   // Achievement Definitions
   getAllAchievementDefinitions(): Promise<AchievementDefinition[]>;
   getActiveAchievementDefinitions(): Promise<AchievementDefinition[]>;
-  getAchievementById(achievementId: string): Promise<AchievementDefinition | undefined>;
+  getAchievementDefinitionById(achievementId: string): Promise<AchievementDefinition | undefined>;
   upsertAchievementDefinition(achievementId: string, data: Partial<InsertAchievementDefinition>): Promise<AchievementDefinition>;
   deleteAchievementDefinition(achievementId: string): Promise<boolean>;
 
@@ -294,8 +294,8 @@ export interface IStorage {
   // XP and Leveling
   awardXP(sessionToken: string, amount: number, reason: string): Promise<{ newXP: number; newLevel: number; leveledUp: boolean }>;
 
-  // Leaderboard
-  getLeaderboard(limit?: number): Promise<{ sessionToken: string; username: string; xp: number; level: number; clueCount: number; questCount: number }[]>;
+  // Leaderboard (Legacy from gameEvents system)
+  getGameSessionLeaderboard(limit?: number): Promise<{ sessionToken: string; username: string; xp: number; level: number; clueCount: number; questCount: number }[]>;
 
   // Gameplay Analytics (Admin)
   getGameplayAnalytics(): Promise<{
@@ -1530,7 +1530,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(achievementDefinitions.sortOrder);
   }
 
-  async getAchievementById(achievementId: string): Promise<AchievementDefinition | undefined> {
+  async getAchievementDefinitionById(achievementId: string): Promise<AchievementDefinition | undefined> {
     const [result] = await db.select().from(achievementDefinitions)
       .where(eq(achievementDefinitions.achievementId, achievementId))
       .limit(1);
@@ -1611,8 +1611,8 @@ export class DatabaseStorage implements IStorage {
     return { newXP, newLevel: levelInfo.level, leveledUp };
   }
 
-  // Leaderboard
-  async getLeaderboard(limit = 20): Promise<{ sessionToken: string; username: string; xp: number; level: number; clueCount: number; questCount: number }[]> {
+  // Leaderboard (Legacy - from gameEvents system)
+  async getGameSessionLeaderboard(limit = 20): Promise<{ sessionToken: string; username: string; xp: number; level: number; clueCount: number; questCount: number }[]> {
     const sessions = await db.select().from(gameSessions)
       .orderBy(desc(gameSessions.xp))
       .limit(limit);
