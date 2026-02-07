@@ -96,13 +96,17 @@ interface Campaign {
   id: string;
   name: string;
   description: string;
+  category: string;
+  difficulty: string;
+  estimatedTime: string;
+  tags: string[];
   nodes: CampaignNode[];
   links: CampaignLink[];
   rootNodes: string[];
-  isChunk?: boolean; // Modular chunk that can be embedded in other campaigns
-  entryPoints?: string[]; // Node IDs that can be entered from other campaigns
-  exitPoints?: string[]; // Node IDs that can link to other campaigns
-  clueRefs?: string[]; // Shared clue IDs referenced in this campaign
+  isChunk?: boolean;
+  entryPoints?: string[];
+  exitPoints?: string[];
+  clueRefs?: string[];
   hiddenClues?: HiddenClue[];
   isPublished?: boolean;
 }
@@ -149,6 +153,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
     id: `campaign-${Date.now()}`,
     name: 'New Campaign',
     description: 'Investigation campaign',
+    category: 'recon',
+    difficulty: 'beginner',
+    estimatedTime: '15 min',
+    tags: [],
     nodes: [],
     links: [],
     rootNodes: [],
@@ -474,7 +482,11 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           const converted = dbCampaigns.map((c: any) => ({
             id: c.campaignId,
             name: c.name,
-            description: c.description,
+            description: c.description || '',
+            category: c.category || 'recon',
+            difficulty: c.difficulty || 'beginner',
+            estimatedTime: c.estimatedTime || '15 min',
+            tags: c.tags || [],
             nodes: c.nodes || [],
             links: c.links || [],
             rootNodes: c.rootNodes || [],
@@ -482,6 +494,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             entryPoints: c.entryPoints,
             exitPoints: c.exitPoints,
             clueRefs: c.clueRefs,
+            hiddenClues: c.hiddenClues || [],
             isPublished: c.isPublished
           }));
           setSavedCampaigns(converted);
@@ -520,6 +533,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       const payload = {
         name: campaign.name,
         description: campaign.description,
+        category: campaign.category || 'recon',
+        difficulty: campaign.difficulty || 'beginner',
+        estimatedTime: campaign.estimatedTime || '15 min',
+        tags: campaign.tags || [],
         nodes: campaign.nodes,
         links: campaign.links,
         rootNodes: campaign.rootNodes,
@@ -607,8 +624,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           id: c.campaignId || `campaign-${Date.now()}`,
           name: c.name,
           description: c.description || '',
+          category: c.category || 'recon',
+          difficulty: c.difficulty || 'intermediate',
+          estimatedTime: c.estimatedTime || '20 min',
+          tags: c.tags || [],
           nodes: (c.nodes || []).map((n: any) => ({
             id: n.id, type: n.type || 'step', title: n.title, content: n.content,
+            htmlContent: n.htmlContent, pageLayout: n.pageLayout, customCss: n.customCss,
             x: n.x || 0, y: n.y || 0, width: n.width || 240, height: n.height || 120,
             color: n.color || 'amber', metadata: n.metadata,
           })),
@@ -664,9 +686,14 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         id: `campaign-${Date.now()}`,
         name: 'New Campaign',
         description: 'Investigation campaign',
+        category: 'recon',
+        difficulty: 'beginner',
+        estimatedTime: '15 min',
+        tags: [],
         nodes: [],
         links: [],
-        rootNodes: []
+        rootNodes: [],
+        hiddenClues: [],
       });
     }
     toast({ title: 'Campaign Deleted' });
@@ -926,6 +953,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       id: newId,
       name: `${template.name} Campaign`,
       description: template.description,
+      category: 'recon',
+      difficulty: template.difficulty === 'any' ? 'beginner' : template.difficulty,
+      estimatedTime: '15 min',
+      tags: [],
       nodes: template.nodes.map(n => withLearningDefaults({ ...n, id: `${newId}-${n.id}` } as CampaignNode)),
       links: template.links.map(l => ({ 
         ...l, 
@@ -933,7 +964,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
         source: `${newId}-${l.source}`,
         target: `${newId}-${l.target}`
       })),
-      rootNodes: template.nodes.length > 0 ? [`${newId}-n1`] : []
+      rootNodes: template.nodes.length > 0 ? [`${newId}-n1`] : [],
+      hiddenClues: [],
     });
     setSelectedNode(null);
     setIsUnsaved(true);
