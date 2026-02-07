@@ -1,58 +1,74 @@
-# HeliBoard Big Spacebar Layout
+# HeliBoard Custom Layouts for Coding
 
-A custom HeliBoard functional key layout that removes the `,` (comma) and `.` (period) keys from either side of the spacebar, giving you a much wider spacebar to reduce typos.
+Custom HeliBoard layouts: bigger spacebar (comma removed, period kept with @ long press) and a coding-optimized symbols page.
 
-## What This Changes
+## Files
 
-The default HeliBoard bottom row looks like:
+- **`functional_keys_bigspace.json`** - Functional key layout (bigger spacebar)
+- **`symbols_coding.txt`** - Symbols layout reorganized for coding
 
+## Functional Keys: Big Spacebar
+
+Removes the comma key, keeps the period (with `@` on long press). The spacebar expands to fill the freed space.
+
+**Default bottom row:**
 ```
-[?123] [,] [lang] [emoji] [    space    ] [.] [enter]
+[?123] [,] [lang] [emoji] [   space   ] [.] [enter]
 ```
 
-This custom layout changes it to:
-
+**This layout:**
 ```
-[?123] [lang] [emoji] [        space        ] [enter]
+[?123] [lang] [emoji] [     space     ] [.] [enter]
 ```
 
-The spacebar expands to fill all the space previously occupied by comma and period, since it uses `width: -1` (fill remaining space).
+### Install
 
-## File
+1. Go to **Settings** > **Advanced** > **Secondary Layouts**
+2. Find **Functional keys** and tap the **+** button
+3. Choose **copy existing layout**, then replace the contents with `functional_keys_bigspace.json`
+4. Save
 
-- **`functional_keys_bigspace.json`** - Custom functional key layout (JSON format)
+## Symbols: Coding-Optimized
 
-## Installation
+Reorganizes the symbols page (`?123`) so all the characters you need for coding are on the first page, logically grouped.
 
-### Method 1: Import via HeliBoard Settings
+### Row 1 - Brackets and delimiters
+```
+{  }  [  ]  (  )  ~  `  \  %
+```
+Long press popups: `{`->`<`, `}`->`>`, `[`->`‹≤«`, `]`->`›≥»`, `~`->`^`, `` ` ``->`´`, `\`->`|`, `%`->`‰℅`
 
-1. Open HeliBoard Settings
-2. Go to **Preferences** > **Appearance & Layouts** > **Custom layout**
-3. Tap the **+** button and choose **Functional keys**
-4. Paste the contents of `functional_keys_bigspace.json` into the editor
-5. Save and select the new layout
+### Row 2 - Operators and special chars
+```
+@  #  $  _  &  -  +  =  |  /
+```
+Long press popups: `_`->`—`, `&`->`§`, `-`->`–⁻·—`, `+`->`±⁺`, `=`->`≠⁼≈∞`, `|`->`¦`, `/`->`÷`
 
-### Method 2: File Import
+### Row 3 - Punctuation
+```
+*  "  '  :  ;  !  ?
+```
+Long press popups: `*`->`†‡★`, `"`->`'` `` ` `` `´`, `'`->`‚''`, `:`->`; `, `;`->`:`, `!`->`¡`, `?`->`¿`
 
-1. Copy `functional_keys_bigspace.json` to your device
-2. In HeliBoard Settings, go to **Preferences** > **Appearance & Layouts** > **Custom layout**
-3. Tap the **+** button, choose **Functional keys**, then use the file import option
-4. Select the JSON file
+### Install
 
-## Accessing Comma and Period
+1. Go to **Settings** > **Advanced** > **Secondary Layouts**
+2. Find **Symbols** and tap the **+** button
+3. Choose **copy existing layout**, then replace the contents with `symbols_coding.txt`
+4. Save
 
-Since comma and period are removed from the bottom row, you can still access them by:
+## What Moved vs Default
 
-- **Long-pressing the spacebar** (if configured in HeliBoard settings)
-- **Switching to the symbols layout** (tap the `?123` key)
-- **Using the period key popup** on any layout that still has it
+| Character | Default Location | New Location |
+|-----------|-----------------|--------------|
+| `~`       | Page 2          | Page 1, Row 1 |
+| `` ` ``   | Page 2          | Page 1, Row 1 |
+| `{ }`     | Page 1, end of row | Page 1, start of row |
+| `\ %`     | Page 1          | Page 1 (kept) |
+| `< >`     | Page 1          | Long press on `{ }` |
 
 ## Compatibility
 
 - Works with any main letter layout (QWERTY, AZERTY, Dvorak, Colemak, etc.)
-- The main letter layout is independent of the functional keys layout
 - Compatible with HeliBoard v2.0+
-
-## Layout Format Reference
-
-This uses the HeliBoard JSON functional key layout format. See the [official layout documentation](https://github.com/Helium314/HeliBoard/blob/main/layouts.md) for details.
+- See the [official layout docs](https://github.com/Helium314/HeliBoard/blob/main/layouts.md) for format details
