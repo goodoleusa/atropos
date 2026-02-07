@@ -12,7 +12,24 @@
     "clean:atropos": "rm -rf .atropos-cache tools/atropos/target",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "sync:campaigns": "tsx script/sync-obsidian.ts campaigns:from-obsidian",
+    "sync:campaigns:export": "tsx script/sync-obsidian.ts campaigns:to-obsidian",
+    "sync:achievements": "tsx script/sync-obsidian.ts achievements:from-obsidian",
+    "sync:learning-paths": "tsx script/sync-obsidian.ts learning-paths:from-obsidian",
+    "sync:from-obsidian": "tsx script/sync-obsidian.ts all:from-obsidian",
+    "sync:to-obsidian": "tsx script/sync-obsidian.ts all:to-obsidian",
+    "vault:init": "./script/init-obsidian-vault.sh",
+    "vault:open": "obsidian obsidian-vault || open -a Obsidian obsidian-vault"
+  },
+  "obsidian": {
+    "vault": "obsidian-vault",
+    "sync": {
+      "campaigns": "bidirectional",
+      "learningPaths": "from-obsidian",
+      "achievements": "from-obsidian"
+    }
+  },
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -111,6 +128,7 @@
     "autoprefixer": "^10.4.21",
     "drizzle-kit": "^0.31.4",
     "esbuild": "^0.25.0",
+    "gray-matter": "^4.0.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.20.5",
