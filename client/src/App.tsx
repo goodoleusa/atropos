@@ -8,6 +8,7 @@ import { ReportProvider } from "@/hooks/useReportContext";
 import DevModePanel from "@/components/DevModePanel";
 import QuickNav from "@/components/QuickNav";
 import { GlobalEffects } from "@/components/GlobalEffects";
+import { AchievementManager } from "@/components/AchievementManager";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
@@ -23,12 +24,16 @@ import AILab from "@/pages/AILab";
 import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 import VideoGallery from "@/pages/VideoGallery";
 import Agents from "@/pages/Agents";
+import Profile from "@/pages/Profile";
+import Leaderboards from "@/pages/Leaderboards";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/terminal" component={TerminalPage} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/leaderboards" component={Leaderboards} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={AdminLogin} />
       <Route path="/void" component={TheVoid} />
@@ -54,6 +59,7 @@ function App() {
           <ReportProvider>
             <Toaster />
             <GlobalEffects />
+            <AchievementManager />
             <Router />
             <DevModePanel />
             <QuickNav />

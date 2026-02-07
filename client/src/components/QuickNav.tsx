@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { QRCodeModal } from '@/components/QRCodeModal';
 import { AgentChat } from '@/components/AgentChat';
@@ -23,9 +25,18 @@ export default function QuickNav() {
   const { gameState, toggleDevMode } = useGame();
   const { pendingFindings, currentSession, targets } = useReportContext();
 
+  const { data: progression } = useQuery({
+    queryKey: ['/api/progression', gameState.sessionToken],
+    queryFn: () => fetch(`/api/progression/${gameState.sessionToken}`).then(r => r.json()),
+    enabled: !!gameState.sessionToken && expanded,
+    staleTime: 30000
+  });
+
   const navItems = [
     { path: '/', icon: Home, label: 'Home', color: 'amber' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
+    { path: '/profile', icon: User, label: 'Profile', color: 'teal' as const },
+    { path: '/leaderboards', icon: TrendingUp, label: 'Leaderboards', color: 'teal' as const },
     { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/atropos', icon: Activity, label: 'Atropos', color: 'teal' as const },
@@ -40,6 +51,24 @@ export default function QuickNav() {
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2" data-testid="quick-nav">
       {expanded && (
         <div className="bg-black/90 backdrop-blur border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2">
+          {progression && (
+            <div className="px-3 py-2 border-b border-stone-800 mb-2">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-3 h-3 text-amber-500" />
+                  <span className="text-xs font-bold text-amber-400">Level {progression.level}</span>
+                </div>
+                <Badge variant="outline" className="text-[9px] border-teal-600 text-teal-400">
+                  {progression.xp} / {progression.level * 100} XP
+                </Badge>
+              </div>
+              <Progress 
+                value={(progression.xp / (progression.level * 100)) * 100} 
+                className="h-1.5 bg-stone-900"
+              />
+            </div>
+          )}
+          
           {currentSession && (
             <div className="px-3 py-2 border-b border-stone-800 mb-2">
               <p className="text-[10px] text-stone-500 uppercase">Active Session</p>

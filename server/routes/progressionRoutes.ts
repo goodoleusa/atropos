@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { storage } from "../storage";
 import { insertPlayerProgressionSchema, insertAchievementSchema, insertDailyChallengeSchema, insertChallengeCompletionSchema } from "../../shared/schema";
-import { rateLimit, validateSessionToken, sanitizeInput } from "../security";
+import { rateLimit, validateSessionToken, sanitizeInput, adminAuth } from "../security";
 
 const router = Router();
 
@@ -35,8 +35,8 @@ router.get("/api/progression/:sessionToken", async (req, res) => {
   }
 });
 
-// Award XP
-router.post("/api/progression/:sessionToken/xp", rateLimit(60, 60000), async (req, res) => {
+// Award XP (should only be called server-side, admin endpoint for testing)
+router.post("/api/progression/:sessionToken/xp", adminAuth, rateLimit(60, 60000), async (req, res) => {
   try {
     const { sessionToken } = req.params;
     const { xp, source } = req.body;
@@ -58,8 +58,8 @@ router.post("/api/progression/:sessionToken/xp", rateLimit(60, 60000), async (re
   }
 });
 
-// Update skill
-router.post("/api/progression/:sessionToken/skill", rateLimit(60, 60000), async (req, res) => {
+// Update skill (admin only for manual adjustments)
+router.post("/api/progression/:sessionToken/skill", adminAuth, rateLimit(60, 60000), async (req, res) => {
   try {
     const { sessionToken } = req.params;
     const { skill, points } = req.body;
@@ -81,8 +81,8 @@ router.post("/api/progression/:sessionToken/skill", rateLimit(60, 60000), async 
   }
 });
 
-// Add currency
-router.post("/api/progression/:sessionToken/currency", rateLimit(60, 60000), async (req, res) => {
+// Add currency (admin only)
+router.post("/api/progression/:sessionToken/currency", adminAuth, rateLimit(60, 60000), async (req, res) => {
   try {
     const { sessionToken } = req.params;
     const { amount } = req.body;
@@ -175,7 +175,7 @@ router.get("/api/achievements/check/:sessionToken/:achievementId", async (req, r
 });
 
 // Create achievement (admin only)
-router.post("/api/achievements", rateLimit(10, 60000), async (req, res) => {
+router.post("/api/achievements", adminAuth, rateLimit(10, 60000), async (req, res) => {
   try {
     const validated = insertAchievementSchema.parse(req.body);
     const achievement = await storage.createAchievement(validated);
@@ -329,7 +329,7 @@ router.post("/api/challenges/complete", rateLimit(20, 60000), async (req, res) =
 });
 
 // Create challenge (admin only)
-router.post("/api/challenges", rateLimit(10, 60000), async (req, res) => {
+router.post("/api/challenges", adminAuth, rateLimit(10, 60000), async (req, res) => {
   try {
     const validated = insertDailyChallengeSchema.parse(req.body);
     const challenge = await storage.createDailyChallenge(validated);
