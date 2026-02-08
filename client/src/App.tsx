@@ -30,14 +30,20 @@ import CampaignsHub from "@/pages/CampaignsHub";
 import CampaignPlayer from "@/pages/CampaignPlayer";
 import Profile from "@/pages/Profile";
 import Leaderboards from "@/pages/Leaderboards";
+import BusinessDashboard from "@/pages/BusinessDashboard";
+import InvestorDashboard from "@/pages/InvestorDashboard";
+import MissionLanding from "@/pages/MissionLanding";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/mission" component={MissionLanding} />
       <Route path="/terminal" component={TerminalPage} />
       <Route path="/profile" component={Profile} />
       <Route path="/leaderboards" component={Leaderboards} />
+      <Route path="/business" component={BusinessDashboard} />
+      <Route path="/investors" component={InvestorDashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={AdminLogin} />
       <Route path="/void" component={TheVoid} />

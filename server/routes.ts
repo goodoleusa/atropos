@@ -87,6 +87,76 @@ export async function registerRoutes(
   // Register Progression routes (XP, achievements, leaderboards, challenges)
   app.use(progressionRoutes);
   
+  // ==================== Client Agent API ====================
+  // For CrewAI security agents deployed on client networks
+  
+  // Report security finding from agent
+  app.post("/api/client-agents/findings", rateLimit(120, 60000), async (req, res) => {
+    try {
+      const { client_id, agent_id, finding, timestamp } = req.body;
+      
+      if (!client_id || !finding) {
+        return res.status(400).json({ error: "client_id and finding required" });
+      }
+      
+      // Create threat alert for client
+      const alert = {
+        client_id,
+        agent_id: agent_id || 'unknown',
+        severity: finding.severity || 'medium',
+        category: finding.category || 'security_finding',
+        title: finding.title || 'Security Finding',
+        description: finding.description || '',
+        evidence: finding,
+        timestamp: timestamp || new Date().toISOString()
+      };
+      
+      // In production, save to database
+      // For now, log it
+      console.log('[CLIENT AGENT FINDING]', alert);
+      
+      res.json({
+        success: true,
+        alert_id: `alert_${Date.now()}`,
+        message: 'Finding logged successfully'
+      });
+    } catch (error) {
+      console.error("Client agent finding error:", error);
+      res.status(500).json({ error: "Failed to log finding" });
+    }
+  });
+  
+  // Request human approval for sensitive action
+  app.post("/api/client-agents/approval-request", rateLimit(30, 60000), async (req, res) => {
+    try {
+      const { client_id, action, severity } = req.body;
+      
+      if (!client_id || !action) {
+        return res.status(400).json({ error: "client_id and action required" });
+      }
+      
+      // Create approval request
+      const approval_id = `approval_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      
+      // In production:
+      // 1. Save to database
+      // 2. Send notification to client
+      // 3. Wait for client response
+      
+      console.log('[APPROVAL REQUEST]', { approval_id, client_id, action, severity });
+      
+      res.json({
+        success: true,
+        approval_id,
+        message: 'Approval request created. Client will be notified.',
+        status: 'pending'
+      });
+    } catch (error) {
+      console.error("Approval request error:", error);
+      res.status(500).json({ error: "Failed to create approval request" });
+    }
+  });
+  
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
     try {

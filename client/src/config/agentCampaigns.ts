@@ -241,7 +241,18 @@ export const GUIDED_QUESTIONS = {
   ]
 }
 
+// Import anti-trafficking campaigns
+import ANTI_TRAFFICKING_CAMPAIGNS from './antiTraffickingCampaigns';
+
 export const AGENT_CAMPAIGNS: Campaign[] = [
+  // ============================================================================
+  // 🚨 PRIORITY: ANTI-TRAFFICKING & FINANCIAL CRIME INVESTIGATIONS
+  // ============================================================================
+  ...ANTI_TRAFFICKING_CAMPAIGNS,
+  
+  // ============================================================================
+  // GENERAL CYBERSECURITY CAMPAIGNS
+  // ============================================================================
   {
     id: 'shell_corp_osint',
     name: 'Shell Corp Investigation',
