@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Campaigns/BGP Route Tracing.md",
+                "file": "Templates/Learning Path Template.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "BGP Route Tracing"
+              "title": "Learning Path Template"
             }
           }
         ]
@@ -188,15 +188,19 @@
   },
   "active": "2fa96a67fa0a0a7b",
   "lastOpenFiles": [
+    "MysticalMessages/prophecy-001.md",
+    "Missions/IRON KEY.md",
+    "Missions/GHOST PROTOCOL.md",
+    "Learning-Paths/OSINT Specialist Path.md",
+    "Curriculum/Curriculum.md",
+    "Campaigns/Shell Company Money Laundering.md",
     "Campaigns/Active Reconnaissance.md",
+    "START_HERE.md",
+    "Campaigns/BGP Route Tracing.md",
     "EXECUTIVE_SUMMARY.md",
     "Missions/SHADOW PROTOCOL.md",
     "Missions/PHANTOM THREAD.md",
-    "Missions/IRON KEY.md",
-    "Missions/GHOST PROTOCOL.md",
     "Missions/DARK BEACON.md",
-    "START_HERE.md",
-    "MysticalMessages/prophecy-001.md",
     "MysticalMessages/intel-fragment-7.md",
     "MysticalMessages",
     "Missions",
@@ -204,7 +208,6 @@
     "Campaigns/Threat Hunting.md",
     "Campaigns/Social Engineering Recon.md",
     "Campaigns/Shell Corp Investigation.md",
-    "Campaigns/Shell Company Money Laundering.md",
     "Campaigns/Phishing Email Analysis.md",
     "Campaigns/Passive Reconnaissance.md",
     "Campaigns/Operation Shadow Network.md",
@@ -212,9 +215,6 @@
     "Campaigns/Malware Triage.md",
     "Campaigns/Incident Response.md",
     "Campaigns/Dark Web Marketplace Shutdown.md",
-    "Campaigns/Dark Web Intelligence.md",
-    "Campaigns/Cryptocurrency Tracing.md",
-    "Campaigns/Cryptocurrency Laundering Investigation.md",
-    "Campaigns/BGP Route Tracing.md"
+    "Campaigns/Dark Web Intelligence.md"
   ]
 }
