@@ -1,6 +1,7 @@
 ---
 id: crypto_laundering_trace
 name: Cryptocurrency Laundering Investigation
+type: campaign
 difficulty: advanced
 tags:
   - Cryptocurrency
@@ -8,6 +9,23 @@ tags:
   - AML
   - Financial Crime
 icon: 💰
+color: yellow
+estimatedTime: 60-90 min
+up: [[INDEX]]
+next: [[Analyze Bitcoin transaction patterns]]
+objectives:
+  - Analyze Bitcoin transaction patterns
+  - Identify cryptocurrency mixers/tumblers
+  - Trace funds to exchange cash-outs
+  - Build financial intelligence report
+  - Learn FBI blockchain forensics methodology
+tools:
+  - Blockchain Explorers
+  - WalletExplorer
+  - Transaction Graph Tools
+  - Exchange Identification
+  - Clustering Analysis
+skills: []
 ---
 
 # Cryptocurrency Laundering Investigation
@@ -15,7 +33,7 @@ icon: 💰
 ## Overview
 Track $500,000 in Bitcoin from ransomware through mixers and exchanges. Learn advanced blockchain forensics used by FBI and Treasury.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -169,7 +187,3 @@ Your report will be used to:
 
 Ready to begin tracing? What's your first investigative step?
 ```
-
-## Clues & Discovery
-- [[Clue: crypto_laundering_trace_source]]
-- [[Evidence: crypto_laundering_trace_intel]]

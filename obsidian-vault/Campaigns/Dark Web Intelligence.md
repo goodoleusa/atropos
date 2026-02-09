@@ -1,12 +1,35 @@
 ---
 id: dark_web_intel
 name: Dark Web Intelligence
+type: campaign
 difficulty: advanced
 tags:
   - Dark Web
   - Threat Intel
   - Breaches
 icon: 🕸️
+color: gray
+estimatedTime: 30-45 min
+up: [[INDEX]]
+next: [[Check breach databases]]
+objectives:
+  - Check breach databases
+  - Search paste sites
+  - Monitor threat actor chatter
+  - Track ransomware leaks
+  - Document exposure
+tools:
+  - Have I Been Pwned
+  - DeHashed
+  - IntelX
+  - Recorded Future
+  - DarkOwl
+skills:
+  - Breach database searching
+  - Paste site monitoring
+  - Dark web marketplace analysis
+  - Credential exposure assessment
+  - Ransomware leak tracking
 ---
 
 # Dark Web Intelligence
@@ -14,7 +37,7 @@ icon: 🕸️
 ## Overview
 Monitor dark web for leaked credentials, data breaches, and threat actor chatter.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -48,7 +71,3 @@ Help me investigate:
 
 What safe OSINT methods can we use without accessing actual dark web markets?
 ```
-
-## Clues & Discovery
-- [[Clue: dark_web_intel_source]]
-- [[Evidence: dark_web_intel_intel]]

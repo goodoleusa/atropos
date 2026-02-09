@@ -1,12 +1,30 @@
 ---
 id: social_engineering
 name: Social Engineering Recon
+type: campaign
 difficulty: intermediate
 tags:
   - OSINT
   - Social Engineering
   - Personnel
 icon: 🎭
+color: pink
+estimatedTime: 45-60 min
+up: [[INDEX]]
+next: [[Map org structure]]
+objectives:
+  - Map org structure
+  - Profile key personnel
+  - Find email patterns
+  - Gather personal details
+  - Identify pretexting angles
+tools:
+  - LinkedIn
+  - Hunter.io
+  - theHarvester
+  - Social media OSINT
+  - Google dorking
+skills: []
 ---
 
 # Social Engineering Recon
@@ -14,7 +32,7 @@ icon: 🎭
 ## Overview
 Build target profiles for social engineering. OSINT on personnel and organizational structure.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -46,7 +64,3 @@ Goals:
 
 What OSINT sources should we mine first for personnel intelligence?
 ```
-
-## Clues & Discovery
-- [[Clue: social_engineering_source]]
-- [[Evidence: social_engineering_intel]]

@@ -1,12 +1,30 @@
 ---
 id: network_topology
 name: Network Topology Mapping
+type: campaign
 difficulty: advanced
 tags:
   - Network
   - Infrastructure
   - Mapping
 icon: 🗺️
+color: blue
+estimatedTime: 45-60 min
+up: [[INDEX]]
+next: [[Identify network segments]]
+objectives:
+  - Identify network segments
+  - Map routing topology
+  - Find critical infrastructure
+  - Document trust relationships
+  - Create network diagram
+tools:
+  - arp-scan
+  - traceroute
+  - nbtscan
+  - enum4linux
+  - BloodHound
+skills: []
 ---
 
 # Network Topology Mapping
@@ -14,7 +32,7 @@ icon: 🗺️
 ## Overview
 Map internal network architecture. Identify VLANs, gateways, trust relationships.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -48,7 +66,3 @@ Help me:
 
 What's the safest way to start mapping without triggering alerts?
 ```
-
-## Clues & Discovery
-- [[Clue: network_topology_source]]
-- [[Evidence: network_topology_intel]]

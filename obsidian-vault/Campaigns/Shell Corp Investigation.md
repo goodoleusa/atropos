@@ -1,12 +1,34 @@
 ---
 id: shell_corp_osint
 name: Shell Corp Investigation
+type: campaign
 difficulty: intermediate
 tags:
   - OSINT
   - Corporate Intel
   - Financial
 icon: 🏢
+color: amber
+estimatedTime: 45-60 min
+up: [[INDEX]]
+next: [[Identify corporate registration details]]
+objectives:
+  - Identify corporate registration details
+  - Map subsidiary relationships
+  - Find beneficial ownership
+  - Trace financial connections
+  - Build personnel dossiers
+tools:
+  - WHOIS
+  - SEC EDGAR
+  - OpenCorporates
+  - LinkedIn OSINT
+  - Domain analysis
+skills:
+  - Corporate registry navigation
+  - Beneficial ownership analysis
+  - Entity relationship mapping
+  - Financial document interpretation
 ---
 
 # Shell Corp Investigation
@@ -14,7 +36,7 @@ icon: 🏢
 ## Overview
 Investigate a suspicious shell corporation. Trace ownership, find hidden connections, and expose the network.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -45,7 +67,3 @@ Help me build a dossier by:
 
 Start with the basics - what sources would you check first for corporate intel?
 ```
-
-## Clues & Discovery
-- [[Clue: shell_corp_osint_source]]
-- [[Evidence: shell_corp_osint_intel]]

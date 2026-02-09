@@ -1,12 +1,36 @@
 ---
 id: crypto_analysis
 name: Cryptocurrency Tracing
+type: campaign
 difficulty: advanced
 tags:
   - Crypto
   - Financial
   - Blockchain
 icon: ₿
+color: yellow
+estimatedTime: 45-60 min
+up: [[INDEX]]
+next: [[Analyze transaction flow]]
+objectives:
+  - Analyze transaction flow
+  - Cluster addresses
+  - Identify exchanges
+  - Detect mixing
+  - Build timeline
+tools:
+  - Blockchain explorers
+  - Chainalysis
+  - Elliptic
+  - OXT
+  - Crystal
+skills:
+  - Blockchain analysis
+  - Wallet clustering
+  - Exchange identification
+  - Mixing detection
+  - Transaction graph analysis
+  - UTXO tracing
 ---
 
 # Cryptocurrency Tracing
@@ -14,7 +38,7 @@ icon: ₿
 ## Overview
 Trace cryptocurrency transactions. Follow the money through blockchain analysis.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -48,7 +72,3 @@ Help me:
 
 What blockchain analysis approach should we take?
 ```
-
-## Clues & Discovery
-- [[Clue: crypto_analysis_source]]
-- [[Evidence: crypto_analysis_intel]]

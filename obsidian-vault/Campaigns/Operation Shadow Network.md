@@ -1,6 +1,7 @@
 ---
 id: operation_shadow_network
 name: Operation Shadow Network
+type: campaign
 difficulty: intermediate
 tags:
   - Human Trafficking
@@ -8,6 +9,29 @@ tags:
   - Cryptocurrency
   - Network Mapping
 icon: 🕵️
+color: red
+estimatedTime: 60-90 min
+up: [[INDEX]]
+next: [[Map social media recruitment network]]
+objectives:
+  - Map social media recruitment network
+  - Identify red flags in fake modeling agencies
+  - Trace cryptocurrency payments through blockchain
+  - Create law enforcement-ready intelligence report
+  - Understand ethical boundaries in OSINT investigations
+tools:
+  - Instagram OSINT
+  - Reverse Image Search
+  - Blockchain Explorers
+  - Network Visualization
+  - Report Writing
+skills:
+  - Social media forensics
+  - Recruitment pattern recognition
+  - Cryptocurrency tracing
+  - Network mapping
+  - Evidence documentation for law enforcement
+  - Ethical investigation boundaries
 ---
 
 # Operation Shadow Network
@@ -15,7 +39,7 @@ icon: 🕵️
 ## Overview
 Investigate a trafficking ring using social media to recruit victims. Track their network and follow the money through cryptocurrency.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -103,7 +127,3 @@ In a real case, you would:
 
 Let's begin. What would you like to investigate first?
 ```
-
-## Clues & Discovery
-- [[Clue: operation_shadow_network_source]]
-- [[Evidence: operation_shadow_network_intel]]

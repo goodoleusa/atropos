@@ -1,9 +1,12 @@
 ---
 id: shadow-protocol
 codename: SHADOW PROTOCOL
+type: mission
 phase: recon
 difficulty: recruit
 handler: ghost
+up: [[Missions Index]]
+status: available
 ---
 
 # Mission: SHADOW PROTOCOL
@@ -45,9 +48,3 @@ GHOST out.
 - [[Investigate domain registration]]
 - [[Run full reconnaissance]]
 - [[Discover hidden directories]]
-
-## Intel Stream
-- [[Intel: SysAdmin Corp registered in 19...]]
-- [[Intel: Multiple subdomains detected: ...]]
-- [[Intel: Registrant information partial...]]
-- [[Intel: SSL certificate reveals intern...]]

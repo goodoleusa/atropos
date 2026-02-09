@@ -1,12 +1,30 @@
 ---
 id: active_recon
 name: Active Reconnaissance
+type: campaign
 difficulty: intermediate
 tags:
   - Recon
   - Scanning
   - Enumeration
 icon: 🔍
+color: red
+estimatedTime: 30-45 min
+up: [[INDEX]]
+next: [[Discover live hosts]]
+objectives:
+  - Discover live hosts
+  - Enumerate open ports
+  - Identify services and versions
+  - Find potential vulnerabilities
+  - Document attack surface
+tools:
+  - nmap
+  - masscan
+  - netcat
+  - nikto
+  - gobuster
+skills: []
 ---
 
 # Active Reconnaissance
@@ -14,7 +32,7 @@ icon: 🔍
 ## Overview
 Direct engagement with target systems. Port scanning, service enumeration, vulnerability probing.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -46,7 +64,3 @@ Help me conduct:
 
 Start with host discovery - what nmap commands would you recommend and why?
 ```
-
-## Clues & Discovery
-- [[Clue: active_recon_source]]
-- [[Evidence: active_recon_intel]]
