@@ -10,8 +10,8 @@ tags:
 icon: "🔍"
 color: "red"
 estimatedTime: "30-45 min"
-up: "[[INDEX]]"
-next: "[[Discover live hosts]]"
+up: [[INDEX]]
+next: [[Discover live hosts]]
 objectives:
   - "Discover live hosts"
   - "Enumerate open ports"
@@ -25,6 +25,7 @@ tools:
   - "nikto"
   - "gobuster"
 skills: []
+clues: []
 ---
 
 # Active Reconnaissance
@@ -49,6 +50,7 @@ Discover live hosts
 - [[Tool: netcat]]
 - [[Tool: nikto]]
 - [[Tool: gobuster]]
+
 
 ## Starter Prompt
 ```

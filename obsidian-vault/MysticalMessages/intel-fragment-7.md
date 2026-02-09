@@ -3,7 +3,7 @@ id: "intel-fragment-7"
 type: "mystical-message"
 category: "financial"
 msg_type: "clue"
-up: "[[The Void]]"
+up: [[The Void]]
 ---
 
 # intel-fragment-7

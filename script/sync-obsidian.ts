@@ -18,26 +18,33 @@ function formatYAML(data: any): string {
             lines.push(`  - "${JSON.stringify(item).replace(/"/g, '\\"')}"`);
           } else {
             const s = String(item);
-            // Always wrap in quotes for consistency as requested, but ensure no " in values
-            lines.push(`  - "${s.replace(/"/g, '')}"`);
+            // If it's a wikilink or potentially a path, don't quote it if it contains [[ ]]
+            if (s.includes('[[') && s.includes(']]')) {
+              lines.push(`  - ${s}`);
+            } else {
+              lines.push(`  - "${s.replace(/"/g, '')}"`);
+            }
           }
         });
       }
     } else {
       const s = String(value);
-      // Always wrap in quotes for consistency, ensure no " in values
-      lines.push(`${key}: "${s.replace(/"/g, '')}"`);
+      if (s.includes('[[') && s.includes(']]')) {
+        lines.push(`${key}: ${s}`);
+      } else {
+        lines.push(`${key}: "${s.replace(/"/g, '')}"`);
+      }
     }
   }
   return lines.join('\n');
 }
 
 async function exportToObsidian() {
-  console.log('📤 Exporting everything to Obsidian vault (Consistent Quotes)...');
+  console.log('📤 Exporting everything to Obsidian vault (Standardized YAML)...');
   
-  const { AGENT_CAMPAIGNS } = await import('../client/src/config/agentCampaigns.ts');
-  const { SPY_MISSIONS } = await import('../client/src/config/spyMissions.ts');
-  const { MYSTICAL_MESSAGES } = await import('../client/src/config/messages.ts');
+  const { AGENT_CAMPAIGNS } = await import('../client/src/config/agentCampaigns.ts') as any;
+  const { SPY_MISSIONS } = await import('../client/src/config/spyMissions.ts') as any;
+  const { MYSTICAL_MESSAGES } = await import('../client/src/config/messages.ts') as any;
 
   const campaignsDir = path.join(OBSIDIAN_VAULT, 'Campaigns');
   const missionsDir = path.join(OBSIDIAN_VAULT, 'Missions');
@@ -62,7 +69,8 @@ async function exportToObsidian() {
       next: campaign.objectives?.[0] ? `[[${campaign.objectives[0].replace(/"/g, '')}]]` : '',
       objectives: campaign.objectives || [],
       tools: campaign.tools || [],
-      skills: campaign.skillsTaught || []
+      skills: campaign.skillsTaught || [],
+      clues: (campaign as any).clues?.map((c: any) => `[[${c.id || c}]]`) || []
     });
 
     const content = `---
@@ -83,13 +91,13 @@ ${campaign.objectives?.[0] || 'Start the investigation.'}
 ### Knowledge Graph
 ${campaign.objectives?.map((o: string) => `- [[${o.replace(/"/g, '')}]]`).join('\n') || ''}
 ${campaign.tools?.map((t: string) => `- [[Tool: ${t.replace(/"/g, '')}]]`).join('\n') || ''}
+${(campaign as any).clues?.map((c: any) => `- [[Clue: ${c.name || c}]]`).join('\n') || ''}
 
 ## Starter Prompt
 \`\`\`
 ${campaign.starterPrompt}
 \`\`\`
 `;
-    // Ensure filename doesn't have quotes
     const safeName = campaign.name.replace(/\//g, '-').replace(/"/g, '');
     await writeFile(path.join(campaignsDir, `${safeName}.md`), content);
   }
@@ -121,7 +129,7 @@ ${mission.briefing}
 - [[Handler: ${mission.handler}]]
 
 ### Tactical Objectives
-${mission.objectives.map(o => `- [[${o.description.replace(/"/g, '')}]]`).join('\n')}
+${mission.objectives.map((o: any) => `- [[${o.description.replace(/"/g, '')}]]`).join('\n')}
 `;
     const safeName = mission.codename.replace(/\//g, '-').replace(/"/g, '');
     await writeFile(path.join(missionsDir, `${safeName}.md`), content);
@@ -150,7 +158,7 @@ ${msg.content}
     await writeFile(path.join(messagesDir, `${safeName}.md`), content);
   }
 
-  console.log('✅ Export complete with consistent quoted frontmatter.');
+  console.log('✅ Export complete with consistent standardized YAML.');
 }
 
 exportToObsidian().catch(console.error);

@@ -36,6 +36,7 @@ export interface CampaignNode {
     linkedClues?: string[];
     condition?: string;
     parentOutcome?: string;
+    nextStepId?: string;
   };
 }
 

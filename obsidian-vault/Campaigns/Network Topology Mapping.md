@@ -10,8 +10,8 @@ tags:
 icon: "🗺️"
 color: "blue"
 estimatedTime: "45-60 min"
-up: "[[INDEX]]"
-next: "[[Identify network segments]]"
+up: [[INDEX]]
+next: [[Identify network segments]]
 objectives:
   - "Identify network segments"
   - "Map routing topology"
@@ -25,6 +25,7 @@ tools:
   - "enum4linux"
   - "BloodHound"
 skills: []
+clues: []
 ---
 
 # Network Topology Mapping
@@ -49,6 +50,7 @@ Identify network segments
 - [[Tool: nbtscan]]
 - [[Tool: enum4linux]]
 - [[Tool: BloodHound]]
+
 
 ## Starter Prompt
 ```

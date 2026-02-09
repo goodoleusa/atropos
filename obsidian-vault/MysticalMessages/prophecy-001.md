@@ -3,7 +3,7 @@ id: "prophecy-001"
 type: "mystical-message"
 category: "void"
 msg_type: "lore"
-up: "[[The Void]]"
+up: [[The Void]]
 ---
 
 # prophecy-001

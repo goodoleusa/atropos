@@ -10,8 +10,8 @@ tags:
 icon: "₿"
 color: "yellow"
 estimatedTime: "45-60 min"
-up: "[[INDEX]]"
-next: "[[Analyze transaction flow]]"
+up: [[INDEX]]
+next: [[Analyze transaction flow]]
 objectives:
   - "Analyze transaction flow"
   - "Cluster addresses"
@@ -31,6 +31,7 @@ skills:
   - "Mixing detection"
   - "Transaction graph analysis"
   - "UTXO tracing"
+clues: []
 ---
 
 # Cryptocurrency Tracing
@@ -55,6 +56,7 @@ Analyze transaction flow
 - [[Tool: Elliptic]]
 - [[Tool: OXT]]
 - [[Tool: Crystal]]
+
 
 ## Starter Prompt
 ```

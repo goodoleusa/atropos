@@ -339,6 +339,32 @@ export default function NodeEditor({
           </div>
         </div>
 
+        <div>
+          <label className="text-[10px] text-stone-500 uppercase">Next Step</label>
+          <Select
+            value={editingNode.metadata?.nextStepId || ''}
+            onValueChange={(nextStepId) => {
+              const newMeta = { ...editingNode.metadata, nextStepId };
+              setEditingNode({ ...editingNode, metadata: newMeta });
+              updateNode(editingNode.id, { metadata: newMeta });
+            }}
+          >
+            <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
+              <SelectValue placeholder="Select next step..." />
+            </SelectTrigger>
+            <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
+              <SelectItem value="none">None</SelectItem>
+              {campaign.nodes
+                .filter(n => n.id !== editingNode.id)
+                .map(node => (
+                  <SelectItem key={node.id} value={node.id} className="text-stone-300">
+                    {node.title}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {editingNode.type === 'decision' && (
           <div>
             <label className="text-[10px] text-stone-500 uppercase">Branch Condition</label>

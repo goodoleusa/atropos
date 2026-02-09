@@ -11,8 +11,8 @@ tags:
 icon: "💰"
 color: "yellow"
 estimatedTime: "60-90 min"
-up: "[[INDEX]]"
-next: "[[Analyze Bitcoin transaction patterns]]"
+up: [[INDEX]]
+next: [[Analyze Bitcoin transaction patterns]]
 objectives:
   - "Analyze Bitcoin transaction patterns"
   - "Identify cryptocurrency mixers/tumblers"
@@ -26,6 +26,7 @@ tools:
   - "Exchange Identification"
   - "Clustering Analysis"
 skills: []
+clues: []
 ---
 
 # Cryptocurrency Laundering Investigation
@@ -50,6 +51,7 @@ Analyze Bitcoin transaction patterns
 - [[Tool: Transaction Graph Tools]]
 - [[Tool: Exchange Identification]]
 - [[Tool: Clustering Analysis]]
+
 
 ## Starter Prompt
 ```

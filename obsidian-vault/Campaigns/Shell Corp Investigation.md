@@ -10,8 +10,8 @@ tags:
 icon: "🏢"
 color: "amber"
 estimatedTime: "45-60 min"
-up: "[[INDEX]]"
-next: "[[Identify corporate registration details]]"
+up: [[INDEX]]
+next: [[Identify corporate registration details]]
 objectives:
   - "Identify corporate registration details"
   - "Map subsidiary relationships"
@@ -29,6 +29,7 @@ skills:
   - "Beneficial ownership analysis"
   - "Entity relationship mapping"
   - "Financial document interpretation"
+clues: []
 ---
 
 # Shell Corp Investigation
@@ -53,6 +54,7 @@ Identify corporate registration details
 - [[Tool: OpenCorporates]]
 - [[Tool: LinkedIn OSINT]]
 - [[Tool: Domain analysis]]
+
 
 ## Starter Prompt
 ```
