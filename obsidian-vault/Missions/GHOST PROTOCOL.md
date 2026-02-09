@@ -1,7 +1,6 @@
 ---
 id: ghost-protocol
 codename: GHOST PROTOCOL
-classification: EYES ONLY
 phase: exfil
 difficulty: shadow
 handler: ghost
@@ -40,26 +39,17 @@ FINAL TRANSMISSION...
 
 Disappear. GHOST out.
 
-## Objectives
-### Extract the secrets table
-- **Hint**: Try: inject ' UNION SELECT * FROM secrets--
-- **Points**: 300
+## Mission Nodes
+- [[Phase: exfil]]
+- [[Handler: ghost]]
 
-### Exfiltrate via C2 channel
-- **Hint**: Try: beacon exfil secrets.db
-- **Points**: 400
+### Tactical Objectives
+- [[Extract the secrets table]]
+- [[Exfiltrate via C2 channel]]
+- [[Clean up traces]]
 
-### Clean up traces
-- **Hint**: Try: beacon kill
-- **Points**: 200
-
-## Intel
-- DLP systems trigger on large data transfers - keep chunks small
-- Timing matters - exfil during business hours blends better
-- Log deletion is often logged - consider log manipulation instead
-- Self-destruct should include memory wiping
-
-## Success Criteria
-- Extract target data
-- Successfully exfiltrate
-- Clean up traces
+## Intel Stream
+- [[Intel: DLP systems trigger on large d...]]
+- [[Intel: Timing matters - exfil during ...]]
+- [[Intel: Log deletion is often logged -...]]
+- [[Intel: Self-destruct should include m...]]

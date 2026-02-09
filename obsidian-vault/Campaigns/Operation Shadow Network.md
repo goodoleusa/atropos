@@ -1,89 +1,13 @@
 ---
-{
-  "id": "operation_shadow_network",
-  "name": "Operation Shadow Network",
-  "icon": "🕵️",
-  "difficulty": "intermediate",
-  "estimatedTime": "60-90 min",
-  "tags": [
-    "Human Trafficking",
-    "Social Media OSINT",
-    "Cryptocurrency",
-    "Network Mapping"
-  ],
-  "color": "red",
-  "targetFields": [
-    {
-      "key": "instagram_handle",
-      "label": "Suspected Recruiter Instagram",
-      "type": "text",
-      "required": true,
-      "placeholder": "@modeling_agency_2024"
-    },
-    {
-      "key": "bitcoin_address",
-      "label": "Bitcoin Payment Address",
-      "type": "text",
-      "required": false,
-      "placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
-    }
-  ],
-  "dummyTargets": {
-    "instagram_handle": "@luxlife_recruiting",
-    "bitcoin_address": "3J98t1WpEZ73CNmYviecrnyiWrnqRhWNLy"
-  },
-  "learningObjectives": [
-    {
-      "goal": "osint_investigation",
-      "weight": 10,
-      "description": "Master social media investigation techniques"
-    },
-    {
-      "goal": "crypto_blockchain_investigation",
-      "weight": 8,
-      "description": "Learn cryptocurrency tracing for trafficking cases"
-    },
-    {
-      "goal": "financial_investigation",
-      "weight": 7,
-      "description": "Follow money trails in criminal networks"
-    }
-  ],
-  "skillsRequired": [
-    "Basic OSINT",
-    "Social media platforms",
-    "Critical thinking"
-  ],
-  "skillsTaught": [
-    "Social media forensics",
-    "Recruitment pattern recognition",
-    "Cryptocurrency tracing",
-    "Network mapping",
-    "Evidence documentation for law enforcement",
-    "Ethical investigation boundaries"
-  ],
-  "learningOutcomes": [
-    "Identify trafficking recruitment red flags",
-    "Map criminal networks using OSINT",
-    "Trace crypto payments through blockchain",
-    "Create professional intelligence reports",
-    "Understand legal and ethical constraints"
-  ],
-  "industryContext": "These techniques are used daily by FBI, Homeland Security Investigations (HSI), NCMEC, and NGOs like Thorn and Polaris Project to combat human trafficking.",
-  "realWorldExamples": [
-    "Operation Cross Country (FBI annual operation rescues 100+ victims)",
-    "Backpage takedown investigation (cryptocurrency tracing)",
-    "Thorn Spotlight tool (social media pattern analysis)",
-    "NCMEC CyberTipline reports (500k+ reports annually)"
-  ],
-  "careerPaths": [
-    "Digital Forensics Investigator",
-    "FBI/HSI Special Agent (Cyber Crimes Against Children)",
-    "NGO Investigator (Polaris, Thorn, IJM)",
-    "Financial Crime Analyst (Anti-Money Laundering)",
-    "OSINT Analyst"
-  ]
-}
+id: operation_shadow_network
+name: Operation Shadow Network
+difficulty: intermediate
+tags:
+  - Human Trafficking
+  - Social Media OSINT
+  - Cryptocurrency
+  - Network Mapping
+icon: 🕵️
 ---
 
 # Operation Shadow Network
@@ -91,19 +15,23 @@
 ## Overview
 Investigate a trafficking ring using social media to recruit victims. Track their network and follow the money through cryptocurrency.
 
-## Objectives
-1. Map social media recruitment network
-2. Identify red flags in fake modeling agencies
-3. Trace cryptocurrency payments through blockchain
-4. Create law enforcement-ready intelligence report
-5. Understand ethical boundaries in OSINT investigations
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- Instagram OSINT
-- Reverse Image Search
-- Blockchain Explorers
-- Network Visualization
-- Report Writing
+### Initial Objective
+Map social media recruitment network
+
+### Knowledge Graph
+- [[Map social media recruitment network]]
+- [[Identify red flags in fake modeling agencies]]
+- [[Trace cryptocurrency payments through blockchain]]
+- [[Create law enforcement-ready intelligence report]]
+- [[Understand ethical boundaries in OSINT investigations]]
+- [[Tool: Instagram OSINT]]
+- [[Tool: Reverse Image Search]]
+- [[Tool: Blockchain Explorers]]
+- [[Tool: Network Visualization]]
+- [[Tool: Report Writing]]
 
 ## Starter Prompt
 ```
@@ -175,3 +103,7 @@ In a real case, you would:
 
 Let's begin. What would you like to investigate first?
 ```
+
+## Clues & Discovery
+- [[Clue: operation_shadow_network_source]]
+- [[Evidence: operation_shadow_network_intel]]

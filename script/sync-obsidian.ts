@@ -1,62 +1,67 @@
 import { readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import matter from 'gray-matter';
 
 const OBSIDIAN_VAULT = path.join(process.cwd(), 'obsidian-vault');
-const APP_CONFIG = path.join(process.cwd(), 'client/src/config');
 
-// Helper to extract exported arrays from TS files using regex (safer than imports for script context)
-async function extractArray(filePath: string, variableName: string): Promise<any[]> {
-  const content = await readFile(filePath, 'utf-8');
-  const regex = new RegExp(`export const ${variableName}:.*?=\\s*\\[([\\s\\S]*?)\\];`, 'm');
-  const match = content.match(regex);
-  if (!match) return [];
-  
-  try {
-    // Basic attempt to parse JSON-like array. In a real app, we'd use a better parser or proper TS compilation
-    // For this prototype, we'll try to use a simplified version of the data
-    return JSON.parse(`[${match[1]}]`);
-  } catch (e) {
-    console.error(`Failed to parse ${variableName} from ${filePath}`);
-    return [];
+function formatYAML(data: any): string {
+  const lines: string[] = [];
+  for (const [key, value] of Object.entries(data)) {
+    if (value === undefined || value === null) continue;
+    
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        lines.push(`${key}: []`);
+      } else {
+        lines.push(`${key}:`);
+        value.forEach(item => {
+          const s = String(item);
+          if (!s.includes(':') && !s.includes('\n') && !s.startsWith('-')) {
+            lines.push(`  - ${s}`);
+          } else {
+            lines.push(`  - "${s.replace(/"/g, '\\"')}"`);
+          }
+        });
+      }
+    } else {
+      const s = String(value);
+      if (!s.includes(':') && !s.includes('\n') && !s.includes('"')) {
+        lines.push(`${key}: ${s}`);
+      } else {
+        lines.push(`${key}: "${s.replace(/"/g, '\\"')}"`);
+      }
+    }
   }
+  return lines.join('\n');
 }
 
 async function exportToObsidian() {
-  console.log('📤 Exporting everything to Obsidian vault...');
+  console.log('📤 Exporting everything to Obsidian vault (Twine-style)...');
   
-  // For the purpose of this script, we'll use the files directly since standard imports are failing in tsx context
+  // Using direct paths with .ts extension for tsx
   const { AGENT_CAMPAIGNS } = await import('../client/src/config/agentCampaigns.ts');
   const { SPY_MISSIONS } = await import('../client/src/config/spyMissions.ts');
   const { MYSTICAL_MESSAGES } = await import('../client/src/config/messages.ts');
 
-  // 1. Export Campaigns
   const campaignsDir = path.join(OBSIDIAN_VAULT, 'Campaigns');
+  const missionsDir = path.join(OBSIDIAN_VAULT, 'Missions');
+  const messagesDir = path.join(OBSIDIAN_VAULT, 'MysticalMessages');
+  
   await mkdir(campaignsDir, { recursive: true });
+  await mkdir(missionsDir, { recursive: true });
+  await mkdir(messagesDir, { recursive: true });
 
+  // 1. Export Campaigns
   for (const campaign of AGENT_CAMPAIGNS) {
-    const frontmatter = {
+    const yaml = formatYAML({
       id: campaign.id,
       name: campaign.name,
-      icon: campaign.icon,
       difficulty: campaign.difficulty,
-      estimatedTime: campaign.estimatedTime,
       tags: campaign.tags,
-      color: campaign.color,
-      targetFields: campaign.targetFields,
-      dummyTargets: campaign.dummyTargets,
-      learningObjectives: campaign.learningObjectives,
-      skillsRequired: campaign.skillsRequired,
-      skillsTaught: campaign.skillsTaught,
-      learningOutcomes: campaign.learningOutcomes,
-      industryContext: campaign.industryContext,
-      realWorldExamples: campaign.realWorldExamples,
-      careerPaths: campaign.careerPaths,
-      teachingAdaptations: campaign.teachingAdaptations
-    };
+      icon: campaign.icon
+    });
 
     const content = `---
-${JSON.stringify(frontmatter, null, 2)}
+${yaml}
 ---
 
 # ${campaign.name}
@@ -64,33 +69,40 @@ ${JSON.stringify(frontmatter, null, 2)}
 ## Overview
 ${campaign.description}
 
-## Objectives
-${campaign.objectives?.map((o: string, i: number) => `${i + 1}. ${o}`).join('\n') || ''}
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-${campaign.tools?.map((t: string) => `- ${t}`).join('\n') || ''}
+### Initial Objective
+${campaign.objectives?.[0] || 'Start the investigation.'}
+
+### Knowledge Graph
+${campaign.objectives?.map((o: string) => `- [[${o}]]`).join('\n') || ''}
+${campaign.tools?.map((t: string) => `- [[Tool: ${t}]]`).join('\n') || ''}
 
 ## Starter Prompt
 \`\`\`
 ${campaign.starterPrompt}
 \`\`\`
+
+## Clues & Discovery
+- [[Clue: ${campaign.id}_source]]
+- [[Evidence: ${campaign.id}_intel]]
 `;
     await writeFile(path.join(campaignsDir, `${campaign.name.replace(/\//g, '-')}.md`), content);
-    console.log(`  ✅ Exported Campaign: ${campaign.name}`);
   }
 
   // 2. Export Missions
-  const missionsDir = path.join(OBSIDIAN_VAULT, 'Missions');
-  await mkdir(missionsDir, { recursive: true });
-
   for (const mission of SPY_MISSIONS) {
+    const yaml = formatYAML({
+      id: mission.id,
+      codename: mission.codename,
+      phase: mission.phase,
+      difficulty: mission.difficulty,
+      handler: mission.handler
+    });
+
     const content = `---
-id: ${mission.id}
-codename: ${mission.codename}
-classification: ${mission.classification}
-phase: ${mission.phase}
-difficulty: ${mission.difficulty}
-handler: ${mission.handler}
+${yaml}
 ---
 
 # Mission: ${mission.codename}
@@ -98,45 +110,44 @@ handler: ${mission.handler}
 ## Briefing
 ${mission.briefing}
 
-## Objectives
-${mission.objectives.map(o => `### ${o.description}\n- **Hint**: ${o.hint}\n- **Points**: ${o.points}`).join('\n\n')}
+## Mission Nodes
+- [[Phase: ${mission.phase}]]
+- [[Handler: ${mission.handler}]]
 
-## Intel
-${mission.intel.map(i => `- ${i}`).join('\n')}
+### Tactical Objectives
+${mission.objectives.map(o => `- [[${o.description}]]`).join('\n')}
 
-## Success Criteria
-${mission.successCriteria.map(s => `- ${s}`).join('\n')}
+## Intel Stream
+${mission.intel.map(i => `- [[Intel: ${i.slice(0, 30)}...]]`).join('\n')}
 `;
     await writeFile(path.join(missionsDir, `${mission.codename.replace(/\//g, '-')}.md`), content);
-    console.log(`  ✅ Exported Mission: ${mission.codename}`);
   }
 
   // 3. Export Mystical Messages
-  const messagesDir = path.join(OBSIDIAN_VAULT, 'MysticalMessages');
-  await mkdir(messagesDir, { recursive: true });
-
   for (const msg of MYSTICAL_MESSAGES) {
+    const yaml = formatYAML({
+      id: msg.id,
+      type: msg.type,
+      category: msg.category
+    });
+
     const content = `---
-id: ${msg.id}
-type: ${msg.type}
-category: ${msg.category}
+${yaml}
 ---
 
-# Message: ${msg.id}
+# ${msg.id}
 
-## Content
+## Revelation
 ${msg.content}
+
+## Connections
+- [[Category: ${msg.category}]]
+- [[Type: ${msg.type}]]
 `;
     await writeFile(path.join(messagesDir, `${msg.id}.md`), content);
-    console.log(`  ✅ Exported Message: ${msg.id}`);
   }
+
+  console.log('✅ Export complete. Clean frontmatter and Twine-style wikilinks implemented.');
 }
 
-async function main() {
-  const args = process.argv.slice(2);
-  if (args.includes('--to-obsidian')) {
-    await exportToObsidian();
-  }
-}
-
-main().catch(console.error);
+exportToObsidian().catch(console.error);

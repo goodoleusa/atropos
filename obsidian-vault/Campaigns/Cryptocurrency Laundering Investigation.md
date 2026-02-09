@@ -1,48 +1,13 @@
 ---
-{
-  "id": "crypto_laundering_trace",
-  "name": "Cryptocurrency Laundering Investigation",
-  "icon": "💰",
-  "difficulty": "advanced",
-  "estimatedTime": "60-90 min",
-  "tags": [
-    "Cryptocurrency",
-    "Money Laundering",
-    "AML",
-    "Financial Crime"
-  ],
-  "color": "yellow",
-  "targetFields": [
-    {
-      "key": "wallet_address",
-      "label": "Source Bitcoin Address",
-      "type": "text",
-      "required": true,
-      "placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
-    }
-  ],
-  "dummyTargets": {
-    "wallet_address": "1CounterpartyXXXXXXXXXXXXXXXUWLpVr"
-  },
-  "learningObjectives": [
-    {
-      "goal": "crypto_blockchain_investigation",
-      "weight": 10,
-      "description": "Master advanced blockchain forensics"
-    },
-    {
-      "goal": "financial_investigation",
-      "weight": 9,
-      "description": "Learn money laundering detection and tracing"
-    }
-  ],
-  "realWorldExamples": [
-    "Colonial Pipeline ransomware recovery ($2.3M traced by FBI)",
-    "Silk Road investigation ($1B+ Bitcoin seized)",
-    "Twitter hack 2020 (suspects identified via blockchain)",
-    "AlphaBay takedown (cryptocurrency tracing led to arrest)"
-  ]
-}
+id: crypto_laundering_trace
+name: Cryptocurrency Laundering Investigation
+difficulty: advanced
+tags:
+  - Cryptocurrency
+  - Money Laundering
+  - AML
+  - Financial Crime
+icon: 💰
 ---
 
 # Cryptocurrency Laundering Investigation
@@ -50,19 +15,23 @@
 ## Overview
 Track $500,000 in Bitcoin from ransomware through mixers and exchanges. Learn advanced blockchain forensics used by FBI and Treasury.
 
-## Objectives
-1. Analyze Bitcoin transaction patterns
-2. Identify cryptocurrency mixers/tumblers
-3. Trace funds to exchange cash-outs
-4. Build financial intelligence report
-5. Learn FBI blockchain forensics methodology
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- Blockchain Explorers
-- WalletExplorer
-- Transaction Graph Tools
-- Exchange Identification
-- Clustering Analysis
+### Initial Objective
+Analyze Bitcoin transaction patterns
+
+### Knowledge Graph
+- [[Analyze Bitcoin transaction patterns]]
+- [[Identify cryptocurrency mixers/tumblers]]
+- [[Trace funds to exchange cash-outs]]
+- [[Build financial intelligence report]]
+- [[Learn FBI blockchain forensics methodology]]
+- [[Tool: Blockchain Explorers]]
+- [[Tool: WalletExplorer]]
+- [[Tool: Transaction Graph Tools]]
+- [[Tool: Exchange Identification]]
+- [[Tool: Clustering Analysis]]
 
 ## Starter Prompt
 ```
@@ -200,3 +169,7 @@ Your report will be used to:
 
 Ready to begin tracing? What's your first investigative step?
 ```
+
+## Clues & Discovery
+- [[Clue: crypto_laundering_trace_source]]
+- [[Evidence: crypto_laundering_trace_intel]]

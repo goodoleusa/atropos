@@ -1,7 +1,6 @@
 ---
 id: iron-key
 codename: IRON KEY
-classification: SECRET
 phase: access
 difficulty: operative
 handler: cipher
@@ -35,29 +34,18 @@ SECURE TRANSMISSION INITIATED...
 
 Stay encrypted. CIPHER.
 
-## Objectives
-### Scan molten_core for open ports
-- **Hint**: Try: nmap molten_core
-- **Points**: 150
+## Mission Nodes
+- [[Phase: access]]
+- [[Handler: cipher]]
 
-### Crack the admin hash (MD5)
-- **Hint**: Try: crack then enter the hash
-- **Points**: 200
+### Tactical Objectives
+- [[Scan molten_core for open ports]]
+- [[Crack the admin hash (MD5)]]
+- [[Load and analyze the exploit]]
+- [[Test SQL injection vulnerability]]
 
-### Load and analyze the exploit
-- **Hint**: Try: exploit CVE-VOID-001
-- **Points**: 250
-
-### Test SQL injection vulnerability
-- **Hint**: Try: inject ' OR 1=1--
-- **Points**: 200
-
-## Intel
-- The admin password is likely a common word - try dictionary attack
-- MongoDB NoAuth is a critical vulnerability - full database access
-- CVE-VOID-001 allows authentication bypass
-- SQL injection could dump the secrets table
-
-## Success Criteria
-- Crack the admin hash
-- Successfully exploit one vulnerability
+## Intel Stream
+- [[Intel: The admin password is likely a...]]
+- [[Intel: MongoDB NoAuth is a critical v...]]
+- [[Intel: CVE-VOID-001 allows authentica...]]
+- [[Intel: SQL injection could dump the s...]]

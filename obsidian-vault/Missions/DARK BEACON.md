@@ -1,7 +1,6 @@
 ---
 id: dark-beacon
 codename: DARK BEACON
-classification: EYES ONLY
 phase: c2
 difficulty: shadow
 handler: phoenix
@@ -44,30 +43,18 @@ PRIORITY OVERRIDE - DIRECT LINE TO COMMAND...
 
 Get it done. PHOENIX out.
 
-## Objectives
-### Initialize the beacon
-- **Hint**: Try: beacon checkin
-- **Points**: 200
+## Mission Nodes
+- [[Phase: c2]]
+- [[Handler: phoenix]]
 
-### Receive tasking from C2
-- **Hint**: Try: beacon tasking
-- **Points**: 250
+### Tactical Objectives
+- [[Initialize the beacon]]
+- [[Receive tasking from C2]]
+- [[Adjust beacon timing for stealth]]
+- [[Exfiltrate test data]]
 
-### Adjust beacon timing for stealth
-- **Hint**: Try: beacon sleep 600
-- **Points**: 150
-
-### Exfiltrate test data
-- **Hint**: Try: beacon exfil .secrets
-- **Points**: 300
-
-## Intel
-- C2 beaconing mimics normal HTTPS traffic to evade detection
-- Jitter prevents pattern-based detection by security tools
-- DNS over HTTPS (DoH) is increasingly used for C2
-- Sleep commands reduce beacon frequency when heat is high
-
-## Success Criteria
-- Successfully beacon to C2
-- Receive and execute tasking
-- Exfiltrate data
+## Intel Stream
+- [[Intel: C2 beaconing mimics normal HTT...]]
+- [[Intel: Jitter prevents pattern-based ...]]
+- [[Intel: DNS over HTTPS (DoH) is increa...]]
+- [[Intel: Sleep commands reduce beacon f...]]

@@ -1,7 +1,6 @@
 ---
 id: phantom-thread
 codename: PHANTOM THREAD
-classification: TOP SECRET
 phase: persist
 difficulty: specialist
 handler: oracle
@@ -38,34 +37,19 @@ ENCRYPTED CHANNEL ESTABLISHED...
 
 Trust the data. ORACLE.
 
-## Objectives
-### Read the .secrets file
-- **Hint**: Try: cat .secrets
-- **Points**: 100
+## Mission Nodes
+- [[Phase: persist]]
+- [[Handler: oracle]]
 
-### Examine route configuration
-- **Hint**: Try: cat .routes.conf
-- **Points**: 150
+### Tactical Objectives
+- [[Read the .secrets file]]
+- [[Examine route configuration]]
+- [[Check active network connections]]
+- [[Map the network path to C2]]
+- [[Enumerate all users]]
 
-### Check active network connections
-- **Hint**: Try: netstat
-- **Points**: 200
-
-### Map the network path to C2
-- **Hint**: Try: traceroute molten_core
-- **Points**: 150
-
-### Enumerate all users
-- **Hint**: Try: enum ssh
-- **Points**: 200
-
-## Intel
-- LOTL binaries: curl, wget, netcat, powershell, certutil
-- Scheduled tasks and cron jobs are common persistence mechanisms
-- Look for writable directories in system paths
-- Service accounts often have weak credentials
-
-## Success Criteria
-- Read sensitive files
-- Map network connections
-- Identify persistence opportunities
+## Intel Stream
+- [[Intel: LOTL binaries: curl, wget, net...]]
+- [[Intel: Scheduled tasks and cron jobs ...]]
+- [[Intel: Look for writable directories ...]]
+- [[Intel: Service accounts often have we...]]

@@ -1,47 +1,13 @@
 ---
-{
-  "id": "dark_web_marketplace_shutdown",
-  "name": "Dark Web Marketplace Shutdown",
-  "icon": "🌐",
-  "difficulty": "advanced",
-  "estimatedTime": "90-120 min",
-  "tags": [
-    "Dark Web",
-    "Infrastructure Mapping",
-    "Cryptocurrency",
-    "Server Analysis"
-  ],
-  "color": "purple",
-  "targetFields": [
-    {
-      "key": "onion_address",
-      "label": "Onion Address (v3)",
-      "type": "text",
-      "required": true,
-      "placeholder": "darkmarket...onion"
-    }
-  ],
-  "dummyTargets": {
-    "onion_address": "abc123def456ghi789jkl.onion"
-  },
-  "learningObjectives": [
-    {
-      "goal": "dark_web_intelligence",
-      "weight": 10,
-      "description": "Master safe dark web investigation techniques"
-    },
-    {
-      "goal": "crypto_blockchain_investigation",
-      "weight": 8,
-      "description": "Advanced cryptocurrency tracing"
-    },
-    {
-      "goal": "penetration_testing",
-      "weight": 6,
-      "description": "Infrastructure analysis and fingerprinting"
-    }
-  ]
-}
+id: dark_web_marketplace_shutdown
+name: Dark Web Marketplace Shutdown
+difficulty: advanced
+tags:
+  - Dark Web
+  - Infrastructure Mapping
+  - Cryptocurrency
+  - Server Analysis
+icon: 🌐
 ---
 
 # Dark Web Marketplace Shutdown
@@ -49,19 +15,23 @@
 ## Overview
 Safely investigate a dark web marketplace selling exploitation material. Map infrastructure and identify operators without accessing illegal content.
 
-## Objectives
-1. Safely investigate dark web infrastructure
-2. Map server hosting and technical details
-3. Trace cryptocurrency payment flows
-4. Identify operators through opsec failures
-5. Create law enforcement intelligence package
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- OnionScan
-- Dark Web Search Engines
-- Blockchain Explorers
-- WHOIS/DNS Tools
-- Username OSINT
+### Initial Objective
+Safely investigate dark web infrastructure
+
+### Knowledge Graph
+- [[Safely investigate dark web infrastructure]]
+- [[Map server hosting and technical details]]
+- [[Trace cryptocurrency payment flows]]
+- [[Identify operators through opsec failures]]
+- [[Create law enforcement intelligence package]]
+- [[Tool: OnionScan]]
+- [[Tool: Dark Web Search Engines]]
+- [[Tool: Blockchain Explorers]]
+- [[Tool: WHOIS/DNS Tools]]
+- [[Tool: Username OSINT]]
 
 ## Starter Prompt
 ```
@@ -190,3 +160,7 @@ Real-World Application:
 
 Ready to begin? Start with Phase 1: What technical metadata can we gather safely?
 ```
+
+## Clues & Discovery
+- [[Clue: dark_web_marketplace_shutdown_source]]
+- [[Evidence: dark_web_marketplace_shutdown_intel]]
