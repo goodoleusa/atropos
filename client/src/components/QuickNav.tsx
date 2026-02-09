@@ -39,6 +39,7 @@ export default function QuickNav() {
     { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
+    { path: '/wiki', icon: Shield, label: 'Wiki', color: 'teal' as const },
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
     { path: '/campaigns', icon: Shield, label: 'Campaigns', color: 'teal' as const },
   ];
@@ -47,6 +48,7 @@ export default function QuickNav() {
     { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const, badge: undefined },
     { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const, badge: undefined },
     { path: '/void', icon: Sparkles, label: 'Void', color: 'purple' as const, badge: undefined },
+    { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const, badge: undefined },
   ] : [];
 
   const navItems = [...baseNavItems, ...devNavItems];
