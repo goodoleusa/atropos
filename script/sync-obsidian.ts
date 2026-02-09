@@ -18,7 +18,7 @@ function formatYAML(data: any): string {
             lines.push(`  - "${JSON.stringify(item).replace(/"/g, '\\"')}"`);
           } else {
             const s = String(item);
-            // If it's a wikilink or potentially a path, don't quote it if it contains [[ ]]
+            // In Obsidian properties/YAML, wikilinks are clickable when NOT quoted.
             if (s.includes('[[') && s.includes(']]')) {
               lines.push(`  - ${s}`);
             } else {
@@ -158,7 +158,7 @@ ${msg.content}
     await writeFile(path.join(messagesDir, `${safeName}.md`), content);
   }
 
-  console.log('✅ Export complete with consistent standardized YAML.');
+  console.log('✅ Export complete with clickable Obsidian links.');
 }
 
 exportToObsidian().catch(console.error);
