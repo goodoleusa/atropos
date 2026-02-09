@@ -248,6 +248,24 @@ export const ASCII_LOGO = `
 // HELPER FUNCTIONS
 // ============================================
 
+// ============================================
+// MYSTICAL MESSAGES (Templates)
+// ============================================
+export const MYSTICAL_MESSAGES = [
+  {
+    id: 'prophecy-001',
+    type: 'lore',
+    category: 'void',
+    content: 'The mesh is leaking copper oxygen. The old world burns in bronze.'
+  },
+  {
+    id: 'intel-fragment-7',
+    type: 'clue',
+    category: 'financial',
+    content: 'Obsidian Holdings isn\'t a company. It\'s a routing table for ghosts.'
+  }
+];
+
 /**
  * Get enabled tarot cards only
  */
