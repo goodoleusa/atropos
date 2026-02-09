@@ -1,67 +1,11 @@
 import { readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
+import { AGENT_CAMPAIGNS } from './client/src/config/agentCampaigns';
+import { SPY_MISSIONS } from './client/src/config/spyMissions';
 
 const OBSIDIAN_VAULT = path.join(process.cwd(), 'obsidian-vault');
 const APP_CONFIG = path.join(process.cwd(), 'client/src/config');
-
-interface CampaignFrontmatter {
-  id: string;
-  name: string;
-  icon: string;
-  difficulty: string;
-  estimatedTime: string;
-  tags: string[];
-  color: string;
-  targetFields?: any[];
-  dummyTargets?: Record<string, string>;
-  learningObjectives?: any[];
-  skillsRequired?: string[];
-  skillsTaught?: string[];
-  learningOutcomes?: string[];
-  industryContext?: string;
-  realWorldExamples?: string[];
-  careerPaths?: string[];
-}
-
-async function extractTeachingAdaptations(content: string): Promise<Record<string, string>> {
-  const adaptations: Record<string, string> = {};
-  const styles = ['experiential', 'visual', 'analytical', 'social', 'pragmatic'];
-  
-  for (const style of styles) {
-    const regex = new RegExp(`### [🔧📊🔬👥⚡] ${style.charAt(0).toUpperCase() + style.slice(1)} Learner\\s*([\\s\\S]*?)(?=###|$)`, 'i');
-    const match = content.match(regex);
-    if (match) {
-      adaptations[style] = match[1].trim().replace(/^<!--.*?-->\s*/gm, '').trim();
-    }
-  }
-  
-  return adaptations;
-}
-
-async function extractObjectivesAndTools(content: string): Promise<{ objectives: string[]; tools: string[] }> {
-  const objectives: string[] = [];
-  const tools: string[] = [];
-  
-  const objectivesMatch = content.match(/## Objectives\s*([\s\S]*?)(?=##|$)/);
-  if (objectivesMatch) {
-    const lines = objectivesMatch[1].split('\n').filter(l => l.trim().match(/^\d+\./));
-    objectives.push(...lines.map(l => l.replace(/^\d+\.\s*/, '').trim()));
-  }
-  
-  const toolsMatch = content.match(/## Tools Required\s*([\s\S]*?)(?=##|$)/);
-  if (toolsMatch) {
-    const lines = toolsMatch[1].split('\n').filter(l => l.trim().startsWith('-'));
-    tools.push(...lines.map(l => l.replace(/^-\s*/, '').trim()));
-  }
-  
-  return { objectives, tools };
-}
-
-async function extractStarterPrompt(content: string): Promise<string> {
-  const match = content.match(/## Starter Prompt\s*```\s*([\s\S]*?)```/);
-  return match ? match[1].trim() : '';
-}
 
 async function syncCampaignsFromObsidian() {
   console.log('🔄 Syncing campaigns from Obsidian vault...');
@@ -78,10 +22,6 @@ async function syncCampaignsFromObsidian() {
       const fileContent = await readFile(filePath, 'utf-8');
       const { data: frontmatter, content } = matter(fileContent);
       
-      const teachingAdaptations = await extractTeachingAdaptations(content);
-      const { objectives, tools } = await extractObjectivesAndTools(content);
-      const starterPrompt = await extractStarterPrompt(content);
-      
       const campaign = {
         id: frontmatter.id || file.replace('.md', '').toLowerCase(),
         name: frontmatter.name || file.replace('.md', ''),
@@ -93,9 +33,9 @@ async function syncCampaignsFromObsidian() {
         color: frontmatter.color || 'amber',
         targetFields: frontmatter.targetFields || [],
         dummyTargets: frontmatter.dummyTargets || {},
-        starterPrompt,
-        objectives,
-        tools,
+        starterPrompt: content.match(/## Starter Prompt\s*```\s*([\s\S]*?)```/)?.[1]?.trim() || '',
+        objectives: frontmatter.objectives || [],
+        tools: frontmatter.tools || [],
         learningObjectives: frontmatter.learningObjectives || [],
         skillsRequired: frontmatter.skillsRequired || [],
         skillsTaught: frontmatter.skillsTaught || [],
@@ -103,7 +43,7 @@ async function syncCampaignsFromObsidian() {
         industryContext: frontmatter.industryContext || '',
         realWorldExamples: frontmatter.realWorldExamples || [],
         careerPaths: frontmatter.careerPaths || [],
-        teachingAdaptations
+        teachingAdaptations: frontmatter.teachingAdaptations || {}
       };
       
       campaigns.push(campaign);
@@ -115,52 +55,105 @@ async function syncCampaignsFromObsidian() {
   
   const outputPath = path.join(APP_CONFIG, 'obsidianCampaigns.ts');
   const tsContent = `// Auto-generated from Obsidian vault
-// Last synced: ${new Date().toISOString()}
-// Source: obsidian-vault/Campaigns/
-// DO NOT EDIT MANUALLY - Edit in Obsidian and run: npm run sync:campaigns
-
-import type { Campaign } from './agentCampaigns';
-
-export const OBSIDIAN_CAMPAIGNS: Campaign[] = ${JSON.stringify(campaigns, null, 2)};
+export const OBSIDIAN_CAMPAIGNS = ${JSON.stringify(campaigns, null, 2)};
 `;
   
   await writeFile(outputPath, tsContent);
   console.log(`\n✅ Exported ${campaigns.length} campaigns to ${outputPath}`);
-  console.log('   Import in agentCampaigns.ts: import { OBSIDIAN_CAMPAIGNS } from "./obsidianCampaigns"');
 }
 
-async function syncCampaignsToObsidian() {
-  console.log('🔄 Syncing campaigns to Obsidian vault...');
+async function exportToObsidian() {
+  console.log('📤 Exporting everything to Obsidian vault...');
   
-  const campaignsPath = path.join(APP_CONFIG, 'agentCampaigns.ts');
-  const campaignsContent = await readFile(campaignsPath, 'utf-8');
-  
-  const campaignsMatch = campaignsContent.match(/export const AGENT_CAMPAIGNS.*?=\s*\[([\s\S]*?)\];/);
-  if (!campaignsMatch) {
-    console.error('❌ Could not parse AGENT_CAMPAIGNS from agentCampaigns.ts');
-    return;
+  // 1. Export Campaigns
+  const campaignsDir = path.join(OBSIDIAN_VAULT, 'Campaigns');
+  await mkdir(campaignsDir, { recursive: true });
+
+  for (const campaign of AGENT_CAMPAIGNS) {
+    const frontmatter = {
+      id: campaign.id,
+      name: campaign.name,
+      icon: campaign.icon,
+      difficulty: campaign.difficulty,
+      estimatedTime: campaign.estimatedTime,
+      tags: campaign.tags,
+      color: campaign.color,
+      targetFields: campaign.targetFields,
+      dummyTargets: campaign.dummyTargets,
+      learningObjectives: campaign.learningObjectives,
+      skillsRequired: campaign.skillsRequired,
+      skillsTaught: campaign.skillsTaught,
+      learningOutcomes: campaign.learningOutcomes,
+      industryContext: campaign.industryContext,
+      realWorldExamples: campaign.realWorldExamples,
+      careerPaths: campaign.careerPaths,
+      teachingAdaptations: campaign.teachingAdaptations
+    };
+
+    const content = `---
+${JSON.stringify(frontmatter, null, 2)}
+---
+
+# ${campaign.name}
+
+## Overview
+${campaign.description}
+
+## Objectives
+${campaign.objectives?.map((o: string, i: number) => `${i + 1}. ${o}`).join('\n') || ''}
+
+## Tools Required
+${campaign.tools?.map((t: string) => `- ${t}`).join('\n') || ''}
+
+## Starter Prompt
+\`\`\`
+${campaign.starterPrompt}
+\`\`\`
+`;
+    await writeFile(path.join(campaignsDir, `${campaign.name.replace(/\//g, '-')}.md`), content);
+    console.log(`  ✅ Exported Campaign: ${campaign.name}`);
   }
-  
-  console.log('⚠️  Manual conversion recommended for TypeScript → Markdown');
-  console.log('   Use obsidian-vault/Templates/Campaign Template.md to create new campaigns');
-  console.log('   Then sync back with: npm run sync:campaigns -- --from-obsidian');
+
+  // 2. Export Missions
+  const missionsDir = path.join(OBSIDIAN_VAULT, 'Missions');
+  await mkdir(missionsDir, { recursive: true });
+
+  for (const mission of SPY_MISSIONS) {
+    const content = `---
+id: ${mission.id}
+codename: ${mission.codename}
+classification: ${mission.classification}
+phase: ${mission.phase}
+difficulty: ${mission.difficulty}
+handler: ${mission.handler}
+---
+
+# Mission: ${mission.codename}
+
+## Briefing
+${mission.briefing}
+
+## Objectives
+${mission.objectives.map(o => `### ${o.description}\n- **Hint**: ${o.hint}\n- **Points**: ${o.points}`).join('\n\n')}
+
+## Intel
+${mission.intel.map(i => `- ${i}`).join('\n')}
+
+## Success Criteria
+${mission.successCriteria.map(s => `- ${s}`).join('\n')}
+`;
+    await writeFile(path.join(missionsDir, `${mission.codename.replace(/\//g, '-')}.md`), content);
+    console.log(`  ✅ Exported Mission: ${mission.codename}`);
+  }
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const direction = args.includes('--from-obsidian') ? 'from' : 
-                   args.includes('--to-obsidian') ? 'to' : 'from';
-  
-  try {
-    if (direction === 'from') {
-      await syncCampaignsFromObsidian();
-    } else {
-      await syncCampaignsToObsidian();
-    }
-  } catch (error) {
-    console.error('Sync failed:', error);
-    process.exit(1);
+  if (args.includes('--to-obsidian')) {
+    await exportToObsidian();
+  } else {
+    await syncCampaignsFromObsidian();
   }
 }
 
-main();
+main().catch(console.error);
