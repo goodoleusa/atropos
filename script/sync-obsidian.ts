@@ -14,17 +14,21 @@ function formatYAML(data: any): string {
       } else {
         lines.push(`${key}:`);
         value.forEach(item => {
-          const s = String(item);
-          if (!s.includes(':') && !s.includes('\n') && !s.startsWith('-')) {
-            lines.push(`  - ${s}`);
+          if (typeof item === 'object') {
+            lines.push(`  - "${JSON.stringify(item).replace(/"/g, '\\"')}"`);
           } else {
-            lines.push(`  - "${s.replace(/"/g, '\\"')}"`);
+            const s = String(item);
+            if (!s.includes(':') && !s.includes('\n') && !s.includes('"')) {
+              lines.push(`  - ${s}`);
+            } else {
+              lines.push(`  - "${s.replace(/"/g, '\\"')}"`);
+            }
           }
         });
       }
     } else {
       const s = String(value);
-      if (!s.includes(':') && !s.includes('\n') && !s.includes('"')) {
+      if (!s.includes(':') && !s.includes('\n') && !s.includes('"') && isNaN(Number(s))) {
         lines.push(`${key}: ${s}`);
       } else {
         lines.push(`${key}: "${s.replace(/"/g, '\\"')}"`);
@@ -35,9 +39,8 @@ function formatYAML(data: any): string {
 }
 
 async function exportToObsidian() {
-  console.log('📤 Exporting everything to Obsidian vault (Twine-style)...');
+  console.log('📤 Exporting everything to Obsidian vault (Professional Frontmatter)...');
   
-  // Using direct paths with .ts extension for tsx
   const { AGENT_CAMPAIGNS } = await import('../client/src/config/agentCampaigns.ts');
   const { SPY_MISSIONS } = await import('../client/src/config/spyMissions.ts');
   const { MYSTICAL_MESSAGES } = await import('../client/src/config/messages.ts');
@@ -55,9 +58,19 @@ async function exportToObsidian() {
     const yaml = formatYAML({
       id: campaign.id,
       name: campaign.name,
+      type: 'campaign',
       difficulty: campaign.difficulty,
       tags: campaign.tags,
-      icon: campaign.icon
+      icon: campaign.icon,
+      color: campaign.color,
+      estimatedTime: campaign.estimatedTime,
+      // Breadcrumbs / Excalibrain support
+      up: '[[INDEX]]',
+      next: campaign.objectives?.[0] ? `[[${campaign.objectives[0]}]]` : '',
+      // Learning metadata for Dataview
+      objectives: campaign.objectives || [],
+      tools: campaign.tools || [],
+      skills: campaign.skillsTaught || []
     });
 
     const content = `---
@@ -69,7 +82,7 @@ ${yaml}
 ## Overview
 ${campaign.description}
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -83,10 +96,6 @@ ${campaign.tools?.map((t: string) => `- [[Tool: ${t}]]`).join('\n') || ''}
 \`\`\`
 ${campaign.starterPrompt}
 \`\`\`
-
-## Clues & Discovery
-- [[Clue: ${campaign.id}_source]]
-- [[Evidence: ${campaign.id}_intel]]
 `;
     await writeFile(path.join(campaignsDir, `${campaign.name.replace(/\//g, '-')}.md`), content);
   }
@@ -96,9 +105,12 @@ ${campaign.starterPrompt}
     const yaml = formatYAML({
       id: mission.id,
       codename: mission.codename,
+      type: 'mission',
       phase: mission.phase,
       difficulty: mission.difficulty,
-      handler: mission.handler
+      handler: mission.handler,
+      up: '[[Missions Index]]',
+      status: 'available'
     });
 
     const content = `---
@@ -116,9 +128,6 @@ ${mission.briefing}
 
 ### Tactical Objectives
 ${mission.objectives.map(o => `- [[${o.description}]]`).join('\n')}
-
-## Intel Stream
-${mission.intel.map(i => `- [[Intel: ${i.slice(0, 30)}...]]`).join('\n')}
 `;
     await writeFile(path.join(missionsDir, `${mission.codename.replace(/\//g, '-')}.md`), content);
   }
@@ -127,8 +136,10 @@ ${mission.intel.map(i => `- [[Intel: ${i.slice(0, 30)}...]]`).join('\n')}
   for (const msg of MYSTICAL_MESSAGES) {
     const yaml = formatYAML({
       id: msg.id,
-      type: msg.type,
-      category: msg.category
+      type: 'mystical-message',
+      category: msg.category,
+      msg_type: msg.type,
+      up: '[[The Void]]'
     });
 
     const content = `---
@@ -139,15 +150,11 @@ ${yaml}
 
 ## Revelation
 ${msg.content}
-
-## Connections
-- [[Category: ${msg.category}]]
-- [[Type: ${msg.type}]]
 `;
     await writeFile(path.join(messagesDir, `${msg.id}.md`), content);
   }
 
-  console.log('✅ Export complete. Clean frontmatter and Twine-style wikilinks implemented.');
+  console.log('✅ Export complete with Obsidian-compliant frontmatter.');
 }
 
 exportToObsidian().catch(console.error);

@@ -1,12 +1,30 @@
 ---
 id: threat_hunting
 name: Threat Hunting
+type: campaign
 difficulty: expert
 tags:
   - Blue Team
   - DFIR
   - Detection
 icon: 🎯
+color: orange
+estimatedTime: 60-90 min
+up: [[INDEX]]
+next: [[Formulate hunting hypotheses]]
+objectives:
+  - Formulate hunting hypotheses
+  - Analyze log sources
+  - Identify IOCs
+  - Trace lateral movement
+  - Find persistence mechanisms
+tools:
+  - RITA
+  - Sigma rules
+  - YARA
+  - Splunk/ELK queries
+  - Velociraptor
+skills: []
 ---
 
 # Threat Hunting
@@ -14,7 +32,7 @@ icon: 🎯
 ## Overview
 Proactively search for indicators of compromise. Analyze logs, hunt for persistence.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -54,7 +72,3 @@ Help me:
 
 Where should we start the hunt?
 ```
-
-## Clues & Discovery
-- [[Clue: threat_hunting_source]]
-- [[Evidence: threat_hunting_intel]]

@@ -1,12 +1,30 @@
 ---
 id: incident_response
 name: Incident Response
+type: campaign
 difficulty: expert
 tags:
   - DFIR
   - Blue Team
   - Crisis
 icon: 🚨
+color: red
+estimatedTime: 60-90 min
+up: [[INDEX]]
+next: [[Contain the threat]]
+objectives:
+  - Contain the threat
+  - Preserve evidence
+  - Assess scope
+  - Identify root cause
+  - Plan eradication
+tools:
+  - Network isolation
+  - Memory forensics
+  - Log analysis
+  - Backup restoration
+  - IOC hunting
+skills: []
 ---
 
 # Incident Response
@@ -14,7 +32,7 @@ icon: 🚨
 ## Overview
 Respond to an active security incident. Contain, eradicate, recover.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -50,7 +68,3 @@ Help me through the IR process:
 
 What's our immediate priority action?
 ```
-
-## Clues & Discovery
-- [[Clue: incident_response_source]]
-- [[Evidence: incident_response_intel]]

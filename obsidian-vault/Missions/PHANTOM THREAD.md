@@ -1,9 +1,12 @@
 ---
 id: phantom-thread
 codename: PHANTOM THREAD
+type: mission
 phase: persist
 difficulty: specialist
 handler: oracle
+up: [[Missions Index]]
+status: available
 ---
 
 # Mission: PHANTOM THREAD
@@ -47,9 +50,3 @@ Trust the data. ORACLE.
 - [[Check active network connections]]
 - [[Map the network path to C2]]
 - [[Enumerate all users]]
-
-## Intel Stream
-- [[Intel: LOTL binaries: curl, wget, net...]]
-- [[Intel: Scheduled tasks and cron jobs ...]]
-- [[Intel: Look for writable directories ...]]
-- [[Intel: Service accounts often have we...]]

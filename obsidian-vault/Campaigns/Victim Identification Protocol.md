@@ -1,6 +1,7 @@
 ---
 id: victim_geolocation
 name: Victim Identification Protocol
+type: campaign
 difficulty: expert
 tags:
   - Geolocation
@@ -8,6 +9,24 @@ tags:
   - Victim Identification
   - OSINT
 icon: 📍
+color: blue
+estimatedTime: 120+ min
+up: [[INDEX]]
+next: [[Master visual geolocation techniques]]
+objectives:
+  - Master visual geolocation techniques
+  - Learn image forensics and metadata analysis
+  - Understand temporal analysis methods
+  - Practice collaborative verification
+  - Create law enforcement-ready reports
+tools:
+  - Google Earth Pro
+  - Google Street View
+  - Sun position calculators
+  - Flora/fauna databases
+  - Architecture references
+  - GeoGuessr techniques
+skills: []
 ---
 
 # Victim Identification Protocol
@@ -15,7 +34,7 @@ icon: 📍
 ## Overview
 Use visual geolocation techniques to help identify victim locations from images. Learn methods used by Interpol and FBI.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -222,7 +241,3 @@ Critical Reminders:
 
 Ready to begin? Let's analyze an environmental clue...
 ```
-
-## Clues & Discovery
-- [[Clue: victim_geolocation_source]]
-- [[Evidence: victim_geolocation_intel]]

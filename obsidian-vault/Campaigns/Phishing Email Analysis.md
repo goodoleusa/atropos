@@ -1,12 +1,30 @@
 ---
 id: phishing_analysis
 name: Phishing Email Analysis
+type: campaign
 difficulty: beginner
 tags:
   - Phishing
   - Email
   - Analysis
 icon: 📧
+color: amber
+estimatedTime: 20-30 min
+up: [[INDEX]]
+next: [[Parse email headers]]
+objectives:
+  - Parse email headers
+  - Analyze infrastructure
+  - Check URL reputation
+  - Extract IOCs
+  - Create detections
+tools:
+  - MXToolbox
+  - URLscan.io
+  - PhishTank
+  - VirusTotal
+  - WHOIS
+skills: []
 ---
 
 # Phishing Email Analysis
@@ -14,7 +32,7 @@ icon: 📧
 ## Overview
 Analyze a suspicious email. Extract IOCs, trace infrastructure, attribute threat actors.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -52,7 +70,3 @@ Help me analyze:
 
 Walk me through the analysis methodology.
 ```
-
-## Clues & Discovery
-- [[Clue: phishing_analysis_source]]
-- [[Evidence: phishing_analysis_intel]]

@@ -1,6 +1,7 @@
 ---
 id: shell_company_trafficking
 name: Shell Company Money Laundering
+type: campaign
 difficulty: advanced
 tags:
   - Money Laundering
@@ -8,6 +9,23 @@ tags:
   - Financial Crime
   - Offshore
 icon: 🏢
+color: teal
+estimatedTime: 75-90 min
+up: [[INDEX]]
+next: [[Navigate international corporate registries]]
+objectives:
+  - Navigate international corporate registries
+  - Trace beneficial ownership through shell companies
+  - Identify money laundering red flags
+  - Map complex corporate structures
+  - Create financial intelligence reports
+tools:
+  - OpenCorporates
+  - ICIJ Offshore Leaks Database
+  - National Corporate Registries
+  - Maltego
+  - Sanction Screening Tools
+skills: []
 ---
 
 # Shell Company Money Laundering
@@ -15,7 +33,7 @@ icon: 🏢
 ## Overview
 Trace trafficking proceeds through shell companies and offshore accounts. Learn corporate intelligence techniques used by financial crime investigators.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -215,7 +233,3 @@ Understanding AML Laws:
 
 Ready to trace the corporate maze? Let's start with the first registry search...
 ```
-
-## Clues & Discovery
-- [[Clue: shell_company_trafficking_source]]
-- [[Evidence: shell_company_trafficking_intel]]

@@ -1,12 +1,34 @@
 ---
 id: bgp_trace
 name: BGP Route Tracing
+type: campaign
 difficulty: advanced
 tags:
   - Network
   - BGP
   - Infrastructure
 icon: 🌐
+color: teal
+estimatedTime: 30-45 min
+up: [[INDEX]]
+next: [[Identify origin ASN]]
+objectives:
+  - Identify origin ASN
+  - Map BGP relationships
+  - Trace global routing paths
+  - Identify transit providers
+  - Detect anomalies
+tools:
+  - BGP Looking Glass
+  - RIPE RIS
+  - RouteViews
+  - Hurricane Electric BGP
+  - PeeringDB
+skills:
+  - BGP analysis
+  - AS path interpretation
+  - Route hijacking detection
+  - Peering relationship mapping
 ---
 
 # BGP Route Tracing
@@ -14,7 +36,7 @@ icon: 🌐
 ## Overview
 Trace IP hops around the world via BGP relations. Understand how traffic flows through ASNs.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -47,7 +69,3 @@ Help me:
 
 What tools and looking glasses should we use to start this investigation?
 ```
-
-## Clues & Discovery
-- [[Clue: bgp_trace_source]]
-- [[Evidence: bgp_trace_intel]]

@@ -1,12 +1,35 @@
 ---
 id: passive_recon
 name: Passive Reconnaissance
+type: campaign
 difficulty: beginner
 tags:
   - Recon
   - OSINT
   - DNS
 icon: 👁️
+color: purple
+estimatedTime: 20-30 min
+up: [[INDEX]]
+next: [[Enumerate DNS records]]
+objectives:
+  - Enumerate DNS records
+  - Analyze certificate transparency
+  - Find historical snapshots
+  - Identify email patterns
+  - Map technology stack
+tools:
+  - SecurityTrails
+  - crt.sh
+  - Wayback Machine
+  - Shodan
+  - BuiltWith
+skills:
+  - DNS enumeration
+  - Certificate transparency analysis
+  - Historical data mining
+  - Technology fingerprinting
+  - Subdomain discovery
 ---
 
 # Passive Reconnaissance
@@ -14,7 +37,7 @@ icon: 👁️
 ## Overview
 Gather intelligence without touching the target. DNS, certificates, historical data only.
 
-## Investigation Mesh (Twine-style)
+## Investigation Mesh
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
@@ -49,7 +72,3 @@ Help me gather:
 
 What's our first passive recon step?
 ```
-
-## Clues & Discovery
-- [[Clue: passive_recon_source]]
-- [[Evidence: passive_recon_intel]]

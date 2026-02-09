@@ -1,9 +1,12 @@
 ---
 id: dark-beacon
 codename: DARK BEACON
+type: mission
 phase: c2
 difficulty: shadow
 handler: phoenix
+up: [[Missions Index]]
+status: available
 ---
 
 # Mission: DARK BEACON
@@ -52,9 +55,3 @@ Get it done. PHOENIX out.
 - [[Receive tasking from C2]]
 - [[Adjust beacon timing for stealth]]
 - [[Exfiltrate test data]]
-
-## Intel Stream
-- [[Intel: C2 beaconing mimics normal HTT...]]
-- [[Intel: Jitter prevents pattern-based ...]]
-- [[Intel: DNS over HTTPS (DoH) is increa...]]
-- [[Intel: Sleep commands reduce beacon f...]]

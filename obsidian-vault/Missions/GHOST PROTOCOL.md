@@ -1,9 +1,12 @@
 ---
 id: ghost-protocol
 codename: GHOST PROTOCOL
+type: mission
 phase: exfil
 difficulty: shadow
 handler: ghost
+up: [[Missions Index]]
+status: available
 ---
 
 # Mission: GHOST PROTOCOL
@@ -47,9 +50,3 @@ Disappear. GHOST out.
 - [[Extract the secrets table]]
 - [[Exfiltrate via C2 channel]]
 - [[Clean up traces]]
-
-## Intel Stream
-- [[Intel: DLP systems trigger on large d...]]
-- [[Intel: Timing matters - exfil during ...]]
-- [[Intel: Log deletion is often logged -...]]
-- [[Intel: Self-destruct should include m...]]

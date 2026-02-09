@@ -1,9 +1,12 @@
 ---
 id: iron-key
 codename: IRON KEY
+type: mission
 phase: access
 difficulty: operative
 handler: cipher
+up: [[Missions Index]]
+status: available
 ---
 
 # Mission: IRON KEY
@@ -43,9 +46,3 @@ Stay encrypted. CIPHER.
 - [[Crack the admin hash (MD5)]]
 - [[Load and analyze the exploit]]
 - [[Test SQL injection vulnerability]]
-
-## Intel Stream
-- [[Intel: The admin password is likely a...]]
-- [[Intel: MongoDB NoAuth is a critical v...]]
-- [[Intel: CVE-VOID-001 allows authentica...]]
-- [[Intel: SQL injection could dump the s...]]
