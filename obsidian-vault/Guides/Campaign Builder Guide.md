@@ -9,6 +9,8 @@ sibling:
   - [[Teaching Strategies]]
   - [[Assessment Methods]]
 child:
+date_created: 2026-44-Mo
+date_modified: 2026-19-Mo
 ---
 
 # Campaign Builder Guide for Obsidian
