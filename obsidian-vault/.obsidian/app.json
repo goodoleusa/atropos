@@ -17,5 +17,6 @@
   "livePreview": true,
   "openBehavior": "file:START_HERE",
   "newLinkFormat": "relative",
-  "promptDelete": false
+  "promptDelete": false,
+  "propertiesInDocument": "source"
 }
