@@ -74,7 +74,6 @@ function App() {
               <Router />
               <GlobalEffectsOverlay />
               <AchievementManager />
-              <DevModePanel />
               <QuickNav />
               <MobileFloatingMenu />
             </GlobalEffectsProvider>
