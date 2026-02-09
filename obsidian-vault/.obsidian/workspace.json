@@ -1,20 +1,24 @@
 {
   "main": {
-    "id": "f9c94924feb11b2f",
+    "id": "ca01d8086be888fa",
     "type": "split",
     "children": [
       {
-        "id": "ff9a2df5d7d90406",
+        "id": "f20031832b62d6d2",
         "type": "tabs",
         "children": [
           {
-            "id": "d4da871ceda2a124",
+            "id": "2fa96a67fa0a0a7b",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Campaigns/BGP Route Tracing.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "BGP Route Tracing"
             }
           }
         ]
@@ -23,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "440eb907498492e5",
+    "id": "c4876055dec33f70",
     "type": "split",
     "children": [
       {
-        "id": "90a60ff9d723cb12",
+        "id": "113c0dc553e0f799",
         "type": "tabs",
         "children": [
           {
-            "id": "99a42504ad5f5f5e",
+            "id": "2006f20c77ede135",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -44,7 +48,7 @@
             }
           },
           {
-            "id": "b8fe83cc683c2a62",
+            "id": "1fb36a7dc155d47a",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -61,7 +65,7 @@
             }
           },
           {
-            "id": "a39e17ec690173c1",
+            "id": "8063455b4b76fa20",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -77,20 +81,20 @@
     "width": 300
   },
   "right": {
-    "id": "bd5b28f5c852b19d",
+    "id": "2c1726da6d740107",
     "type": "split",
     "children": [
       {
-        "id": "914f9d867f4f3b80",
+        "id": "b4f3ea89af16aa13",
         "type": "tabs",
         "children": [
           {
-            "id": "a3a413ab664852d9",
+            "id": "3c683c26444c6dd8",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "IMPLEMENTATION_REPORT.md",
+                "file": "Guides/Campaign Builder Guide.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,25 +104,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for IMPLEMENTATION_REPORT"
+              "title": "Backlinks for Campaign Builder Guide"
             }
           },
           {
-            "id": "9b7811beed2a1641",
+            "id": "fc5459777676f064",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "IMPLEMENTATION_REPORT.md",
+                "file": "Guides/Campaign Builder Guide.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from IMPLEMENTATION_REPORT"
+              "title": "Outgoing links from Campaign Builder Guide"
             }
           },
           {
-            "id": "15862b0f16ffb137",
+            "id": "02e6710305948b63",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -133,7 +137,7 @@
             }
           },
           {
-            "id": "3f8885757583a050",
+            "id": "21c857bef73e6fc2",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -147,18 +151,18 @@
             }
           },
           {
-            "id": "bca20b0b5cb47d2f",
+            "id": "b03a6f640b0fd3c6",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "IMPLEMENTATION_REPORT.md",
+                "file": "Guides/Campaign Builder Guide.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of IMPLEMENTATION_REPORT"
+              "title": "Outline of Campaign Builder Guide"
             }
           }
         ]
@@ -176,32 +180,41 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "bases:Create new base": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-git:Open Git source control": false,
+      "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "99a42504ad5f5f5e",
+  "active": "2fa96a67fa0a0a7b",
   "lastOpenFiles": [
-    "obsidian-vault/START_HERE_NOW.md",
-    "obsidian-vault/replit.md",
-    "obsidian-vault/QUICK_REFERENCE.md",
-    "obsidian-vault/QUICK_START.md",
-    "obsidian-vault/BUILD_COMPLETE_REPORT.md",
-    "obsidian-vault/ARCHITECTURE_SUMMARY.md",
-    "obsidian-vault/ARCHITECTURE.md",
-    "obsidian-vault/COMPLETE_SUMMARY.md",
-    "obsidian-vault/OBSIDIAN_VAULT_COMPLETE.md",
-    "obsidian-vault/MERGE_COMPLETE.md",
-    "obsidian-vault/INTEGRATION_STATUS.md",
-    "obsidian-vault/INTEGRATION_QUICKSTART.md",
-    "obsidian-vault/IMPLEMENTATION_REPORT.md",
-    "obsidian-vault/IMPLEMENTATION_COMPLETE.md",
-    "obsidian-vault/EXECUTIVE_SUMMARY.md",
-    "OBSIDIAN_VAULT_COMPLETE.md",
-    "BUILD_COMPLETE_REPORT.md",
-    "ARCHITECTURE.md",
-    "MERGE_COMPLETE.md",
-    "INTEGRATION_STATUS.md",
-    "IMPLEMENTATION_REPORT.md",
-    "ARCHITECTURE_SUMMARY.md"
+    "Campaigns/Active Reconnaissance.md",
+    "EXECUTIVE_SUMMARY.md",
+    "Missions/SHADOW PROTOCOL.md",
+    "Missions/PHANTOM THREAD.md",
+    "Missions/IRON KEY.md",
+    "Missions/GHOST PROTOCOL.md",
+    "Missions/DARK BEACON.md",
+    "START_HERE.md",
+    "MysticalMessages/prophecy-001.md",
+    "MysticalMessages/intel-fragment-7.md",
+    "MysticalMessages",
+    "Missions",
+    "Campaigns/Victim Identification Protocol.md",
+    "Campaigns/Threat Hunting.md",
+    "Campaigns/Social Engineering Recon.md",
+    "Campaigns/Shell Corp Investigation.md",
+    "Campaigns/Shell Company Money Laundering.md",
+    "Campaigns/Phishing Email Analysis.md",
+    "Campaigns/Passive Reconnaissance.md",
+    "Campaigns/Operation Shadow Network.md",
+    "Campaigns/Network Topology Mapping.md",
+    "Campaigns/Malware Triage.md",
+    "Campaigns/Incident Response.md",
+    "Campaigns/Dark Web Marketplace Shutdown.md",
+    "Campaigns/Dark Web Intelligence.md",
+    "Campaigns/Cryptocurrency Tracing.md",
+    "Campaigns/Cryptocurrency Laundering Investigation.md",
+    "Campaigns/BGP Route Tracing.md"
   ]
 }
