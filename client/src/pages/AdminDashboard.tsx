@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Trophy, 
   Terminal, 
@@ -276,74 +277,100 @@ function QuickAccessSection() {
 
   return (
     <section className="mb-8">
-      <h2 className="text-lg font-orbitron text-amber-600 mb-4 flex items-center gap-2">
-        <Zap className="w-5 h-5" /> Quick Access
-      </h2>
-      <div className="grid md:grid-cols-3 gap-4">
-        <Card className="bg-[#0a0500] border-red-900/30 hover:border-red-700/50 transition-colors" data-testid="quick-access-atropos">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-red-500 text-sm font-mono flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4" /> Atropos Scanner
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-stone-500">Status</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="bg-[#0a0500] border-red-900/20 hover:border-red-700/40 transition-colors shadow-sm" data-testid="quick-access-atropos">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-red-500" />
+                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-tight">Scanner Status</span>
+              </div>
               {health?.status === "ok" ? (
-                <Badge className="bg-emerald-900/30 text-emerald-500 border-emerald-900/50 text-[10px]">Online</Badge>
+                <Badge className="bg-emerald-950/30 text-emerald-500 border-emerald-900/30 text-[9px] h-5 px-1.5 font-bold uppercase">Online</Badge>
               ) : (
-                <Badge variant="outline" className="border-red-900/50 text-red-500 text-[10px]">Offline</Badge>
+                <Badge variant="outline" className="border-red-900/30 text-red-500 text-[9px] h-5 px-1.5 font-bold uppercase">Offline</Badge>
               )}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-stone-500">Binary</span>
-              <span className={`text-[10px] ${health?.binary?.available ? 'text-emerald-500' : 'text-red-500'}`}>
-                {health?.binary?.available ? 'Available' : 'Not Found'}
-              </span>
-            </div>
-            {health?.binary?.path && (
-              <p className="text-[10px] text-stone-600 font-mono truncate">{health.binary.path}</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-[#0a0500] border-teal-900/30 hover:border-teal-700/50 transition-colors" data-testid="quick-access-sessions">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
-              <Users className="w-4 h-4" /> Active Players
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-stone-500">Active Now</span>
-              <span className="text-lg font-bold text-teal-400">{activeSessions.length}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-stone-500">Total Sessions</span>
-              <span className="text-sm text-stone-400">{sessions?.length || 0}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-[#0a0500] border-amber-900/30 hover:border-amber-700/50 transition-colors" data-testid="quick-access-activity">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-              <Activity className="w-4 h-4" /> Recent Activity
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            
             <div className="space-y-1.5">
-              {(activityData?.activities || []).slice(0, 3).map((act, i) => (
-                <div key={i} className="flex items-center gap-2 text-[10px]">
-                  <div className={`w-1.5 h-1.5 rounded-full ${
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-stone-500">Binary Engine</span>
+                <span className={`text-[10px] font-mono ${health?.binary?.available ? 'text-emerald-500' : 'text-red-500'}`}>
+                  {health?.binary?.available ? 'READY' : 'MISSING'}
+                </span>
+              </div>
+              {health?.binary?.path && (
+                <div className="bg-black/40 p-1.5 rounded border border-stone-900 overflow-hidden">
+                  <p className="text-[9px] text-stone-600 font-mono truncate lowercase">{health.binary.path}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-teal-900/20 hover:border-teal-700/40 transition-colors shadow-sm" data-testid="quick-access-sessions">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-teal-500" />
+                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-tight">Active Matrix</span>
+              </div>
+              <Badge variant="outline" className="border-teal-900/30 text-teal-500 text-[9px] h-5 px-1.5 font-bold">
+                {sessions?.length || 0} TOTAL
+              </Badge>
+            </div>
+
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-2xl font-orbitron font-bold text-teal-400 leading-none">
+                  {activeSessions.length}
+                </p>
+                <p className="text-[9px] text-stone-600 uppercase mt-1 font-bold tracking-tighter">Players Connected</p>
+              </div>
+              <div className="flex -space-x-1">
+                {[...Array(Math.min(activeSessions.length, 5))].map((_, i) => (
+                  <div key={i} className="w-5 h-5 rounded-full bg-teal-950 border border-teal-900 flex items-center justify-center">
+                    <Users className="w-2.5 h-2.5 text-teal-500" />
+                  </div>
+                ))}
+                {activeSessions.length > 5 && (
+                  <div className="w-5 h-5 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-[8px] text-stone-500 font-bold">
+                    +{activeSessions.length - 5}
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#0a0500] border-amber-900/20 hover:border-amber-700/40 transition-colors shadow-sm sm:col-span-2 lg:col-span-1" data-testid="quick-access-activity">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-amber-500" />
+                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-tight">Telemetry Stream</span>
+              </div>
+              <div className="flex gap-1">
+                <div className="w-1 h-1 rounded-full bg-amber-500 animate-ping" />
+                <span className="text-[8px] text-amber-600 font-mono font-bold uppercase tracking-widest">Live</span>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 h-[44px] overflow-hidden">
+              {(activityData?.activities || []).slice(0, 2).map((act, i) => (
+                <div key={i} className="flex items-center gap-2 group">
+                  <div className={`w-1 h-1 rounded-full shrink-0 ${
                     act.type === 'command' ? 'bg-amber-500' :
                     act.type === 'session' ? 'bg-teal-500' : 'bg-purple-500'
                   }`} />
-                  <span className="text-stone-400 truncate flex-1">{act.description}</span>
+                  <span className="text-[10px] text-stone-400 truncate flex-1 group-hover:text-stone-200 transition-colors">{act.description}</span>
+                  <span className="text-[8px] text-stone-700 font-mono shrink-0">
+                    {new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
               ))}
               {(!activityData?.activities || activityData.activities.length === 0) && (
-                <p className="text-[10px] text-stone-600">No recent activity</p>
+                <p className="text-[10px] text-stone-700 italic">Standby - waiting for data...</p>
               )}
             </div>
           </CardContent>
@@ -566,166 +593,135 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050200] text-stone-300 font-mono">
-      {/* Header */}
-      <header className="border-b border-amber-900/30 bg-[#0a0500] sticky top-0 z-50">
-        <div className="px-4 md:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 rounded hover:bg-amber-900/20 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              data-testid="sidebar-toggle"
-            >
-              <Layers className="w-5 h-5 text-amber-600" />
-            </button>
-            <Server className="w-5 h-5 text-amber-600 hidden md:block" />
-            <h1 className="font-orbitron text-lg font-bold">
-              <span className="text-amber-600">ADMIN</span> <span className="hidden sm:inline">CONSOLE</span>
-            </h1>
-            <Badge 
-              variant="outline" 
-              className={`ml-1 text-[10px] ${gameState.devMode ? 'border-teal-500 text-teal-400 bg-teal-950/30' : 'border-amber-900/50 text-amber-600'}`}
-            >
-              {gameState.devMode ? 'DEV' : 'GAME'}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2 px-2 py-1 rounded border border-amber-900/30 bg-black/30">
-              <Label htmlFor="dev-mode-toggle" className="text-stone-400 text-[10px]">Dev</Label>
-              <Switch 
-                id="dev-mode-toggle"
-                checked={gameState.devMode} 
-                onCheckedChange={toggleDevMode}
-                data-testid="dev-mode-toggle"
-              />
+    <div className="min-h-screen bg-[#050200] text-stone-300 font-mono flex flex-col md:flex-row overflow-hidden">
+      {/* Navigation Sidebar (Desktop) / Bottom Bar (Mobile) */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0500] border-r border-amber-900/30 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="h-full flex flex-col">
+          <div className="p-4 border-b border-amber-900/30 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-amber-600" />
+              <h1 className="text-sm font-orbitron text-amber-500 tracking-tighter uppercase">Admin Hub</h1>
             </div>
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="text-stone-500 hover:text-amber-500 h-9">
-                <ExternalLink className="w-3.5 h-3.5 mr-1" /> <span className="hidden sm:inline">Site</span>
-              </Button>
-            </Link>
-            <Link href="/terminal">
-              <Button variant="outline" size="sm" className="border-amber-900/50 text-amber-600 hover:bg-amber-950/30 h-9">
-                <Terminal className="w-3.5 h-3.5 mr-1" /> <span className="hidden sm:inline">Terminal</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <div className="flex h-[calc(100vh-49px)]">
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} data-testid="sidebar-overlay" />
-        )}
-
-        {/* Sidebar */}
-        <aside className={`
-          fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
-          w-64 bg-[#0a0500] border-r border-amber-900/30
-          transform transition-transform duration-200
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          flex flex-col overflow-hidden
-          pt-[49px] lg:pt-0
-        `}>
-          {/* Quick Access - hidden on mobile to save space */}
-          <div className="hidden lg:block p-3 border-b border-amber-900/20">
-            <QuickAccessSection />
+            <Button variant="ghost" size="sm" className="md:hidden text-amber-500" onClick={() => setSidebarOpen(false)}>
+              <ChevronRight className="w-5 h-5 rotate-180" />
+            </Button>
           </div>
 
-          {/* Nav Groups */}
-          <nav className="flex-1 overflow-y-auto p-2 space-y-1" data-testid="admin-sidebar">
-            {NAV_GROUPS.map((group) => {
-              const isCollapsed = collapsedGroups[group.label];
-              return (
-                <div key={group.label}>
-                  <button
+          <ScrollArea className="flex-1 px-3 py-4">
+            <div className="space-y-4">
+              {NAV_GROUPS.map((group) => (
+                <div key={group.label} className="space-y-1">
+                  <div 
+                    className="flex items-center justify-between px-2 mb-1 cursor-pointer group"
                     onClick={() => setCollapsedGroups(prev => ({ ...prev, [group.label]: !prev[group.label] }))}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded hover:bg-stone-900/30 min-h-[36px] ${groupColors[group.color] || 'text-stone-500'}`}
-                    data-testid={`nav-group-${group.label.toLowerCase().replace(/\s/g, '-')}`}
                   >
-                    <span>{group.label}</span>
-                    {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                  </button>
-                  {!isCollapsed && (
-                    <div className="space-y-0.5 mt-0.5 ml-1">
+                    <span className={`text-[9px] font-bold uppercase tracking-widest ${groupColors[group.color]}`}>
+                      {group.label}
+                    </span>
+                    <ChevronDown className={`w-2.5 h-2.5 text-stone-600 transition-transform ${collapsedGroups[group.label] ? '-rotate-90' : ''}`} />
+                  </div>
+                  
+                  {!collapsedGroups[group.label] && (
+                    <div className="space-y-0.5">
                       {group.items.map((item) => {
                         const Icon = NAV_ICONS[item.icon] || Settings;
                         const isActive = activeSection === item.id;
-                        const activeGroup = getGroupForSection(item.id);
-                        const color = activeGroup?.color || 'amber';
                         return (
                           <button
                             key={item.id}
-                            onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
-                            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs transition-all min-h-[44px] ${
-                              isActive 
-                                ? `${activeColors[color]} border` 
-                                : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/30 border border-transparent'
-                            }`}
-                            data-testid={`nav-item-${item.id}`}
+                            onClick={() => {
+                              setActiveSection(item.id);
+                              if (window.innerWidth < 768) setSidebarOpen(false);
+                            }}
+                            className={`
+                              w-full flex items-center gap-2.5 px-3 py-1.5 rounded text-[11px] transition-all duration-200 group
+                              ${isActive 
+                                ? activeColors[group.color] 
+                                : 'text-stone-500 hover:text-stone-300 hover:bg-stone-900/50'
+                              }
+                            `}
                           >
-                            <Icon className="w-4 h-4 flex-shrink-0" />
-                            <span className="truncate">{item.label}</span>
+                            <Icon className={`w-3.5 h-3.5 ${isActive ? '' : 'text-stone-600 group-hover:text-stone-400'}`} />
+                            <span className="font-medium truncate">{item.label}</span>
                           </button>
                         );
                       })}
                     </div>
                   )}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+          </ScrollArea>
 
-            {/* Dev Quick Links */}
-            {gameState.devMode && (
-              <div className="mt-3 pt-3 border-t border-amber-900/20 space-y-0.5">
-                <span className="px-3 text-[10px] font-bold text-teal-600 uppercase tracking-wider">Quick Links</span>
-                <Link href="/void">
-                  <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs text-stone-400 hover:text-purple-400 hover:bg-purple-950/20 min-h-[44px]">
-                    <Sparkles className="w-4 h-4" /> The Void
-                  </button>
-                </Link>
-                <Link href="/ai-lab">
-                  <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs text-stone-400 hover:text-blue-400 hover:bg-blue-950/20 min-h-[44px]">
-                    <Bot className="w-4 h-4" /> AI Lab
-                  </button>
-                </Link>
-                <Link href="/report">
-                  <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs text-stone-400 hover:text-orange-400 hover:bg-orange-950/20 min-h-[44px]">
-                    <FileText className="w-4 h-4" /> Report Builder
-                  </button>
-                </Link>
-                <button
-                  onClick={() => setApiPlaygroundOpen(true)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs text-stone-400 hover:text-blue-400 hover:bg-blue-950/20 min-h-[44px]"
-                  data-testid="api-playground-button"
-                >
-                  <Zap className="w-4 h-4" /> API Playground
-                </button>
-                <button
-                  onClick={() => setCampaignDesignerOpen(true)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs text-stone-400 hover:text-purple-400 hover:bg-purple-950/20 min-h-[44px]"
-                  data-testid="campaign-designer-button"
-                >
-                  <Layers className="w-4 h-4" /> Campaign Builder
-                </button>
+          <div className="p-3 border-t border-amber-900/20">
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="w-full justify-start text-stone-500 hover:text-amber-500 text-[10px] h-8">
+                <ArrowRight className="w-3 h-3 mr-2 rotate-180" /> Exit to Platform
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        {/* Header */}
+        <header className="h-14 border-b border-amber-900/30 bg-[#0a0500]/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" className="md:hidden text-amber-500 p-2" onClick={() => setSidebarOpen(true)}>
+              <Terminal className="w-5 h-5" />
+            </Button>
+            <div>
+              <h2 className="text-xs font-bold text-stone-200 capitalize tracking-wide">
+                {activeSection.replace(/-/g, ' ')}
+              </h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[9px] text-stone-600 font-mono tracking-tight uppercase">System Online</span>
               </div>
-            )}
-          </nav>
-        </aside>
+            </div>
+          </div>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8" data-testid="admin-main-content">
-          {renderContent()}
-        </main>
-      </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={`h-7 px-2 border-amber-900/30 text-[9px] font-bold ${gameState?.devMode ? 'text-teal-400 border-teal-500/50 bg-teal-950/20' : 'text-stone-500'}`}
+              onClick={toggleDevMode}
+            >
+              DEV: {gameState?.devMode ? 'ON' : 'OFF'}
+            </Button>
+            <div className="w-px h-3 bg-stone-800 mx-1" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 text-stone-500 hover:text-amber-500"
+              onClick={() => setApiPlaygroundOpen(true)}
+            >
+              <Zap className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+        </header>
 
-      
-      {/* API Playground Modal */}
+        {/* Content Viewport */}
+        <ScrollArea className="flex-1">
+          <div className="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto">
+            {activeSection === 'activity' && <QuickAccessSection />}
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              {renderContent()}
+            </div>
+          </div>
+        </ScrollArea>
+      </main>
+
+      {/* Modals */}
       <ApiPlayground open={apiPlaygroundOpen} onOpenChange={setApiPlaygroundOpen} />
-      <CampaignDesigner
-        open={campaignDesignerOpen}
-        onOpenChange={setCampaignDesignerOpen}
+      <CampaignDesigner 
+        open={campaignDesignerOpen} 
+        onOpenChange={setCampaignDesignerOpen} 
         sessionToken={gameState?.sessionToken}
       />
     </div>
