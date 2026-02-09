@@ -1,12 +1,12 @@
 ---
-id: dark-beacon
-codename: DARK BEACON
-type: mission
-phase: c2
-difficulty: shadow
-handler: phoenix
-up: [[Missions Index]]
-status: available
+id: "dark-beacon"
+codename: "DARK BEACON"
+type: "mission"
+phase: "c2"
+difficulty: "shadow"
+handler: "phoenix"
+up: "[[Missions Index]]"
+status: "available"
 ---
 
 # Mission: DARK BEACON
