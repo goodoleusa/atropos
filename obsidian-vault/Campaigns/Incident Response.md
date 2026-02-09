@@ -1,37 +1,12 @@
 ---
-{
-  "id": "incident_response",
-  "name": "Incident Response",
-  "icon": "🚨",
-  "difficulty": "expert",
-  "estimatedTime": "60-90 min",
-  "tags": [
-    "DFIR",
-    "Blue Team",
-    "Crisis"
-  ],
-  "color": "red",
-  "targetFields": [
-    {
-      "key": "context",
-      "label": "Incident Summary",
-      "type": "text",
-      "required": true,
-      "placeholder": "Ransomware behavior on finance workstations"
-    },
-    {
-      "key": "scope",
-      "label": "Affected Scope (optional)",
-      "type": "text",
-      "required": false,
-      "placeholder": "Finance department (10+ hosts)"
-    }
-  ],
-  "dummyTargets": {
-    "context": "Ransomware behavior on finance workstations",
-    "scope": "Finance department (10+ hosts)"
-  }
-}
+id: incident_response
+name: Incident Response
+difficulty: expert
+tags:
+  - DFIR
+  - Blue Team
+  - Crisis
+icon: 🚨
 ---
 
 # Incident Response
@@ -39,19 +14,23 @@
 ## Overview
 Respond to an active security incident. Contain, eradicate, recover.
 
-## Objectives
-1. Contain the threat
-2. Preserve evidence
-3. Assess scope
-4. Identify root cause
-5. Plan eradication
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- Network isolation
-- Memory forensics
-- Log analysis
-- Backup restoration
-- IOC hunting
+### Initial Objective
+Contain the threat
+
+### Knowledge Graph
+- [[Contain the threat]]
+- [[Preserve evidence]]
+- [[Assess scope]]
+- [[Identify root cause]]
+- [[Plan eradication]]
+- [[Tool: Network isolation]]
+- [[Tool: Memory forensics]]
+- [[Tool: Log analysis]]
+- [[Tool: Backup restoration]]
+- [[Tool: IOC hunting]]
 
 ## Starter Prompt
 ```
@@ -71,3 +50,7 @@ Help me through the IR process:
 
 What's our immediate priority action?
 ```
+
+## Clues & Discovery
+- [[Clue: incident_response_source]]
+- [[Evidence: incident_response_intel]]

@@ -1,29 +1,12 @@
 ---
-{
-  "id": "active_recon",
-  "name": "Active Reconnaissance",
-  "icon": "🔍",
-  "difficulty": "intermediate",
-  "estimatedTime": "30-45 min",
-  "tags": [
-    "Recon",
-    "Scanning",
-    "Enumeration"
-  ],
-  "color": "red",
-  "targetFields": [
-    {
-      "key": "cidr",
-      "label": "Network Range",
-      "type": "cidr",
-      "required": true,
-      "placeholder": "10.0.0.0/24"
-    }
-  ],
-  "dummyTargets": {
-    "cidr": "10.0.0.0/24"
-  }
-}
+id: active_recon
+name: Active Reconnaissance
+difficulty: intermediate
+tags:
+  - Recon
+  - Scanning
+  - Enumeration
+icon: 🔍
 ---
 
 # Active Reconnaissance
@@ -31,19 +14,23 @@
 ## Overview
 Direct engagement with target systems. Port scanning, service enumeration, vulnerability probing.
 
-## Objectives
-1. Discover live hosts
-2. Enumerate open ports
-3. Identify services and versions
-4. Find potential vulnerabilities
-5. Document attack surface
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- nmap
-- masscan
-- netcat
-- nikto
-- gobuster
+### Initial Objective
+Discover live hosts
+
+### Knowledge Graph
+- [[Discover live hosts]]
+- [[Enumerate open ports]]
+- [[Identify services and versions]]
+- [[Find potential vulnerabilities]]
+- [[Document attack surface]]
+- [[Tool: nmap]]
+- [[Tool: masscan]]
+- [[Tool: netcat]]
+- [[Tool: nikto]]
+- [[Tool: gobuster]]
 
 ## Starter Prompt
 ```
@@ -59,3 +46,7 @@ Help me conduct:
 
 Start with host discovery - what nmap commands would you recommend and why?
 ```
+
+## Clues & Discovery
+- [[Clue: active_recon_source]]
+- [[Evidence: active_recon_intel]]

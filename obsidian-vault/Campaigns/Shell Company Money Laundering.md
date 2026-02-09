@@ -1,48 +1,13 @@
 ---
-{
-  "id": "shell_company_trafficking",
-  "name": "Shell Company Money Laundering",
-  "icon": "🏢",
-  "difficulty": "advanced",
-  "estimatedTime": "75-90 min",
-  "tags": [
-    "Money Laundering",
-    "Corporate Intelligence",
-    "Financial Crime",
-    "Offshore"
-  ],
-  "color": "teal",
-  "targetFields": [
-    {
-      "key": "company_name",
-      "label": "Shell Company Name",
-      "type": "org",
-      "required": true,
-      "placeholder": "Global Enterprises LLC"
-    }
-  ],
-  "dummyTargets": {
-    "company_name": "Phoenix Holdings International Ltd"
-  },
-  "learningObjectives": [
-    {
-      "goal": "financial_investigation",
-      "weight": 10,
-      "description": "Master corporate intelligence and beneficial ownership tracing"
-    },
-    {
-      "goal": "osint_investigation",
-      "weight": 8,
-      "description": "Advanced multi-source intelligence gathering"
-    }
-  ],
-  "realWorldExamples": [
-    "Panama Papers investigation (214,000 shell companies)",
-    "FinCEN Files ($2 trillion suspicious transactions)",
-    "Danske Bank scandal ($230B laundered)",
-    "Human trafficking networks using shell companies"
-  ]
-}
+id: shell_company_trafficking
+name: Shell Company Money Laundering
+difficulty: advanced
+tags:
+  - Money Laundering
+  - Corporate Intelligence
+  - Financial Crime
+  - Offshore
+icon: 🏢
 ---
 
 # Shell Company Money Laundering
@@ -50,19 +15,23 @@
 ## Overview
 Trace trafficking proceeds through shell companies and offshore accounts. Learn corporate intelligence techniques used by financial crime investigators.
 
-## Objectives
-1. Navigate international corporate registries
-2. Trace beneficial ownership through shell companies
-3. Identify money laundering red flags
-4. Map complex corporate structures
-5. Create financial intelligence reports
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- OpenCorporates
-- ICIJ Offshore Leaks Database
-- National Corporate Registries
-- Maltego
-- Sanction Screening Tools
+### Initial Objective
+Navigate international corporate registries
+
+### Knowledge Graph
+- [[Navigate international corporate registries]]
+- [[Trace beneficial ownership through shell companies]]
+- [[Identify money laundering red flags]]
+- [[Map complex corporate structures]]
+- [[Create financial intelligence reports]]
+- [[Tool: OpenCorporates]]
+- [[Tool: ICIJ Offshore Leaks Database]]
+- [[Tool: National Corporate Registries]]
+- [[Tool: Maltego]]
+- [[Tool: Sanction Screening Tools]]
 
 ## Starter Prompt
 ```
@@ -246,3 +215,7 @@ Understanding AML Laws:
 
 Ready to trace the corporate maze? Let's start with the first registry search...
 ```
+
+## Clues & Discovery
+- [[Clue: shell_company_trafficking_source]]
+- [[Evidence: shell_company_trafficking_intel]]

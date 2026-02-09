@@ -1,45 +1,12 @@
 ---
-{
-  "id": "phishing_analysis",
-  "name": "Phishing Email Analysis",
-  "icon": "📧",
-  "difficulty": "beginner",
-  "estimatedTime": "20-30 min",
-  "tags": [
-    "Phishing",
-    "Email",
-    "Analysis"
-  ],
-  "color": "amber",
-  "targetFields": [
-    {
-      "key": "url",
-      "label": "Suspicious URL",
-      "type": "url",
-      "required": true,
-      "placeholder": "hxxp://amaz0n-verify[.]com/login"
-    },
-    {
-      "key": "email",
-      "label": "Sender Email (optional)",
-      "type": "email",
-      "required": false,
-      "placeholder": "support@amaz0n-verify.com"
-    },
-    {
-      "key": "ip",
-      "label": "Originating IP (optional)",
-      "type": "ip",
-      "required": false,
-      "placeholder": "185.234.xxx.xxx"
-    }
-  ],
-  "dummyTargets": {
-    "url": "hxxp://amaz0n-verify[.]com/login",
-    "email": "support@amaz0n-verify.com",
-    "ip": "185.234.xxx.xxx"
-  }
-}
+id: phishing_analysis
+name: Phishing Email Analysis
+difficulty: beginner
+tags:
+  - Phishing
+  - Email
+  - Analysis
+icon: 📧
 ---
 
 # Phishing Email Analysis
@@ -47,19 +14,23 @@
 ## Overview
 Analyze a suspicious email. Extract IOCs, trace infrastructure, attribute threat actors.
 
-## Objectives
-1. Parse email headers
-2. Analyze infrastructure
-3. Check URL reputation
-4. Extract IOCs
-5. Create detections
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- MXToolbox
-- URLscan.io
-- PhishTank
-- VirusTotal
-- WHOIS
+### Initial Objective
+Parse email headers
+
+### Knowledge Graph
+- [[Parse email headers]]
+- [[Analyze infrastructure]]
+- [[Check URL reputation]]
+- [[Extract IOCs]]
+- [[Create detections]]
+- [[Tool: MXToolbox]]
+- [[Tool: URLscan.io]]
+- [[Tool: PhishTank]]
+- [[Tool: VirusTotal]]
+- [[Tool: WHOIS]]
 
 ## Starter Prompt
 ```
@@ -81,3 +52,7 @@ Help me analyze:
 
 Walk me through the analysis methodology.
 ```
+
+## Clues & Discovery
+- [[Clue: phishing_analysis_source]]
+- [[Evidence: phishing_analysis_intel]]

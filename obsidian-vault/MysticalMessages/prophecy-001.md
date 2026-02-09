@@ -4,7 +4,11 @@ type: lore
 category: void
 ---
 
-# Message: prophecy-001
+# prophecy-001
 
-## Content
+## Revelation
 The mesh is leaking copper oxygen. The old world burns in bronze.
+
+## Connections
+- [[Category: void]]
+- [[Type: lore]]

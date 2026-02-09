@@ -4,7 +4,11 @@ type: clue
 category: financial
 ---
 
-# Message: intel-fragment-7
+# intel-fragment-7
 
-## Content
+## Revelation
 Obsidian Holdings isn't a company. It's a routing table for ghosts.
+
+## Connections
+- [[Category: financial]]
+- [[Type: clue]]

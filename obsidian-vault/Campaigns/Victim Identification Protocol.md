@@ -1,43 +1,13 @@
 ---
-{
-  "id": "victim_geolocation",
-  "name": "Victim Identification Protocol",
-  "icon": "📍",
-  "difficulty": "expert",
-  "estimatedTime": "120+ min",
-  "tags": [
-    "Geolocation",
-    "Image Forensics",
-    "Victim Identification",
-    "OSINT"
-  ],
-  "color": "blue",
-  "learningObjectives": [
-    {
-      "goal": "osint_investigation",
-      "weight": 10,
-      "description": "Advanced visual geolocation"
-    },
-    {
-      "goal": "threat_hunting",
-      "weight": 7,
-      "description": "Evidence analysis and pattern recognition"
-    }
-  ],
-  "realWorldExamples": [
-    "Interpol Project VIC (10,000+ victims identified)",
-    "German \"Vico\" case (location from eye reflection)",
-    "Thai resort identification (rock formation)",
-    "FBI geolocation leading to rescues"
-  ],
-  "careerPaths": [
-    "FBI Victim Specialist",
-    "Interpol Analyst",
-    "NCMEC Analyst",
-    "Digital Forensics Investigator",
-    "NGO investigator (Thorn, IJM, Polaris)"
-  ]
-}
+id: victim_geolocation
+name: Victim Identification Protocol
+difficulty: expert
+tags:
+  - Geolocation
+  - Image Forensics
+  - Victim Identification
+  - OSINT
+icon: 📍
 ---
 
 # Victim Identification Protocol
@@ -45,20 +15,24 @@
 ## Overview
 Use visual geolocation techniques to help identify victim locations from images. Learn methods used by Interpol and FBI.
 
-## Objectives
-1. Master visual geolocation techniques
-2. Learn image forensics and metadata analysis
-3. Understand temporal analysis methods
-4. Practice collaborative verification
-5. Create law enforcement-ready reports
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- Google Earth Pro
-- Google Street View
-- Sun position calculators
-- Flora/fauna databases
-- Architecture references
-- GeoGuessr techniques
+### Initial Objective
+Master visual geolocation techniques
+
+### Knowledge Graph
+- [[Master visual geolocation techniques]]
+- [[Learn image forensics and metadata analysis]]
+- [[Understand temporal analysis methods]]
+- [[Practice collaborative verification]]
+- [[Create law enforcement-ready reports]]
+- [[Tool: Google Earth Pro]]
+- [[Tool: Google Street View]]
+- [[Tool: Sun position calculators]]
+- [[Tool: Flora/fauna databases]]
+- [[Tool: Architecture references]]
+- [[Tool: GeoGuessr techniques]]
 
 ## Starter Prompt
 ```
@@ -248,3 +222,7 @@ Critical Reminders:
 
 Ready to begin? Let's analyze an environmental clue...
 ```
+
+## Clues & Discovery
+- [[Clue: victim_geolocation_source]]
+- [[Evidence: victim_geolocation_intel]]

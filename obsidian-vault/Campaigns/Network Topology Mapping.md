@@ -1,37 +1,12 @@
 ---
-{
-  "id": "network_topology",
-  "name": "Network Topology Mapping",
-  "icon": "🗺️",
-  "difficulty": "advanced",
-  "estimatedTime": "45-60 min",
-  "tags": [
-    "Network",
-    "Infrastructure",
-    "Mapping"
-  ],
-  "color": "blue",
-  "targetFields": [
-    {
-      "key": "ip",
-      "label": "Entry Host IP",
-      "type": "ip",
-      "required": true,
-      "placeholder": "192.168.1.50"
-    },
-    {
-      "key": "cidr",
-      "label": "Network Range (optional)",
-      "type": "cidr",
-      "required": false,
-      "placeholder": "192.168.1.0/24"
-    }
-  ],
-  "dummyTargets": {
-    "ip": "192.168.1.50",
-    "cidr": "192.168.1.0/24"
-  }
-}
+id: network_topology
+name: Network Topology Mapping
+difficulty: advanced
+tags:
+  - Network
+  - Infrastructure
+  - Mapping
+icon: 🗺️
 ---
 
 # Network Topology Mapping
@@ -39,19 +14,23 @@
 ## Overview
 Map internal network architecture. Identify VLANs, gateways, trust relationships.
 
-## Objectives
-1. Identify network segments
-2. Map routing topology
-3. Find critical infrastructure
-4. Document trust relationships
-5. Create network diagram
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- arp-scan
-- traceroute
-- nbtscan
-- enum4linux
-- BloodHound
+### Initial Objective
+Identify network segments
+
+### Knowledge Graph
+- [[Identify network segments]]
+- [[Map routing topology]]
+- [[Find critical infrastructure]]
+- [[Document trust relationships]]
+- [[Create network diagram]]
+- [[Tool: arp-scan]]
+- [[Tool: traceroute]]
+- [[Tool: nbtscan]]
+- [[Tool: enum4linux]]
+- [[Tool: BloodHound]]
 
 ## Starter Prompt
 ```
@@ -69,3 +48,7 @@ Help me:
 
 What's the safest way to start mapping without triggering alerts?
 ```
+
+## Clues & Discovery
+- [[Clue: network_topology_source]]
+- [[Evidence: network_topology_intel]]

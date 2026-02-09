@@ -1,37 +1,12 @@
 ---
-{
-  "id": "social_engineering",
-  "name": "Social Engineering Recon",
-  "icon": "🎭",
-  "difficulty": "intermediate",
-  "estimatedTime": "45-60 min",
-  "tags": [
-    "OSINT",
-    "Social Engineering",
-    "Personnel"
-  ],
-  "color": "pink",
-  "targetFields": [
-    {
-      "key": "org",
-      "label": "Organization",
-      "type": "org",
-      "required": true,
-      "placeholder": "TechCorp Industries"
-    },
-    {
-      "key": "domain",
-      "label": "Primary Domain (optional)",
-      "type": "domain",
-      "required": false,
-      "placeholder": "techcorp.com"
-    }
-  ],
-  "dummyTargets": {
-    "org": "TechCorp Industries",
-    "domain": "techcorp.com"
-  }
-}
+id: social_engineering
+name: Social Engineering Recon
+difficulty: intermediate
+tags:
+  - OSINT
+  - Social Engineering
+  - Personnel
+icon: 🎭
 ---
 
 # Social Engineering Recon
@@ -39,19 +14,23 @@
 ## Overview
 Build target profiles for social engineering. OSINT on personnel and organizational structure.
 
-## Objectives
-1. Map org structure
-2. Profile key personnel
-3. Find email patterns
-4. Gather personal details
-5. Identify pretexting angles
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- LinkedIn
-- Hunter.io
-- theHarvester
-- Social media OSINT
-- Google dorking
+### Initial Objective
+Map org structure
+
+### Knowledge Graph
+- [[Map org structure]]
+- [[Profile key personnel]]
+- [[Find email patterns]]
+- [[Gather personal details]]
+- [[Identify pretexting angles]]
+- [[Tool: LinkedIn]]
+- [[Tool: Hunter.io]]
+- [[Tool: theHarvester]]
+- [[Tool: Social media OSINT]]
+- [[Tool: Google dorking]]
 
 ## Starter Prompt
 ```
@@ -67,3 +46,7 @@ Goals:
 
 What OSINT sources should we mine first for personnel intelligence?
 ```
+
+## Clues & Discovery
+- [[Clue: social_engineering_source]]
+- [[Evidence: social_engineering_intel]]

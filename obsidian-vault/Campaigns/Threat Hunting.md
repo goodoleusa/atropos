@@ -1,37 +1,12 @@
 ---
-{
-  "id": "threat_hunting",
-  "name": "Threat Hunting",
-  "icon": "🎯",
-  "difficulty": "expert",
-  "estimatedTime": "60-90 min",
-  "tags": [
-    "Blue Team",
-    "DFIR",
-    "Detection"
-  ],
-  "color": "orange",
-  "targetFields": [
-    {
-      "key": "org",
-      "label": "Organization / Environment",
-      "type": "org",
-      "required": true,
-      "placeholder": "SysAdmin Corp"
-    },
-    {
-      "key": "context",
-      "label": "Incident Context (optional)",
-      "type": "text",
-      "required": false,
-      "placeholder": "Unusual outbound traffic at 3 AM"
-    }
-  ],
-  "dummyTargets": {
-    "org": "SysAdmin Corp",
-    "context": "Unusual outbound traffic at 3 AM"
-  }
-}
+id: threat_hunting
+name: Threat Hunting
+difficulty: expert
+tags:
+  - Blue Team
+  - DFIR
+  - Detection
+icon: 🎯
 ---
 
 # Threat Hunting
@@ -39,19 +14,23 @@
 ## Overview
 Proactively search for indicators of compromise. Analyze logs, hunt for persistence.
 
-## Objectives
-1. Formulate hunting hypotheses
-2. Analyze log sources
-3. Identify IOCs
-4. Trace lateral movement
-5. Find persistence mechanisms
+## Investigation Mesh (Twine-style)
+Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
-## Tools Required
-- RITA
-- Sigma rules
-- YARA
-- Splunk/ELK queries
-- Velociraptor
+### Initial Objective
+Formulate hunting hypotheses
+
+### Knowledge Graph
+- [[Formulate hunting hypotheses]]
+- [[Analyze log sources]]
+- [[Identify IOCs]]
+- [[Trace lateral movement]]
+- [[Find persistence mechanisms]]
+- [[Tool: RITA]]
+- [[Tool: Sigma rules]]
+- [[Tool: YARA]]
+- [[Tool: Splunk/ELK queries]]
+- [[Tool: Velociraptor]]
 
 ## Starter Prompt
 ```
@@ -75,3 +54,7 @@ Help me:
 
 Where should we start the hunt?
 ```
+
+## Clues & Discovery
+- [[Clue: threat_hunting_source]]
+- [[Evidence: threat_hunting_intel]]
