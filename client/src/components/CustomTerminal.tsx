@@ -98,7 +98,7 @@ const ALL_COMMANDS = ['help', 'modules', 'whoami', 'ls', 'cd', 'cat', 'pwd', 'cl
   'recon', 'dossier', 'social', 'shodan', 'exif',
   'decode', 'encode', 'rot13', 'xor', 'hex', 'strings', 'binwalk',
   'probe', 'inventory', 'history', 'export',
-  'missions', 'mission', 'beacon', 'handler', 'style'];
+  'missions', 'mission', 'beacon', 'handler', 'style', 'scan', 'connect', 'fuzz'];
 
 export const CustomTerminal = () => {
   const { gameState, collectClue } = useGame();
@@ -1117,7 +1117,27 @@ export const CustomTerminal = () => {
           newHistory.push({ type: 'system', content: handler.signoff });
         }
         break;
-        
+
+      case 'scan':
+        const scanTarget = args.join(' ');
+        newHistory.push({ type: 'system', content: `Scanning ${scanTarget || 'network'}...` });
+        newHistory.push({ type: 'output', content: 'Scanning targets...' });
+        newHistory.push({ type: 'success', content: 'Scan complete. Results logged to discovery cache.' });
+        break;
+
+      case 'connect':
+        const connectTarget = args[0];
+        newHistory.push({ type: 'system', content: `Connecting to ${connectTarget || 'remote host'}...` });
+        newHistory.push({ type: 'success', content: 'Connection established. Tunnel active.' });
+        break;
+
+      case 'fuzz':
+        const fuzzTarget = args[0];
+        newHistory.push({ type: 'system', content: `Fuzzing ${fuzzTarget || 'endpoint'}...` });
+        newHistory.push({ type: 'warning', content: 'Anomalous response detected. Investigating...' });
+        newHistory.push({ type: 'success', content: 'Vulnerability confirmed. Use "exploit" to proceed.' });
+        break;
+
       default:
         if (trimmedCmd !== '') {
           newHistory.push({ type: 'error', content: `Command not found: ${command}` });
