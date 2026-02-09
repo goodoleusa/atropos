@@ -10,8 +10,8 @@ tags:
 icon: "🎯"
 color: "orange"
 estimatedTime: "60-90 min"
-up: "[[INDEX]]"
-next: "[[Formulate hunting hypotheses]]"
+up: [[INDEX]]
+next: [[Formulate hunting hypotheses]]
 objectives:
   - "Formulate hunting hypotheses"
   - "Analyze log sources"
@@ -25,6 +25,7 @@ tools:
   - "Splunk/ELK queries"
   - "Velociraptor"
 skills: []
+clues: []
 ---
 
 # Threat Hunting
@@ -49,6 +50,7 @@ Formulate hunting hypotheses
 - [[Tool: YARA]]
 - [[Tool: Splunk/ELK queries]]
 - [[Tool: Velociraptor]]
+
 
 ## Starter Prompt
 ```

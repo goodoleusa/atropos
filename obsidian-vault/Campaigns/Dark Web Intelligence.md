@@ -10,8 +10,8 @@ tags:
 icon: "🕸️"
 color: "gray"
 estimatedTime: "30-45 min"
-up: "[[INDEX]]"
-next: "[[Check breach databases]]"
+up: [[INDEX]]
+next: [[Check breach databases]]
 objectives:
   - "Check breach databases"
   - "Search paste sites"
@@ -30,6 +30,7 @@ skills:
   - "Dark web marketplace analysis"
   - "Credential exposure assessment"
   - "Ransomware leak tracking"
+clues: []
 ---
 
 # Dark Web Intelligence
@@ -54,6 +55,7 @@ Check breach databases
 - [[Tool: IntelX]]
 - [[Tool: Recorded Future]]
 - [[Tool: DarkOwl]]
+
 
 ## Starter Prompt
 ```

@@ -10,8 +10,8 @@ tags:
 icon: "👁️"
 color: "purple"
 estimatedTime: "20-30 min"
-up: "[[INDEX]]"
-next: "[[Enumerate DNS records]]"
+up: [[INDEX]]
+next: [[Enumerate DNS records]]
 objectives:
   - "Enumerate DNS records"
   - "Analyze certificate transparency"
@@ -30,6 +30,7 @@ skills:
   - "Historical data mining"
   - "Technology fingerprinting"
   - "Subdomain discovery"
+clues: []
 ---
 
 # Passive Reconnaissance
@@ -54,6 +55,7 @@ Enumerate DNS records
 - [[Tool: Wayback Machine]]
 - [[Tool: Shodan]]
 - [[Tool: BuiltWith]]
+
 
 ## Starter Prompt
 ```

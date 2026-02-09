@@ -10,8 +10,8 @@ tags:
 icon: "📧"
 color: "amber"
 estimatedTime: "20-30 min"
-up: "[[INDEX]]"
-next: "[[Parse email headers]]"
+up: [[INDEX]]
+next: [[Parse email headers]]
 objectives:
   - "Parse email headers"
   - "Analyze infrastructure"
@@ -25,6 +25,7 @@ tools:
   - "VirusTotal"
   - "WHOIS"
 skills: []
+clues: []
 ---
 
 # Phishing Email Analysis
@@ -49,6 +50,7 @@ Parse email headers
 - [[Tool: PhishTank]]
 - [[Tool: VirusTotal]]
 - [[Tool: WHOIS]]
+
 
 ## Starter Prompt
 ```

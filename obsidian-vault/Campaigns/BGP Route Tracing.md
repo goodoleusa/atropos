@@ -10,8 +10,8 @@ tags:
 icon: "🌐"
 color: "teal"
 estimatedTime: "30-45 min"
-up: "[[INDEX]]"
-next: "[[Identify origin ASN]]"
+up: [[INDEX]]
+next: [[Identify origin ASN]]
 objectives:
   - "Identify origin ASN"
   - "Map BGP relationships"
@@ -29,6 +29,7 @@ skills:
   - "AS path interpretation"
   - "Route hijacking detection"
   - "Peering relationship mapping"
+clues: []
 ---
 
 # BGP Route Tracing
@@ -53,6 +54,7 @@ Identify origin ASN
 - [[Tool: RouteViews]]
 - [[Tool: Hurricane Electric BGP]]
 - [[Tool: PeeringDB]]
+
 
 ## Starter Prompt
 ```

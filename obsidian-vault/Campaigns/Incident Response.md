@@ -10,8 +10,8 @@ tags:
 icon: "🚨"
 color: "red"
 estimatedTime: "60-90 min"
-up: "[[INDEX]]"
-next: "[[Contain the threat]]"
+up: [[INDEX]]
+next: [[Contain the threat]]
 objectives:
   - "Contain the threat"
   - "Preserve evidence"
@@ -25,6 +25,7 @@ tools:
   - "Backup restoration"
   - "IOC hunting"
 skills: []
+clues: []
 ---
 
 # Incident Response
@@ -49,6 +50,7 @@ Contain the threat
 - [[Tool: Log analysis]]
 - [[Tool: Backup restoration]]
 - [[Tool: IOC hunting]]
+
 
 ## Starter Prompt
 ```

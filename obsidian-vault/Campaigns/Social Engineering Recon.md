@@ -10,8 +10,8 @@ tags:
 icon: "🎭"
 color: "pink"
 estimatedTime: "45-60 min"
-up: "[[INDEX]]"
-next: "[[Map org structure]]"
+up: [[INDEX]]
+next: [[Map org structure]]
 objectives:
   - "Map org structure"
   - "Profile key personnel"
@@ -25,6 +25,7 @@ tools:
   - "Social media OSINT"
   - "Google dorking"
 skills: []
+clues: []
 ---
 
 # Social Engineering Recon
@@ -49,6 +50,7 @@ Map org structure
 - [[Tool: theHarvester]]
 - [[Tool: Social media OSINT]]
 - [[Tool: Google dorking]]
+
 
 ## Starter Prompt
 ```

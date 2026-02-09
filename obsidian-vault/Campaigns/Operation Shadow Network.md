@@ -11,8 +11,8 @@ tags:
 icon: "🕵️"
 color: "red"
 estimatedTime: "60-90 min"
-up: "[[INDEX]]"
-next: "[[Map social media recruitment network]]"
+up: [[INDEX]]
+next: [[Map social media recruitment network]]
 objectives:
   - "Map social media recruitment network"
   - "Identify red flags in fake modeling agencies"
@@ -32,6 +32,7 @@ skills:
   - "Network mapping"
   - "Evidence documentation for law enforcement"
   - "Ethical investigation boundaries"
+clues: []
 ---
 
 # Operation Shadow Network
@@ -56,6 +57,7 @@ Map social media recruitment network
 - [[Tool: Blockchain Explorers]]
 - [[Tool: Network Visualization]]
 - [[Tool: Report Writing]]
+
 
 ## Starter Prompt
 ```

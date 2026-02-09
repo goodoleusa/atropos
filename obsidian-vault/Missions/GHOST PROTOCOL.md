@@ -5,7 +5,7 @@ type: "mission"
 phase: "exfil"
 difficulty: "shadow"
 handler: "ghost"
-up: "[[Missions Index]]"
+up: [[Missions Index]]
 status: "available"
 ---
 

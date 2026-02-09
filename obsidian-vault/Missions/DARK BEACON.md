@@ -5,7 +5,7 @@ type: "mission"
 phase: "c2"
 difficulty: "shadow"
 handler: "phoenix"
-up: "[[Missions Index]]"
+up: [[Missions Index]]
 status: "available"
 ---
 

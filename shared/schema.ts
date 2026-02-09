@@ -532,6 +532,8 @@ export const agentModules = pgTable("agent_modules", {
     redFlags: string[];
     successIndicators: string[];
     nextStepConditions: { condition: string; nextStep: string; rationale: string }[];
+    linkedClues?: string[]; // Clues associated with this step
+    nextStepId?: string;    // Direct link to the next logical step
   }[]>().notNull().default([]),
   adaptivePrompts: jsonb("adaptive_prompts").$type<string[]>().notNull().default([]),
   isActive: boolean("is_active").notNull().default(true),

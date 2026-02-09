@@ -11,8 +11,8 @@ tags:
 icon: "🏢"
 color: "teal"
 estimatedTime: "75-90 min"
-up: "[[INDEX]]"
-next: "[[Navigate international corporate registries]]"
+up: [[INDEX]]
+next: [[Navigate international corporate registries]]
 objectives:
   - "Navigate international corporate registries"
   - "Trace beneficial ownership through shell companies"
@@ -26,6 +26,7 @@ tools:
   - "Maltego"
   - "Sanction Screening Tools"
 skills: []
+clues: []
 ---
 
 # Shell Company Money Laundering
@@ -50,6 +51,7 @@ Navigate international corporate registries
 - [[Tool: National Corporate Registries]]
 - [[Tool: Maltego]]
 - [[Tool: Sanction Screening Tools]]
+
 
 ## Starter Prompt
 ```

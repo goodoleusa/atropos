@@ -11,8 +11,8 @@ tags:
 icon: "📍"
 color: "blue"
 estimatedTime: "120+ min"
-up: "[[INDEX]]"
-next: "[[Master visual geolocation techniques]]"
+up: [[INDEX]]
+next: [[Master visual geolocation techniques]]
 objectives:
   - "Master visual geolocation techniques"
   - "Learn image forensics and metadata analysis"
@@ -27,6 +27,7 @@ tools:
   - "Architecture references"
   - "GeoGuessr techniques"
 skills: []
+clues: []
 ---
 
 # Victim Identification Protocol
@@ -52,6 +53,7 @@ Master visual geolocation techniques
 - [[Tool: Flora/fauna databases]]
 - [[Tool: Architecture references]]
 - [[Tool: GeoGuessr techniques]]
+
 
 ## Starter Prompt
 ```

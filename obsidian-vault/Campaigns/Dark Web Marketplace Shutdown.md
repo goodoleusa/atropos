@@ -11,8 +11,8 @@ tags:
 icon: "🌐"
 color: "purple"
 estimatedTime: "90-120 min"
-up: "[[INDEX]]"
-next: "[[Safely investigate dark web infrastructure]]"
+up: [[INDEX]]
+next: [[Safely investigate dark web infrastructure]]
 objectives:
   - "Safely investigate dark web infrastructure"
   - "Map server hosting and technical details"
@@ -26,6 +26,7 @@ tools:
   - "WHOIS/DNS Tools"
   - "Username OSINT"
 skills: []
+clues: []
 ---
 
 # Dark Web Marketplace Shutdown
@@ -50,6 +51,7 @@ Safely investigate dark web infrastructure
 - [[Tool: Blockchain Explorers]]
 - [[Tool: WHOIS/DNS Tools]]
 - [[Tool: Username OSINT]]
+
 
 ## Starter Prompt
 ```
