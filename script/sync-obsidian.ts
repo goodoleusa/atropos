@@ -18,28 +18,22 @@ function formatYAML(data: any): string {
             lines.push(`  - "${JSON.stringify(item).replace(/"/g, '\\"')}"`);
           } else {
             const s = String(item);
-            if (!s.includes(':') && !s.includes('\n') && !s.includes('"')) {
-              lines.push(`  - ${s}`);
-            } else {
-              lines.push(`  - "${s.replace(/"/g, '\\"')}"`);
-            }
+            // Always wrap in quotes for consistency as requested, but ensure no " in values
+            lines.push(`  - "${s.replace(/"/g, '')}"`);
           }
         });
       }
     } else {
       const s = String(value);
-      if (!s.includes(':') && !s.includes('\n') && !s.includes('"') && isNaN(Number(s))) {
-        lines.push(`${key}: ${s}`);
-      } else {
-        lines.push(`${key}: "${s.replace(/"/g, '\\"')}"`);
-      }
+      // Always wrap in quotes for consistency, ensure no " in values
+      lines.push(`${key}: "${s.replace(/"/g, '')}"`);
     }
   }
   return lines.join('\n');
 }
 
 async function exportToObsidian() {
-  console.log('📤 Exporting everything to Obsidian vault (Professional Frontmatter)...');
+  console.log('📤 Exporting everything to Obsidian vault (Consistent Quotes)...');
   
   const { AGENT_CAMPAIGNS } = await import('../client/src/config/agentCampaigns.ts');
   const { SPY_MISSIONS } = await import('../client/src/config/spyMissions.ts');
@@ -64,10 +58,8 @@ async function exportToObsidian() {
       icon: campaign.icon,
       color: campaign.color,
       estimatedTime: campaign.estimatedTime,
-      // Breadcrumbs / Excalibrain support
       up: '[[INDEX]]',
-      next: campaign.objectives?.[0] ? `[[${campaign.objectives[0]}]]` : '',
-      // Learning metadata for Dataview
+      next: campaign.objectives?.[0] ? `[[${campaign.objectives[0].replace(/"/g, '')}]]` : '',
       objectives: campaign.objectives || [],
       tools: campaign.tools || [],
       skills: campaign.skillsTaught || []
@@ -89,15 +81,17 @@ Use these [[Wikilinks]] to navigate the nodes of this investigation.
 ${campaign.objectives?.[0] || 'Start the investigation.'}
 
 ### Knowledge Graph
-${campaign.objectives?.map((o: string) => `- [[${o}]]`).join('\n') || ''}
-${campaign.tools?.map((t: string) => `- [[Tool: ${t}]]`).join('\n') || ''}
+${campaign.objectives?.map((o: string) => `- [[${o.replace(/"/g, '')}]]`).join('\n') || ''}
+${campaign.tools?.map((t: string) => `- [[Tool: ${t.replace(/"/g, '')}]]`).join('\n') || ''}
 
 ## Starter Prompt
 \`\`\`
 ${campaign.starterPrompt}
 \`\`\`
 `;
-    await writeFile(path.join(campaignsDir, `${campaign.name.replace(/\//g, '-')}.md`), content);
+    // Ensure filename doesn't have quotes
+    const safeName = campaign.name.replace(/\//g, '-').replace(/"/g, '');
+    await writeFile(path.join(campaignsDir, `${safeName}.md`), content);
   }
 
   // 2. Export Missions
@@ -127,9 +121,10 @@ ${mission.briefing}
 - [[Handler: ${mission.handler}]]
 
 ### Tactical Objectives
-${mission.objectives.map(o => `- [[${o.description}]]`).join('\n')}
+${mission.objectives.map(o => `- [[${o.description.replace(/"/g, '')}]]`).join('\n')}
 `;
-    await writeFile(path.join(missionsDir, `${mission.codename.replace(/\//g, '-')}.md`), content);
+    const safeName = mission.codename.replace(/\//g, '-').replace(/"/g, '');
+    await writeFile(path.join(missionsDir, `${safeName}.md`), content);
   }
 
   // 3. Export Mystical Messages
@@ -151,10 +146,11 @@ ${yaml}
 ## Revelation
 ${msg.content}
 `;
-    await writeFile(path.join(messagesDir, `${msg.id}.md`), content);
+    const safeName = msg.id.replace(/"/g, '');
+    await writeFile(path.join(messagesDir, `${safeName}.md`), content);
   }
 
-  console.log('✅ Export complete with Obsidian-compliant frontmatter.');
+  console.log('✅ Export complete with consistent quoted frontmatter.');
 }
 
 exportToObsidian().catch(console.error);

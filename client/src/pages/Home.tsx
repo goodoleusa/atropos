@@ -4,6 +4,7 @@ import { QRCodeModal } from "@/components/QRCodeModal";
 import { AgentChat } from "@/components/AgentChat";
 import { useGame } from "@/hooks/useGameSession";
 import { Button } from "@/components/ui/button";
+import { InteractiveHover } from '@/components/InteractiveHover';
 import { 
   Shield, Zap, Eye, Server, QrCode, Bot, 
   ChevronDown, Crosshair, Clock, AlertTriangle,
@@ -241,29 +242,31 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="group"
             >
-              <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#0f0a05] to-[#0a0500] border border-amber-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-amber-600/50" data-testid="card-offensive-security">
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-900/40 to-amber-950/60 flex items-center justify-center mb-6 group-hover:from-amber-800/50 group-hover:to-amber-900/70 transition-all">
-                  <Crosshair className="w-7 h-7 text-amber-500" />
+              <InteractiveHover className="h-full">
+                <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#0f0a05] to-[#0a0500] border border-amber-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-amber-600/50" data-testid="card-offensive-security">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-900/40 to-amber-950/60 flex items-center justify-center mb-6 group-hover:from-amber-800/50 group-hover:to-amber-900/70 transition-all">
+                    <Crosshair className="w-7 h-7 text-amber-500" />
+                  </div>
+                  <h3 className="font-orbitron text-xl text-stone-200 mb-3">
+                    Battle-Hardened Offensive Security
+                  </h3>
+                  <p className="text-stone-500 leading-relaxed mb-4">
+                    Red team operations, penetration testing, and adversarial simulation. 
+                    We find your weaknesses before attackers do.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                      PENTEST
+                    </span>
+                    <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                      RED TEAM
+                    </span>
+                    <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                      BUG BOUNTY
+                    </span>
+                  </div>
                 </div>
-                <h3 className="font-orbitron text-xl text-stone-200 mb-3">
-                  Battle-Hardened Offensive Security
-                </h3>
-                <p className="text-stone-500 leading-relaxed mb-4">
-                  Red team operations, penetration testing, and adversarial simulation. 
-                  We find your weaknesses before attackers do.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
-                    PENTEST
-                  </span>
-                  <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
-                    RED TEAM
-                  </span>
-                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
-                    BUG BOUNTY
-                  </span>
-                </div>
-              </div>
+              </InteractiveHover>
             </motion.div>
 
             {/* 24/7 Monitoring */}
@@ -274,29 +277,31 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="group"
             >
-              <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#050a0f] to-[#0a0500] border border-teal-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-teal-600/50" data-testid="card-monitoring">
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-teal-900/40 to-teal-950/60 flex items-center justify-center mb-6 group-hover:from-teal-800/50 group-hover:to-teal-900/70 transition-all">
-                  <Radio className="w-7 h-7 text-teal-500" />
+              <InteractiveHover className="h-full" color="rgba(20, 184, 166, 0.4)">
+                <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#050a0f] to-[#0a0500] border border-teal-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-teal-600/50" data-testid="card-monitoring">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-teal-900/40 to-teal-950/60 flex items-center justify-center mb-6 group-hover:from-teal-800/50 group-hover:to-teal-900/70 transition-all">
+                    <Radio className="w-7 h-7 text-teal-500" />
+                  </div>
+                  <h3 className="font-orbitron text-xl text-stone-200 mb-3">
+                    24/7 Live Monitoring
+                  </h3>
+                  <p className="text-stone-500 leading-relaxed mb-4">
+                    Real-time threat detection across your entire attack surface. 
+                    AI-powered analysis with human oversight, around the clock.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                      SIEM/SOAR
+                    </span>
+                    <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                      THREAT INTEL
+                    </span>
+                    <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                      ML-POWERED
+                    </span>
+                  </div>
                 </div>
-                <h3 className="font-orbitron text-xl text-stone-200 mb-3">
-                  24/7 Live Monitoring
-                </h3>
-                <p className="text-stone-500 leading-relaxed mb-4">
-                  Real-time threat detection across your entire attack surface. 
-                  AI-powered analysis with human oversight, around the clock.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
-                    SIEM/SOAR
-                  </span>
-                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
-                    THREAT INTEL
-                  </span>
-                  <span className="text-[10px] px-2 py-1 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
-                    ML-POWERED
-                  </span>
-                </div>
-              </div>
+              </InteractiveHover>
             </motion.div>
 
             {/* Incident Response */}
@@ -307,29 +312,31 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="group"
             >
-              <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#0f0505] to-[#0a0500] border border-orange-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-orange-600/50" data-testid="card-incident-response">
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-orange-900/40 to-orange-950/60 flex items-center justify-center mb-6 group-hover:from-orange-800/50 group-hover:to-orange-900/70 transition-all">
-                  <AlertTriangle className="w-7 h-7 text-orange-500" />
+              <InteractiveHover className="h-full" color="rgba(249, 115, 22, 0.4)">
+                <div className="h-full p-6 md:p-8 bg-gradient-to-br from-[#0f0505] to-[#0a0500] border border-orange-900/30 rounded-lg molten-edge transition-all duration-500 hover:border-orange-600/50" data-testid="card-incident-response">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-orange-900/40 to-orange-950/60 flex items-center justify-center mb-6 group-hover:from-orange-800/50 group-hover:to-orange-900/70 transition-all">
+                    <AlertTriangle className="w-7 h-7 text-orange-500" />
+                  </div>
+                  <h3 className="font-orbitron text-xl text-stone-200 mb-3">
+                    Rapid Incident Response
+                  </h3>
+                  <p className="text-stone-500 leading-relaxed mb-4">
+                    When breaches occur, every second counts. Our response teams 
+                    contain, investigate, and remediate with surgical precision.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-[10px] px-2 py-1 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">
+                      FORENSICS
+                    </span>
+                    <span className="text-[10px] px-2 py-1 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">
+                      CONTAINMENT
+                    </span>
+                    <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
+                      RECOVERY
+                    </span>
+                  </div>
                 </div>
-                <h3 className="font-orbitron text-xl text-stone-200 mb-3">
-                  Rapid Incident Response
-                </h3>
-                <p className="text-stone-500 leading-relaxed mb-4">
-                  When breaches occur, every second counts. Our response teams 
-                  contain, investigate, and remediate with surgical precision.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-[10px] px-2 py-1 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">
-                    FORENSICS
-                  </span>
-                  <span className="text-[10px] px-2 py-1 rounded bg-orange-950/50 text-orange-500 border border-orange-900/30">
-                    CONTAINMENT
-                  </span>
-                  <span className="text-[10px] px-2 py-1 rounded bg-teal-950/50 text-teal-500 border border-teal-900/30">
-                    RECOVERY
-                  </span>
-                </div>
-              </div>
+              </InteractiveHover>
             </motion.div>
           </div>
 

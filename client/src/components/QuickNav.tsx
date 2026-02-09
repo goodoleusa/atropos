@@ -11,6 +11,7 @@ import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
 import { Switch } from '@/components/ui/switch';
+import { InteractiveHover } from './InteractiveHover';
 
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
@@ -161,28 +162,30 @@ export default function QuickNav() {
         </div>
       )}
 
-      <Button
-        onClick={() => setExpanded(!expanded)}
-        className={`rounded-full w-14 h-14 shadow-lg ${
-          expanded 
-            ? 'bg-amber-700 hover:bg-amber-600' 
-            : 'bg-gradient-to-br from-amber-700 to-teal-700 hover:from-amber-600 hover:to-teal-600'
-        }`}
-        data-testid="quick-nav-toggle"
-      >
-        {expanded ? (
-          <ChevronDown className="w-6 h-6 text-black" />
-        ) : (
-          <div className="flex flex-col items-center">
-            <Zap className="w-5 h-5 text-black" />
-            {pendingFindings.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 rounded-full text-[10px] text-white flex items-center justify-center">
-                {pendingFindings.length}
-              </span>
-            )}
-          </div>
-        )}
-      </Button>
+      <InteractiveHover>
+        <Button
+          onClick={() => setExpanded(!expanded)}
+          className={`rounded-full w-14 h-14 shadow-lg ${
+            expanded 
+              ? 'bg-amber-700 hover:bg-amber-600' 
+              : 'bg-gradient-to-br from-amber-700 to-teal-700 hover:from-amber-600 hover:to-teal-600'
+          }`}
+          data-testid="quick-nav-toggle"
+        >
+          {expanded ? (
+            <ChevronDown className="w-6 h-6 text-black" />
+          ) : (
+            <div className="flex flex-col items-center">
+              <Zap className="w-5 h-5 text-black" />
+              {pendingFindings.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 rounded-full text-[10px] text-white flex items-center justify-center">
+                  {pendingFindings.length}
+                </span>
+              )}
+            </div>
+          )}
+        </Button>
+      </InteractiveHover>
     </div>
   );
 }

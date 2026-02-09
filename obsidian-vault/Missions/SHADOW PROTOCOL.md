@@ -1,12 +1,12 @@
 ---
-id: shadow-protocol
-codename: SHADOW PROTOCOL
-type: mission
-phase: recon
-difficulty: recruit
-handler: ghost
-up: [[Missions Index]]
-status: available
+id: "shadow-protocol"
+codename: "SHADOW PROTOCOL"
+type: "mission"
+phase: "recon"
+difficulty: "recruit"
+handler: "ghost"
+up: "[[Missions Index]]"
+status: "available"
 ---
 
 # Mission: SHADOW PROTOCOL

@@ -1,29 +1,29 @@
 ---
-id: social_engineering
-name: Social Engineering Recon
-type: campaign
-difficulty: intermediate
+id: "social_engineering"
+name: "Social Engineering Recon"
+type: "campaign"
+difficulty: "intermediate"
 tags:
-  - OSINT
-  - Social Engineering
-  - Personnel
-icon: 🎭
-color: pink
-estimatedTime: 45-60 min
-up: [[INDEX]]
-next: [[Map org structure]]
+  - "OSINT"
+  - "Social Engineering"
+  - "Personnel"
+icon: "🎭"
+color: "pink"
+estimatedTime: "45-60 min"
+up: "[[INDEX]]"
+next: "[[Map org structure]]"
 objectives:
-  - Map org structure
-  - Profile key personnel
-  - Find email patterns
-  - Gather personal details
-  - Identify pretexting angles
+  - "Map org structure"
+  - "Profile key personnel"
+  - "Find email patterns"
+  - "Gather personal details"
+  - "Identify pretexting angles"
 tools:
-  - LinkedIn
-  - Hunter.io
-  - theHarvester
-  - Social media OSINT
-  - Google dorking
+  - "LinkedIn"
+  - "Hunter.io"
+  - "theHarvester"
+  - "Social media OSINT"
+  - "Google dorking"
 skills: []
 ---
 

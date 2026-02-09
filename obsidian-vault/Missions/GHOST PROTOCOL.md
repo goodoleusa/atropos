@@ -1,12 +1,12 @@
 ---
-id: ghost-protocol
-codename: GHOST PROTOCOL
-type: mission
-phase: exfil
-difficulty: shadow
-handler: ghost
-up: [[Missions Index]]
-status: available
+id: "ghost-protocol"
+codename: "GHOST PROTOCOL"
+type: "mission"
+phase: "exfil"
+difficulty: "shadow"
+handler: "ghost"
+up: "[[Missions Index]]"
+status: "available"
 ---
 
 # Mission: GHOST PROTOCOL
