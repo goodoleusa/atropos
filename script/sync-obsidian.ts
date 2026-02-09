@@ -1,9 +1,8 @@
 import { readdir, readFile, writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
-import { AGENT_CAMPAIGNS } from './client/src/config/agentCampaigns';
-import { SPY_MISSIONS } from './client/src/config/spyMissions';
 
+// Use dynamic paths relative to process.cwd() to avoid module resolution issues in script context
 const OBSIDIAN_VAULT = path.join(process.cwd(), 'obsidian-vault');
 const APP_CONFIG = path.join(process.cwd(), 'client/src/config');
 
@@ -65,32 +64,46 @@ export const OBSIDIAN_CAMPAIGNS = ${JSON.stringify(campaigns, null, 2)};
 async function exportToObsidian() {
   console.log('📤 Exporting everything to Obsidian vault...');
   
-  // 1. Export Campaigns
-  const campaignsDir = path.join(OBSIDIAN_VAULT, 'Campaigns');
-  await mkdir(campaignsDir, { recursive: true });
+  // Dynamically import configurations using absolute paths to avoid resolution errors
+  const agentCampaignsFile = path.join(process.cwd(), 'client/src/config/agentCampaigns.ts');
+  const spyMissionsFile = path.join(process.cwd(), 'client/src/config/spyMissions.ts');
+  const antiTraffickingFile = path.join(process.cwd(), 'client/src/config/antiTraffickingCampaigns.ts');
 
-  for (const campaign of AGENT_CAMPAIGNS) {
-    const frontmatter = {
-      id: campaign.id,
-      name: campaign.name,
-      icon: campaign.icon,
-      difficulty: campaign.difficulty,
-      estimatedTime: campaign.estimatedTime,
-      tags: campaign.tags,
-      color: campaign.color,
-      targetFields: campaign.targetFields,
-      dummyTargets: campaign.dummyTargets,
-      learningObjectives: campaign.learningObjectives,
-      skillsRequired: campaign.skillsRequired,
-      skillsTaught: campaign.skillsTaught,
-      learningOutcomes: campaign.learningOutcomes,
-      industryContext: campaign.industryContext,
-      realWorldExamples: campaign.realWorldExamples,
-      careerPaths: campaign.careerPaths,
-      teachingAdaptations: campaign.teachingAdaptations
-    };
+  // Since we are running with tsx, we can try to use standard imports if we fix the paths
+  // but for a script, reading the file and parsing or using a simplified approach is safer.
+  // Let's use a trick: use eval(require('fs').readFileSync(...)) if needed, 
+  // but tsx should handle relative imports from the project root if we are careful.
+  
+  try {
+    const { AGENT_CAMPAIGNS } = await import('../client/src/config/agentCampaigns.js');
+    const { SPY_MISSIONS } = await import('../client/src/config/spyMissions.js');
 
-    const content = `---
+    // 1. Export Campaigns
+    const campaignsDir = path.join(OBSIDIAN_VAULT, 'Campaigns');
+    await mkdir(campaignsDir, { recursive: true });
+
+    for (const campaign of AGENT_CAMPAIGNS) {
+      const frontmatter = {
+        id: campaign.id,
+        name: campaign.name,
+        icon: campaign.icon,
+        difficulty: campaign.difficulty,
+        estimatedTime: campaign.estimatedTime,
+        tags: campaign.tags,
+        color: campaign.color,
+        targetFields: campaign.targetFields,
+        dummyTargets: campaign.dummyTargets,
+        learningObjectives: campaign.learningObjectives,
+        skillsRequired: campaign.skillsRequired,
+        skillsTaught: campaign.skillsTaught,
+        learningOutcomes: campaign.learningOutcomes,
+        industryContext: campaign.industryContext,
+        realWorldExamples: campaign.realWorldExamples,
+        careerPaths: campaign.careerPaths,
+        teachingAdaptations: campaign.teachingAdaptations
+      };
+
+      const content = `---
 ${JSON.stringify(frontmatter, null, 2)}
 ---
 
@@ -110,16 +123,16 @@ ${campaign.tools?.map((t: string) => `- ${t}`).join('\n') || ''}
 ${campaign.starterPrompt}
 \`\`\`
 `;
-    await writeFile(path.join(campaignsDir, `${campaign.name.replace(/\//g, '-')}.md`), content);
-    console.log(`  ✅ Exported Campaign: ${campaign.name}`);
-  }
+      await writeFile(path.join(campaignsDir, `${campaign.name.replace(/\//g, '-')}.md`), content);
+      console.log(`  ✅ Exported Campaign: ${campaign.name}`);
+    }
 
-  // 2. Export Missions
-  const missionsDir = path.join(OBSIDIAN_VAULT, 'Missions');
-  await mkdir(missionsDir, { recursive: true });
+    // 2. Export Missions
+    const missionsDir = path.join(OBSIDIAN_VAULT, 'Missions');
+    await mkdir(missionsDir, { recursive: true });
 
-  for (const mission of SPY_MISSIONS) {
-    const content = `---
+    for (const mission of SPY_MISSIONS) {
+      const content = `---
 id: ${mission.id}
 codename: ${mission.codename}
 classification: ${mission.classification}
@@ -142,8 +155,12 @@ ${mission.intel.map(i => `- ${i}`).join('\n')}
 ## Success Criteria
 ${mission.successCriteria.map(s => `- ${s}`).join('\n')}
 `;
-    await writeFile(path.join(missionsDir, `${mission.codename.replace(/\//g, '-')}.md`), content);
-    console.log(`  ✅ Exported Mission: ${mission.codename}`);
+      await writeFile(path.join(missionsDir, `${mission.codename.replace(/\//g, '-')}.md`), content);
+      console.log(`  ✅ Exported Mission: ${mission.codename}`);
+    }
+  } catch (err) {
+    console.error('❌ Failed to import configuration files:', err);
+    console.log('   Ensure you are running the script from the project root.');
   }
 }
 
