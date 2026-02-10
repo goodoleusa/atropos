@@ -82,7 +82,7 @@ export default function MobileFloatingMenu() {
   }, [setLocation]);
 
   if (location === '/admin' || location === '/login') return null;
-  if (!isMobile) return null;
+  return null;
 
   const colorMap: Record<string, string> = {
     amber: 'bg-amber-900/80 text-amber-400 border-amber-700',

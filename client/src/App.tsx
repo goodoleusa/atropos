@@ -8,6 +8,7 @@ import { ReportProvider } from "@/hooks/useReportContext";
 import { GlobalEffectsProvider } from "@/hooks/useGlobalEffects";
 import GlobalEffectsOverlay from "@/components/GlobalEffectsOverlay";
 import DevModePanel from "@/components/DevModePanel";
+import TopNav from "@/components/TopNav";
 import QuickNav from "@/components/QuickNav";
 import MobileFloatingMenu from "@/components/MobileFloatingMenu";
 import { AchievementManager } from "@/components/AchievementManager";
@@ -71,7 +72,10 @@ function App() {
           <ReportProvider>
             <GlobalEffectsProvider>
               <Toaster />
-              <Router />
+              <TopNav />
+              <div className="pt-16 sm:pt-0">
+                <Router />
+              </div>
               <GlobalEffectsOverlay />
               <AchievementManager />
               <QuickNav />
