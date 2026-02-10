@@ -48,16 +48,23 @@ export default function QuickNav() {
   });
 
   const baseNavItems = [
-    { path: '/', icon: Home, label: 'Home', color: 'amber' as const },
-    { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
-    { path: '/profile', icon: User, label: 'Profile', color: 'teal' as const },
-    { path: '/leaderboards', icon: TrendingUp, label: 'Leaderboards', color: 'teal' as const },
-    { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
-    { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
+    // Foundation & Training
+    { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
+    { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
     { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
-    { path: '/wiki', icon: Shield, label: 'Wiki', color: 'teal' as const },
+    
+    // Active Investigation
+    { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
+    { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
+    { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
+    
+    // Results & Documentation
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
-    { path: '/campaigns', icon: Shield, label: 'Campaigns', color: 'teal' as const },
+    { path: '/wiki', icon: Shield, label: 'Wiki', color: 'teal' as const },
+    
+    // Profile & Rankings
+    { path: '/profile', icon: User, label: 'Portfolio', color: 'teal' as const },
+    { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
   ];
 
   const devNavItems: typeof baseNavItems = gameState.devMode ? [
@@ -169,10 +176,19 @@ export default function QuickNav() {
                 data-testid="quicknav-dev-mode-toggle"
               />
             </div>
-            <div className="flex gap-1">
-              <ModmailDialog />
-              <MultiplayerLobby />
-            </div>
+          <div className="flex gap-1">
+            <ModmailDialog />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 bg-amber-900/20 text-amber-400 hover:bg-amber-900/40 min-h-[44px]"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-qr-modal'))}
+            >
+              <QrCode className="w-4 h-4 mr-2" />
+              QR Tool
+            </Button>
+            <MultiplayerLobby />
+          </div>
           </div>
         </div>
       )}

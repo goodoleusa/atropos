@@ -64,7 +64,18 @@ function Router() {
   );
 }
 
+import { QRCodeModal } from "@/components/QRCodeModal";
+import { useState, useEffect } from "react";
+
 function App() {
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenQR = () => setQrModalOpen(true);
+    window.addEventListener('open-qr-modal', handleOpenQR);
+    return () => window.removeEventListener('open-qr-modal', handleOpenQR);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -77,6 +88,7 @@ function App() {
               <AchievementManager />
               <QuickNav />
               <MobileFloatingMenu />
+              <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
             </GlobalEffectsProvider>
           </ReportProvider>
         </GameProvider>
