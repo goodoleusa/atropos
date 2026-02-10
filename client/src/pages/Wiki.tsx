@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Book, Terminal, Bot, FileText, Settings, Zap, Target, Shield, ChevronRight, Home, Search, Trophy, TrendingUp, Award, GraduationCap, Users } from 'lucide-react';
+import { Book, Terminal, Bot, FileText, Settings, Zap, Target, Shield, ChevronRight, Home, Search, Trophy, TrendingUp, Award, GraduationCap, Users, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,6 +17,86 @@ export default function Wiki() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const sections: WikiSection[] = [
+    {
+      id: 'ai-ecosystem',
+      title: 'AI Ecosystem Overview',
+      icon: <Bot className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">The AI Ecosystem</h2>
+          <p className="text-stone-300 leading-relaxed">
+            Atropos features several AI-powered interfaces designed for different stages of your journey. 
+            Here is a guide to help you navigate them:
+          </p>
+
+          <div className="grid gap-4">
+            <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-teal-300 mb-2">1. AI Academy (/campaigns)</h3>
+              <p className="text-stone-300 text-sm">
+                <strong>Purpose:</strong> Structured learning and skill development.
+                <br />
+                Choose from 23+ investigation tracks where a NEXUS Agent guides you through 
+                specific security scenarios step-by-step.
+              </p>
+            </div>
+
+            <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-amber-300 mb-2">2. NEXUS Agents (/agents)</h3>
+              <p className="text-stone-300 text-sm">
+                <strong>Purpose:</strong> Specialized consultation.
+                <br />
+                Interact with 6 specialized personas (OSINTAnalyst, VulnAnalyst, etc.) to get 
+                expert feedback on your specific investigation findings.
+              </p>
+            </div>
+
+            <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-purple-300 mb-2">3. AI Lab (/ai-lab)</h3>
+              <p className="text-stone-300 text-sm">
+                <strong>Purpose:</strong> Research and Experimentation.
+                <br />
+                A sandbox for advanced users to compare different AI models, test prompts, 
+                and engage in "AI Pentesting" challenges.
+              </p>
+            </div>
+
+            <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-stone-300 mb-2">4. AI Playground (/prompt-builder)</h3>
+              <p className="text-stone-300 text-sm">
+                <strong>Purpose:</strong> Command Crafting.
+                <br />
+                The technical workshop where you can build and refine custom prompts for 
+                automated investigation workflows.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'a2a-notes',
+      title: 'A2A - Agent to Agent Notes',
+      icon: <MessageSquare className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Agent-to-Agent Coordination</h2>
+          <div className="bg-amber-950/20 border border-amber-800/30 p-4 rounded-lg italic text-stone-400 text-sm">
+            "These notes serve as the shared memory context for autonomous agents navigating the platform."
+          </div>
+          
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-amber-300">Current Observations</h3>
+            <ul className="list-disc list-inside space-y-2 text-stone-300 text-sm">
+              <li><strong>UI Convergence:</strong> The QuickNav is now the primary nexus for all features. Maintain "molten bronze" aesthetics for all interactive elements.</li>
+              <li><strong>Navigation Logic:</strong> Workflow-based grouping is prioritized. (Foundation → Investigation → Results → Profile).</li>
+              <li><strong>Missing Features:</strong> The 'Business' and 'Investor' dashboards are currently placeholders and require integration with real-time project metrics.</li>
+              <li><strong>Tooling Gaps:</strong> The QR Tool is integrated but could benefit from more "hands-on lab" content in the Wiki.</li>
+              <li><strong>Pedagogy:</strong> Ensure agents consistently reference the "80/20 learning model" in their adaptive responses.</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
     {
       id: 'overview',
       title: 'Overview',
