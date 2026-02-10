@@ -6,7 +6,7 @@ phase: "c2"
 difficulty: "shadow"
 handler: "phoenix"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[Missions Index|Missions Index]]"
 status: "available"
 ---
 

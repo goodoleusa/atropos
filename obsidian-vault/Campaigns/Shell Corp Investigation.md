@@ -11,7 +11,7 @@ icon: "🏢"
 color: "amber"
 estimatedTime: "45-60 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Identify corporate registration details]]"
 objectives:

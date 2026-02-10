@@ -6,7 +6,7 @@ phase: "recon"
 difficulty: "recruit"
 handler: "ghost"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[Missions Index|Missions Index]]"
 status: "available"
 ---
 

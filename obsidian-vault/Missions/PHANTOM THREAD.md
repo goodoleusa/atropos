@@ -6,7 +6,7 @@ phase: "persist"
 difficulty: "specialist"
 handler: "oracle"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[Missions Index|Missions Index]]"
 status: "available"
 ---
 

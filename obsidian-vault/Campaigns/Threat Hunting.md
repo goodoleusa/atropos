@@ -11,7 +11,7 @@ icon: "🎯"
 color: "orange"
 estimatedTime: "60-90 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Formulate hunting hypotheses]]"
 objectives:

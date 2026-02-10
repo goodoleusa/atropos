@@ -12,7 +12,7 @@ icon: "📍"
 color: "blue"
 estimatedTime: "120+ min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Master visual geolocation techniques]]"
 objectives:

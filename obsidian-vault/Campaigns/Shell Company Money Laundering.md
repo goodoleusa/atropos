@@ -12,7 +12,7 @@ icon: "🏢"
 color: "teal"
 estimatedTime: "75-90 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Navigate international corporate registries]]"
 objectives:

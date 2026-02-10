@@ -11,7 +11,7 @@ icon: "🌐"
 color: "teal"
 estimatedTime: "30-45 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Identify origin ASN]]"
 objectives:

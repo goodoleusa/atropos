@@ -11,7 +11,7 @@ icon: "🕸️"
 color: "gray"
 estimatedTime: "30-45 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Check breach databases]]"
 objectives:

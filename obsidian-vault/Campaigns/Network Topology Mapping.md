@@ -11,7 +11,7 @@ icon: "🗺️"
 color: "blue"
 estimatedTime: "45-60 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Identify network segments]]"
 objectives:

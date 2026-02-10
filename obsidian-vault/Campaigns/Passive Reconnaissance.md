@@ -11,7 +11,7 @@ icon: "👁️"
 color: "purple"
 estimatedTime: "20-30 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Enumerate DNS records]]"
 objectives:

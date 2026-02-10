@@ -11,7 +11,7 @@ icon: "🎭"
 color: "pink"
 estimatedTime: "45-60 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Map org structure]]"
 objectives:

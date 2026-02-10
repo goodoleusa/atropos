@@ -4,7 +4,7 @@ type: "mystical-message"
 category: "financial"
 msg_type: "clue"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[The Void|The Void]]"
 ---
 
 # intel-fragment-7
