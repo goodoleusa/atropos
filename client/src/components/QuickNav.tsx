@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
@@ -24,6 +24,21 @@ export default function QuickNav() {
   const [location] = useLocation();
   const { gameState, toggleDevMode } = useGame();
   const { pendingFindings, currentSession, targets } = useReportContext();
+
+  const handleToggle = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setExpanded(!expanded);
+  };
+
+  // Listen for global toggle event
+  useEffect(() => {
+    const handleGlobalToggle = () => setExpanded(prev => !prev);
+    window.addEventListener('toggle-quicknav', handleGlobalToggle);
+    return () => window.removeEventListener('toggle-quicknav', handleGlobalToggle);
+  }, []);
 
   const { data: progression } = useQuery({
     queryKey: ['/api/progression', gameState.sessionToken],
@@ -164,10 +179,10 @@ export default function QuickNav() {
 
       <InteractiveHover>
         <Button
-          onClick={() => setExpanded(!expanded)}
-          className={`rounded-full w-14 h-14 shadow-lg ${
+          onClick={handleToggle}
+          className={`rounded-full w-14 h-14 shadow-lg transition-all duration-300 ${
             expanded 
-              ? 'bg-amber-700 hover:bg-amber-600' 
+              ? 'bg-amber-700 hover:bg-amber-600 rotate-180' 
               : 'bg-gradient-to-br from-amber-700 to-teal-700 hover:from-amber-600 hover:to-teal-600'
           }`}
           data-testid="quick-nav-toggle"
@@ -176,9 +191,9 @@ export default function QuickNav() {
             <ChevronDown className="w-6 h-6 text-black" />
           ) : (
             <div className="flex flex-col items-center">
-              <Zap className="w-5 h-5 text-black" />
+              <Server className="w-6 h-6 text-black" />
               {pendingFindings.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 rounded-full text-[10px] text-white flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 rounded-full text-[10px] text-white flex items-center justify-center border-2 border-black">
                   {pendingFindings.length}
                 </span>
               )}
