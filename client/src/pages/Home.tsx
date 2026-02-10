@@ -92,10 +92,13 @@ export default function Home() {
         </motion.div>
         
         {/* Minimal Logo on Video */}
-        <div className="absolute top-6 left-6 z-20">
+        <div 
+          className="absolute top-6 left-6 z-20 cursor-pointer group"
+          onClick={() => window.dispatchEvent(new CustomEvent('toggle-quicknav'))}
+        >
           <div className="flex items-center gap-2">
-            <Server className={`w-6 h-6 transition-colors duration-1000 ${videoLoaded ? 'text-stone-800' : 'text-amber-500'}`} />
-            <span className={`font-orbitron font-bold text-xl tracking-wider transition-colors duration-1000 ${videoLoaded ? 'text-stone-800' : 'text-amber-400'}`}>
+            <Server className={`w-6 h-6 transition-all duration-1000 group-hover:scale-110 ${videoLoaded ? 'text-stone-800' : 'text-amber-500'}`} />
+            <span className={`font-orbitron font-bold text-xl tracking-wider transition-colors duration-1000 group-hover:text-amber-500 ${videoLoaded ? 'text-stone-800' : 'text-amber-400'}`}>
               NEXUS
             </span>
           </div>
