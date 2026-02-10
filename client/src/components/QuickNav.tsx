@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -79,9 +80,14 @@ export default function QuickNav() {
   if (location === '/admin' || location === '/login') return null;
 
   return (
-    <div className="flex fixed bottom-6 left-6 z-[10000] flex-col items-start gap-2" data-testid="quick-nav">
+    <div 
+      className="flex fixed bottom-6 left-6 z-[10000] flex-col items-start gap-2" 
+      data-testid="quick-nav"
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+    >
       {expanded && (
-        <div className="bg-black/90 backdrop-blur border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2">
+        <div className="bg-black/95 backdrop-blur border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] overflow-y-auto no-scrollbar molten-edge">
           {progression && (
             <div className="px-3 py-2 border-b border-stone-800 mb-2">
               <div className="flex items-center justify-between mb-1">
@@ -120,15 +126,26 @@ export default function QuickNav() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`w-full justify-start min-h-[44px] ${
+                  className={`w-full justify-start min-h-[44px] relative group overflow-hidden ${
                     isActive ? styles.active : 'text-stone-400 hover:text-stone-200'
                   }`}
                   data-testid={`nav-${item.label.toLowerCase()}`}
                 >
-                  <Icon className={`w-4 h-4 mr-2 ${isActive ? styles.icon : ''}`} />
-                  {item.label}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="active-nav-glow"
+                      className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent opacity-50"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/5 transition-colors duration-300" />
+                  <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? styles.icon + ' scale-110' : 'group-hover:text-amber-400'}`} />
+                  <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest">
+                    {item.label}
+                  </span>
                   {item.badge && (
-                    <Badge className="ml-auto bg-purple-700 text-white text-[10px] px-1.5">
+                    <Badge className="ml-auto bg-purple-700 text-white text-[10px] px-1.5 relative z-10">
                       {item.badge}
                     </Badge>
                   )}
