@@ -129,53 +129,6 @@ export default function Home() {
           `
         }}
       >
-        {/* Navigation - Appears after scroll */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolledPastVideo 
-            ? 'bg-[#0a0500]/95 backdrop-blur-md border-b border-amber-900/20 translate-y-0' 
-            : '-translate-y-full'
-        }`}>
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Server className="text-amber-600 w-6 h-6" />
-              <span className="font-orbitron font-bold text-xl tracking-wider text-stone-200">
-                NEXUS
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link href="/terminal">
-                <Button 
-                  variant="ghost" 
-                  className="text-stone-400 hover:text-amber-500 touch-target hidden md:flex"
-                  data-testid="nav-terminal"
-                >
-                  Terminal
-                </Button>
-              </Link>
-              <Button 
-                variant="outline"
-                onClick={() => setQrModalOpen(true)}
-                className="border-amber-700/50 text-amber-600 hover:bg-amber-950/30 touch-target"
-                data-testid="nav-qr-button"
-              >
-                <QrCode className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Tools</span>
-              </Button>
-              <Link href="/login">
-                <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-black font-bold touch-target" data-testid="nav-access-button">
-                  Access
-                </Button>
-              </Link>
-              {/* Hidden admin trigger */}
-              <div 
-                className="w-4 h-4 cursor-pointer opacity-0 hover:opacity-30 transition-opacity"
-                onClick={() => setLocation("/admin")}
-                data-testid="hidden-nav-trigger"
-              />
-            </div>
-          </div>
-        </nav>
-
         <div className="container mx-auto max-w-4xl pt-16">
           {/* Torch-Cut Paragraph 1 */}
           <div 

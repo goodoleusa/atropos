@@ -57,7 +57,7 @@ export default function QuickNav() {
   if (location === '/admin' || location === '/login') return null;
 
   return (
-    <div className="fixed bottom-10 left-10 z-[10000] flex flex-col items-start gap-2" data-testid="quick-nav">
+    <div className="hidden fixed bottom-10 left-10 z-[10000] flex flex-col items-start gap-2" data-testid="quick-nav">
       <div className="md:hidden">
         {/* Force display on mobile too for testing */}
       </div>
