@@ -10,7 +10,7 @@ tags:
 icon: 🚨
 color: red
 estimatedTime: 60-90 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Contain the threat]]
 objectives:
   - Contain the threat

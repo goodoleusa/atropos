@@ -10,7 +10,7 @@ tags:
 icon: 📧
 color: amber
 estimatedTime: 20-30 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Parse email headers]]
 objectives:
   - Parse email headers

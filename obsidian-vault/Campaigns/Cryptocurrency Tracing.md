@@ -10,7 +10,7 @@ tags:
 icon: ₿
 color: yellow
 estimatedTime: 45-60 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Analyze transaction flow]]
 objectives:
   - Analyze transaction flow

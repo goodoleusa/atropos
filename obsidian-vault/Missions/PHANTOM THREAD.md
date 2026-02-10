@@ -5,7 +5,7 @@ type: mission
 phase: persist
 difficulty: specialist
 handler: oracle
-up: [[Missions Index]]
+up: [[../INDEX|INDEX]]
 status: available
 ---
 

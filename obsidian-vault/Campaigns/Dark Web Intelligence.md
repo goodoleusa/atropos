@@ -10,7 +10,7 @@ tags:
 icon: 🕸️
 color: gray
 estimatedTime: 30-45 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Check breach databases]]
 objectives:
   - Check breach databases
