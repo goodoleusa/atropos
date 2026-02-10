@@ -10,7 +10,7 @@ tags:
 icon: 🎯
 color: orange
 estimatedTime: 60-90 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Formulate hunting hypotheses]]
 objectives:
   - Formulate hunting hypotheses

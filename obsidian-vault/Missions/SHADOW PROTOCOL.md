@@ -5,7 +5,7 @@ type: mission
 phase: recon
 difficulty: recruit
 handler: ghost
-up: [[Missions Index]]
+up: [[../INDEX|INDEX]]
 status: available
 ---
 

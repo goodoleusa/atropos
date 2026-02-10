@@ -11,7 +11,7 @@ tags:
 icon: 🕵️
 color: red
 estimatedTime: 60-90 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Map social media recruitment network]]
 objectives:
   - Map social media recruitment network

@@ -5,7 +5,7 @@ type: mission
 phase: access
 difficulty: operative
 handler: cipher
-up: [[Missions Index]]
+up: [[../INDEX|INDEX]]
 status: available
 ---
 

@@ -11,7 +11,7 @@ tags:
 icon: 💰
 color: yellow
 estimatedTime: 60-90 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Analyze Bitcoin transaction patterns]]
 objectives:
   - Analyze Bitcoin transaction patterns

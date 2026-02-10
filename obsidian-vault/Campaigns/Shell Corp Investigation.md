@@ -10,7 +10,7 @@ tags:
 icon: 🏢
 color: amber
 estimatedTime: 45-60 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Identify corporate registration details]]
 objectives:
   - Identify corporate registration details

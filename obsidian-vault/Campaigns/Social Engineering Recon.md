@@ -10,7 +10,7 @@ tags:
 icon: 🎭
 color: pink
 estimatedTime: 45-60 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Map org structure]]
 objectives:
   - Map org structure

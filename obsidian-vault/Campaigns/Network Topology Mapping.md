@@ -10,7 +10,7 @@ tags:
 icon: 🗺️
 color: blue
 estimatedTime: 45-60 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Identify network segments]]
 objectives:
   - Identify network segments

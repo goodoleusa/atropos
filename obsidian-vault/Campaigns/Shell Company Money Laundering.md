@@ -11,7 +11,7 @@ tags:
 icon: 🏢
 color: teal
 estimatedTime: 75-90 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Navigate international corporate registries]]
 objectives:
   - Navigate international corporate registries

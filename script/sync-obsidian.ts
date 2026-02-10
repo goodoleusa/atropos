@@ -66,7 +66,7 @@ async function exportToObsidian() {
       icon: campaign.icon,
       color: campaign.color,
       estimatedTime: campaign.estimatedTime,
-      up: '[[INDEX]]',
+      up: '[[../INDEX|INDEX]]',
       next: campaign.objectives?.[0] ? `[[${campaign.objectives[0].replace(/"/g, '')}]]` : '',
       objectives: campaign.objectives || [],
       tools: campaign.tools || [],
@@ -112,7 +112,7 @@ ${campaign.starterPrompt}
       phase: mission.phase,
       difficulty: mission.difficulty,
       handler: mission.handler,
-      up: '[[Missions Index]]',
+      up: '[[../INDEX|INDEX]]',
       status: 'available'
     });
 
@@ -143,7 +143,7 @@ ${mission.objectives.map((o: any) => `- [[${o.description.replace(/"/g, '')}]]`)
       type: 'mystical-message',
       category: msg.category,
       msg_type: msg.type,
-      up: '[[The Void]]'
+      up: '[[../INDEX|INDEX]]'
     });
 
     const content = `---

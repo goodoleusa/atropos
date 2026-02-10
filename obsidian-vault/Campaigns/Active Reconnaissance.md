@@ -10,7 +10,7 @@ tags:
 icon: 🔍
 color: red
 estimatedTime: 30-45 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Discover live hosts]]
 objectives:
   - Discover live hosts

@@ -11,7 +11,7 @@ tags:
 icon: 📍
 color: blue
 estimatedTime: 120+ min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Master visual geolocation techniques]]
 objectives:
   - Master visual geolocation techniques

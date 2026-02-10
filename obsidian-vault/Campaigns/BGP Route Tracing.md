@@ -10,7 +10,7 @@ tags:
 icon: 🌐
 color: teal
 estimatedTime: 30-45 min
-up: [[INDEX]]
+up: [[../INDEX|INDEX]]
 next: [[Identify origin ASN]]
 objectives:
   - Identify origin ASN

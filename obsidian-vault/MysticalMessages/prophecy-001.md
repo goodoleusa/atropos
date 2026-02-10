@@ -3,7 +3,7 @@ id: prophecy-001
 type: mystical-message
 category: void
 msg_type: lore
-up: [[The Void]]
+up: [[../INDEX|INDEX]]
 ---
 
 # prophecy-001
