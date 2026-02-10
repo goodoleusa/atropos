@@ -57,7 +57,8 @@ export default function QuickNav() {
     // Active Investigation
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
-    { path: '/agents', icon: Bot, label: 'Agents', color: 'teal' as const },
+    { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
+    { path: '/prompt-builder', icon: Zap, label: 'AI Playground', color: 'purple' as const },
     
     // Results & Documentation
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
@@ -76,6 +77,24 @@ export default function QuickNav() {
   ] : [];
 
   const navItems = [...baseNavItems, ...devNavItems];
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!expanded) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-testid="quick-nav"]')) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [expanded]);
+
+  // Close menu on location change
+  useEffect(() => {
+    setExpanded(false);
+  }, [location]);
 
   if (location === '/admin' || location === '/login') return null;
 
@@ -176,25 +195,7 @@ export default function QuickNav() {
             </div>
           </div>
 
-          <div className="border-t border-stone-800 pt-2 mt-2">
-            <div className="flex items-center justify-between px-3 py-2 bg-black/30 rounded mb-2">
-              <div className="flex items-center gap-2">
-                {gameState.devMode ? (
-                  <Eye className="w-4 h-4 text-teal-400" />
-                ) : (
-                  <EyeOff className="w-4 h-4 text-stone-500" />
-                )}
-                <span className="text-xs text-stone-400">Dev Mode</span>
-              </div>
-              <Switch
-                checked={gameState.devMode}
-                onCheckedChange={toggleDevMode}
-                className="data-[state=checked]:bg-teal-600"
-                data-testid="quicknav-dev-mode-toggle"
-              />
-            </div>
-          <div className="flex gap-1">
-            <ModmailDialog />
+          <div className="flex gap-1 pt-2 mt-2 border-t border-stone-800">
             <Button
               variant="ghost"
               size="sm"
@@ -204,8 +205,6 @@ export default function QuickNav() {
               <QrCode className="w-4 h-4 mr-2" />
               QR Tool
             </Button>
-            <MultiplayerLobby />
-          </div>
           </div>
         </div>
       )}
