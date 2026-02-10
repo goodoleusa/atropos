@@ -11,7 +11,7 @@ icon: "📧"
 color: "amber"
 estimatedTime: "20-30 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Parse email headers]]"
 objectives:

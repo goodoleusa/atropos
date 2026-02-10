@@ -11,7 +11,7 @@ icon: "₿"
 color: "yellow"
 estimatedTime: "45-60 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Analyze transaction flow]]"
 objectives:

@@ -12,7 +12,7 @@ icon: "💰"
 color: "yellow"
 estimatedTime: "60-90 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Analyze Bitcoin transaction patterns]]"
 objectives:

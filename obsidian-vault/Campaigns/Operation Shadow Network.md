@@ -12,7 +12,7 @@ icon: "🕵️"
 color: "red"
 estimatedTime: "60-90 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Map social media recruitment network]]"
 objectives:

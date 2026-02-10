@@ -6,7 +6,7 @@ phase: "access"
 difficulty: "operative"
 handler: "cipher"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[Missions Index|Missions Index]]"
 status: "available"
 ---
 

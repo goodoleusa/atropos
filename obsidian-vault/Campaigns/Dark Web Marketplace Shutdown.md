@@ -12,7 +12,7 @@ icon: "🌐"
 color: "purple"
 estimatedTime: "90-120 min"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[INDEX|INDEX]]"
 next:
   - "[[Safely investigate dark web infrastructure]]"
 objectives:

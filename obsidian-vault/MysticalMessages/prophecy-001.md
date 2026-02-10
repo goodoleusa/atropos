@@ -4,7 +4,7 @@ type: "mystical-message"
 category: "void"
 msg_type: "lore"
 up:
-  - "[[../INDEX|INDEX]]"
+  - "[[The Void|The Void]]"
 ---
 
 # prophecy-001
