@@ -32,7 +32,14 @@ tools:
   - "theHarvester"
   - "Social media OSINT"
   - "Google dorking"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives: []
+targetFields:
+  - "{\"key\":\"org\",\"label\":\"Organization\",\"type\":\"org\",\"required\":true,\"placeholder\":\"TechCorp Industries\"}"
+  - "{\"key\":\"domain\",\"label\":\"Primary Domain (optional)\",\"type\":\"domain\",\"required\":false,\"placeholder\":\"techcorp.com\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

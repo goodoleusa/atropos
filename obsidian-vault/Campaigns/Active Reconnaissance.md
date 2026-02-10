@@ -32,7 +32,13 @@ tools:
   - "netcat"
   - "nikto"
   - "gobuster"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives: []
+targetFields:
+  - "{\"key\":\"cidr\",\"label\":\"Network Range\",\"type\":\"cidr\",\"required\":true,\"placeholder\":\"10.0.0.0/24\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

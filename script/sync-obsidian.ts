@@ -67,7 +67,12 @@ async function exportToObsidian() {
       right_side_friend: [],
       objectives: campaign.objectives || [],
       tools: campaign.tools || [],
-      skills: campaign.skillsTaught || [],
+      skillsRequired: campaign.skillsRequired || [],
+      skillsTaught: campaign.skillsTaught || [],
+      learningObjectives: campaign.learningObjectives || [],
+      targetFields: campaign.targetFields || [],
+      dummyTargets: campaign.dummyTargets || {},
+      industryContext: campaign.industryContext || "",
       clues: (campaign as any).clues?.map((c: any) => `[[${c.id || c}]]`) || []
     });
 

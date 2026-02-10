@@ -32,7 +32,14 @@ tools:
   - "nbtscan"
   - "enum4linux"
   - "BloodHound"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives: []
+targetFields:
+  - "{\"key\":\"ip\",\"label\":\"Entry Host IP\",\"type\":\"ip\",\"required\":true,\"placeholder\":\"192.168.1.50\"}"
+  - "{\"key\":\"cidr\",\"label\":\"Network Range (optional)\",\"type\":\"cidr\",\"required\":false,\"placeholder\":\"192.168.1.0/24\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

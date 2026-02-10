@@ -32,7 +32,14 @@ tools:
   - "Log analysis"
   - "Backup restoration"
   - "IOC hunting"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives: []
+targetFields:
+  - "{\"key\":\"context\",\"label\":\"Incident Summary\",\"type\":\"text\",\"required\":true,\"placeholder\":\"Ransomware behavior on finance workstations\"}"
+  - "{\"key\":\"scope\",\"label\":\"Affected Scope (optional)\",\"type\":\"text\",\"required\":false,\"placeholder\":\"Finance department (10+ hosts)\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

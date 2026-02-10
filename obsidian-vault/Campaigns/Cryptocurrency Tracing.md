@@ -32,13 +32,24 @@ tools:
   - "Elliptic"
   - "OXT"
   - "Crystal"
-skills:
+skillsRequired:
+  - "Basic cryptocurrency understanding"
+  - "Transaction concepts"
+  - "Address formats"
+skillsTaught:
   - "Blockchain analysis"
   - "Wallet clustering"
   - "Exchange identification"
   - "Mixing detection"
   - "Transaction graph analysis"
   - "UTXO tracing"
+learningObjectives:
+  - "{\"goal\":\"crypto_blockchain_investigation\",\"weight\":10,\"description\":\"Master cryptocurrency tracing and blockchain analysis\"}"
+  - "{\"goal\":\"financial_investigation\",\"weight\":8,\"description\":\"Follow the money through digital transactions\"}"
+targetFields:
+  - "{\"key\":\"address\",\"label\":\"Wallet Address\",\"type\":\"address\",\"required\":true,\"placeholder\":\"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa\"}"
+dummyTargets: "[object Object]"
+industryContext: "Law enforcement, regulatory agencies, and cybersecurity firms trace cryptocurrency in ransomware investigations, fraud cases, sanctions enforcement, and money laundering. Blockchain analysts are in high demand for crypto compliance."
 clues: []
 ---
 

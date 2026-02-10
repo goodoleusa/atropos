@@ -33,13 +33,26 @@ tools:
   - "Blockchain Explorers"
   - "Network Visualization"
   - "Report Writing"
-skills:
+skillsRequired:
+  - "Basic OSINT"
+  - "Social media platforms"
+  - "Critical thinking"
+skillsTaught:
   - "Social media forensics"
   - "Recruitment pattern recognition"
   - "Cryptocurrency tracing"
   - "Network mapping"
   - "Evidence documentation for law enforcement"
   - "Ethical investigation boundaries"
+learningObjectives:
+  - "{\"goal\":\"osint_investigation\",\"weight\":10,\"description\":\"Master social media investigation techniques\"}"
+  - "{\"goal\":\"crypto_blockchain_investigation\",\"weight\":8,\"description\":\"Learn cryptocurrency tracing for trafficking cases\"}"
+  - "{\"goal\":\"financial_investigation\",\"weight\":7,\"description\":\"Follow money trails in criminal networks\"}"
+targetFields:
+  - "{\"key\":\"instagram_handle\",\"label\":\"Suspected Recruiter Instagram\",\"type\":\"text\",\"required\":true,\"placeholder\":\"@modeling_agency_2024\"}"
+  - "{\"key\":\"bitcoin_address\",\"label\":\"Bitcoin Payment Address\",\"type\":\"text\",\"required\":false,\"placeholder\":\"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa\"}"
+dummyTargets: "[object Object]"
+industryContext: "These techniques are used daily by FBI, Homeland Security Investigations (HSI), NCMEC, and NGOs like Thorn and Polaris Project to combat human trafficking."
 clues: []
 ---
 
