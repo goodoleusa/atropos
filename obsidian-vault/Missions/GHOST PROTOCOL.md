@@ -1,12 +1,13 @@
 ---
-id: ghost-protocol
-codename: GHOST PROTOCOL
-type: mission
-phase: exfil
-difficulty: shadow
-handler: ghost
-up: [[../INDEX|INDEX]]
-status: available
+id: "ghost-protocol"
+codename: "GHOST PROTOCOL"
+type: "mission"
+phase: "exfil"
+difficulty: "shadow"
+handler: "ghost"
+up:
+  - "[[../INDEX|INDEX]]"
+status: "available"
 ---
 
 # Mission: GHOST PROTOCOL

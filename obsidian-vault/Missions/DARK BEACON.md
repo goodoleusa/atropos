@@ -1,12 +1,13 @@
 ---
-id: dark-beacon
-codename: DARK BEACON
-type: mission
-phase: c2
-difficulty: shadow
-handler: phoenix
-up: [[../INDEX|INDEX]]
-status: available
+id: "dark-beacon"
+codename: "DARK BEACON"
+type: "mission"
+phase: "c2"
+difficulty: "shadow"
+handler: "phoenix"
+up:
+  - "[[../INDEX|INDEX]]"
+status: "available"
 ---
 
 # Mission: DARK BEACON

@@ -1,12 +1,13 @@
 ---
-id: phantom-thread
-codename: PHANTOM THREAD
-type: mission
-phase: persist
-difficulty: specialist
-handler: oracle
-up: [[../INDEX|INDEX]]
-status: available
+id: "phantom-thread"
+codename: "PHANTOM THREAD"
+type: "mission"
+phase: "persist"
+difficulty: "specialist"
+handler: "oracle"
+up:
+  - "[[../INDEX|INDEX]]"
+status: "available"
 ---
 
 # Mission: PHANTOM THREAD

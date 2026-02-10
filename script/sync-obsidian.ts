@@ -13,28 +13,20 @@ function formatYAML(data: any): string {
         lines.push(`${key}: []`);
       } else {
         // Multi-entry fields in Obsidian properties: 
-        // Use block list format with NO quotes around wikilinks to keep them clickable
+        // Use block list format with quotes around wikilinks as requested
         lines.push(`${key}:`);
         value.forEach(item => {
           if (typeof item === 'object') {
-            lines.push(`  - ${JSON.stringify(item)}`);
+            lines.push(`  - "${JSON.stringify(item).replace(/"/g, '\\"')}"`);
           } else {
             const s = String(item);
-            if (s.includes('[[') && s.includes(']]')) {
-              lines.push(`  - ${s}`);
-            } else {
-              lines.push(`  - ${s}`);
-            }
+            lines.push(`  - "${s}"`);
           }
         });
       }
     } else {
       const s = String(value);
-      if (s.includes('[[') && s.includes(']]')) {
-        lines.push(`${key}: ${s}`);
-      } else {
-        lines.push(`${key}: ${s}`);
-      }
+      lines.push(`${key}: "${s}"`);
     }
   }
   return lines.join('\n');
@@ -66,8 +58,8 @@ async function exportToObsidian() {
       icon: campaign.icon,
       color: campaign.color,
       estimatedTime: campaign.estimatedTime,
-      up: '[[../INDEX|INDEX]]',
-      next: campaign.objectives?.[0] ? `[[${campaign.objectives[0].replace(/"/g, '')}]]` : '',
+      up: ['[[../INDEX|INDEX]]'],
+      next: campaign.objectives?.[0] ? [`[[${campaign.objectives[0].replace(/"/g, '')}]]`] : [],
       objectives: campaign.objectives || [],
       tools: campaign.tools || [],
       skills: campaign.skillsTaught || [],
@@ -112,7 +104,7 @@ ${campaign.starterPrompt}
       phase: mission.phase,
       difficulty: mission.difficulty,
       handler: mission.handler,
-      up: '[[../INDEX|INDEX]]',
+      up: ['[[../INDEX|INDEX]]'],
       status: 'available'
     });
 
@@ -143,7 +135,7 @@ ${mission.objectives.map((o: any) => `- [[${o.description.replace(/"/g, '')}]]`)
       type: 'mystical-message',
       category: msg.category,
       msg_type: msg.type,
-      up: '[[../INDEX|INDEX]]'
+      up: ['[[../INDEX|INDEX]]']
     });
 
     const content = `---

@@ -1,30 +1,32 @@
 ---
-id: shell_company_trafficking
-name: Shell Company Money Laundering
-type: campaign
-difficulty: advanced
+id: "shell_company_trafficking"
+name: "Shell Company Money Laundering"
+type: "campaign"
+difficulty: "advanced"
 tags:
-  - Money Laundering
-  - Corporate Intelligence
-  - Financial Crime
-  - Offshore
-icon: 🏢
-color: teal
-estimatedTime: 75-90 min
-up: [[../INDEX|INDEX]]
-next: [[Navigate international corporate registries]]
+  - "Money Laundering"
+  - "Corporate Intelligence"
+  - "Financial Crime"
+  - "Offshore"
+icon: "🏢"
+color: "teal"
+estimatedTime: "75-90 min"
+up:
+  - "[[../INDEX|INDEX]]"
+next:
+  - "[[Navigate international corporate registries]]"
 objectives:
-  - Navigate international corporate registries
-  - Trace beneficial ownership through shell companies
-  - Identify money laundering red flags
-  - Map complex corporate structures
-  - Create financial intelligence reports
+  - "Navigate international corporate registries"
+  - "Trace beneficial ownership through shell companies"
+  - "Identify money laundering red flags"
+  - "Map complex corporate structures"
+  - "Create financial intelligence reports"
 tools:
-  - OpenCorporates
-  - ICIJ Offshore Leaks Database
-  - National Corporate Registries
-  - Maltego
-  - Sanction Screening Tools
+  - "OpenCorporates"
+  - "ICIJ Offshore Leaks Database"
+  - "National Corporate Registries"
+  - "Maltego"
+  - "Sanction Screening Tools"
 skills: []
 clues: []
 ---

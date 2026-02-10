@@ -1,36 +1,38 @@
 ---
-id: crypto_analysis
-name: Cryptocurrency Tracing
-type: campaign
-difficulty: advanced
+id: "crypto_analysis"
+name: "Cryptocurrency Tracing"
+type: "campaign"
+difficulty: "advanced"
 tags:
-  - Crypto
-  - Financial
-  - Blockchain
-icon: ₿
-color: yellow
-estimatedTime: 45-60 min
-up: [[../INDEX|INDEX]]
-next: [[Analyze transaction flow]]
+  - "Crypto"
+  - "Financial"
+  - "Blockchain"
+icon: "₿"
+color: "yellow"
+estimatedTime: "45-60 min"
+up:
+  - "[[../INDEX|INDEX]]"
+next:
+  - "[[Analyze transaction flow]]"
 objectives:
-  - Analyze transaction flow
-  - Cluster addresses
-  - Identify exchanges
-  - Detect mixing
-  - Build timeline
+  - "Analyze transaction flow"
+  - "Cluster addresses"
+  - "Identify exchanges"
+  - "Detect mixing"
+  - "Build timeline"
 tools:
-  - Blockchain explorers
-  - Chainalysis
-  - Elliptic
-  - OXT
-  - Crystal
+  - "Blockchain explorers"
+  - "Chainalysis"
+  - "Elliptic"
+  - "OXT"
+  - "Crystal"
 skills:
-  - Blockchain analysis
-  - Wallet clustering
-  - Exchange identification
-  - Mixing detection
-  - Transaction graph analysis
-  - UTXO tracing
+  - "Blockchain analysis"
+  - "Wallet clustering"
+  - "Exchange identification"
+  - "Mixing detection"
+  - "Transaction graph analysis"
+  - "UTXO tracing"
 clues: []
 ---
 
