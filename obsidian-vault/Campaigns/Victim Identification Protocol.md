@@ -34,7 +34,14 @@ tools:
   - "Flora/fauna databases"
   - "Architecture references"
   - "GeoGuessr techniques"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives:
+  - "{\"goal\":\"osint_investigation\",\"weight\":10,\"description\":\"Advanced visual geolocation\"}"
+  - "{\"goal\":\"threat_hunting\",\"weight\":7,\"description\":\"Evidence analysis and pattern recognition\"}"
+targetFields: []
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

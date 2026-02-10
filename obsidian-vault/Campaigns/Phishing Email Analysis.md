@@ -32,7 +32,15 @@ tools:
   - "PhishTank"
   - "VirusTotal"
   - "WHOIS"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives: []
+targetFields:
+  - "{\"key\":\"url\",\"label\":\"Suspicious URL\",\"type\":\"url\",\"required\":true,\"placeholder\":\"hxxp://amaz0n-verify[.]com/login\"}"
+  - "{\"key\":\"email\",\"label\":\"Sender Email (optional)\",\"type\":\"email\",\"required\":false,\"placeholder\":\"support@amaz0n-verify.com\"}"
+  - "{\"key\":\"ip\",\"label\":\"Originating IP (optional)\",\"type\":\"ip\",\"required\":false,\"placeholder\":\"185.234.xxx.xxx\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

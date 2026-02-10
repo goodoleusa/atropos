@@ -33,7 +33,15 @@ tools:
   - "National Corporate Registries"
   - "Maltego"
   - "Sanction Screening Tools"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives:
+  - "{\"goal\":\"financial_investigation\",\"weight\":10,\"description\":\"Master corporate intelligence and beneficial ownership tracing\"}"
+  - "{\"goal\":\"osint_investigation\",\"weight\":8,\"description\":\"Advanced multi-source intelligence gathering\"}"
+targetFields:
+  - "{\"key\":\"company_name\",\"label\":\"Shell Company Name\",\"type\":\"org\",\"required\":true,\"placeholder\":\"Global Enterprises LLC\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

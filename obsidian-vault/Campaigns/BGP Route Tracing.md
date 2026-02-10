@@ -32,11 +32,23 @@ tools:
   - "RouteViews"
   - "Hurricane Electric BGP"
   - "PeeringDB"
-skills:
+skillsRequired:
+  - "Basic networking"
+  - "IP addressing"
+  - "Routing concepts"
+skillsTaught:
   - "BGP analysis"
   - "AS path interpretation"
   - "Route hijacking detection"
   - "Peering relationship mapping"
+learningObjectives:
+  - "{\"goal\":\"bgp_routing\",\"weight\":10,\"description\":\"Master BGP protocol and autonomous system relationships\"}"
+  - "{\"goal\":\"network_security\",\"weight\":7,\"description\":\"Understand network infrastructure security\"}"
+targetFields:
+  - "{\"key\":\"ip\",\"label\":\"IP Address\",\"type\":\"ip\",\"required\":true,\"placeholder\":\"185.199.108.153\"}"
+  - "{\"key\":\"asn\",\"label\":\"ASN (optional)\",\"type\":\"asn\",\"required\":false,\"placeholder\":\"AS13335\"}"
+dummyTargets: "[object Object]"
+industryContext: "Network engineers, ISP security teams, and incident responders use BGP analysis to detect route hijacking, DDoS mitigation bypasses, and nation-state traffic manipulation. Critical for infrastructure defense."
 clues: []
 ---
 

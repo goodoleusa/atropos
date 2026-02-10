@@ -32,12 +32,23 @@ tools:
   - "Wayback Machine"
   - "Shodan"
   - "BuiltWith"
-skills:
+skillsRequired:
+  - "Basic web browsing"
+  - "Understanding of DNS"
+skillsTaught:
   - "DNS enumeration"
   - "Certificate transparency analysis"
   - "Historical data mining"
   - "Technology fingerprinting"
   - "Subdomain discovery"
+learningObjectives:
+  - "{\"goal\":\"osint_investigation\",\"weight\":10,\"description\":\"Master passive reconnaissance techniques\"}"
+  - "{\"goal\":\"penetration_testing\",\"weight\":5,\"description\":\"Learn reconnaissance phase of pentesting\"}"
+targetFields:
+  - "{\"key\":\"domain\",\"label\":\"Domain\",\"type\":\"domain\",\"required\":true,\"placeholder\":\"sysadmincorp.net\"}"
+  - "{\"key\":\"org\",\"label\":\"Organization (optional)\",\"type\":\"org\",\"required\":false,\"placeholder\":\"SysAdmin Corp\"}"
+dummyTargets: "[object Object]"
+industryContext: "Bug bounty hunters and penetration testers always start with passive recon to map attack surface without alerting targets. Essential first phase of any security assessment."
 clues: []
 ---
 

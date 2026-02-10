@@ -32,12 +32,25 @@ tools:
   - "IntelX"
   - "Recorded Future"
   - "DarkOwl"
-skills:
+skillsRequired:
+  - "Basic OSINT"
+  - "Understanding of anonymity networks"
+  - "Operational security awareness"
+skillsTaught:
   - "Breach database searching"
   - "Paste site monitoring"
   - "Dark web marketplace analysis"
   - "Credential exposure assessment"
   - "Ransomware leak tracking"
+learningObjectives:
+  - "{\"goal\":\"dark_web_intelligence\",\"weight\":10,\"description\":\"Master dark web investigation techniques\"}"
+  - "{\"goal\":\"threat_hunting\",\"weight\":7,\"description\":\"Proactive threat detection from underground sources\"}"
+  - "{\"goal\":\"osint_investigation\",\"weight\":5,\"description\":\"Apply OSINT to underground intelligence\"}"
+targetFields:
+  - "{\"key\":\"org\",\"label\":\"Organization\",\"type\":\"org\",\"required\":true,\"placeholder\":\"MegaCorp\"}"
+  - "{\"key\":\"domain\",\"label\":\"Domain (optional)\",\"type\":\"domain\",\"required\":false,\"placeholder\":\"megacorp.com\"}"
+dummyTargets: "[object Object]"
+industryContext: "Threat intelligence teams, fraud prevention, and security operations centers monitor dark web for early warning of attacks, stolen credentials, and data breaches. Law enforcement uses these techniques for cybercrime investigations."
 clues: []
 ---
 

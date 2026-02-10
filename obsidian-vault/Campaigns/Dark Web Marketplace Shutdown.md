@@ -33,7 +33,16 @@ tools:
   - "Blockchain Explorers"
   - "WHOIS/DNS Tools"
   - "Username OSINT"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives:
+  - "{\"goal\":\"dark_web_intelligence\",\"weight\":10,\"description\":\"Master safe dark web investigation techniques\"}"
+  - "{\"goal\":\"crypto_blockchain_investigation\",\"weight\":8,\"description\":\"Advanced cryptocurrency tracing\"}"
+  - "{\"goal\":\"penetration_testing\",\"weight\":6,\"description\":\"Infrastructure analysis and fingerprinting\"}"
+targetFields:
+  - "{\"key\":\"onion_address\",\"label\":\"Onion Address (v3)\",\"type\":\"text\",\"required\":true,\"placeholder\":\"darkmarket...onion\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

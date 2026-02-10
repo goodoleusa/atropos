@@ -32,7 +32,14 @@ tools:
   - "YARA"
   - "Splunk/ELK queries"
   - "Velociraptor"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives: []
+targetFields:
+  - "{\"key\":\"org\",\"label\":\"Organization / Environment\",\"type\":\"org\",\"required\":true,\"placeholder\":\"SysAdmin Corp\"}"
+  - "{\"key\":\"context\",\"label\":\"Incident Context (optional)\",\"type\":\"text\",\"required\":false,\"placeholder\":\"Unusual outbound traffic at 3 AM\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 

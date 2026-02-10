@@ -33,7 +33,15 @@ tools:
   - "Transaction Graph Tools"
   - "Exchange Identification"
   - "Clustering Analysis"
-skills: []
+skillsRequired: []
+skillsTaught: []
+learningObjectives:
+  - "{\"goal\":\"crypto_blockchain_investigation\",\"weight\":10,\"description\":\"Master advanced blockchain forensics\"}"
+  - "{\"goal\":\"financial_investigation\",\"weight\":9,\"description\":\"Learn money laundering detection and tracing\"}"
+targetFields:
+  - "{\"key\":\"wallet_address\",\"label\":\"Source Bitcoin Address\",\"type\":\"text\",\"required\":true,\"placeholder\":\"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa\"}"
+dummyTargets: "[object Object]"
+industryContext: ""
 clues: []
 ---
 
