@@ -58,30 +58,28 @@ export default function TopNav() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-      isScrolled ? 'bg-black/90 backdrop-blur-md border-b border-amber-900/30 py-2' : 'bg-transparent py-4'
+      isScrolled ? 'bg-black/95 backdrop-blur-md border-b border-amber-900/30 py-1' : 'bg-[#0a0500]/80 py-2'
     }`}>
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
+      <div className="container mx-auto px-4 flex items-center justify-between h-12">
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth">
           {allItems.map((item) => {
-            const Icon = item.icon;
             const isActive = location === item.path;
             
             return (
               <Link key={item.path} href={item.path}>
                 <button
-                  className={`flex items-center gap-2 transition-colors whitespace-nowrap ${
-                    isActive ? 'text-amber-500' : 'text-stone-400 hover:text-stone-200'
+                  className={`px-3 py-1.5 text-xs font-bold tracking-wider transition-all whitespace-nowrap uppercase font-orbitron border-b-2 ${
+                    isActive 
+                      ? 'text-amber-500 border-amber-500 bg-amber-500/5' 
+                      : 'text-stone-500 border-transparent hover:text-stone-300 hover:bg-stone-800/30'
                   }`}
                   data-testid={`top-nav-${item.label.toLowerCase()}`}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm font-bold tracking-tight hidden md:inline uppercase font-orbitron">
-                    {item.label}
-                  </span>
+                  {item.label}
                   {item.badge && (
-                    <Badge className="bg-purple-600 text-[10px] h-4 px-1 min-w-[16px] flex items-center justify-center">
+                    <span className="ml-1.5 inline-flex items-center justify-center bg-purple-600 text-white text-[9px] h-3.5 px-1 rounded-sm">
                       {item.badge}
-                    </Badge>
+                    </span>
                   )}
                 </button>
               </Link>
@@ -89,21 +87,24 @@ export default function TopNav() {
           })}
         </div>
 
-        <div className="flex items-center gap-3 ml-4">
-          <div className="hidden sm:flex flex-col items-end mr-2">
-            <span className="text-[10px] text-stone-500 uppercase font-mono">Lv.{gameState.level || 1}</span>
-            <div className="w-16 h-1 bg-stone-800 rounded-full mt-0.5">
+        <div className="flex items-center gap-4 ml-4 shrink-0">
+          <div className="hidden sm:flex flex-col items-end">
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-stone-500 uppercase font-mono">Lv.{gameState.level || 1}</span>
+              <span className="text-[9px] text-amber-600 font-mono">{(gameState.xp || 0).toLocaleString()} XP</span>
+            </div>
+            <div className="w-20 h-1 bg-stone-900 rounded-full mt-0.5 border border-stone-800/50">
               <div 
-                className="h-full bg-amber-500 rounded-full" 
+                className="h-full bg-gradient-to-r from-amber-700 to-amber-500 rounded-full" 
                 style={{ width: `${Math.min(100, ((gameState.xp || 0) % 250) / 250 * 100)}%` }}
               />
             </div>
           </div>
           
           <Link href="/profile">
-            <Button variant="ghost" size="icon" className="rounded-full bg-stone-900/50 border border-stone-800 w-8 h-8">
-              <User className="w-4 h-4 text-teal-400" />
-            </Button>
+            <button className={`p-1.5 rounded transition-colors ${location === '/profile' ? 'text-teal-400 bg-teal-400/5' : 'text-stone-500 hover:text-teal-400'}`}>
+              <User className="w-4 h-4" />
+            </button>
           </Link>
         </div>
       </div>
