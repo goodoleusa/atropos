@@ -1,37 +1,39 @@
 ---
-id: operation_shadow_network
-name: Operation Shadow Network
-type: campaign
-difficulty: intermediate
+id: "operation_shadow_network"
+name: "Operation Shadow Network"
+type: "campaign"
+difficulty: "intermediate"
 tags:
-  - Human Trafficking
-  - Social Media OSINT
-  - Cryptocurrency
-  - Network Mapping
-icon: 🕵️
-color: red
-estimatedTime: 60-90 min
-up: [[../INDEX|INDEX]]
-next: [[Map social media recruitment network]]
+  - "Human Trafficking"
+  - "Social Media OSINT"
+  - "Cryptocurrency"
+  - "Network Mapping"
+icon: "🕵️"
+color: "red"
+estimatedTime: "60-90 min"
+up:
+  - "[[../INDEX|INDEX]]"
+next:
+  - "[[Map social media recruitment network]]"
 objectives:
-  - Map social media recruitment network
-  - Identify red flags in fake modeling agencies
-  - Trace cryptocurrency payments through blockchain
-  - Create law enforcement-ready intelligence report
-  - Understand ethical boundaries in OSINT investigations
+  - "Map social media recruitment network"
+  - "Identify red flags in fake modeling agencies"
+  - "Trace cryptocurrency payments through blockchain"
+  - "Create law enforcement-ready intelligence report"
+  - "Understand ethical boundaries in OSINT investigations"
 tools:
-  - Instagram OSINT
-  - Reverse Image Search
-  - Blockchain Explorers
-  - Network Visualization
-  - Report Writing
+  - "Instagram OSINT"
+  - "Reverse Image Search"
+  - "Blockchain Explorers"
+  - "Network Visualization"
+  - "Report Writing"
 skills:
-  - Social media forensics
-  - Recruitment pattern recognition
-  - Cryptocurrency tracing
-  - Network mapping
-  - Evidence documentation for law enforcement
-  - Ethical investigation boundaries
+  - "Social media forensics"
+  - "Recruitment pattern recognition"
+  - "Cryptocurrency tracing"
+  - "Network mapping"
+  - "Evidence documentation for law enforcement"
+  - "Ethical investigation boundaries"
 clues: []
 ---
 

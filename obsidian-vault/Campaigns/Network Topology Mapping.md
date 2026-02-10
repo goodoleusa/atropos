@@ -1,29 +1,31 @@
 ---
-id: network_topology
-name: Network Topology Mapping
-type: campaign
-difficulty: advanced
+id: "network_topology"
+name: "Network Topology Mapping"
+type: "campaign"
+difficulty: "advanced"
 tags:
-  - Network
-  - Infrastructure
-  - Mapping
-icon: 🗺️
-color: blue
-estimatedTime: 45-60 min
-up: [[../INDEX|INDEX]]
-next: [[Identify network segments]]
+  - "Network"
+  - "Infrastructure"
+  - "Mapping"
+icon: "🗺️"
+color: "blue"
+estimatedTime: "45-60 min"
+up:
+  - "[[../INDEX|INDEX]]"
+next:
+  - "[[Identify network segments]]"
 objectives:
-  - Identify network segments
-  - Map routing topology
-  - Find critical infrastructure
-  - Document trust relationships
-  - Create network diagram
+  - "Identify network segments"
+  - "Map routing topology"
+  - "Find critical infrastructure"
+  - "Document trust relationships"
+  - "Create network diagram"
 tools:
-  - arp-scan
-  - traceroute
-  - nbtscan
-  - enum4linux
-  - BloodHound
+  - "arp-scan"
+  - "traceroute"
+  - "nbtscan"
+  - "enum4linux"
+  - "BloodHound"
 skills: []
 clues: []
 ---

@@ -1,31 +1,33 @@
 ---
-id: victim_geolocation
-name: Victim Identification Protocol
-type: campaign
-difficulty: expert
+id: "victim_geolocation"
+name: "Victim Identification Protocol"
+type: "campaign"
+difficulty: "expert"
 tags:
-  - Geolocation
-  - Image Forensics
-  - Victim Identification
-  - OSINT
-icon: 📍
-color: blue
-estimatedTime: 120+ min
-up: [[../INDEX|INDEX]]
-next: [[Master visual geolocation techniques]]
+  - "Geolocation"
+  - "Image Forensics"
+  - "Victim Identification"
+  - "OSINT"
+icon: "📍"
+color: "blue"
+estimatedTime: "120+ min"
+up:
+  - "[[../INDEX|INDEX]]"
+next:
+  - "[[Master visual geolocation techniques]]"
 objectives:
-  - Master visual geolocation techniques
-  - Learn image forensics and metadata analysis
-  - Understand temporal analysis methods
-  - Practice collaborative verification
-  - Create law enforcement-ready reports
+  - "Master visual geolocation techniques"
+  - "Learn image forensics and metadata analysis"
+  - "Understand temporal analysis methods"
+  - "Practice collaborative verification"
+  - "Create law enforcement-ready reports"
 tools:
-  - Google Earth Pro
-  - Google Street View
-  - Sun position calculators
-  - Flora/fauna databases
-  - Architecture references
-  - GeoGuessr techniques
+  - "Google Earth Pro"
+  - "Google Street View"
+  - "Sun position calculators"
+  - "Flora/fauna databases"
+  - "Architecture references"
+  - "GeoGuessr techniques"
 skills: []
 clues: []
 ---

@@ -1,9 +1,10 @@
 ---
-id: intel-fragment-7
-type: mystical-message
-category: financial
-msg_type: clue
-up: [[../INDEX|INDEX]]
+id: "intel-fragment-7"
+type: "mystical-message"
+category: "financial"
+msg_type: "clue"
+up:
+  - "[[../INDEX|INDEX]]"
 ---
 
 # intel-fragment-7

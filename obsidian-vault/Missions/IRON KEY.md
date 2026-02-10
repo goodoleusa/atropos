@@ -1,12 +1,13 @@
 ---
-id: iron-key
-codename: IRON KEY
-type: mission
-phase: access
-difficulty: operative
-handler: cipher
-up: [[../INDEX|INDEX]]
-status: available
+id: "iron-key"
+codename: "IRON KEY"
+type: "mission"
+phase: "access"
+difficulty: "operative"
+handler: "cipher"
+up:
+  - "[[../INDEX|INDEX]]"
+status: "available"
 ---
 
 # Mission: IRON KEY

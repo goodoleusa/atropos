@@ -1,30 +1,32 @@
 ---
-id: crypto_laundering_trace
-name: Cryptocurrency Laundering Investigation
-type: campaign
-difficulty: advanced
+id: "crypto_laundering_trace"
+name: "Cryptocurrency Laundering Investigation"
+type: "campaign"
+difficulty: "advanced"
 tags:
-  - Cryptocurrency
-  - Money Laundering
-  - AML
-  - Financial Crime
-icon: 💰
-color: yellow
-estimatedTime: 60-90 min
-up: [[../INDEX|INDEX]]
-next: [[Analyze Bitcoin transaction patterns]]
+  - "Cryptocurrency"
+  - "Money Laundering"
+  - "AML"
+  - "Financial Crime"
+icon: "💰"
+color: "yellow"
+estimatedTime: "60-90 min"
+up:
+  - "[[../INDEX|INDEX]]"
+next:
+  - "[[Analyze Bitcoin transaction patterns]]"
 objectives:
-  - Analyze Bitcoin transaction patterns
-  - Identify cryptocurrency mixers/tumblers
-  - Trace funds to exchange cash-outs
-  - Build financial intelligence report
-  - Learn FBI blockchain forensics methodology
+  - "Analyze Bitcoin transaction patterns"
+  - "Identify cryptocurrency mixers/tumblers"
+  - "Trace funds to exchange cash-outs"
+  - "Build financial intelligence report"
+  - "Learn FBI blockchain forensics methodology"
 tools:
-  - Blockchain Explorers
-  - WalletExplorer
-  - Transaction Graph Tools
-  - Exchange Identification
-  - Clustering Analysis
+  - "Blockchain Explorers"
+  - "WalletExplorer"
+  - "Transaction Graph Tools"
+  - "Exchange Identification"
+  - "Clustering Analysis"
 skills: []
 clues: []
 ---
