@@ -10,10 +10,16 @@ tags:
 icon: "🏢"
 color: "amber"
 estimatedTime: "45-60 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Identify corporate registration details]]"
+sibling: []
+prev: []
 next:
   - "[[Identify corporate registration details]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Identify corporate registration details"
   - "Map subsidiary relationships"

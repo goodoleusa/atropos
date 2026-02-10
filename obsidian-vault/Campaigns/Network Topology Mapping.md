@@ -10,10 +10,16 @@ tags:
 icon: "🗺️"
 color: "blue"
 estimatedTime: "45-60 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Identify network segments]]"
+sibling: []
+prev: []
 next:
   - "[[Identify network segments]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Identify network segments"
   - "Map routing topology"

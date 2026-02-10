@@ -58,8 +58,13 @@ async function exportToObsidian() {
       icon: campaign.icon,
       color: campaign.color,
       estimatedTime: campaign.estimatedTime,
-      up: ['[[INDEX|INDEX]]'],
+      parent: ['[[INDEX|INDEX]]'],
+      child: campaign.objectives?.[0] ? [`[[${campaign.objectives[0].replace(/"/g, '')}]]`] : [],
+      sibling: [],
+      prev: [],
       next: campaign.objectives?.[0] ? [`[[${campaign.objectives[0].replace(/"/g, '')}]]`] : [],
+      left_side_friend: [],
+      right_side_friend: [],
       objectives: campaign.objectives || [],
       tools: campaign.tools || [],
       skills: campaign.skillsTaught || [],
@@ -104,7 +109,13 @@ ${campaign.starterPrompt}
       phase: mission.phase,
       difficulty: mission.difficulty,
       handler: mission.handler,
-      up: ['[[Missions Index|Missions Index]]'],
+      parent: ['[[Missions Index|Missions Index]]'],
+      child: mission.objectives?.map((o: any) => `[[${o.description.replace(/"/g, '')}]]`) || [],
+      sibling: [],
+      prev: [],
+      next: [],
+      left_side_friend: [],
+      right_side_friend: [],
       status: 'available'
     });
 
@@ -135,7 +146,13 @@ ${mission.objectives.map((o: any) => `- [[${o.description.replace(/"/g, '')}]]`)
       type: 'mystical-message',
       category: msg.category,
       msg_type: msg.type,
-      up: ['[[The Void|The Void]]']
+      parent: ['[[The Void|The Void]]'],
+      child: [],
+      sibling: [],
+      prev: [],
+      next: [],
+      left_side_friend: [],
+      right_side_friend: []
     });
 
     const content = `---

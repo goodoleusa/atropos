@@ -10,10 +10,16 @@ tags:
 icon: "🕸️"
 color: "gray"
 estimatedTime: "30-45 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Check breach databases]]"
+sibling: []
+prev: []
 next:
   - "[[Check breach databases]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Check breach databases"
   - "Search paste sites"

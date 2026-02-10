@@ -10,10 +10,16 @@ tags:
 icon: "🎯"
 color: "orange"
 estimatedTime: "60-90 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Formulate hunting hypotheses]]"
+sibling: []
+prev: []
 next:
   - "[[Formulate hunting hypotheses]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Formulate hunting hypotheses"
   - "Analyze log sources"

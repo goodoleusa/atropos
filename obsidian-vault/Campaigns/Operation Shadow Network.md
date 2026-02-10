@@ -11,10 +11,16 @@ tags:
 icon: "🕵️"
 color: "red"
 estimatedTime: "60-90 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Map social media recruitment network]]"
+sibling: []
+prev: []
 next:
   - "[[Map social media recruitment network]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Map social media recruitment network"
   - "Identify red flags in fake modeling agencies"

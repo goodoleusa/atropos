@@ -11,10 +11,16 @@ tags:
 icon: "💰"
 color: "yellow"
 estimatedTime: "60-90 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Analyze Bitcoin transaction patterns]]"
+sibling: []
+prev: []
 next:
   - "[[Analyze Bitcoin transaction patterns]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Analyze Bitcoin transaction patterns"
   - "Identify cryptocurrency mixers/tumblers"

@@ -5,8 +5,18 @@ type: "mission"
 phase: "c2"
 difficulty: "shadow"
 handler: "phoenix"
-up:
+parent:
   - "[[Missions Index|Missions Index]]"
+child:
+  - "[[Initialize the beacon]]"
+  - "[[Receive tasking from C2]]"
+  - "[[Adjust beacon timing for stealth]]"
+  - "[[Exfiltrate test data]]"
+sibling: []
+prev: []
+next: []
+left_side_friend: []
+right_side_friend: []
 status: "available"
 ---
 

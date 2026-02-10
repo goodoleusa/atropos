@@ -10,10 +10,16 @@ tags:
 icon: "🔍"
 color: "red"
 estimatedTime: "30-45 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Discover live hosts]]"
+sibling: []
+prev: []
 next:
   - "[[Discover live hosts]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Discover live hosts"
   - "Enumerate open ports"

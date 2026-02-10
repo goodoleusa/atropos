@@ -5,8 +5,18 @@ type: "mission"
 phase: "access"
 difficulty: "operative"
 handler: "cipher"
-up:
+parent:
   - "[[Missions Index|Missions Index]]"
+child:
+  - "[[Scan molten_core for open ports]]"
+  - "[[Crack the admin hash (MD5)]]"
+  - "[[Load and analyze the exploit]]"
+  - "[[Test SQL injection vulnerability]]"
+sibling: []
+prev: []
+next: []
+left_side_friend: []
+right_side_friend: []
 status: "available"
 ---
 

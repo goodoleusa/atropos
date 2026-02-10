@@ -10,10 +10,16 @@ tags:
 icon: "🚨"
 color: "red"
 estimatedTime: "60-90 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Contain the threat]]"
+sibling: []
+prev: []
 next:
   - "[[Contain the threat]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Contain the threat"
   - "Preserve evidence"

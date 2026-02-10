@@ -3,8 +3,14 @@ id: "prophecy-001"
 type: "mystical-message"
 category: "void"
 msg_type: "lore"
-up:
+parent:
   - "[[The Void|The Void]]"
+child: []
+sibling: []
+prev: []
+next: []
+left_side_friend: []
+right_side_friend: []
 ---
 
 # prophecy-001
