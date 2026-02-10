@@ -1,29 +1,29 @@
 ---
-id: "phishing_analysis"
-name: "Phishing Email Analysis"
-type: "campaign"
-difficulty: "beginner"
+id: phishing_analysis
+name: Phishing Email Analysis
+type: campaign
+difficulty: beginner
 tags:
-  - "Phishing"
-  - "Email"
-  - "Analysis"
-icon: "📧"
-color: "amber"
-estimatedTime: "20-30 min"
+  - Phishing
+  - Email
+  - Analysis
+icon: 📧
+color: amber
+estimatedTime: 20-30 min
 up: [[INDEX]]
 next: [[Parse email headers]]
 objectives:
-  - "Parse email headers"
-  - "Analyze infrastructure"
-  - "Check URL reputation"
-  - "Extract IOCs"
-  - "Create detections"
+  - Parse email headers
+  - Analyze infrastructure
+  - Check URL reputation
+  - Extract IOCs
+  - Create detections
 tools:
-  - "MXToolbox"
-  - "URLscan.io"
-  - "PhishTank"
-  - "VirusTotal"
-  - "WHOIS"
+  - MXToolbox
+  - URLscan.io
+  - PhishTank
+  - VirusTotal
+  - WHOIS
 skills: []
 clues: []
 ---

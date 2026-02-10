@@ -1,35 +1,35 @@
 ---
-id: "dark_web_intel"
-name: "Dark Web Intelligence"
-type: "campaign"
-difficulty: "advanced"
+id: dark_web_intel
+name: Dark Web Intelligence
+type: campaign
+difficulty: advanced
 tags:
-  - "Dark Web"
-  - "Threat Intel"
-  - "Breaches"
-icon: "🕸️"
-color: "gray"
-estimatedTime: "30-45 min"
+  - Dark Web
+  - Threat Intel
+  - Breaches
+icon: 🕸️
+color: gray
+estimatedTime: 30-45 min
 up: [[INDEX]]
 next: [[Check breach databases]]
 objectives:
-  - "Check breach databases"
-  - "Search paste sites"
-  - "Monitor threat actor chatter"
-  - "Track ransomware leaks"
-  - "Document exposure"
+  - Check breach databases
+  - Search paste sites
+  - Monitor threat actor chatter
+  - Track ransomware leaks
+  - Document exposure
 tools:
-  - "Have I Been Pwned"
-  - "DeHashed"
-  - "IntelX"
-  - "Recorded Future"
-  - "DarkOwl"
+  - Have I Been Pwned
+  - DeHashed
+  - IntelX
+  - Recorded Future
+  - DarkOwl
 skills:
-  - "Breach database searching"
-  - "Paste site monitoring"
-  - "Dark web marketplace analysis"
-  - "Credential exposure assessment"
-  - "Ransomware leak tracking"
+  - Breach database searching
+  - Paste site monitoring
+  - Dark web marketplace analysis
+  - Credential exposure assessment
+  - Ransomware leak tracking
 clues: []
 ---
 

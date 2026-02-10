@@ -12,17 +12,18 @@ function formatYAML(data: any): string {
       if (value.length === 0) {
         lines.push(`${key}: []`);
       } else {
+        // Multi-entry fields in Obsidian properties: 
+        // Use block list format with NO quotes around wikilinks to keep them clickable
         lines.push(`${key}:`);
         value.forEach(item => {
           if (typeof item === 'object') {
-            lines.push(`  - "${JSON.stringify(item).replace(/"/g, '\\"')}"`);
+            lines.push(`  - ${JSON.stringify(item)}`);
           } else {
             const s = String(item);
-            // In Obsidian properties/YAML, wikilinks are clickable when NOT quoted.
             if (s.includes('[[') && s.includes(']]')) {
               lines.push(`  - ${s}`);
             } else {
-              lines.push(`  - "${s.replace(/"/g, '')}"`);
+              lines.push(`  - ${s}`);
             }
           }
         });
@@ -32,7 +33,7 @@ function formatYAML(data: any): string {
       if (s.includes('[[') && s.includes(']]')) {
         lines.push(`${key}: ${s}`);
       } else {
-        lines.push(`${key}: "${s.replace(/"/g, '')}"`);
+        lines.push(`${key}: ${s}`);
       }
     }
   }

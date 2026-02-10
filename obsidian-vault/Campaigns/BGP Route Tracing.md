@@ -1,34 +1,34 @@
 ---
-id: "bgp_trace"
-name: "BGP Route Tracing"
-type: "campaign"
-difficulty: "advanced"
+id: bgp_trace
+name: BGP Route Tracing
+type: campaign
+difficulty: advanced
 tags:
-  - "Network"
-  - "BGP"
-  - "Infrastructure"
-icon: "🌐"
-color: "teal"
-estimatedTime: "30-45 min"
+  - Network
+  - BGP
+  - Infrastructure
+icon: 🌐
+color: teal
+estimatedTime: 30-45 min
 up: [[INDEX]]
 next: [[Identify origin ASN]]
 objectives:
-  - "Identify origin ASN"
-  - "Map BGP relationships"
-  - "Trace global routing paths"
-  - "Identify transit providers"
-  - "Detect anomalies"
+  - Identify origin ASN
+  - Map BGP relationships
+  - Trace global routing paths
+  - Identify transit providers
+  - Detect anomalies
 tools:
-  - "BGP Looking Glass"
-  - "RIPE RIS"
-  - "RouteViews"
-  - "Hurricane Electric BGP"
-  - "PeeringDB"
+  - BGP Looking Glass
+  - RIPE RIS
+  - RouteViews
+  - Hurricane Electric BGP
+  - PeeringDB
 skills:
-  - "BGP analysis"
-  - "AS path interpretation"
-  - "Route hijacking detection"
-  - "Peering relationship mapping"
+  - BGP analysis
+  - AS path interpretation
+  - Route hijacking detection
+  - Peering relationship mapping
 clues: []
 ---
 
