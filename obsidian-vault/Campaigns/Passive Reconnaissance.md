@@ -1,35 +1,35 @@
 ---
-id: "passive_recon"
-name: "Passive Reconnaissance"
-type: "campaign"
-difficulty: "beginner"
+id: passive_recon
+name: Passive Reconnaissance
+type: campaign
+difficulty: beginner
 tags:
-  - "Recon"
-  - "OSINT"
-  - "DNS"
-icon: "👁️"
-color: "purple"
-estimatedTime: "20-30 min"
+  - Recon
+  - OSINT
+  - DNS
+icon: 👁️
+color: purple
+estimatedTime: 20-30 min
 up: [[INDEX]]
 next: [[Enumerate DNS records]]
 objectives:
-  - "Enumerate DNS records"
-  - "Analyze certificate transparency"
-  - "Find historical snapshots"
-  - "Identify email patterns"
-  - "Map technology stack"
+  - Enumerate DNS records
+  - Analyze certificate transparency
+  - Find historical snapshots
+  - Identify email patterns
+  - Map technology stack
 tools:
-  - "SecurityTrails"
-  - "crt.sh"
-  - "Wayback Machine"
-  - "Shodan"
-  - "BuiltWith"
+  - SecurityTrails
+  - crt.sh
+  - Wayback Machine
+  - Shodan
+  - BuiltWith
 skills:
-  - "DNS enumeration"
-  - "Certificate transparency analysis"
-  - "Historical data mining"
-  - "Technology fingerprinting"
-  - "Subdomain discovery"
+  - DNS enumeration
+  - Certificate transparency analysis
+  - Historical data mining
+  - Technology fingerprinting
+  - Subdomain discovery
 clues: []
 ---
 

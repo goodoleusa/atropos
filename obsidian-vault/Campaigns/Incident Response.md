@@ -1,29 +1,29 @@
 ---
-id: "incident_response"
-name: "Incident Response"
-type: "campaign"
-difficulty: "expert"
+id: incident_response
+name: Incident Response
+type: campaign
+difficulty: expert
 tags:
-  - "DFIR"
-  - "Blue Team"
-  - "Crisis"
-icon: "🚨"
-color: "red"
-estimatedTime: "60-90 min"
+  - DFIR
+  - Blue Team
+  - Crisis
+icon: 🚨
+color: red
+estimatedTime: 60-90 min
 up: [[INDEX]]
 next: [[Contain the threat]]
 objectives:
-  - "Contain the threat"
-  - "Preserve evidence"
-  - "Assess scope"
-  - "Identify root cause"
-  - "Plan eradication"
+  - Contain the threat
+  - Preserve evidence
+  - Assess scope
+  - Identify root cause
+  - Plan eradication
 tools:
-  - "Network isolation"
-  - "Memory forensics"
-  - "Log analysis"
-  - "Backup restoration"
-  - "IOC hunting"
+  - Network isolation
+  - Memory forensics
+  - Log analysis
+  - Backup restoration
+  - IOC hunting
 skills: []
 clues: []
 ---

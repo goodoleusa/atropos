@@ -1,29 +1,29 @@
 ---
-id: "threat_hunting"
-name: "Threat Hunting"
-type: "campaign"
-difficulty: "expert"
+id: threat_hunting
+name: Threat Hunting
+type: campaign
+difficulty: expert
 tags:
-  - "Blue Team"
-  - "DFIR"
-  - "Detection"
-icon: "🎯"
-color: "orange"
-estimatedTime: "60-90 min"
+  - Blue Team
+  - DFIR
+  - Detection
+icon: 🎯
+color: orange
+estimatedTime: 60-90 min
 up: [[INDEX]]
 next: [[Formulate hunting hypotheses]]
 objectives:
-  - "Formulate hunting hypotheses"
-  - "Analyze log sources"
-  - "Identify IOCs"
-  - "Trace lateral movement"
-  - "Find persistence mechanisms"
+  - Formulate hunting hypotheses
+  - Analyze log sources
+  - Identify IOCs
+  - Trace lateral movement
+  - Find persistence mechanisms
 tools:
-  - "RITA"
-  - "Sigma rules"
-  - "YARA"
-  - "Splunk/ELK queries"
-  - "Velociraptor"
+  - RITA
+  - Sigma rules
+  - YARA
+  - Splunk/ELK queries
+  - Velociraptor
 skills: []
 clues: []
 ---

@@ -1,8 +1,8 @@
 ---
-id: "intel-fragment-7"
-type: "mystical-message"
-category: "financial"
-msg_type: "clue"
+id: intel-fragment-7
+type: mystical-message
+category: financial
+msg_type: clue
 up: [[The Void]]
 ---
 

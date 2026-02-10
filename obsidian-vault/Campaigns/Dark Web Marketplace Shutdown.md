@@ -1,30 +1,30 @@
 ---
-id: "dark_web_marketplace_shutdown"
-name: "Dark Web Marketplace Shutdown"
-type: "campaign"
-difficulty: "advanced"
+id: dark_web_marketplace_shutdown
+name: Dark Web Marketplace Shutdown
+type: campaign
+difficulty: advanced
 tags:
-  - "Dark Web"
-  - "Infrastructure Mapping"
-  - "Cryptocurrency"
-  - "Server Analysis"
-icon: "🌐"
-color: "purple"
-estimatedTime: "90-120 min"
+  - Dark Web
+  - Infrastructure Mapping
+  - Cryptocurrency
+  - Server Analysis
+icon: 🌐
+color: purple
+estimatedTime: 90-120 min
 up: [[INDEX]]
 next: [[Safely investigate dark web infrastructure]]
 objectives:
-  - "Safely investigate dark web infrastructure"
-  - "Map server hosting and technical details"
-  - "Trace cryptocurrency payment flows"
-  - "Identify operators through opsec failures"
-  - "Create law enforcement intelligence package"
+  - Safely investigate dark web infrastructure
+  - Map server hosting and technical details
+  - Trace cryptocurrency payment flows
+  - Identify operators through opsec failures
+  - Create law enforcement intelligence package
 tools:
-  - "OnionScan"
-  - "Dark Web Search Engines"
-  - "Blockchain Explorers"
-  - "WHOIS/DNS Tools"
-  - "Username OSINT"
+  - OnionScan
+  - Dark Web Search Engines
+  - Blockchain Explorers
+  - WHOIS/DNS Tools
+  - Username OSINT
 skills: []
 clues: []
 ---

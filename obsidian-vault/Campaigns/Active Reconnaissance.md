@@ -1,29 +1,29 @@
 ---
-id: "active_recon"
-name: "Active Reconnaissance"
-type: "campaign"
-difficulty: "intermediate"
+id: active_recon
+name: Active Reconnaissance
+type: campaign
+difficulty: intermediate
 tags:
-  - "Recon"
-  - "Scanning"
-  - "Enumeration"
-icon: "🔍"
-color: "red"
-estimatedTime: "30-45 min"
+  - Recon
+  - Scanning
+  - Enumeration
+icon: 🔍
+color: red
+estimatedTime: 30-45 min
 up: [[INDEX]]
 next: [[Discover live hosts]]
 objectives:
-  - "Discover live hosts"
-  - "Enumerate open ports"
-  - "Identify services and versions"
-  - "Find potential vulnerabilities"
-  - "Document attack surface"
+  - Discover live hosts
+  - Enumerate open ports
+  - Identify services and versions
+  - Find potential vulnerabilities
+  - Document attack surface
 tools:
-  - "nmap"
-  - "masscan"
-  - "netcat"
-  - "nikto"
-  - "gobuster"
+  - nmap
+  - masscan
+  - netcat
+  - nikto
+  - gobuster
 skills: []
 clues: []
 ---

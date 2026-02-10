@@ -29,9 +29,8 @@ export default function QuickNav() {
   const handleToggle = (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
-      e.stopPropagation();
     }
-    setExpanded(!expanded);
+    setExpanded(prev => !prev);
   };
 
   // Listen for global toggle event

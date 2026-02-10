@@ -1,34 +1,34 @@
 ---
-id: "shell_corp_osint"
-name: "Shell Corp Investigation"
-type: "campaign"
-difficulty: "intermediate"
+id: shell_corp_osint
+name: Shell Corp Investigation
+type: campaign
+difficulty: intermediate
 tags:
-  - "OSINT"
-  - "Corporate Intel"
-  - "Financial"
-icon: "🏢"
-color: "amber"
-estimatedTime: "45-60 min"
+  - OSINT
+  - Corporate Intel
+  - Financial
+icon: 🏢
+color: amber
+estimatedTime: 45-60 min
 up: [[INDEX]]
 next: [[Identify corporate registration details]]
 objectives:
-  - "Identify corporate registration details"
-  - "Map subsidiary relationships"
-  - "Find beneficial ownership"
-  - "Trace financial connections"
-  - "Build personnel dossiers"
+  - Identify corporate registration details
+  - Map subsidiary relationships
+  - Find beneficial ownership
+  - Trace financial connections
+  - Build personnel dossiers
 tools:
-  - "WHOIS"
-  - "SEC EDGAR"
-  - "OpenCorporates"
-  - "LinkedIn OSINT"
-  - "Domain analysis"
+  - WHOIS
+  - SEC EDGAR
+  - OpenCorporates
+  - LinkedIn OSINT
+  - Domain analysis
 skills:
-  - "Corporate registry navigation"
-  - "Beneficial ownership analysis"
-  - "Entity relationship mapping"
-  - "Financial document interpretation"
+  - Corporate registry navigation
+  - Beneficial ownership analysis
+  - Entity relationship mapping
+  - Financial document interpretation
 clues: []
 ---
 
