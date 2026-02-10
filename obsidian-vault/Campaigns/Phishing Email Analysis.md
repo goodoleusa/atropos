@@ -10,10 +10,16 @@ tags:
 icon: "📧"
 color: "amber"
 estimatedTime: "20-30 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Parse email headers]]"
+sibling: []
+prev: []
 next:
   - "[[Parse email headers]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Parse email headers"
   - "Analyze infrastructure"

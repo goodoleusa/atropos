@@ -11,10 +11,16 @@ tags:
 icon: "🌐"
 color: "purple"
 estimatedTime: "90-120 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Safely investigate dark web infrastructure]]"
+sibling: []
+prev: []
 next:
   - "[[Safely investigate dark web infrastructure]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Safely investigate dark web infrastructure"
   - "Map server hosting and technical details"

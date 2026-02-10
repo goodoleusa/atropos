@@ -10,10 +10,16 @@ tags:
 icon: "₿"
 color: "yellow"
 estimatedTime: "45-60 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Analyze transaction flow]]"
+sibling: []
+prev: []
 next:
   - "[[Analyze transaction flow]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Analyze transaction flow"
   - "Cluster addresses"

@@ -11,10 +11,16 @@ tags:
 icon: "📍"
 color: "blue"
 estimatedTime: "120+ min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Master visual geolocation techniques]]"
+sibling: []
+prev: []
 next:
   - "[[Master visual geolocation techniques]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Master visual geolocation techniques"
   - "Learn image forensics and metadata analysis"

@@ -5,8 +5,18 @@ type: "mission"
 phase: "recon"
 difficulty: "recruit"
 handler: "ghost"
-up:
+parent:
   - "[[Missions Index|Missions Index]]"
+child:
+  - "[[Enumerate DNS records of sysadmin.corp]]"
+  - "[[Investigate domain registration]]"
+  - "[[Run full reconnaissance]]"
+  - "[[Discover hidden directories]]"
+sibling: []
+prev: []
+next: []
+left_side_friend: []
+right_side_friend: []
 status: "available"
 ---
 

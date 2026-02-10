@@ -10,10 +10,16 @@ tags:
 icon: "🎭"
 color: "pink"
 estimatedTime: "45-60 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Map org structure]]"
+sibling: []
+prev: []
 next:
   - "[[Map org structure]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Map org structure"
   - "Profile key personnel"

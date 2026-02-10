@@ -10,10 +10,16 @@ tags:
 icon: "👁️"
 color: "purple"
 estimatedTime: "20-30 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Enumerate DNS records]]"
+sibling: []
+prev: []
 next:
   - "[[Enumerate DNS records]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Enumerate DNS records"
   - "Analyze certificate transparency"

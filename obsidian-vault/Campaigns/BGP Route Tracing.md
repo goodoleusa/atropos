@@ -10,10 +10,16 @@ tags:
 icon: "🌐"
 color: "teal"
 estimatedTime: "30-45 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Identify origin ASN]]"
+sibling: []
+prev: []
 next:
   - "[[Identify origin ASN]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Identify origin ASN"
   - "Map BGP relationships"

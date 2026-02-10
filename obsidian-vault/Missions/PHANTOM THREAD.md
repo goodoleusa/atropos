@@ -5,8 +5,19 @@ type: "mission"
 phase: "persist"
 difficulty: "specialist"
 handler: "oracle"
-up:
+parent:
   - "[[Missions Index|Missions Index]]"
+child:
+  - "[[Read the .secrets file]]"
+  - "[[Examine route configuration]]"
+  - "[[Check active network connections]]"
+  - "[[Map the network path to C2]]"
+  - "[[Enumerate all users]]"
+sibling: []
+prev: []
+next: []
+left_side_friend: []
+right_side_friend: []
 status: "available"
 ---
 

@@ -11,10 +11,16 @@ tags:
 icon: "🏢"
 color: "teal"
 estimatedTime: "75-90 min"
-up:
+parent:
   - "[[INDEX|INDEX]]"
+child:
+  - "[[Navigate international corporate registries]]"
+sibling: []
+prev: []
 next:
   - "[[Navigate international corporate registries]]"
+left_side_friend: []
+right_side_friend: []
 objectives:
   - "Navigate international corporate registries"
   - "Trace beneficial ownership through shell companies"

@@ -5,8 +5,17 @@ type: "mission"
 phase: "exfil"
 difficulty: "shadow"
 handler: "ghost"
-up:
+parent:
   - "[[Missions Index|Missions Index]]"
+child:
+  - "[[Extract the secrets table]]"
+  - "[[Exfiltrate via C2 channel]]"
+  - "[[Clean up traces]]"
+sibling: []
+prev: []
+next: []
+left_side_friend: []
+right_side_friend: []
 status: "available"
 ---
 
