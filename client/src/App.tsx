@@ -72,10 +72,7 @@ function App() {
           <ReportProvider>
             <GlobalEffectsProvider>
               <Toaster />
-              <TopNav />
-              <div className="pt-16 sm:pt-0">
-                <Router />
-              </div>
+              <Router />
               <GlobalEffectsOverlay />
               <AchievementManager />
               <QuickNav />
