@@ -157,10 +157,9 @@ export async function registerRoutes(
     }
   });
   
-  // ==================== Admin Agent Config API ====================
   app.get("/api/admin/agent-config", async (req, res) => {
     try {
-      const accessToken = req.headers['x-access-token'] as string;
+      const accessToken = req.headers['x-access-token'] as string || req.cookies.APP_ACCESS_TOKEN;
       if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
         return res.status(403).json({ error: "Admin access required" });
       }
@@ -182,7 +181,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/agent-config", async (req, res) => {
     try {
-      const accessToken = req.headers['x-access-token'] as string;
+      const accessToken = req.headers['x-access-token'] as string || req.cookies.APP_ACCESS_TOKEN;
       if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
         return res.status(403).json({ error: "Admin access required" });
       }
@@ -194,7 +193,8 @@ export async function registerRoutes(
         name: agentId,
         content: JSON.stringify({ ...config, updatedAt: new Date().toISOString() }),
         category: 'system',
-        isActive: true
+        isActive: true,
+        version: 1
       });
       res.json({ success: true });
     } catch (error) {
@@ -205,7 +205,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/wandb-config", async (req, res) => {
     try {
-      const accessToken = req.headers['x-access-token'] as string;
+      const accessToken = req.headers['x-access-token'] as string || req.cookies.APP_ACCESS_TOKEN;
       if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
         return res.status(403).json({ error: "Admin access required" });
       }
@@ -221,7 +221,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/wandb-config", async (req, res) => {
     try {
-      const accessToken = req.headers['x-access-token'] as string;
+      const accessToken = req.headers['x-access-token'] as string || req.cookies.APP_ACCESS_TOKEN;
       if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
         return res.status(403).json({ error: "Admin access required" });
       }
@@ -231,7 +231,8 @@ export async function registerRoutes(
         name: 'W&B Configuration',
         content: JSON.stringify(config),
         category: 'monitoring',
-        isActive: true
+        isActive: true,
+        version: 1
       });
       res.json({ success: true });
     } catch (error) {
