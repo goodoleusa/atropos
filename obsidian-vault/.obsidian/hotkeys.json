@@ -16,5 +16,21 @@
       ],
       "key": "N"
     }
+  ],
+  "obsidian-linter:lint-file": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "L"
+    }
+  ],
+  "obsidian-linter:lint-all-files-in-folder": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "F"
+    }
   ]
 }

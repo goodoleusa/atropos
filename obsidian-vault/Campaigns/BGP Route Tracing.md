@@ -3,10 +3,7 @@ id: "bgp_trace"
 name: "BGP Route Tracing"
 type: "campaign"
 difficulty: "advanced"
-tags:
-  - "Network"
-  - "BGP"
-  - "Infrastructure"
+tags: ["Network", "BGP", "Infrastructure"]
 icon: "🌐"
 color: "teal"
 estimatedTime: "30-45 min"
@@ -15,9 +12,6 @@ parent:
 child:
   - "[[Identify origin ASN]]"
 sibling: []
-prev: []
-next:
-  - "[[Identify origin ASN]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -50,20 +44,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: "Network engineers, ISP security teams, and incident responders use BGP analysis to detect route hijacking, DDoS mitigation bypasses, and nation-state traffic manipulation. Critical for infrastructure defense."
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # BGP Route Tracing
 
 ## Overview
+
 Trace IP hops around the world via BGP relations. Understand how traffic flows through ASNs.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Identify origin ASN
 
 ### Knowledge Graph
+
 - [[Identify origin ASN]]
 - [[Map BGP relationships]]
 - [[Trace global routing paths]]
@@ -75,14 +75,14 @@ Identify origin ASN
 - [[Tool: Hurricane Electric BGP]]
 - [[Tool: PeeringDB]]
 
-
 ## Starter Prompt
-```
+
 I want to trace network routes and understand BGP peering relationships.
 
 Target: An IP address I found in the logs - 185.199.108.153
 
 Help me:
+
 1. Identify the origin ASN and organization
 2. Map BGP peering relationships
 3. Trace the path packets would take from different regions
@@ -90,4 +90,3 @@ Help me:
 5. Look for route hijacking indicators
 
 What tools and looking glasses should we use to start this investigation?
-```

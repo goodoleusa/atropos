@@ -3,10 +3,7 @@ id: "shell_corp_osint"
 name: "Shell Corp Investigation"
 type: "campaign"
 difficulty: "intermediate"
-tags:
-  - "OSINT"
-  - "Corporate Intel"
-  - "Financial"
+tags: ["OSINT", "Corporate Intel", "Financial"]
 icon: "🏢"
 color: "amber"
 estimatedTime: "45-60 min"
@@ -15,9 +12,6 @@ parent:
 child:
   - "[[Identify corporate registration details]]"
 sibling: []
-prev: []
-next:
-  - "[[Identify corporate registration details]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -51,20 +45,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: "Financial crime investigators, fraud analysts, compliance officers, and journalists use these techniques to expose money laundering, corruption, and criminal networks. Skills directly applicable to AML/CFT compliance roles."
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Shell Corp Investigation
 
 ## Overview
+
 Investigate a suspicious shell corporation. Trace ownership, find hidden connections, and expose the network.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Identify corporate registration details
 
 ### Knowledge Graph
+
 - [[Identify corporate registration details]]
 - [[Map subsidiary relationships]]
 - [[Find beneficial ownership]]
@@ -76,12 +76,12 @@ Identify corporate registration details
 - [[Tool: LinkedIn OSINT]]
 - [[Tool: Domain analysis]]
 
-
 ## Starter Prompt
-```
-I want to investigate a shell corporation called "Obsidian Holdings LLC". 
+
+I want to investigate a shell corporation called "Obsidian Holdings LLC".
 
 Help me build a dossier by:
+
 1. Identifying corporate registration patterns
 2. Finding beneficial ownership through OSINT techniques
 3. Mapping connected entities and subsidiaries
@@ -89,4 +89,3 @@ Help me build a dossier by:
 5. Identifying key personnel and their digital footprints
 
 Start with the basics - what sources would you check first for corporate intel?
-```

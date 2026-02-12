@@ -1,3 +1,7 @@
+---
+date_created: 2026-50-Mo
+date_modified: 2026-54-Tu
+---
 # Lotus → Atropos Integration Status
 
 **Branch**: `feature/lotus-integration`  

@@ -3,11 +3,7 @@ id: "operation_shadow_network"
 name: "Operation Shadow Network"
 type: "campaign"
 difficulty: "intermediate"
-tags:
-  - "Human Trafficking"
-  - "Social Media OSINT"
-  - "Cryptocurrency"
-  - "Network Mapping"
+tags: ["Human Trafficking", "Social Media OSINT", "Cryptocurrency", "Network Mapping"]
 icon: "🕵️"
 color: "red"
 estimatedTime: "60-90 min"
@@ -16,9 +12,6 @@ parent:
 child:
   - "[[Map social media recruitment network]]"
 sibling: []
-prev: []
-next:
-  - "[[Map social media recruitment network]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -54,6 +47,8 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: "These techniques are used daily by FBI, Homeland Security Investigations (HSI), NCMEC, and NGOs like Thorn and Polaris Project to combat human trafficking."
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Operation Shadow Network

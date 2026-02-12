@@ -1,5 +1,4 @@
 ---
-id: "<% tp.file.title.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') %>"
 name: "<% tp.file.title %>"
 type: achievement
 category: <% tp.system.prompt("Category (discovery/speed/mastery/social/special)?") %>

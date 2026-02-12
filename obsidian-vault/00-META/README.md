@@ -1,3 +1,8 @@
+---
+tags: [1, 2-3]
+date_created: 2026-50-Mo
+date_modified: 2026-54-Tu
+---
 # Atropos - OSINT for Good
 ## Training Ethical Hackers to Combat Human Trafficking
 
@@ -428,7 +433,7 @@ Atropos operates on a **mission-driven, multi-stream revenue model** with clear 
 
 ## 🎯 Core Systems
 
-### 1. **Player Progression & Gamification** ✨ NEW!
+### 1. **Player Progression & Gamification** ✨ NEW
 - **XP & Leveling**: Earn experience through investigations, level up from 1 to 50+
 - **Skill Specializations**: Develop expertise in OSINT, Network Security, Malware Analysis, Social Engineering
 - **Achievement System**: 500+ achievements with rarity tiers (common → legendary)
@@ -436,7 +441,7 @@ Atropos operates on a **mission-driven, multi-stream revenue model** with clear 
 - **Daily Challenges**: Rotating objectives with XP and currency rewards
 - **Campaign Analytics**: Track completion rates, times, and difficulty
 
-### 2. **Experiential Learning Curriculum** 🎓 NEW!
+### 2. **Experiential Learning Curriculum** 🎓 NEW
 - **427-Line Framework**: Structured curriculum emphasizing 80% hands-on, 20% theory
 - **6 OSINT Specialization Tracks**:
   - 🌍 **Geolocation & GEOINT**: Photo analysis, satellite imagery, shadow analysis
@@ -486,7 +491,7 @@ Atropos operates on a **mission-driven, multi-stream revenue model** with clear 
 - **Admin Dashboard**: Content management, analytics, player tracking
 - **Mobile-Responsive**: 48px+ touch targets, optimized layouts
 
-### 7. **Obsidian Vault Integration** 📝 NEW!
+### 7. **Obsidian Vault Integration** 📝 NEW
 - **Offline Campaign Editor**: Create campaigns in Obsidian with Templater templates
 - **Breadcrumbs**: Hierarchical relationship management (prerequisites, unlocks, dependencies)
 - **Excalibrain**: Visual knowledge graph showing campaign connections

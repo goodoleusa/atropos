@@ -3,10 +3,7 @@ id: "threat_hunting"
 name: "Threat Hunting"
 type: "campaign"
 difficulty: "expert"
-tags:
-  - "Blue Team"
-  - "DFIR"
-  - "Detection"
+tags: ["Blue Team", "DFIR", "Detection"]
 icon: "🎯"
 color: "orange"
 estimatedTime: "60-90 min"
@@ -15,9 +12,6 @@ parent:
 child:
   - "[[Formulate hunting hypotheses]]"
 sibling: []
-prev: []
-next:
-  - "[[Formulate hunting hypotheses]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -41,20 +35,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: ""
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Threat Hunting
 
 ## Overview
+
 Proactively search for indicators of compromise. Analyze logs, hunt for persistence.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Formulate hunting hypotheses
 
 ### Knowledge Graph
+
 - [[Formulate hunting hypotheses]]
 - [[Analyze log sources]]
 - [[Identify IOCs]]
@@ -66,12 +66,12 @@ Formulate hunting hypotheses
 - [[Tool: Splunk/ELK queries]]
 - [[Tool: Velociraptor]]
 
-
 ## Starter Prompt
-```
+
 I'm a threat hunter investigating potential compromise indicators.
 
 Available data sources:
+
 - Windows Event Logs (Security, System, PowerShell)
 - Firewall logs
 - DNS query logs
@@ -80,6 +80,7 @@ Available data sources:
 Suspicious activity reported: Unusual outbound traffic at 3 AM
 
 Help me:
+
 1. Create hunting hypotheses
 2. Identify relevant log sources
 3. Build detection queries
@@ -88,4 +89,3 @@ Help me:
 6. Timeline the activity
 
 Where should we start the hunt?
-```

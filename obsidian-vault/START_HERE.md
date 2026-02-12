@@ -4,9 +4,11 @@ status: start-here
 created: 2026-02-07
 modified: 2026-02-07
 cssclass: start-here
+date_created: 2026-44-Mo
+date_modified: 2026-54-Tu
 ---
 
-# 👋 Welcome to Atropos Education Management Vault!
+# 👋 Welcome to Atropos Education Management Vault
 
 You're in an **Obsidian-based curriculum management system** for the Atropos cybersecurity training platform.
 
@@ -401,7 +403,7 @@ learningObjectives:   # Correct
 
 ---
 
-## 🎉 You're All Set!
+## 🎉 You're All Set
 
 This vault is your **offline-first education management system**.
 

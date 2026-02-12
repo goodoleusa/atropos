@@ -1,9 +1,15 @@
+---
+date_created: 2026-15-Mo
+date_modified: 2026-54-Tu
+---
 # Architecture Overview & Lotus Integration Plan
 
 ## Current Architecture
 
 ### System Overview
+
 **SysAdmin Corp** is a full-stack TypeScript web application combining:
+
 - **Interactive Terminal Game** - CTF/escape room experience with occult/cyber-ritual aesthetic
 - **OSINT Investigation Platform** - Security research tools and workflows
 - **AI-Powered Assistant (NEXUS)** - OpenRouter-backed agent for investigations and guidance
@@ -12,10 +18,11 @@
 ### Technology Stack
 
 #### Frontend (`client/`)
+
 - **Framework**: React 19 + TypeScript
 - **Build Tool**: Vite 7
 - **Routing**: Wouter
-- **State Management**: 
+- **State Management**:
   - TanStack Query (server state)
   - Zustand (learning preferences)
   - React Context (game state)
@@ -23,6 +30,7 @@
 - **UI Components**: shadcn/ui (Radix UI primitives)
 
 #### Backend (`server/`)
+
 - **Runtime**: Node.js with Express 5
 - **Language**: TypeScript (ESM modules)
 - **Build**: esbuild (server bundling)
@@ -31,9 +39,10 @@
 - **Session Management**: express-session with PostgreSQL store
 
 #### Data Layer (`shared/`)
+
 - **Schema**: Drizzle ORM schema definitions
 - **Models**: Type-safe database models and Zod schemas
-- **Tables**: 
+- **Tables**:
   - Game sessions, clues, quests, campaigns
   - OSINT tools, tool calls, investigations
   - Behavioral profiles, user analyses
@@ -42,6 +51,7 @@
 ### Key Components
 
 #### 1. NEXUS AI Agent System
+
 **Location**: `client/src/components/AgentChat.tsx`, `client/src/config/agentPrompts.ts`
 
 - **Purpose**: User-facing AI assistant for investigations and game guidance
@@ -54,6 +64,7 @@
 - **Identity**: Always referred to as **"NEXUS"** in user-facing contexts
 
 #### 2. OSINT Tool Integration
+
 **Location**: `server/routes/osint.ts`, `server/services/osint.ts`
 
 - **Purpose**: Configurable OSINT tool registry and execution
@@ -65,6 +76,7 @@
   - Tool call logging and analytics
 
 #### 3. Investigation Workspace
+
 **Location**: `client/src/pages/InvestigationWorkspace.tsx`
 
 - **Purpose**: Unified hub for OSINT investigations
@@ -75,6 +87,7 @@
   - Investigation context management
 
 #### 4. Campaign Designer
+
 **Location**: `client/src/components/CampaignDesigner.tsx`
 
 - **Purpose**: Visual flow editor for investigation campaigns
@@ -85,6 +98,7 @@
   - Cross-campaign linking
 
 #### 5. Existing Atropos Tool
+
 **Location**: `tools/atropos/`
 
 - **Current State**: Rust-based OSINT scanner with Lua scripting
@@ -117,7 +131,9 @@ User → React Frontend → Express API → PostgreSQL
 ## Lotus → Atropos Integration Plan
 
 ### Objective
-Integrate the **lotus** repository (https://github.com/goodoleusa/lotus) as a working branch, where:
+
+Integrate the **lotus** repository (<https://github.com/goodoleusa/lotus>) as a working branch, where:
+
 - **Lotus** becomes the **"Atropos OSINT Tool"** (backend scanning engine)
 - **NEXUS** remains the user-facing AI agent name
 - Both systems work together seamlessly
@@ -125,6 +141,7 @@ Integrate the **lotus** repository (https://github.com/goodoleusa/lotus) as a wo
 ### Phase 1: Repository Setup & Branch Strategy
 
 #### 1.1 Create Integration Branch
+
 ```bash
 # Create new branch from main
 git checkout -b feature/lotus-integration
@@ -140,6 +157,7 @@ git subtree add --prefix=tools/atropos lotus main --squash
 ```
 
 #### 1.2 Directory Structure
+
 ```
 mcl/
 ├── client/              # React frontend (unchanged)
@@ -158,6 +176,7 @@ mcl/
 ### Phase 2: Atropos Tool Integration
 
 #### 2.1 Rename & Rebrand Lotus → Atropos
+
 - Update all references from "lotus" to "atropos" in:
   - `Cargo.toml` (package name)
   - `README.md` (documentation)
@@ -168,6 +187,7 @@ mcl/
 #### 2.2 Build System Integration
 
 **Primary: Option A — Standalone Binary**
+
 - Build atropos as a standalone Rust binary; this is the default and only supported path for production.
 - Express server spawns atropos processes for each scan (CLI: `echo <target> | atropos scan <script>`).
 - Communication is process-based (stdin/stdout or CLI args); no long-lived atropos daemon required.
@@ -175,17 +195,20 @@ mcl/
 - Enables clear process boundaries, easier security and resource limits, and works on Replit when Rust is in the Nix environment.
 
 **Future: Option B — Embedded Library (groundwork only)**
+
 - Possible evolution: compile atropos core as a Node.js addon (e.g. `neon` or `napi-rs`) for lower latency and no process spawn per scan.
 - Requires: atropos core exposed as a callable library (e.g. `libatropos`), then a thin Node binding. Not implemented; the current codebase is structured so that a future library API could mirror `AtroposService.executeScript()` without changing the rest of the stack.
 - Prefer only if profiling shows process spawn overhead is a bottleneck.
 
 **Lightweight / Replit-optimized variant**
+
 - If Replit or resource-constrained hosting needs a smaller footprint:
   - **Build**: Use `cargo build --release` with strip and optional LTO in `tools/atropos`; consider a feature flag or a separate minimal binary that only runs a subset of scripts (e.g. no web UI, no optional OSINT backends).
   - **Runtime**: The existing design already supports “binary missing”: if the atropos binary is not built or not installed, the API returns a clear health/error and the rest of the app runs. No separate “light” code path is required.
   - **Optional**: A future “atropos-lite” crate could exclude heavy dependencies (e.g. optional HTTP server, unused Lua extensions) and ship a smaller binary; document in `tools/atropos/README.md` and wire a second binary path (e.g. `ATROPOS_LITE_BINARY_PATH`) only if needed.
 
 #### 2.3 API Integration Layer
+
 Create `server/services/atropos.ts`:
 
 ```typescript
@@ -213,6 +236,7 @@ export class AtroposService {
 ```
 
 #### 2.4 Express Routes
+
 Create `server/routes/atropos.ts`:
 
 ```typescript
@@ -235,6 +259,7 @@ Create `server/routes/atropos.ts`:
 ### Phase 3: Frontend Integration
 
 #### 3.1 Atropos Tool Panel
+
 **Location**: `client/src/components/AtroposPanel.tsx` (new)
 
 - **Purpose**: UI for executing Atropos scans
@@ -246,6 +271,7 @@ Create `server/routes/atropos.ts`:
   - Integration with Investigation Workspace
 
 #### 3.2 NEXUS Agent Integration
+
 **Location**: `client/src/components/AgentChat.tsx` (modify)
 
 - **Enhancement**: NEXUS can suggest Atropos scans
@@ -256,6 +282,7 @@ Create `server/routes/atropos.ts`:
   4. Results fed back to NEXUS for analysis
 
 #### 3.3 Investigation Workspace Integration
+
 **Location**: `client/src/pages/InvestigationWorkspace.tsx` (modify)
 
 - **Add Tab**: "Atropos Scans"
@@ -268,6 +295,7 @@ Create `server/routes/atropos.ts`:
 ### Phase 4: Database Schema Updates
 
 #### 4.1 Atropos Scan Tracking
+
 Add to `shared/schema.ts`:
 
 ```typescript
@@ -303,6 +331,7 @@ export const atroposScripts = pgTable("atropos_scripts", {
 ### Phase 5: Build & Deployment
 
 #### 5.1 Build Script Updates
+
 Modify `script/build.ts`:
 
 ```typescript
@@ -316,6 +345,7 @@ async function buildAtropos() {
 ```
 
 #### 5.2 Docker Integration
+
 Update `Dockerfile` (if exists) or create new:
 
 ```dockerfile
@@ -331,6 +361,7 @@ COPY --from=atropos-builder /atropos/target/release/atropos /usr/local/bin/atrop
 ```
 
 #### 5.3 Environment Variables
+
 Add to `.env.example`:
 
 ```bash
@@ -349,16 +380,19 @@ SECURITYTRAILS_API_KEY=
 ### Phase 6: Testing & Validation
 
 #### 6.1 Unit Tests
+
 - Test Atropos service wrapper
 - Test API route handlers
 - Test script execution
 
 #### 6.2 Integration Tests
+
 - End-to-end scan execution
 - NEXUS agent → Atropos scan flow
 - Results integration with investigations
 
 #### 6.3 Manual Testing Checklist
+
 - [ ] Execute basic subdomain scan
 - [ ] Execute vulnerability scan
 - [ ] NEXUS suggests Atropos scan
@@ -370,16 +404,19 @@ SECURITYTRAILS_API_KEY=
 ### Phase 7: Documentation & Migration
 
 #### 7.1 Update README.md
+
 - Add Atropos tool section
 - Document integration points
 - Update architecture diagram
 
 #### 7.2 Migration Guide
+
 - How to migrate from existing `tools/atropos/` (if needed)
 - How to register new Lua scripts
 - How to configure API keys
 
 #### 7.3 User Documentation
+
 - How to use Atropos scans in investigations
 - Available scripts and their purposes
 - NEXUS agent integration guide
@@ -389,12 +426,14 @@ SECURITYTRAILS_API_KEY=
 ## Naming Conventions
 
 ### Consistent Terminology
+
 - **"NEXUS"**: User-facing AI agent (always uppercase, always "NEXUS")
 - **"Atropos"**: OSINT scanning tool (capitalized, "Atropos OSINT Tool" in UI)
 - **"atropos"**: Binary/command name (lowercase)
 - **"lotus"**: Repository name (temporary, will be rebranded)
 
 ### Code References
+
 - File names: `atropos.ts`, `AtroposPanel.tsx`
 - Database tables: `atropos_scans`, `atropos_scripts`
 - API routes: `/api/atropos/*`
@@ -426,36 +465,43 @@ SECURITYTRAILS_API_KEY=
 ## Success Criteria
 
 ### Phase 1 Complete
+
 - [ ] Lotus repository integrated as subtree/submodule
 - [ ] Branch created and pushed
 - [ ] Directory structure established
 
 ### Phase 2 Complete
+
 - [ ] Atropos tool builds successfully
 - [ ] API integration layer implemented
 - [ ] Express routes functional
 
 ### Phase 3 Complete
+
 - [ ] Frontend UI components created
 - [ ] NEXUS agent can trigger scans
 - [ ] Results integrated into investigations
 
 ### Phase 4 Complete
+
 - [ ] Database schema updated
 - [ ] Migrations run successfully
 - [ ] Data persistence working
 
 ### Phase 5 Complete
+
 - [ ] Build process includes Atropos
 - [ ] Docker image builds successfully
 - [ ] Deployment process documented
 
 ### Phase 6 Complete
+
 - [ ] All tests passing
 - [ ] Manual testing complete
 - [ ] Performance acceptable
 
 ### Phase 7 Complete
+
 - [ ] Documentation updated
 - [ ] Migration guide written
 - [ ] Ready for production merge

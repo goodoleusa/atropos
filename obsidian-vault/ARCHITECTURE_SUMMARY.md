@@ -1,3 +1,7 @@
+---
+date_created: 2026-15-Mo
+date_modified: 2026-54-Tu
+---
 # Architecture Summary: SysAdmin Corp / Atropos Platform
 
 ## Executive Summary
@@ -338,7 +342,7 @@ SECURITYTRAILS_API_KEY=...
 
 ## Success Criteria
 
-### Integration Complete When:
+### Integration Complete When
 
 - [x] Lotus repository integrated as subtree/submodule
 - [ ] Atropos tool builds successfully

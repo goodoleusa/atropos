@@ -2,6 +2,8 @@
 title: Atropos Education Management Hub
 type: index
 cssclass: dashboard
+date_created: 2026-44-Mo
+date_modified: 2026-54-Tu
 ---
 
 # 🎓 Atropos Education Management Vault
@@ -11,39 +13,48 @@ cssclass: dashboard
 ## 🚀 Quick Navigation
 
 ### 📚 Curriculum
+
 - [[Experiential-Learning-Framework]] - Core philosophy and structure
 
 ### 🎯 Campaigns (23 Total)
+
 **Beginner**:
+
 - [[Passive-Reconnaissance]]
 - [[Basic-OSINT-Investigation]]
 
 **Intermediate**:
+
 - [[Shell-Corp-Investigation]]
 - [[Active-Reconnaissance]]
 - [[Phishing-Analysis]]
 
 **Advanced**:
+
 - [[BGP-Route-Tracing]]
 - [[Dark-Web-Intelligence]]
 - [[Cryptocurrency-Tracing]]
 - [[Threat-Hunting]]
 
 **Expert**:
+
 - [[Incident-Response]]
 - [[APT-Attribution]]
 
 ### 🛤️ Learning Paths
+
 - [[Financial-Crime-Investigator]] - Corporate + crypto investigation
 - [[Threat-Intelligence-Analyst]] - APT tracking + dark web
 - [[OSINT-Specialist]] - Multi-discipline OSINT
 - [[Security-Researcher]] - Bug bounty + pentesting
 
 ### 🏆 Achievements
+
 - [[Achievement-Definitions]] - All 515 achievements
 - [[Achievement-Categories]] - Discovery, Speed, Mastery, Social, Special
 
 ### 🔧 Tools
+
 - [[OSINT-Tool-Registry]]
 - [[Blockchain-Analysis-Tools]]
 - [[Corporate-Research-Tools]]
@@ -72,6 +83,7 @@ GROUP BY status
 ## 🔗 Relationship Graph
 
 Open **Excalibrain** (brain icon) to see:
+
 - Campaign prerequisites and progressions
 - Learning path connections
 - Achievement unlocks
@@ -80,6 +92,7 @@ Open **Excalibrain** (brain icon) to see:
 ## 🛠️ Workflows
 
 ### Create New Campaign
+
 1. Go to `Campaigns/` folder
 2. Create new note (Templater auto-fills)
 3. Answer prompts (difficulty, time, etc.)
@@ -88,6 +101,7 @@ Open **Excalibrain** (brain icon) to see:
 6. Save and sync: `npm run sync:campaigns -- --from-obsidian`
 
 ### Edit Learning Path
+
 1. Open path in `Learning-Paths/`
 2. Add/remove campaign links: `[[Campaign-Name]]`
 3. Update relationships
@@ -95,6 +109,7 @@ Open **Excalibrain** (brain icon) to see:
 5. Sync when ready
 
 ### Design Achievement
+
 1. Use Achievement Template
 2. Define requirement JSON
 3. Set XP/currency rewards
@@ -120,6 +135,7 @@ npm run sync:all
 ## 📝 Templates
 
 Located in `Templates/`:
+
 - **Campaign Template** - Full investigation workflow
 - **Learning Path Template** - Career track structure
 - **Achievement Template** - Unlock condition + rewards
@@ -129,6 +145,7 @@ Use: `Cmd/Ctrl + P` → "Templater: Create new note from template"
 ## 🎨 Visual Tools
 
 ### Excalibrain
+
 - Hexagon (🟡) = Campaign
 - Diamond (🟢) = Learning Path
 - Star (🟣) = Achievement
@@ -136,14 +153,17 @@ Use: `Cmd/Ctrl + P` → "Templater: Create new note from template"
 - Square (🟢) = Tool
 
 ### Breadcrumbs
+
 Shows: prerequisite → this → unlocks chain
 
 ### Graph View
+
 See all connections between notes
 
 ## 📊 Queries & Reports
 
 ### Campaigns by Difficulty
+
 ````markdown
 ```dataview
 LIST
@@ -153,6 +173,7 @@ WHERE difficulty = "beginner"
 ````
 
 ### Track Completion
+
 ````markdown
 ```dataview
 TABLE status, COUNT(rows) as "Count"
@@ -162,6 +183,7 @@ GROUP BY status
 ````
 
 ### Career Path Mapping
+
 ````markdown
 ```dataview
 TABLE careerPaths, difficulty

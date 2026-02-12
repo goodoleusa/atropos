@@ -3,10 +3,7 @@ id: "phishing_analysis"
 name: "Phishing Email Analysis"
 type: "campaign"
 difficulty: "beginner"
-tags:
-  - "Phishing"
-  - "Email"
-  - "Analysis"
+tags: ["Phishing", "Email", "Analysis"]
 icon: "📧"
 color: "amber"
 estimatedTime: "20-30 min"
@@ -15,9 +12,6 @@ parent:
 child:
   - "[[Parse email headers]]"
 sibling: []
-prev: []
-next:
-  - "[[Parse email headers]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -42,20 +36,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: ""
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Phishing Email Analysis
 
 ## Overview
+
 Analyze a suspicious email. Extract IOCs, trace infrastructure, attribute threat actors.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Parse email headers
 
 ### Knowledge Graph
+
 - [[Parse email headers]]
 - [[Analyze infrastructure]]
 - [[Check URL reputation]]
@@ -67,18 +67,19 @@ Parse email headers
 - [[Tool: VirusTotal]]
 - [[Tool: WHOIS]]
 
-
 ## Starter Prompt
-```
+
 User reported a suspicious email. I have the full EML file.
 
 Headers show:
-- From: support@amaz0n-verify.com
-- Reply-To: verify@gmail.com
+
+- From: <support@amaz0n-verify.com>
+- Reply-To: <verify@gmail.com>
 - X-Originating-IP: 185.234.xxx.xxx
 - Contains link: hxxp://amaz0n-verify[.]com/login
 
 Help me analyze:
+
 1. Parse email headers for origin
 2. Analyze sender infrastructure
 3. Check URL reputation and history
@@ -87,4 +88,3 @@ Help me analyze:
 6. Write detection rules
 
 Walk me through the analysis methodology.
-```

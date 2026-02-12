@@ -1,5 +1,4 @@
 ---
-id: "<% tp.file.title.toLowerCase().replace(/\s+/g, '_') %>"
 name: "<% tp.file.title %>"
 type: campaign
 status: draft

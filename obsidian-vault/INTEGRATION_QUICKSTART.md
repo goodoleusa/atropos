@@ -1,3 +1,7 @@
+---
+date_created: 2026-15-Mo
+date_modified: 2026-54-Tu
+---
 # Lotus → Atropos Integration Quick Start
 
 ## Overview

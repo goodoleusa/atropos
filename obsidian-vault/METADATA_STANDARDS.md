@@ -3,6 +3,8 @@ type: guide
 status: canonical
 created: 2026-02-07
 modified: 2026-02-07
+date_created: 2026-44-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Metadata Standards for Atropos Obsidian Vault

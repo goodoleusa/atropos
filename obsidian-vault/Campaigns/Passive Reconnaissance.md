@@ -3,10 +3,7 @@ id: "passive_recon"
 name: "Passive Reconnaissance"
 type: "campaign"
 difficulty: "beginner"
-tags:
-  - "Recon"
-  - "OSINT"
-  - "DNS"
+tags: ["Recon", "OSINT", "DNS"]
 icon: "👁️"
 color: "purple"
 estimatedTime: "20-30 min"
@@ -15,9 +12,6 @@ parent:
 child:
   - "[[Enumerate DNS records]]"
 sibling: []
-prev: []
-next:
-  - "[[Enumerate DNS records]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -50,20 +44,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: "Bug bounty hunters and penetration testers always start with passive recon to map attack surface without alerting targets. Essential first phase of any security assessment."
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Passive Reconnaissance
 
 ## Overview
+
 Gather intelligence without touching the target. DNS, certificates, historical data only.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Enumerate DNS records
 
 ### Knowledge Graph
+
 - [[Enumerate DNS records]]
 - [[Analyze certificate transparency]]
 - [[Find historical snapshots]]
@@ -75,14 +75,14 @@ Enumerate DNS records
 - [[Tool: Shodan]]
 - [[Tool: BuiltWith]]
 
-
 ## Starter Prompt
-```
+
 I need to perform passive reconnaissance on target domain: sysadmincorp.net
 
 Rules: NO active scanning, NO direct connections to target infrastructure.
 
 Help me gather:
+
 1. DNS records (A, MX, TXT, NS, SPF, DMARC)
 2. SSL/TLS certificate history and SANs
 3. Subdomain enumeration via CT logs
@@ -92,4 +92,3 @@ Help me gather:
 7. Technology fingerprinting from public sources
 
 What's our first passive recon step?
-```

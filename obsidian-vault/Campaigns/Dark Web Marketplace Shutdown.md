@@ -3,11 +3,7 @@ id: "dark_web_marketplace_shutdown"
 name: "Dark Web Marketplace Shutdown"
 type: "campaign"
 difficulty: "advanced"
-tags:
-  - "Dark Web"
-  - "Infrastructure Mapping"
-  - "Cryptocurrency"
-  - "Server Analysis"
+tags: ["Dark Web", "Infrastructure Mapping", "Cryptocurrency", "Server Analysis"]
 icon: "🌐"
 color: "purple"
 estimatedTime: "90-120 min"
@@ -16,9 +12,6 @@ parent:
 child:
   - "[[Safely investigate dark web infrastructure]]"
 sibling: []
-prev: []
-next:
-  - "[[Safely investigate dark web infrastructure]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -44,20 +37,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: ""
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Dark Web Marketplace Shutdown
 
 ## Overview
+
 Safely investigate a dark web marketplace selling exploitation material. Map infrastructure and identify operators without accessing illegal content.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Safely investigate dark web infrastructure
 
 ### Knowledge Graph
+
 - [[Safely investigate dark web infrastructure]]
 - [[Map server hosting and technical details]]
 - [[Trace cryptocurrency payment flows]]
@@ -69,12 +68,12 @@ Safely investigate dark web infrastructure
 - [[Tool: WHOIS/DNS Tools]]
 - [[Tool: Username OSINT]]
 
-
 ## Starter Prompt
-```
+
 🌐 OPERATION DARK HUNT - DARK WEB MARKETPLACE INVESTIGATION
 
 ⚠️ SAFETY FIRST: This is a training scenario. In real investigations:
+
 - Never access illegal marketplaces directly
 - Never download illegal content
 - Work ONLY with metadata and public information
@@ -90,11 +89,12 @@ Your role: Map the technical infrastructure using safe, legal OSINT techniques.
 Objective: Gather technical details WITHOUT accessing the site
 
 Methods:
+
 1. Domain/Onion Analysis:
    - Extract server information from public databases
    - Check dark web search engines (Ahmia, DarkSearch) for metadata
    - Analyze Tor network statistics
-   
+
 2. Server Fingerprinting:
    - Identify web server software (Apache, nginx)
    - Detect hosting provider patterns
@@ -108,6 +108,7 @@ Methods:
    - Review dark web forum discussions (public archives)
 
 Tools:
+
 - OnionScan (metadata extraction tool)
 - Dark web search engines (for public metadata only)
 - WHOIS/DNS history tools
@@ -118,6 +119,7 @@ Tools:
 Objective: Trace payment infrastructure
 
 Investigation steps:
+
 - Identify payment methods (Bitcoin, Monero, etc.)
 - Extract wallet addresses from public mentions
 - Analyze blockchain transactions
@@ -125,6 +127,7 @@ Investigation steps:
 - Look for patterns that indicate shared ownership
 
 Questions:
+
 - What cryptocurrencies are accepted?
 - Are there mixing services involved?
 - Can we cluster wallets to same operator?
@@ -135,6 +138,7 @@ Questions:
 Objective: Find real-world identity through mistakes
 
 Common opsec failures to look for:
+
 - Reused usernames across clearnet/darknet
 - Email addresses in registration leaks
 - IP address leaks from misconfiguration
@@ -143,6 +147,7 @@ Common opsec failures to look for:
 - Cryptocurrency reuse across platforms
 
 Technique: "Breadcrumb Trail"
+
 1. Find username on dark web
 2. Search same username on Google
 3. Find clearnet accounts
@@ -189,6 +194,7 @@ This investigation must follow strict guidelines:
 ❌ Never tip off suspects
 
 Real-World Application:
+
 - These techniques were used to take down:
   - Silk Road (2013)
   - AlphaBay (2017)
@@ -196,4 +202,3 @@ Real-World Application:
   - Dark Market (2021)
 
 Ready to begin? Start with Phase 1: What technical metadata can we gather safely?
-```

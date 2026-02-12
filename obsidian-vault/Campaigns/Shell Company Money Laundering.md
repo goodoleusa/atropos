@@ -3,11 +3,7 @@ id: "shell_company_trafficking"
 name: "Shell Company Money Laundering"
 type: "campaign"
 difficulty: "advanced"
-tags:
-  - "Money Laundering"
-  - "Corporate Intelligence"
-  - "Financial Crime"
-  - "Offshore"
+tags: ["Money Laundering", "Corporate Intelligence", "Financial Crime", "Offshore"]
 icon: "🏢"
 color: "teal"
 estimatedTime: "75-90 min"
@@ -16,9 +12,6 @@ parent:
 child:
   - "[[Navigate international corporate registries]]"
 sibling: []
-prev: []
-next:
-  - "[[Navigate international corporate registries]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -43,20 +36,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: ""
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Shell Company Money Laundering
 
 ## Overview
+
 Trace trafficking proceeds through shell companies and offshore accounts. Learn corporate intelligence techniques used by financial crime investigators.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Navigate international corporate registries
 
 ### Knowledge Graph
+
 - [[Navigate international corporate registries]]
 - [[Trace beneficial ownership through shell companies]]
 - [[Identify money laundering red flags]]
@@ -68,9 +67,8 @@ Navigate international corporate registries
 - [[Tool: Maltego]]
 - [[Tool: Sanction Screening Tools]]
 
-
 ## Starter Prompt
-```
+
 🏢 OPERATION PAPER TRAIL - SHELL COMPANY INVESTIGATION
 
 CASE BRIEFING:
@@ -87,9 +85,9 @@ Investigation Steps:
 1. Primary Registration Search:
    - OpenCorporates.com (global database)
    - Jurisdiction-specific registries:
-     * UK: Companies House
-     * US: State corporation databases
-     * Offshore: Panama, Cayman, BVI, Delaware
+     - UK: Companies House
+     - US: State corporation databases
+     - Offshore: Panama, Cayman, BVI, Delaware
    - Extract: Registration date, directors, registered agent
 
 2. Red Flags to Identify:
@@ -250,4 +248,3 @@ Understanding AML Laws:
    - Black list (non-cooperative countries)
 
 Ready to trace the corporate maze? Let's start with the first registry search...
-```

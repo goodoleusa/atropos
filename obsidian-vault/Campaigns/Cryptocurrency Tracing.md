@@ -3,10 +3,7 @@ id: "crypto_analysis"
 name: "Cryptocurrency Tracing"
 type: "campaign"
 difficulty: "advanced"
-tags:
-  - "Crypto"
-  - "Financial"
-  - "Blockchain"
+tags: ["Crypto", "Financial", "Blockchain"]
 icon: "₿"
 color: "yellow"
 estimatedTime: "45-60 min"
@@ -15,9 +12,6 @@ parent:
 child:
   - "[[Analyze transaction flow]]"
 sibling: []
-prev: []
-next:
-  - "[[Analyze transaction flow]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -51,20 +45,26 @@ targetFields:
 dummyTargets: "[object Object]"
 industryContext: "Law enforcement, regulatory agencies, and cybersecurity firms trace cryptocurrency in ransomware investigations, fraud cases, sanctions enforcement, and money laundering. Blockchain analysts are in high demand for crypto compliance."
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Cryptocurrency Tracing
 
 ## Overview
+
 Trace cryptocurrency transactions. Follow the money through blockchain analysis.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Analyze transaction flow
 
 ### Knowledge Graph
+
 - [[Analyze transaction flow]]
 - [[Cluster addresses]]
 - [[Identify exchanges]]
@@ -76,14 +76,14 @@ Analyze transaction flow
 - [[Tool: OXT]]
 - [[Tool: Crystal]]
 
-
 ## Starter Prompt
-```
+
 I need to trace cryptocurrency associated with a suspected fraud operation.
 
 Known Bitcoin address: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
 
 Help me:
+
 1. Analyze transaction history
 2. Cluster related addresses
 3. Identify exchange deposits/withdrawals
@@ -92,4 +92,3 @@ Help me:
 6. Build a financial timeline
 
 What blockchain analysis approach should we take?
-```

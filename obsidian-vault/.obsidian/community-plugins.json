@@ -1,11 +1,11 @@
 [
   "breadcrumbs",
   "dataview",
-  "templater-obsidian",
   "obsidian-git",
   "obsidian-kanban",
   "periodic-notes",
-  "obsidian-linter",
   "obsidian-excalidraw-plugin",
-  "excalibrain"
+  "excalibrain",
+  "obsidian42-brat",
+  "obsidian-linter"
 ]

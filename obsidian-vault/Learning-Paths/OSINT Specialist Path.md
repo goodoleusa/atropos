@@ -34,6 +34,8 @@ child:
   - [[SOCMINT Module]]
   - [[Geolocation Module]]
   - [[Dark Web Intel Module]]
+date_created: 2026-44-Mo
+date_modified: 2026-54-Tu
 ---
 
 # OSINT Specialist Learning Path

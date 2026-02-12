@@ -3,11 +3,7 @@ id: "victim_geolocation"
 name: "Victim Identification Protocol"
 type: "campaign"
 difficulty: "expert"
-tags:
-  - "Geolocation"
-  - "Image Forensics"
-  - "Victim Identification"
-  - "OSINT"
+tags: ["Geolocation", "Image Forensics", "Victim Identification", "OSINT"]
 icon: "📍"
 color: "blue"
 estimatedTime: "120+ min"
@@ -16,9 +12,6 @@ parent:
 child:
   - "[[Master visual geolocation techniques]]"
 sibling: []
-prev: []
-next:
-  - "[[Master visual geolocation techniques]]"
 left_side_friend: []
 right_side_friend: []
 objectives:
@@ -43,20 +36,26 @@ targetFields: []
 dummyTargets: "[object Object]"
 industryContext: ""
 clues: []
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Victim Identification Protocol
 
 ## Overview
+
 Use visual geolocation techniques to help identify victim locations from images. Learn methods used by Interpol and FBI.
 
 ## Investigation Mesh
+
 Use these [[Wikilinks]] to navigate the nodes of this investigation.
 
 ### Initial Objective
+
 Master visual geolocation techniques
 
 ### Knowledge Graph
+
 - [[Master visual geolocation techniques]]
 - [[Learn image forensics and metadata analysis]]
 - [[Understand temporal analysis methods]]
@@ -69,9 +68,8 @@ Master visual geolocation techniques
 - [[Tool: Architecture references]]
 - [[Tool: GeoGuessr techniques]]
 
-
 ## Starter Prompt
-```
+
 📍 OPERATION LOCATION FINDER - VICTIM GEOLOCATION INVESTIGATION
 
 ⚠️ CONTENT WARNING: This training deals with victim identification techniques.
@@ -87,12 +85,13 @@ This is based on REAL Interpol methodology (Project VIC - Victim Identification 
 Even if EXIF data is stripped, clues remain:
 
 Visual Metadata to Examine:
+
 1. Architecture & Building Style:
    - Regional construction patterns
    - Roof types (flat, pitched, tile)
    - Window styles
    - Building materials
-   
+
 2. Infrastructure:
    - Electrical outlets (different by country)
    - Light switches & fixtures
@@ -145,6 +144,7 @@ Advanced methods to pinpoint location:
 When was the image taken?
 
 Time Indicators:
+
 1. Technology:
    - Electronics visible (phones, TVs)
    - Manufacturing date ranges
@@ -171,6 +171,7 @@ Time Indicators:
 Real investigations use crowdsourcing:
 
 Verification Steps:
+
 1. Generate Hypothesis:
    - "Based on clues, likely: [Country, Region, City]"
    - "Estimated timeframe: [Year range]"
@@ -219,11 +220,13 @@ Your report should include:
 🌟 REAL-WORLD IMPACT
 
 Success Stories:
+
 - Interpol Project VIC: 10,000+ victims identified since 2001
 - Europol: 1,000+ arrests through victim identification
 - FBI: Hundreds of rescues via geolocation analysis
 
 Notable Cases:
+
 - "Vico" case: German police identified location from reflection in victim's eyes
 - Thai beach resort: Location identified from unique rock formation
 - Amsterdam case: Wallpaper pattern matched to specific IKEA product year
@@ -239,6 +242,7 @@ Techniques You're Learning:
 Real investigations use volunteers:
 
 Organizations That Do This:
+
 - Trace Labs (missing persons OSINT CTF)
 - European Financial Coalition (victim identification)
 - NCMEC analysts
@@ -250,6 +254,7 @@ After completing this training, you can volunteer with organizations that use th
 ⚖️ ETHICAL GUIDELINES
 
 Critical Reminders:
+
 - Never share victim images
 - Never discuss case details publicly
 - Always work through official channels
@@ -257,4 +262,3 @@ Critical Reminders:
 - Report findings to appropriate authorities
 
 Ready to begin? Let's analyze an environmental clue...
-```

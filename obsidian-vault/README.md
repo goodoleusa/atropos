@@ -1,3 +1,7 @@
+---
+date_created: 2026-44-Mo
+date_modified: 2026-54-Tu
+---
 # Atropos Education Management Vault
 
 > **Obsidian vault for managing Atropos curriculum, campaigns, and learning paths offline**

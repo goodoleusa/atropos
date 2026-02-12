@@ -4,10 +4,15 @@ status: active
 created: 2026-02-07
 modified: 2026-02-07
 
-parent: [[Guides]]
+parent: [[Guides INDEX]]
 sibling:
   - [[Teaching Strategies]]
   - [[Assessment Methods]]
+  - [[Corporate-Registry-Guide]]
+  - [[Financial-Crime-Career-Guide]]
+  - [[Blockchain-Analysis-Guide]]
+  - [[Corporate-Registry-Guide]]
+  - [[OSINT-Tool-Registry]]
 child:
 date_created: 2026-44-Mo
 date_modified: 2026-19-Mo
@@ -54,6 +59,7 @@ Complete guide to building investigation campaigns in Obsidian vault with bidire
 ```
 
 Templater auto-generates:
+
 ```yaml
 ---
 id: instagram_osint_investigation
@@ -219,6 +225,7 @@ npm run dev
 ### Multi-Step Campaigns with Child Notes
 
 **Structure**:
+
 ```
 Instagram OSINT Investigation (parent)
 ├── Step 1: Profile Analysis (child)
@@ -230,6 +237,7 @@ Instagram OSINT Investigation (parent)
 **Implementation**:
 
 **Main Campaign** (`Instagram OSINT Investigation.md`):
+
 ```yaml
 child:
   - [[Step 1 Profile Analysis]]
@@ -239,6 +247,7 @@ child:
 ```
 
 **Each Step** (`Step 1 Profile Analysis.md`):
+
 ```yaml
 ---
 parent: [[Instagram OSINT Investigation]]
@@ -268,6 +277,7 @@ Extract all public information from target profile
 **Scenario**: Campaign adapts based on findings
 
 **Structure**:
+
 ```
 Phishing Investigation (parent)
 ├── Path A: Email Header Analysis (child)
@@ -276,6 +286,7 @@ Phishing Investigation (parent)
 ```
 
 **Use conditional** `child` assignments:
+
 ```yaml
 child:
   - [[Path A Email Headers]] # If email-based phishing
@@ -284,6 +295,7 @@ child:
 ```
 
 In campaign content:
+
 ```markdown
 ## Investigation Branches
 
@@ -384,17 +396,20 @@ Phishing Campaign
 ### Writing for Experiential Learners
 
 **Do**:
+
 - Start with action: "Open the tool..."
 - Use command examples
 - Encourage exploration
 - Allow mistakes
 
 **Don't**:
+
 - Long theory explanations upfront
 - Passive reading
 - Warn against all errors
 
 **Example**:
+
 ```
 Try this command: `instaloader profile targetuser`
 
@@ -409,17 +424,20 @@ Learn by experimenting.
 ### Writing for Visual Learners
 
 **Do**:
+
 - Use ASCII diagrams
 - Describe visual relationships
 - Reference map/graph tools
 - Paint mental pictures
 
 **Don't**:
+
 - Walls of text
 - Abstract descriptions
 - No visual anchors
 
 **Example**:
+
 ```
 Draw the network as you discover it:
 
@@ -440,17 +458,20 @@ Tight-knit group → possible coordinated behavior.
 ### Writing for Analytical Learners
 
 **Do**:
+
 - Explain why before how
 - Reference documentation
 - Technical deep dives
 - Framework context
 
 **Don't**:
+
 - Skip theory
 - Just give commands
 - Assume understanding
 
 **Example**:
+
 ```
 Instagram uses a REST API with OAuth 2.0. Public profiles expose 
 certain fields without authentication:
@@ -470,17 +491,20 @@ Understanding these API limitations shapes our OSINT approach...
 ### Writing for Social Learners
 
 **Do**:
+
 - Reference community resources
 - Link to writeups and blogs
 - Mention discussions
 - Collaborative approaches
 
 **Don't**:
+
 - Isolate the learner
 - Ignore community wisdom
 - Skip case studies
 
 **Example**:
+
 ```
 The OSINT community has documented Instagram investigation extensively:
 
@@ -497,17 +521,20 @@ Learn from others' experiences before reinventing the wheel.
 ### Writing for Pragmatic Learners
 
 **Do**:
+
 - One-liners and scripts
 - Automation examples
 - Efficiency tips
 - Quick wins
 
 **Don't**:
+
 - Long explanations
 - Theory dumps
 - Slow methods
 
 **Example**:
+
 ```
 Fast Instagram OSINT workflow:
 
@@ -527,6 +554,7 @@ Automate with bash script if doing multiple accounts.
 ### 1. Self-Test
 
 **Ask yourself**:
+
 - [ ] Can I complete this investigation with the tools listed?
 - [ ] Are objectives clear and achievable?
 - [ ] Is the starter prompt helpful?
@@ -537,6 +565,7 @@ Automate with bash script if doing multiple accounts.
 ### 2. Peer Review
 
 Share with another educator:
+
 - Can they follow the campaign?
 - Is difficulty rating accurate?
 - Are time estimates realistic?
@@ -545,6 +574,7 @@ Share with another educator:
 ### 3. Pilot Test
 
 Before full rollout:
+
 1. Sync to app (test instance)
 2. Complete investigation yourself
 3. Time yourself
@@ -557,6 +587,7 @@ Before full rollout:
 ## 📊 Campaign Management Queries
 
 ### View All Your Drafts
+
 ```dataview
 TABLE difficulty, estimatedTime, tags
 FROM "Campaigns"
@@ -565,6 +596,7 @@ SORT modified DESC
 ```
 
 ### Find Campaigns Needing Review
+
 ```dataview
 LIST
 FROM "Campaigns"
@@ -572,6 +604,7 @@ WHERE !learningObjectives OR length(learningObjectives) = 0
 ```
 
 ### Campaigns by Difficulty
+
 ```dataview
 TABLE length(rows) as Count
 FROM "Campaigns"
@@ -580,6 +613,7 @@ SORT difficulty ASC
 ```
 
 ### Most Referenced Campaigns
+
 ```dataview
 TABLE 
   length(file.inlinks) as "Inbound Links",
@@ -596,17 +630,20 @@ LIMIT 10
 ### Daily Routine
 
 **Morning**: Import app changes (if team is working)
+
 ```bash
 npm run sync:to-obsidian
 ```
 
 **During Day**: Edit in Obsidian
+
 - Create new campaigns
 - Update existing ones
 - Reorganize with Excalibrain
 - Use Git commits frequently
 
 **Evening**: Export to app
+
 ```bash
 npm run sync:from-obsidian
 npm run dev  # Test
@@ -617,6 +654,7 @@ git push
 ### Conflict Resolution
 
 **If sync fails**:
+
 1. Check frontmatter YAML is valid
 2. Ensure status is "active" not "draft"
 3. Verify all required fields present
@@ -624,6 +662,7 @@ git push
 5. Run with verbose flag: `tsx script/sync-obsidian.ts campaigns:from-obsidian --verbose`
 
 **If app and vault diverge**:
+
 1. Decide source of truth (usually Obsidian)
 2. Export app to vault: `npm run sync:to-obsidian`
 3. Manually merge conflicts
@@ -636,6 +675,7 @@ git push
 Before marking status as "active":
 
 ### Content Quality
+
 - [ ] Clear, actionable objectives
 - [ ] Realistic time estimate (test it!)
 - [ ] All tools documented
@@ -644,6 +684,7 @@ Before marking status as "active":
 - [ ] Expected findings documented
 
 ### Learning Integration
+
 - [ ] Learning objectives map to curriculum
 - [ ] Skills required are prerequisites
 - [ ] Skills taught are outcomes
@@ -653,6 +694,7 @@ Before marking status as "active":
 - [ ] Career paths list real job titles
 
 ### Teaching Adaptations
+
 - [ ] All 5 styles have unique content
 - [ ] Experiential: Hands-on, action-oriented
 - [ ] Visual: Describes diagrams/visualizations
@@ -662,6 +704,7 @@ Before marking status as "active":
 - [ ] Each is 2-4 sentences minimum
 
 ### Metadata Compliance
+
 - [ ] Parent assigned correctly
 - [ ] Siblings identified (if any)
 - [ ] Child set (if multi-step)
@@ -671,6 +714,7 @@ Before marking status as "active":
 - [ ] Status set appropriately
 
 ### Technical
+
 - [ ] YAML syntax valid
 - [ ] Wiki links resolve
 - [ ] No circular references
@@ -684,6 +728,7 @@ Before marking status as "active":
 ### 1. Use Dataview for Batch Operations
 
 Find all campaigns missing teaching adaptations:
+
 ```dataview
 LIST
 FROM "Campaigns"
@@ -695,6 +740,7 @@ WHERE status = "active" AND
 ### 2. Template Variations
 
 Create specialized templates:
+
 - `Campaign Template - OSINT.md`
 - `Campaign Template - Network.md`
 - `Campaign Template - Malware.md`
@@ -704,6 +750,7 @@ Each pre-fills common fields for that domain.
 ### 3. Keyboard Shortcuts
 
 Set in Obsidian Settings → Hotkeys:
+
 - "Create from Campaign Template": `Ctrl+Shift+C`
 - "Open in Excalibrain": `Ctrl+Shift+E`
 - "Sync to app": External command via script
@@ -711,6 +758,7 @@ Set in Obsidian Settings → Hotkeys:
 ### 4. Daily Notes for Planning
 
 Template: `Templates/Daily Note Template.md`
+
 ```markdown
 ---
 date: <% tp.date.now("YYYY-MM-DD") %>
@@ -731,24 +779,30 @@ WHERE status = "draft"
 ```
 
 ## Sync Log
-- 
+
+-
+
 ```
 
 ### 5. Version Control Best Practices
 
 **.gitignore**:
 ```
+
 .obsidian/workspace*
 .obsidian/workspace.json
 .trash/
+
 ```
 
 **Commit messages**:
 ```
+
 content: add Instagram OSINT campaign
 content: update 3 campaigns with teaching adaptations
 fix: correct parent relationships in SOCMINT module
 refactor: reorganize campaign hierarchy
+
 ```
 
 **Branch strategy**:

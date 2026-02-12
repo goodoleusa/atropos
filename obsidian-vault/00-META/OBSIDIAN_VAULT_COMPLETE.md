@@ -1,3 +1,7 @@
+---
+date_created: 2026-50-Mo
+date_modified: 2026-54-Tu
+---
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║              ✅ OBSIDIAN VAULT SETUP COMPLETE                             ║
 ║      Offline Campaign Builder & Education Management System               ║
@@ -184,16 +188,16 @@ Total time: 20-30 min per campaign (faster than web editor!)
 
 🔄 SYNC COMMANDS:
 
-# Export FROM Obsidian TO App:
+# Export FROM Obsidian TO App
 npm run sync:campaigns         # Campaigns only
 npm run sync:achievements      # Achievements only
 npm run sync:learning-paths    # Learning paths only
 npm run sync:from-obsidian     # Everything
 
-# Import FROM App TO Obsidian:
+# Import FROM App TO Obsidian
 npm run sync:to-obsidian       # Export existing campaigns to vault
 
-# Vault Management:
+# Vault Management
 npm run vault:init             # Initialize vault (first time)
 npm run vault:open             # Open in Obsidian
 

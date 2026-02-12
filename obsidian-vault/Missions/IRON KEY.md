@@ -13,11 +13,11 @@ child:
   - "[[Load and analyze the exploit]]"
   - "[[Test SQL injection vulnerability]]"
 sibling: []
-prev: []
-next: []
 left_side_friend: []
 right_side_friend: []
 status: "available"
+date_created: 2026-40-Mo
+date_modified: 2026-54-Tu
 ---
 
 # Mission: IRON KEY

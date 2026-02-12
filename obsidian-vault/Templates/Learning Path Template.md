@@ -1,5 +1,4 @@
 ---
-id: "<% tp.file.title.toLowerCase().replace(/\s+/g, '_') %>"
 name: "<% tp.file.title %>"
 type: learning-path
 category: <% tp.system.prompt("Category (osint/network/malware/social)?") %>

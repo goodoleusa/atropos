@@ -1,5 +1,6 @@
 {
   "pinned": [
-    "obsidian-linter:lint-file"
+    "obsidian-linter:lint-file",
+    "file-explorer:move-file"
   ]
 }
