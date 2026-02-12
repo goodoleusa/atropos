@@ -55,10 +55,24 @@ export default function AgentConfigSection() {
   
   const { data: agentConfigs = {}, isLoading: configLoading } = useQuery<Record<string, AgentConfig>>({
     queryKey: ['/api/admin/agent-config'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/agent-config', {
+        headers: { 'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || '' }
+      });
+      if (!res.ok) throw new Error('Failed to fetch agent config');
+      return res.json();
+    }
   });
   
   const { data: wandbConfig, isLoading: wandbLoading } = useQuery<WandBConfig>({
     queryKey: ['/api/admin/wandb-config'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/wandb-config', {
+        headers: { 'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || '' }
+      });
+      if (!res.ok) throw new Error('Failed to fetch wandb config');
+      return res.json();
+    }
   });
   
   useEffect(() => {
@@ -73,7 +87,10 @@ export default function AgentConfigSection() {
     mutationFn: async (config: { agentId: string } & AgentConfig) => {
       const res = await fetch('/api/admin/agent-config', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
         body: JSON.stringify(config),
       });
       if (!res.ok) throw new Error('Failed to save');
@@ -92,7 +109,10 @@ export default function AgentConfigSection() {
     mutationFn: async (config: Partial<WandBConfig> & { apiKey?: string }) => {
       const res = await fetch('/api/admin/wandb-config', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
         body: JSON.stringify(config),
       });
       if (!res.ok) throw new Error('Failed to save');
