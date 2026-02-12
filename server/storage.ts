@@ -149,7 +149,8 @@ export interface IStorage {
   // Admin Prompts
   getAdminPromptByKey(key: string): Promise<AdminPrompt | undefined>;
   getAllAdminPrompts(): Promise<AdminPrompt[]>;
-  upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt>;
+  upsertAdminPrompt(data: InsertAdminPrompt): Promise<AdminPrompt>;
+  getAdminPromptsByCategory(category: string): Promise<AdminPrompt[]>;
 
   // Prompt Gallery
   getPromptGallery(status?: string): Promise<PromptGalleryEntry[]>;
@@ -634,23 +635,30 @@ export class DatabaseStorage implements IStorage {
     return prompt;
   }
 
+  async getAdminPromptsByCategory(category: string): Promise<AdminPrompt[]> {
+    return await db
+      .select()
+      .from(adminPrompts)
+      .where(eq(adminPrompts.category, category));
+  }
+
   async getAllAdminPrompts(): Promise<AdminPrompt[]> {
     return await db.select().from(adminPrompts).orderBy(adminPrompts.category);
   }
 
-  async upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt> {
-    const existing = await this.getAdminPromptByKey(key);
+  async upsertAdminPrompt(data: InsertAdminPrompt): Promise<AdminPrompt> {
+    const existing = await this.getAdminPromptByKey(data.key);
     if (existing) {
       const [updated] = await db
         .update(adminPrompts)
         .set({ ...data, version: existing.version + 1, updatedAt: new Date() })
-        .where(eq(adminPrompts.key, key))
+        .where(eq(adminPrompts.key, data.key))
         .returning();
       return updated;
     } else {
       const [created] = await db
         .insert(adminPrompts)
-        .values({ key, name: data.name || key, content: data.content || '', ...data })
+        .values(data)
         .returning();
       return created;
     }

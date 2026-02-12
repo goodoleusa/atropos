@@ -157,6 +157,89 @@ export async function registerRoutes(
     }
   });
   
+  // ==================== Admin Agent Config API ====================
+  app.get("/api/admin/agent-config", async (req, res) => {
+    try {
+      const accessToken = req.headers['x-access-token'] as string;
+      if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      const prompts = await storage.getAdminPromptsByCategory('system');
+      const config: Record<string, any> = {};
+      prompts.forEach(p => {
+        try {
+          config[p.key] = JSON.parse(p.content);
+        } catch (e) {
+          config[p.key] = { baseInstructions: p.content };
+        }
+      });
+      res.json(config);
+    } catch (error) {
+      console.error("Get agent config error:", error);
+      res.status(500).json({ error: "Failed to fetch agent config" });
+    }
+  });
+
+  app.put("/api/admin/agent-config", async (req, res) => {
+    try {
+      const accessToken = req.headers['x-access-token'] as string;
+      if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      const { agentId, ...config } = req.body;
+      if (!agentId) return res.status(400).json({ error: "agentId required" });
+      
+      await storage.upsertAdminPrompt({
+        key: agentId,
+        name: agentId,
+        content: JSON.stringify({ ...config, updatedAt: new Date().toISOString() }),
+        category: 'system',
+        isActive: true
+      });
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Save agent config error:", error);
+      res.status(500).json({ error: "Failed to save agent config" });
+    }
+  });
+
+  app.get("/api/admin/wandb-config", async (req, res) => {
+    try {
+      const accessToken = req.headers['x-access-token'] as string;
+      if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      const prompt = await storage.getAdminPromptByKey('wandb_config');
+      if (!prompt) return res.json({ enabled: false, project: 'nexus-agents', entity: '' });
+      const config = JSON.parse(prompt.content);
+      res.json({ ...config, apiKeySet: !!config.apiKey });
+    } catch (error) {
+      console.error("Get wandb config error:", error);
+      res.status(500).json({ error: "Failed to fetch wandb config" });
+    }
+  });
+
+  app.put("/api/admin/wandb-config", async (req, res) => {
+    try {
+      const accessToken = req.headers['x-access-token'] as string;
+      if (!accessToken || accessToken !== process.env.APP_ACCESS_TOKEN) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      const config = req.body;
+      await storage.upsertAdminPrompt({
+        key: 'wandb_config',
+        name: 'W&B Configuration',
+        content: JSON.stringify(config),
+        category: 'monitoring',
+        isActive: true
+      });
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Save wandb config error:", error);
+      res.status(500).json({ error: "Failed to save wandb config" });
+    }
+  });
+
   // Get or create game session (rate limited: 30/min)
   app.post("/api/session", rateLimit(30, 60000), async (req, res) => {
     try {
