@@ -54,7 +54,6 @@ export default function QuickNav() {
     { path: '/agents', icon: User, label: 'Your Agent', color: 'teal' as const },
     { path: '/campaigns/designer', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
     { path: '/business', icon: TrendingUp, label: 'Bounty Feed', color: 'teal' as const },
-    { path: '/agents', icon: User, label: 'User Agent', color: 'teal' as const },
     
     // Active Investigation
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
