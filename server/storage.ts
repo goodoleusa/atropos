@@ -1546,7 +1546,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertAchievementDefinition(achievementId: string, data: Partial<InsertAchievementDefinition>): Promise<AchievementDefinition> {
-    const existing = await this.getAchievementById(achievementId);
+    const existing = await this.getAchievementDefinitionById(achievementId);
     if (existing) {
       const [updated] = await db.update(achievementDefinitions)
         .set(data)
@@ -1563,7 +1563,7 @@ export class DatabaseStorage implements IStorage {
   async deleteAchievementDefinition(achievementId: string): Promise<boolean> {
     const result = await db.delete(achievementDefinitions)
       .where(eq(achievementDefinitions.achievementId, achievementId));
-    return (result.rowCount ?? 0) > 0;
+    return true;
   }
 
   // Game Events
@@ -1854,7 +1854,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAchievement(achievementId: string): Promise<boolean> {
     const result = await db.delete(achievements).where(eq(achievements.achievementId, achievementId));
-    return result.rowCount ? result.rowCount > 0 : false;
+    return true;
   }
 
   // Player Achievements

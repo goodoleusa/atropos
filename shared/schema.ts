@@ -1388,7 +1388,7 @@ export const XP_LEVELS = [
 ] as const;
 
 export function getLevelForXP(xp: number): { level: number; title: string; xpForNext: number; xpProgress: number } {
-  let currentLevel = XP_LEVELS[0];
+  let currentLevel = XP_LEVELS[0] as typeof XP_LEVELS[number];
   for (const lvl of XP_LEVELS) {
     if (xp >= lvl.xpRequired) {
       currentLevel = lvl;
