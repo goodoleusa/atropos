@@ -29,6 +29,22 @@ const TEMPLATES = [
     ]
   },
   {
+    name: 'Social Engineering',
+    nodes: [
+      { id: '1', title: 'Persona Setup', content: 'Craft a convincing LinkedIn profile. Mention [[Credential Harvesting]] as the goal.', type: 'start' as const, x: 50, y: 50 },
+      { id: '2', title: 'Phishing Draft', content: 'Write an urgent internal security alert.', type: 'choice' as const, x: 300, y: 50 },
+      { id: '3', title: 'Success Outcome', content: 'Target clicked the link. Access granted.', type: 'outcome' as const, x: 550, y: 50 }
+    ]
+  },
+  {
+    name: 'Financial Trace',
+    nodes: [
+      { id: '1', title: 'Wallet Discovery', content: 'Find the transaction ID in [[Dark Web Intel]].', type: 'start' as const, x: 50, y: 50 },
+      { id: '2', title: 'Mixer Analysis', content: 'De-anonymize the mixer traffic.', type: 'choice' as const, x: 300, y: 50 },
+      { id: '3', title: 'Exchange Off-ramp', content: 'Identify the KYC verified account.', type: 'choice' as const, x: 550, y: 50 }
+    ]
+  },
+  {
     name: 'Ransomware Trace',
     nodes: [
       { id: '1', title: 'Initial Infection', content: 'Identify the entry vector.', type: 'start' as const, x: 50, y: 150 },
@@ -347,7 +363,5 @@ export default function CampaignBuilder() {
         </AnimatePresence>
       </main>
     </div>
-  );
-}
   );
 }
