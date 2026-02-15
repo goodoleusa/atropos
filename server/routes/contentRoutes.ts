@@ -330,7 +330,24 @@ router.get("/api/campaigns/:campaignId/play", async (req, res) => {
   }
 });
 
-router.get("/api/campaigns/:campaignId/page/:nodeId?", async (req, res) => {
+router.get("/api/campaigns/:campaignId/page", async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+    const campaign = await storage.getDesignerCampaignById(campaignId);
+    if (!campaign || !campaign.isPublished) {
+      return res.status(404).send("<html><body><h1>Campaign not found</h1></body></html>");
+    }
+    const rootId = campaign.rootNodes?.[0];
+    if (!rootId) {
+       return res.status(404).send("<html><body><h1>No root node found</h1></body></html>");
+    }
+    res.redirect(`/api/campaigns/${campaignId}/page/${rootId}`);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to load campaign" });
+  }
+});
+
+router.get("/api/campaigns/:campaignId/page/:nodeId", async (req, res) => {
   try {
     const { campaignId, nodeId } = req.params;
     const campaign = await storage.getDesignerCampaignById(campaignId);
