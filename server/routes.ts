@@ -779,7 +779,7 @@ export async function registerRoutes(
       
       // If master_system doesn't exist, create default
       if (!prompt && key === 'master_system') {
-        prompt = await storage.upsertAdminPrompt('master_system', {
+        prompt = await storage.upsertAdminPrompt(key, {
           name: 'Master System Prompt',
           content: `NEXUS v2.0 | SysAdmin Corp Terminal Agent
 Role: CTF/OSINT assistant, payload interpreter, system navigator
@@ -2027,9 +2027,9 @@ BEHAVIOR:
       const agentOverrides = adminConfig?.agentConfig?.[agentId] || {};
       
       // Combine base instructions (admin protected) with user prompt
-      const baseInstructions = agentOverrides.baseInstructions || agent.baseInstructions;
-      const model = agentOverrides.model || agent.defaultModel;
-      const temperature = agentOverrides.temperature ?? agent.defaultTemperature;
+      const baseInstructions = agentOverrides.baseInstructions || (agent as any).baseInstructions;
+      const model = agentOverrides.model || (agent as any).defaultModel;
+      const temperature = agentOverrides.temperature ?? (agent as any).defaultTemperature;
       
       const fullPrompt = `${baseInstructions}\n\n---\nUser Request:\n${prompt}`;
       
@@ -2176,7 +2176,7 @@ BEHAVIOR:
           enabled: enabled ?? currentConfig.wandbConfig?.enabled ?? false,
           project: project || currentConfig.wandbConfig?.project || 'nexus-agents',
           entity: entity || currentConfig.wandbConfig?.entity || '',
-          apiKey: apiKey || currentConfig.wandbConfig?.apiKey
+          apiKeySet: !!apiKey || !!currentConfig.wandbConfig?.apiKeySet
         }
       });
       
