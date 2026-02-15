@@ -779,7 +779,7 @@ export async function registerRoutes(
       
       // If master_system doesn't exist, create default
       if (!prompt && key === 'master_system') {
-        prompt = await storage.upsertAdminPrompt(key, {
+        prompt = await storage.upsertAdminPrompt('master_system', {
           name: 'Master System Prompt',
           content: `NEXUS v2.0 | SysAdmin Corp Terminal Agent
 Role: CTF/OSINT assistant, payload interpreter, system navigator

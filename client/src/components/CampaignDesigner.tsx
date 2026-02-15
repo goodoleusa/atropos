@@ -515,6 +515,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
   // Save campaign to database
   const saveCampaign = useCallback(async () => {
+    if (isSyncing) return;
     setIsSyncing(true);
     try {
       const payload = {
@@ -539,15 +540,17 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       
       if (response.ok) {
         // Update local cache
-        const existing = savedCampaigns.findIndex(c => c.id === campaign.id);
-        const updated = [...savedCampaigns];
-        if (existing >= 0) {
-          updated[existing] = campaign;
-        } else {
-          updated.push(campaign);
-        }
-        setSavedCampaigns(updated);
-        localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
+        setSavedCampaigns(prev => {
+          const existing = prev.findIndex(c => c.id === campaign.id);
+          const updated = [...prev];
+          if (existing >= 0) {
+            updated[existing] = campaign;
+          } else {
+            updated.push(campaign);
+          }
+          localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
+          return updated;
+        });
         setIsUnsaved(false);
         setLastSavedAt(new Date());
         toast({ title: 'Campaign Saved', description: `"${campaign.name}" synced to database` });
@@ -556,17 +559,20 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       }
     } catch (error) {
       // Fallback to localStorage only
-      const existing = savedCampaigns.findIndex(c => c.id === campaign.id);
-      const updated = [...savedCampaigns];
-      if (existing >= 0) updated[existing] = campaign;
-      else updated.push(campaign);
-      localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
-      setSavedCampaigns(updated);
+      setSavedCampaigns(prev => {
+        const existing = prev.findIndex(c => c.id === campaign.id);
+        const updated = [...prev];
+        if (existing >= 0) updated[existing] = campaign;
+        else updated.push(campaign);
+        localStorage.setItem('nexus_campaigns', JSON.stringify(updated));
+        return updated;
+      });
       setIsUnsaved(false);
       toast({ title: 'Saved Locally', description: 'Database sync failed, saved to local storage' });
+    } finally {
+      setIsSyncing(false);
     }
-    setIsSyncing(false);
-  }, [campaign, savedCampaigns]);
+  }, [campaign, isSyncing]);
 
   const publishCampaign = useCallback(async () => {
     if (!campaign.id || isUnsaved) {

@@ -646,19 +646,19 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(adminPrompts).orderBy(adminPrompts.category);
   }
 
-  async upsertAdminPrompt(data: InsertAdminPrompt): Promise<AdminPrompt> {
-    const existing = await this.getAdminPromptByKey(data.key);
+  async upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt> {
+    const existing = await this.getAdminPromptByKey(key);
     if (existing) {
       const [updated] = await db
         .update(adminPrompts)
         .set({ ...data, version: existing.version + 1, updatedAt: new Date() })
-        .where(eq(adminPrompts.key, data.key))
+        .where(eq(adminPrompts.key, key))
         .returning();
       return updated;
     } else {
       const [created] = await db
         .insert(adminPrompts)
-        .values(data)
+        .values({ ...data, key } as InsertAdminPrompt)
         .returning();
       return created;
     }
