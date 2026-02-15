@@ -160,7 +160,7 @@ export default function Agents() {
   const [agentRuns, setAgentRuns] = useState<AgentRun[]>([]);
   const [enabledFeeds, setEnabledFeeds] = useState<string[]>(['abuse_ch_threatfox', 'cisa_kev']);
 
-  const { data: agents = [], isLoading: agentsLoading } = useQuery<SecurityAgent[]>({
+  const { data: agents = [], isLoading: agentsLoading } = useQuery<(SecurityAgent & { moduleId?: string; starterPrompt?: string })[]>({
     queryKey: ['/api/agents'],
   });
 
@@ -333,7 +333,7 @@ export default function Agents() {
                 {agents.map((agent) => (
                   <Card 
                     key={agent.id}
-                    className={`bg-gradient-to-br ${AGENT_COLORS[agent.id] || 'from-stone-800 to-stone-900'} border cursor-pointer hover:scale-[1.02] transition-transform`}
+                    className={`bg-gradient-to-br ${AGENT_COLORS[(agent as any).moduleId] || 'from-stone-800 to-stone-900'} border cursor-pointer hover:scale-[1.02] transition-transform`}
                     onClick={() => {
                       setSelectedAgent(agent);
                       setActiveTab('playground');
@@ -344,7 +344,7 @@ export default function Agents() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="p-2 rounded-lg bg-stone-900/50">
-                            {AGENT_ICONS[agent.id] || <Bot className="w-5 h-5" />}
+                            {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-5 h-5" />}
                           </div>
                           <CardTitle className="text-lg text-white">{agent.name}</CardTitle>
                         </div>
@@ -358,7 +358,7 @@ export default function Agents() {
                         {agent.description}
                       </CardDescription>
                       <div className="flex flex-wrap gap-1">
-                        {agent.scanCategories.slice(0, 3).map(cat => (
+                        {((agent as any).scanCategories || (agent as any).tags || []).slice(0, 3).map((cat: string) => (
                           <Badge key={cat} variant="secondary" className="text-xs bg-stone-800/50">
                             {cat}
                           </Badge>
@@ -383,17 +383,17 @@ export default function Agents() {
                   <div>
                     <label className="text-sm text-stone-400 mb-2 block">Select Agent</label>
                     <Select 
-                      value={selectedAgent?.id || ''} 
-                      onValueChange={(id) => setSelectedAgent(agents.find(a => a.id === id) || null)}
+                      value={selectedAgent?.id?.toString() || ''} 
+                      onValueChange={(id) => setSelectedAgent(agents.find(a => a.id.toString() === id) || null)}
                     >
                       <SelectTrigger className="bg-stone-800 border-stone-700" data-testid="select-agent">
                         <SelectValue placeholder="Choose an agent..." />
                       </SelectTrigger>
                       <SelectContent>
                         {agents.map(agent => (
-                          <SelectItem key={agent.id} value={agent.id}>
+                          <SelectItem key={agent.id} value={agent.id.toString()}>
                             <div className="flex items-center gap-2">
-                              {AGENT_ICONS[agent.id]}
+                              {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-4 h-4" />}
                               <span>{agent.name}</span>
                             </div>
                           </SelectItem>
@@ -433,7 +433,7 @@ export default function Agents() {
                       </p>
                       <ScrollArea className="h-24">
                         <pre className="text-xs text-stone-400 whitespace-pre-wrap">
-                          {selectedAgent.systemPrompt.slice(0, 500)}...
+                          {(selectedAgent as any).systemPrompt?.slice(0, 500) || (selectedAgent as any).starterPrompt?.slice(0, 500)}...
                         </pre>
                       </ScrollArea>
                     </div>
