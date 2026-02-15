@@ -1638,4 +1638,39 @@ router.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) =>
   }
 });
 
+router.post("/api/campaign-templates/generate", rateLimit(10, 60000), async (req, res) => {
+  try {
+    const { templateId, topic, skill } = req.body;
+    if (!templateId || !topic) {
+      return res.status(400).json({ error: "templateId and topic required" });
+    }
+
+    const generator = TEMPLATE_GENERATORS[templateId];
+    if (!generator) {
+      return res.status(404).json({ error: "Generator template not found" });
+    }
+
+    const campaignData = generator(topic, skill || "intermediate");
+    
+    // Convert to storage format
+    const campaignId = `gen-${Date.now()}`;
+    const campaign = await storage.upsertDesignerCampaign(campaignId, {
+      campaignId,
+      name: campaignData.name,
+      description: campaignData.description,
+      nodes: campaignData.nodes,
+      links: campaignData.links,
+      rootNodes: campaignData.rootNodes,
+      hiddenClues: campaignData.hiddenClues,
+      tags: campaignData.tags,
+      isPublished: false
+    });
+
+    res.json({ success: true, campaign });
+  } catch (error) {
+    console.error("Generate campaign error:", error);
+    res.status(500).json({ error: "Failed to generate campaign" });
+  }
+});
+
 export default router;
