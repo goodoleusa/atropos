@@ -8,9 +8,47 @@ import {
   mysticalCards,
   quantumMessages,
   osintTools,
-  agentModules
+  agentModules,
+  campaignTemplates
 } from "../../shared/schema";
 import { ACHIEVEMENTS } from "./achievements";
+
+async function seedCampaignTemplates() {
+  const templatesData = [
+    {
+      key: "osint_recon_v1",
+      name: "Standard OSINT Recon",
+      description: "A baseline template for OSINT reconnaissance missions.",
+      category: "osint",
+      difficulty: "beginner",
+      estimatedTime: "30 min",
+      phases: [
+        { id: "passive", name: "Passive Discovery", prompts: ["Gather all public DNS records"], triggers: ["found_dns"] },
+        { id: "active", name: "Active Scanning", prompts: ["Map open ports and services"], triggers: ["scan_complete"] }
+      ],
+      isActive: true
+    },
+    {
+      key: "threat_intel_v1",
+      name: "Threat Intel Gathering",
+      description: "Analyze indicators of compromise and build a threat profile.",
+      category: "threat_intel",
+      difficulty: "intermediate",
+      estimatedTime: "45 min",
+      phases: [
+        { id: "ioc", name: "IOC Collection", prompts: ["Extract IPs and domains from report"], triggers: ["iocs_extracted"] },
+        { id: "analysis", name: "Pattern Analysis", prompts: ["Identify TTPs associated with findings"], triggers: ["ttps_identified"] }
+      ],
+      isActive: true
+    }
+  ];
+
+  console.log("Seeding campaign templates...");
+  for (const template of templatesData) {
+    await db.insert(campaignTemplates).values(template).onConflictDoNothing();
+  }
+  console.log(`✓ Seeded ${templatesData.length} campaign templates`);
+}
 
 async function seedClues() {
   const cluesData = [
@@ -487,6 +525,7 @@ export async function seedAll() {
   console.log("\n🌱 Starting database seeding...\n");
   
   try {
+    await seedCampaignTemplates();
     await seedClues();
     await seedQuests();
     await seedAchievements();
