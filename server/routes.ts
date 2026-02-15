@@ -1025,55 +1025,135 @@ BEHAVIOR:
     }
   });
 
-  // ==================== Designer Campaigns API ====================
+  // ==================== Agent Modules API ====================
   
-  // Get all designer campaigns
-  app.get("/api/designer/campaigns", async (req, res) => {
+  // Get all agent modules (mirrors /api/agents for frontend compatibility)
+  app.get(["/api/agent-modules", "/api/agents"], async (req, res) => {
     try {
-      const campaigns = await storage.getAllDesignerCampaigns();
-      res.json(campaigns);
+      const modules = await storage.getAllAgentModules();
+      res.json(modules);
     } catch (error) {
-      console.error("Get designer campaigns error:", error);
-      res.status(500).json({ error: "Failed to fetch designer campaigns" });
+      console.error("Get agent modules error:", error);
+      res.status(500).json({ error: "Failed to fetch agent modules" });
     }
   });
 
-  // Get single designer campaign
-  app.get("/api/designer/campaigns/:campaignId", async (req, res) => {
+  // Get single agent module
+  app.get("/api/agent-modules/:key", async (req, res) => {
     try {
-      const { campaignId } = req.params;
-      const campaign = await storage.getDesignerCampaignById(campaignId);
-      if (!campaign) {
-        return res.status(404).json({ error: "Campaign not found" });
+      const { key } = req.params;
+      const module = await storage.getAgentModuleByKey(key);
+      if (!module) {
+        return res.status(404).json({ error: "Agent module not found" });
       }
-      res.json(campaign);
+      res.json(module);
     } catch (error) {
-      console.error("Get designer campaign error:", error);
-      res.status(500).json({ error: "Failed to fetch campaign" });
+      console.error("Get agent module error:", error);
+      res.status(500).json({ error: "Failed to fetch agent module" });
     }
   });
 
-  // Save/update designer campaign
-  app.put("/api/designer/campaigns/:campaignId", async (req, res) => {
+  // Create agent module
+  app.post("/api/agent-modules", async (req, res) => {
     try {
-      const { campaignId } = req.params;
-      const campaign = await storage.upsertDesignerCampaign(campaignId, req.body);
-      res.json(campaign);
+      const module = await storage.createAgentModule(req.body);
+      res.json(module);
     } catch (error) {
-      console.error("Save designer campaign error:", error);
-      res.status(500).json({ error: "Failed to save campaign" });
+      console.error("Create agent module error:", error);
+      res.status(500).json({ error: "Failed to create agent module" });
     }
   });
 
-  // Delete designer campaign
-  app.delete("/api/designer/campaigns/:campaignId", async (req, res) => {
+  // Update agent module
+  app.put("/api/agent-modules/:key", async (req, res) => {
     try {
-      const { campaignId } = req.params;
-      await storage.deleteDesignerCampaign(campaignId);
+      const { key } = req.params;
+      const module = await storage.updateAgentModule(key, req.body);
+      if (!module) {
+        return res.status(404).json({ error: "Agent module not found" });
+      }
+      res.json(module);
+    } catch (error) {
+      console.error("Update agent module error:", error);
+      res.status(500).json({ error: "Failed to update agent module" });
+    }
+  });
+
+  // Delete agent module
+  app.delete("/api/agent-modules/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      await storage.deleteAgentModule(key);
       res.json({ success: true });
     } catch (error) {
-      console.error("Delete designer campaign error:", error);
-      res.status(500).json({ error: "Failed to delete campaign" });
+      console.error("Delete agent module error:", error);
+      res.status(500).json({ error: "Failed to delete agent module" });
+    }
+  });
+
+  // ==================== Campaign Templates API ====================
+
+  // Get all campaign templates (mirrors /api/campaigns for frontend compatibility)
+  app.get(["/api/campaign-templates", "/api/campaigns"], async (req, res) => {
+    try {
+      const templates = await storage.getAllCampaignTemplates();
+      res.json(templates);
+    } catch (error) {
+      console.error("Get campaign templates error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign templates" });
+    }
+  });
+
+  // Get single campaign template
+  app.get("/api/campaign-templates/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      const template = await storage.getCampaignTemplateByKey(key);
+      if (!template) {
+        return res.status(404).json({ error: "Campaign template not found" });
+      }
+      res.json(template);
+    } catch (error) {
+      console.error("Get campaign template error:", error);
+      res.status(500).json({ error: "Failed to fetch campaign template" });
+    }
+  });
+
+  // Create campaign template
+  app.post("/api/campaign-templates", async (req, res) => {
+    try {
+      const template = await storage.createCampaignTemplate(req.body);
+      res.json(template);
+    } catch (error) {
+      console.error("Create campaign template error:", error);
+      res.status(500).json({ error: "Failed to create campaign template" });
+    }
+  });
+
+  // Update campaign template
+  app.put("/api/campaign-templates/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      const template = await storage.updateCampaignTemplate(key, req.body);
+      if (!template) {
+        return res.status(404).json({ error: "Campaign template not found" });
+      }
+      res.json(template);
+    } catch (error) {
+      console.error("Update campaign template error:", error);
+      res.status(500).json({ error: "Failed to update campaign template" });
+    }
+  });
+
+  // Delete campaign template
+  app.delete("/api/campaign-templates/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      await storage.deleteCampaignTemplate(key);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete campaign template error:", error);
+      res.status(500).json({ error: "Failed to delete campaign template" });
     }
   });
 
