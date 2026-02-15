@@ -8,6 +8,7 @@ import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
 import atroposRoutes from "./routes/atropos";
 import progressionRoutes from "./routes/progressionRoutes";
+import contentRoutes from "./routes/contentRoutes";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -71,6 +72,9 @@ export async function registerRoutes(
   
   // Register chat routes for AI agent
   registerChatRoutes(app);
+  
+  // Register Content routes (Prompt Gallery, Agent Modules, Designer)
+  app.use(contentRoutes);
   
   // Register OSINT routes
   app.use("/api/osint", osintRoutes);

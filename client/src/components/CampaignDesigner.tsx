@@ -600,13 +600,19 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   const generateFromCtfTemplate = useCallback(async () => {
     if (!ctfGenTemplate || !ctfGenTopic.trim()) return;
     setCtfGenerating(true);
+    console.log('[Designer] Generating campaign from template:', ctfGenTemplate.id, 'topic:', ctfGenTopic);
     try {
       const res = await fetch('/api/campaign-templates/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ templateId: ctfGenTemplate.id, topic: ctfGenTopic.trim(), skill: ctfGenSkill }),
       });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Generation failed');
+      }
       const data = await res.json();
+      console.log('[Designer] Generation response:', data);
       if (data.success && data.campaign) {
         const c = data.campaign;
         const newCampaign: Campaign = {
