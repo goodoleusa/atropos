@@ -648,29 +648,50 @@ ${modelRankings.slice(0, 3).map(m => {
 
       <div className="max-w-4xl mx-auto p-4 space-y-6 pb-24">
         
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="bg-black/50 border-amber-900/30">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-amber-400">{sessionSummary.totalRuns}</div>
-              <div className="text-xs text-stone-500">Runs</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-black/50 border-teal-900/30">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-teal-400">{sessionSummary.totalTokens.toLocaleString()}</div>
-              <div className="text-xs text-stone-500">Tokens</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-black/50 border-green-900/30">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-400">${sessionSummary.totalCost.toFixed(4)}</div>
-              <div className="text-xs text-stone-500">Cost</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-black/50 border-purple-900/30">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400">{sessionSummary.avgLatency.toFixed(0)}ms</div>
-              <div className="text-xs text-stone-500">Avg Latency</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="border-amber-900/50 bg-stone-900/50">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-amber-500 text-lg sm:text-xl">Model Selection</CardTitle>
+              <CardDescription className="text-stone-400">Choose the AI intelligence layer</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 p-4 sm:p-6">
+              <div className="flex flex-wrap gap-2 mb-4 max-h-40 overflow-y-auto">
+                {MODELS.map((model) => (
+                  <Badge
+                    key={model.id}
+                    variant={selectedModel === model.id ? 'default' : 'outline'}
+                    className={`cursor-pointer px-3 py-1 text-xs sm:text-sm transition-all ${
+                      selectedModel === model.id 
+                        ? 'bg-amber-600 text-white shadow-[0_0_10px_rgba(217,119,6,0.5)]' 
+                        : 'bg-stone-800 text-stone-300 hover:border-amber-500 hover:text-amber-400'
+                    }`}
+                    onClick={() => setSelectedModel(model.id)}
+                  >
+                    {model.name}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-stone-300 text-sm">System Prompt Modules</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {(Object.keys(moduleDescriptions) as ModuleKey[]).map((mod) => (
+                    <Badge
+                      key={mod}
+                      variant={enabledModules.includes(mod) ? 'default' : 'outline'}
+                      className={`cursor-pointer justify-start gap-2 py-2 px-3 transition-all ${
+                        enabledModules.includes(mod)
+                          ? 'bg-teal-900/50 text-teal-400 border-teal-500/50 shadow-[0_0_8px_rgba(20,184,166,0.3)]'
+                          : 'bg-stone-800/50 text-stone-500 border-stone-700 hover:border-teal-500/30'
+                      }`}
+                      onClick={() => toggleModule(mod)}
+                    >
+                      <span className="text-base">{moduleDescriptions[mod].icon}</span>
+                      <span className="text-[10px] sm:text-xs truncate">{moduleDescriptions[mod].name}</span>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
