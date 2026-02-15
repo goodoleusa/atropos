@@ -52,7 +52,7 @@ export default function QuickNav() {
     { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
     { path: '/agents', icon: User, label: 'Your Agent', color: 'teal' as const },
-    { path: '/campaigns/designer', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
+    { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
     { path: '/business', icon: TrendingUp, label: 'Bounty Feed', color: 'teal' as const },
     
     // Active Investigation
