@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server, Beaker } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
@@ -51,13 +51,18 @@ export default function QuickNav() {
     // Foundation & Training
     { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
-    { path: '/ai-lab', icon: Brain, label: 'AI Lab', color: 'teal' as const },
+    { path: '/agents', icon: User, label: 'Your Agent', color: 'teal' as const },
+    { path: '/campaigns/designer', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
+    { path: '/business', icon: TrendingUp, label: 'Bounty Feed', color: 'teal' as const },
+    { path: '/agents', icon: User, label: 'User Agent', color: 'teal' as const },
     
     // Active Investigation
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
     { path: '/prompt-builder', icon: Zap, label: 'AI Playground', color: 'purple' as const },
+    { path: '/ai-lab', icon: Beaker, label: 'AI Lab', color: 'teal' as const },
+    { path: '/videos', icon: Bot, label: 'AI Gallery', color: 'teal' as const },
     
     // Results & Documentation
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
@@ -66,16 +71,15 @@ export default function QuickNav() {
     // Profile & Rankings
     { path: '/profile', icon: User, label: 'Portfolio', color: 'teal' as const },
     { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
+
+    // Dev Tools
+    { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const },
+    { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const },
+    { path: '/void', icon: Sparkles, label: 'Void', color: 'purple' as const },
+    { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
   ];
 
-  const devNavItems: typeof baseNavItems = gameState.devMode ? [
-    { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const, badge: undefined },
-    { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const, badge: undefined },
-    { path: '/void', icon: Sparkles, label: 'Void', color: 'purple' as const, badge: undefined },
-    { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const, badge: undefined },
-  ] : [];
-
-  const navItems = [...baseNavItems, ...devNavItems];
+  const navItems = baseNavItems;
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -204,6 +208,15 @@ export default function QuickNav() {
               <QrCode className="w-4 h-4 mr-2" />
               QR Tool
             </Button>
+          </div>
+
+          <div className="flex items-center justify-between px-3 py-2 border-t border-stone-800 mt-2">
+            <span className="text-[10px] text-stone-500 uppercase font-orbitron tracking-tighter">Dev Mode</span>
+            <Switch 
+              checked={gameState.devMode} 
+              onCheckedChange={toggleDevMode}
+              className="scale-75 data-[state=checked]:bg-amber-600"
+            />
           </div>
         </div>
       )}

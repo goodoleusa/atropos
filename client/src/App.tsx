@@ -7,10 +7,7 @@ import { GameProvider } from "@/hooks/useGameSession";
 import { ReportProvider } from "@/hooks/useReportContext";
 import { GlobalEffectsProvider } from "@/hooks/useGlobalEffects";
 import GlobalEffectsOverlay from "@/components/GlobalEffectsOverlay";
-import DevModePanel from "@/components/DevModePanel";
-import TopNav from "@/components/TopNav";
 import QuickNav from "@/components/QuickNav";
-import MobileFloatingMenu from "@/components/MobileFloatingMenu";
 import { AchievementManager } from "@/components/AchievementManager";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
@@ -87,7 +84,6 @@ function App() {
               <GlobalEffectsOverlay />
               <AchievementManager />
               <QuickNav />
-              <MobileFloatingMenu />
               <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
             </GlobalEffectsProvider>
           </ReportProvider>
