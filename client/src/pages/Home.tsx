@@ -8,7 +8,7 @@ import { InteractiveHover } from '@/components/InteractiveHover';
 import { 
   Shield, Zap, Eye, Server, QrCode, Bot, 
   ChevronDown, Crosshair, Clock, AlertTriangle,
-  Target, Radio, FileSearch
+  Target, Radio, FileSearch, Layout
 } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
