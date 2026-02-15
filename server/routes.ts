@@ -188,8 +188,7 @@ export async function registerRoutes(
       const { agentId, ...config } = req.body;
       if (!agentId) return res.status(400).json({ error: "agentId required" });
       
-      await storage.upsertAdminPrompt({
-        key: agentId,
+      await storage.upsertAdminPrompt(agentId, {
         name: agentId,
         content: JSON.stringify({ ...config, updatedAt: new Date().toISOString() }),
         category: 'system',
@@ -226,8 +225,7 @@ export async function registerRoutes(
         return res.status(403).json({ error: "Admin access required" });
       }
       const config = req.body;
-      await storage.upsertAdminPrompt({
-        key: 'wandb_config',
+      await storage.upsertAdminPrompt('wandb_config', {
         name: 'W&B Configuration',
         content: JSON.stringify(config),
         category: 'monitoring',
@@ -1042,7 +1040,7 @@ BEHAVIOR:
   app.get("/api/agent-modules/:key", async (req, res) => {
     try {
       const { key } = req.params;
-      const module = await storage.getAgentModuleByKey(key);
+      const module = await storage.getAgentModuleById(key);
       if (!module) {
         return res.status(404).json({ error: "Agent module not found" });
       }
@@ -1056,7 +1054,7 @@ BEHAVIOR:
   // Create agent module
   app.post("/api/agent-modules", async (req, res) => {
     try {
-      const module = await storage.createAgentModule(req.body);
+      const module = await storage.upsertAgentModule(req.body.moduleId, req.body);
       res.json(module);
     } catch (error) {
       console.error("Create agent module error:", error);
@@ -1068,7 +1066,7 @@ BEHAVIOR:
   app.put("/api/agent-modules/:key", async (req, res) => {
     try {
       const { key } = req.params;
-      const module = await storage.updateAgentModule(key, req.body);
+      const module = await storage.upsertAgentModule(key, req.body);
       if (!module) {
         return res.status(404).json({ error: "Agent module not found" });
       }
@@ -1096,7 +1094,7 @@ BEHAVIOR:
   // Get all campaign templates (mirrors /api/campaigns for frontend compatibility)
   app.get(["/api/campaign-templates", "/api/campaigns"], async (req, res) => {
     try {
-      const templates = await storage.getAllCampaignTemplates();
+      const templates = await storage.getAllCampaigns();
       res.json(templates);
     } catch (error) {
       console.error("Get campaign templates error:", error);
@@ -1108,7 +1106,7 @@ BEHAVIOR:
   app.get("/api/campaign-templates/:key", async (req, res) => {
     try {
       const { key } = req.params;
-      const template = await storage.getCampaignTemplateByKey(key);
+      const template = await storage.getCampaignByKey(key);
       if (!template) {
         return res.status(404).json({ error: "Campaign template not found" });
       }
@@ -1122,7 +1120,7 @@ BEHAVIOR:
   // Create campaign template
   app.post("/api/campaign-templates", async (req, res) => {
     try {
-      const template = await storage.createCampaignTemplate(req.body);
+      const template = await storage.createCampaign(req.body);
       res.json(template);
     } catch (error) {
       console.error("Create campaign template error:", error);
@@ -1134,7 +1132,7 @@ BEHAVIOR:
   app.put("/api/campaign-templates/:key", async (req, res) => {
     try {
       const { key } = req.params;
-      const template = await storage.updateCampaignTemplate(key, req.body);
+      const template = await storage.updateCampaign(key, req.body);
       if (!template) {
         return res.status(404).json({ error: "Campaign template not found" });
       }
@@ -1149,7 +1147,7 @@ BEHAVIOR:
   app.delete("/api/campaign-templates/:key", async (req, res) => {
     try {
       const { key } = req.params;
-      await storage.deleteCampaignTemplate(key);
+      await storage.deleteCampaign(key);
       res.json({ success: true });
     } catch (error) {
       console.error("Delete campaign template error:", error);
@@ -1521,6 +1519,24 @@ BEHAVIOR:
     } catch (error) {
       console.error("QR decode error:", error);
       res.status(500).json({ error: "Failed to decode QR code" });
+    }
+  });
+
+  // OSINT Tool Calls
+  app.get("/api/tool-calls", async (req, res) => {
+    try {
+      const sessionToken = req.headers['x-session-token'] as string;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      if (!sessionToken) {
+        return res.status(400).json({ error: "Session token required" });
+      }
+      
+      const calls = await storage.getToolCallsBySession(sessionToken, limit);
+      res.json(calls);
+    } catch (error) {
+      console.error("Get tool calls error:", error);
+      res.status(500).json({ error: "Failed to fetch tool calls" });
     }
   });
 
@@ -2026,6 +2042,7 @@ BEHAVIOR:
     'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_recent&selector=100' },
     'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
     'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
+    'nvd_cve': { url: 'https://services.nvd.nist.gov/rest/json/cves/2.0', method: 'GET' },
   };
   
   app.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) => {
@@ -2088,10 +2105,22 @@ BEHAVIOR:
   
   app.post("/api/agents/analyze", rateLimit(20, 60000), async (req, res) => {
     try {
-      const { agentId, prompt, sessionToken } = req.body;
+      const { agentId, prompt, sessionToken, scanId } = req.body;
       
       if (!agentId || !prompt) {
         return res.status(400).json({ error: "agentId and prompt required" });
+      }
+
+      let scanContext = "";
+      if (scanId) {
+        try {
+          const scanResults = await storage.getToolCallsBySession(sessionToken || "anonymous", 5);
+          if (scanResults && scanResults.length > 0) {
+            scanContext = "\n\n--- Recent Scan Results ---\n" + JSON.stringify(scanResults, null, 2);
+          }
+        } catch (e) {
+          console.error("Failed to fetch scan context:", e);
+        }
       }
       
       // Import agent definitions
@@ -2106,12 +2135,12 @@ BEHAVIOR:
       const adminConfig = await storage.getAdminConfig();
       const agentOverrides = adminConfig?.agentConfig?.[agentId] || {};
       
-      // Combine base instructions (admin protected) with user prompt
+      // Combine base instructions (admin protected) with user prompt and scan context
       const baseInstructions = agentOverrides.baseInstructions || (agent as any).baseInstructions;
       const model = agentOverrides.model || (agent as any).defaultModel;
       const temperature = agentOverrides.temperature ?? (agent as any).defaultTemperature;
       
-      const fullPrompt = `${baseInstructions}\n\n---\nUser Request:\n${prompt}`;
+      const fullPrompt = `${baseInstructions}\n\n---\nUser Request:\n${prompt}${scanContext}`;
       
       // Call OpenRouter API
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -2126,7 +2155,7 @@ BEHAVIOR:
           model,
           messages: [
             { role: "system", content: baseInstructions },
-            { role: "user", content: prompt }
+            { role: "user", content: prompt + (scanContext ? "\n\nPlease analyze the provided scan results in the context of this request." : "") }
           ],
           temperature,
           max_tokens: 2000
