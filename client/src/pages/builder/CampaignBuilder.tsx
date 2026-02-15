@@ -77,14 +77,22 @@ export default function CampaignBuilder() {
       y: 100
     };
     setNodes([...nodes, newNode]);
-    toast({ title: "Node Created", description: "Position your new node in the architect." });
+    toast({ 
+      title: "Node Created", 
+      description: "Position your new node in the architect.",
+      duration: 2000
+    });
   };
 
   const applyTemplate = (templateName: string) => {
     const template = TEMPLATES.find(t => t.name === templateName);
     if (template) {
       setNodes(template.nodes);
-      toast({ title: "Template Applied", description: `Loaded ${templateName} workflow.` });
+      toast({ 
+        title: "Template Applied", 
+        description: `Loaded ${templateName} workflow.`,
+        duration: 2000
+      });
     }
   };
 
@@ -97,7 +105,11 @@ export default function CampaignBuilder() {
     const targetNode = nodes.find(n => n.title.toLowerCase() === nodeTitle.toLowerCase());
     if (targetNode) {
       setSelectedNode(targetNode.id);
-      toast({ title: "Navigated", description: `Jumping to ${targetNode.title}` });
+      toast({ 
+        title: "Navigated", 
+        description: `Jumping to ${targetNode.title}`,
+        duration: 1500
+      });
     } else {
       toast({ title: "Reference Missing", description: `Node "${nodeTitle}" not found.` });
     }
