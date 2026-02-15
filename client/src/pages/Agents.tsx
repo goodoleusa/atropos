@@ -159,6 +159,7 @@ export default function Agents() {
   const [copied, setCopied] = useState(false);
   const [agentRuns, setAgentRuns] = useState<AgentRun[]>([]);
   const [enabledFeeds, setEnabledFeeds] = useState<string[]>(['abuse_ch_threatfox', 'cisa_kev']);
+  const [loadingScan, setLoadingScan] = useState(false);
 
   const { data: agents = [], isLoading: agentsLoading } = useQuery<(SecurityAgent & { moduleId?: string; starterPrompt?: string })[]>({
     queryKey: ['/api/agents'],
@@ -170,22 +171,31 @@ export default function Agents() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          scanData: params.input,
-          scanId: `test_${Date.now()}`,
-          category: 'general',
-          agentIds: [params.agentId],
-          runSynthesis: false,
+          agentId: params.agentId,
+          prompt: params.input,
+          sessionToken: localStorage.getItem('session_token'),
           userPromptAddition: params.userPrompt,
+          scanId: params.input.includes('scan_results') ? 'latest_scan' : undefined
         }),
       });
-      if (!res.ok) throw new Error('Agent analysis failed');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Agent analysis failed');
+      }
       return res.json();
     },
     onSuccess: (data) => {
-      if (data.agentRuns?.[0]) {
-        setTestOutput(data.agentRuns[0].output || 'No output');
-        setAgentRuns(prev => [data.agentRuns[0], ...prev].slice(0, 10));
-        generateReport(data.agentRuns[0]);
+      if (data.analysis) {
+        setTestOutput(data.analysis || 'No output');
+        const run: AgentRun = {
+          id: `run_${Date.now()}`,
+          agentId: data.agentId,
+          output: data.analysis,
+          status: 'completed',
+          timestamp: data.timestamp
+        } as any;
+        setAgentRuns(prev => [run, ...prev].slice(0, 10));
+        generateReport(run);
       }
       toast({ title: 'Analysis Complete', description: 'Agent finished processing' });
     },
@@ -210,6 +220,32 @@ export default function Agents() {
     localStorage.setItem('agent_reports', JSON.stringify(existingReports.slice(0, 50)));
   };
 
+  const fetchLatestScan = async () => {
+    setLoadingScan(true);
+    try {
+      const sessionToken = localStorage.getItem('session_token');
+      if (!sessionToken) throw new Error('No active session');
+      
+      const res = await fetch(`/api/tool-calls?limit=5`, {
+        headers: { 'x-session-token': sessionToken }
+      });
+      if (!res.ok) throw new Error('Failed to fetch scan results');
+      
+      const data = await res.json();
+      if (!data || data.length === 0) {
+        toast({ title: 'No Scans Found', description: 'Run a scan in the terminal first', variant: 'destructive' });
+        return;
+      }
+      
+      setTestInput(JSON.stringify(data, null, 2));
+      toast({ title: 'Scan Data Loaded', description: `Loaded ${data.length} recent scanner results` });
+    } catch (error: any) {
+      toast({ title: 'Load Failed', description: error.message, variant: 'destructive' });
+    } finally {
+      setLoadingScan(false);
+    }
+  };
+
   const handleRunAgent = async () => {
     if (!selectedAgent || !testInput.trim()) {
       toast({ title: 'Missing Input', description: 'Select an agent and provide test input', variant: 'destructive' });
@@ -218,8 +254,9 @@ export default function Agents() {
     setIsRunning(true);
     setTestOutput('');
     try {
+      const agentIdToUse = (selectedAgent as any).moduleId || selectedAgent.id;
       await runAgentMutation.mutateAsync({
-        agentId: selectedAgent.id,
+        agentId: agentIdToUse,
         input: testInput,
         userPrompt: userPrompt.trim() || undefined,
       });
@@ -491,6 +528,15 @@ export default function Agents() {
                           Run Analysis
                         </>
                       )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={fetchLatestScan}
+                      disabled={loadingScan}
+                      className="border-stone-700 text-teal-500 hover:text-teal-400"
+                      title="Load latest Atropos scan results"
+                    >
+                      {loadingScan ? <Loader2 className="w-4 h-4 animate-spin" /> : <Radar className="w-4 h-4" />}
                     </Button>
                     <Button
                       variant="outline"

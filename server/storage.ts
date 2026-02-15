@@ -149,7 +149,7 @@ export interface IStorage {
   // Admin Prompts
   getAdminPromptByKey(key: string): Promise<AdminPrompt | undefined>;
   getAllAdminPrompts(): Promise<AdminPrompt[]>;
-  upsertAdminPrompt(data: InsertAdminPrompt): Promise<AdminPrompt>;
+  upsertAdminPrompt(key: string, data: Partial<InsertAdminPrompt>): Promise<AdminPrompt>;
   getAdminPromptsByCategory(category: string): Promise<AdminPrompt[]>;
 
   // Prompt Gallery
