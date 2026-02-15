@@ -26,6 +26,7 @@ import VideoGallery from "@/pages/VideoGallery";
 import Agents from "@/pages/Agents";
 import CampaignsHub from "@/pages/CampaignsHub";
 import CampaignPlayer from "@/pages/CampaignPlayer";
+import CampaignBuilder from "@/pages/builder/CampaignBuilder";
 import Profile from "@/pages/Profile";
 import Leaderboards from "@/pages/Leaderboards";
 import BusinessDashboard from "@/pages/BusinessDashboard";
@@ -54,6 +55,7 @@ function Router() {
       <Route path="/wiki" component={Wiki} />
       <Route path="/videos" component={VideoGallery} />
       <Route path="/agents" component={Agents} />
+      <Route path="/builder" component={CampaignBuilder} />
       <Route path="/campaigns" component={CampaignsHub} />
       <Route path="/play/:campaignId" component={CampaignPlayer} />
       <Route component={NotFound} />
