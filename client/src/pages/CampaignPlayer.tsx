@@ -184,6 +184,14 @@ export default function CampaignPlayer() {
     }
   }, [campaignId, campaign, gameState.sessionToken, runId]);
 
+  const isComplete = currentNode?.type === 'output' && nextNodes.length === 0;
+
+  useEffect(() => {
+    if (isComplete && campaignId && currentNodeId) {
+      syncCheckpoint(currentNodeId, Array.from(visitedNodes), Array.from(foundClues), true);
+    }
+  }, [isComplete, campaignId, currentNodeId, visitedNodes, foundClues, syncCheckpoint]);
+
   const navigateToNode = useCallback((nodeId: string) => {
     setCurrentNodeId(nodeId);
     setVisitedNodes(prev => {
@@ -298,14 +306,6 @@ export default function CampaignPlayer() {
       </div>
     );
   }
-
-  const isComplete = currentNode.type === 'output' && nextNodes.length === 0;
-
-  useEffect(() => {
-    if (isComplete && campaignId && currentNodeId) {
-      syncCheckpoint(currentNodeId, Array.from(visitedNodes), Array.from(foundClues), true);
-    }
-  }, [isComplete, campaignId, currentNodeId, visitedNodes, foundClues, syncCheckpoint]);
 
   return (
     <div className="min-h-screen bg-[#0a0500] text-stone-300">
