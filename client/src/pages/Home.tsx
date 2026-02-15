@@ -332,19 +332,21 @@ export default function Home() {
               size="lg" 
               className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-black font-bold shadow-lg shadow-amber-900/30 touch-target"
               data-testid="cta-security-audit"
+              showParticles
             >
               <Shield className="w-5 h-5 mr-2" />
               Request Security Audit
             </Button>
-            <Link href="/terminal">
+            <Link href="/builder">
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-teal-800/50 text-teal-400 hover:border-teal-600 hover:bg-teal-950/20 touch-target w-full sm:w-auto"
-                data-testid="cta-explore-platform"
+                className="border-amber-800/50 text-amber-400 hover:border-amber-600 hover:bg-amber-950/20 touch-target w-full sm:w-auto"
+                data-testid="cta-open-builder"
+                showParticles
               >
-                <Target className="w-5 h-5 mr-2" />
-                Explore Platform
+                <Layout className="w-5 h-5 mr-2" />
+                Campaign Architect
               </Button>
             </Link>
           </div>
