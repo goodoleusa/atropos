@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'wouter';
+import { Link, useSearch } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -181,6 +181,7 @@ const WIZARD_STEPS = [
 ];
 
 export default function Agents() {
+  const searchString = useSearch();
   const [wizardStep, setWizardStep] = useState(1);
   const [selectedAgent, setSelectedAgent] = useState<SecurityAgent | null>(null);
   const [userPrompt, setUserPrompt] = useState('');
@@ -196,6 +197,22 @@ export default function Agents() {
   const [loadingScan, setLoadingScan] = useState(false);
   const [loadingFeed, setLoadingFeed] = useState<string | null>(null);
   const [showExport, setShowExport] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    const scanDataParam = params.get('scanData');
+    if (scanDataParam) {
+      try {
+        const scanData = JSON.parse(decodeURIComponent(scanDataParam));
+        setTestInput(JSON.stringify(scanData, null, 2).slice(0, 10000));
+        setWizardStep(2);
+        toast({ title: 'Scan Data Loaded', description: `Loaded scan results with ${scanData.findings?.length || 0} findings` });
+        window.history.replaceState({}, '', '/agents');
+      } catch {
+        console.error('Failed to parse scanData param');
+      }
+    }
+  }, [searchString]);
 
   const { data: agents = [], isLoading: agentsLoading } = useQuery<(SecurityAgent & { moduleId?: string; starterPrompt?: string })[]>({
     queryKey: ['/api/agents'],
