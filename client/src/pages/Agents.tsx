@@ -175,6 +175,7 @@ const FREE_MODELS = [
 
 export default function Agents() {
   const [activeTab, setActiveTab] = useState('agents');
+  const [wizardStep, setWizardStep] = useState(1);
   const [selectedAgent, setSelectedAgent] = useState<SecurityAgent | null>(null);
   const [userPrompt, setUserPrompt] = useState('');
   const [testInput, setTestInput] = useState('');
