@@ -145,6 +145,24 @@ const THREAT_INTEL_FEEDS: ThreatIntelFeed[] = [
     category: 'malware',
     free: true,
   },
+  {
+    id: 'spamhaus_drop',
+    name: 'Spamhaus DROP',
+    description: 'Don\'t Route Or Peer list',
+    url: 'https://www.spamhaus.org/drop/drop.txt',
+    icon: <ShieldAlert className="w-4 h-4" />,
+    category: 'ioc',
+    free: true,
+  },
+  {
+    id: 'emerging_threats_ips',
+    name: 'Emerging Threats',
+    description: 'Known malicious IP addresses',
+    url: 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt',
+    icon: <Zap className="w-4 h-4" />,
+    category: 'ioc',
+    free: true,
+  },
 ];
 
 const FREE_MODELS = [
