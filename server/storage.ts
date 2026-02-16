@@ -104,7 +104,10 @@ import {
   type AchievementDefinition,
   type InsertAchievementDefinition,
   type GameEvent,
-  type InsertGameEvent
+  type InsertGameEvent,
+  businessProjects,
+  type BusinessProject,
+  type InsertBusinessProject
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -374,6 +377,13 @@ export interface IStorage {
   joinLobby(lobbyId: string, player: { sessionToken: string; alias: string }): Promise<MultiplayerLobby | undefined>;
   leaveLobby(lobbyId: string, sessionToken: string): Promise<MultiplayerLobby | undefined>;
   deleteLobby(lobbyId: string): Promise<boolean>;
+
+  // Business Projects
+  getAllBusinessProjects(): Promise<BusinessProject[]>;
+  getBusinessProjectById(id: number): Promise<BusinessProject | undefined>;
+  createBusinessProject(project: InsertBusinessProject): Promise<BusinessProject>;
+  updateBusinessProject(id: number, updates: Partial<BusinessProject>): Promise<BusinessProject | undefined>;
+  deleteBusinessProject(id: number): Promise<boolean>;
 }
 
 // Admin configuration type (stored in memory/file, not DB)
@@ -2211,6 +2221,34 @@ export class DatabaseStorage implements IStorage {
       score: timeMinutes * -1, // Negative so faster times rank higher
       metadata: { campaignId, completionTime: timeMinutes }
     });
+  }
+
+  // Business Projects
+  async getAllBusinessProjects(): Promise<BusinessProject[]> {
+    return db.select().from(businessProjects).orderBy(desc(businessProjects.updatedAt));
+  }
+
+  async getBusinessProjectById(id: number): Promise<BusinessProject | undefined> {
+    const [project] = await db.select().from(businessProjects).where(eq(businessProjects.id, id));
+    return project;
+  }
+
+  async createBusinessProject(project: InsertBusinessProject): Promise<BusinessProject> {
+    const [created] = await db.insert(businessProjects).values(project).returning();
+    return created;
+  }
+
+  async updateBusinessProject(id: number, updates: Partial<BusinessProject>): Promise<BusinessProject | undefined> {
+    const [updated] = await db.update(businessProjects)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(businessProjects.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteBusinessProject(id: number): Promise<boolean> {
+    const result = await db.delete(businessProjects).where(eq(businessProjects.id, id)).returning();
+    return result.length > 0;
   }
 }
 

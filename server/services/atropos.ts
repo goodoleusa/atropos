@@ -46,14 +46,25 @@ export class AtroposService {
   private versionCheckTimeout: number;
   
   constructor() {
-    // Try to find atropos binary - check multiple locations
+    // Try to find atropos binary - check multiple locations in priority order
     const possiblePaths = [
       process.env.ATROPOS_BINARY_PATH,
       path.join(process.cwd(), 'dist', 'bin', 'atropos'),
       path.join(process.cwd(), 'tools', 'atropos', 'target', 'release', 'atropos'),
     ].filter(Boolean) as string[];
     
+    // Use first path that actually exists on disk
     this.binaryPath = possiblePaths[0] || 'atropos';
+    for (const p of possiblePaths) {
+      try {
+        const stat = require('fs').statSync(p);
+        if (stat.isFile()) {
+          this.binaryPath = p;
+          console.log(`[Atropos] Binary found at: ${p}`);
+          break;
+        }
+      } catch {}
+    }
     
     this.scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || 
                      path.join(process.cwd(), 'tools', 'atropos', 'examples');

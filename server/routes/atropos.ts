@@ -3,6 +3,8 @@ import { atroposService, type AtroposScanParams, type AtroposScanResult } from "
 import { storage } from "../storage";
 import { logSessionInteraction } from "../services/osint";
 import { nanoid } from "nanoid";
+import fs from "fs/promises";
+import path from "path";
 
 const router = Router();
 
@@ -593,6 +595,235 @@ router.post("/remote/scan", async (req: Request, res: Response) => {
       details: error.message 
     });
   }
+});
+
+// ============ Lua Script CRUD ============
+
+router.get("/lua-scripts", async (req: Request, res: Response) => {
+  try {
+    const scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || path.join(process.cwd(), "tools", "atropos", "examples");
+    const files = await fs.readdir(scriptsDir);
+    const scripts = [];
+    for (const file of files) {
+      if (!file.endsWith(".lua")) continue;
+      const filePath = path.join(scriptsDir, file);
+      const content = await fs.readFile(filePath, "utf-8");
+      const stat = await fs.stat(filePath);
+      const descMatch = content.match(/^--\s*(.+)/m);
+      const catMatch = file.match(/^(cti|monitoring|active|recon|CVE|config|func)/i);
+      scripts.push({
+        filename: file,
+        name: path.basename(file, ".lua").replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase()),
+        description: descMatch ? descMatch[1].trim() : "",
+        category: catMatch ? catMatch[1].toLowerCase() : file.includes("sqli") || file.includes("xss") || file.includes("vuln") || file.includes("CVE") ? "vulnerability" : file.includes("osint") || file.includes("bbot") || file.includes("amass") || file.includes("recon") ? "osint" : file.includes("secret") || file.includes("leak") || file.includes("sensitive") ? "secret_detection" : file.includes("threat") || file.includes("ioc") || file.includes("cti") ? "threat_intel" : file.includes("monitor") || file.includes("header") || file.includes("error") ? "monitoring" : "general",
+        size: stat.size,
+        modified: stat.mtime.toISOString(),
+        content,
+      });
+    }
+    res.json(scripts);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/lua-scripts", async (req: Request, res: Response) => {
+  try {
+    const { filename, content } = req.body;
+    if (!filename || !content) return res.status(400).json({ error: "filename and content required" });
+    if (!filename.endsWith(".lua")) return res.status(400).json({ error: "filename must end with .lua" });
+    if (/[\/\\]/.test(filename)) return res.status(400).json({ error: "filename cannot contain path separators" });
+    const scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || path.join(process.cwd(), "tools", "atropos", "examples");
+    await fs.mkdir(scriptsDir, { recursive: true });
+    const filePath = path.join(scriptsDir, filename);
+    await fs.writeFile(filePath, content, "utf-8");
+    res.json({ success: true, filename, path: filePath });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put("/lua-scripts/:filename", async (req: Request, res: Response) => {
+  try {
+    const { filename } = req.params;
+    const { content } = req.body;
+    if (!content) return res.status(400).json({ error: "content required" });
+    const scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || path.join(process.cwd(), "tools", "atropos", "examples");
+    const filePath = path.join(scriptsDir, filename as string);
+    try { await fs.access(filePath); } catch { return res.status(404).json({ error: "Script not found" }); }
+    await fs.writeFile(filePath, content, "utf-8");
+    res.json({ success: true, filename });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/lua-scripts/:filename", async (req: Request, res: Response) => {
+  try {
+    const { filename } = req.params;
+    const scriptsDir = process.env.ATROPOS_SCRIPTS_DIR || path.join(process.cwd(), "tools", "atropos", "examples");
+    const filePath = path.join(scriptsDir, filename as string);
+    try { await fs.access(filePath); } catch { return res.status(404).json({ error: "Script not found" }); }
+    await fs.unlink(filePath);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ API Lookups (VirusTotal, Hybrid Analysis, free APIs) ============
+
+router.post("/lookup/virustotal", async (req: Request, res: Response) => {
+  try {
+    const { target, type = "domain" } = req.body;
+    if (!target) return res.status(400).json({ error: "target required" });
+    const apiKey = process.env.VIRUSTOTAL_API_KEY;
+    if (!apiKey) return res.status(400).json({ error: "VIRUSTOTAL_API_KEY not configured", needsKey: true });
+    const endpoints: Record<string, string> = {
+      domain: `https://www.virustotal.com/api/v3/domains/${encodeURIComponent(target)}`,
+      ip: `https://www.virustotal.com/api/v3/ip_addresses/${encodeURIComponent(target)}`,
+      hash: `https://www.virustotal.com/api/v3/files/${encodeURIComponent(target)}`,
+      url: `https://www.virustotal.com/api/v3/urls/${Buffer.from(target).toString("base64url")}`,
+    };
+    const url = endpoints[type] || endpoints.domain;
+    const response = await fetch(url, {
+      headers: { "x-apikey": apiKey },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) {
+      const err = await response.text();
+      return res.status(response.status).json({ error: `VirusTotal API error: ${response.status}`, details: err });
+    }
+    const data = await response.json();
+    res.json({ source: "virustotal", type, target, data: data.data, timestamp: new Date().toISOString() });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/lookup/hybrid-analysis", async (req: Request, res: Response) => {
+  try {
+    const { target, type = "search" } = req.body;
+    if (!target) return res.status(400).json({ error: "target required" });
+    const apiKey = process.env.HYBRID_ANALYSIS_API_KEY;
+    if (!apiKey) return res.status(400).json({ error: "HYBRID_ANALYSIS_API_KEY not configured", needsKey: true });
+    let url = "https://www.hybrid-analysis.com/api/v2/search/terms";
+    let body: any = {};
+    if (type === "hash") {
+      body = { hash: target };
+    } else if (type === "domain") {
+      body = { domain: target };
+    } else {
+      body = { filename: target };
+    }
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "api-key": apiKey,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Falcon Sandbox",
+      },
+      body: new URLSearchParams(body).toString(),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `Hybrid Analysis API error: ${response.status}` });
+    }
+    const data = await response.json();
+    res.json({ source: "hybrid-analysis", type, target, data, timestamp: new Date().toISOString() });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/lookup/free", async (req: Request, res: Response) => {
+  try {
+    const { target, service = "dns" } = req.body;
+    if (!target) return res.status(400).json({ error: "target required" });
+    const results: any = { source: service, target, timestamp: new Date().toISOString() };
+
+    if (service === "dns" || service === "all") {
+      try {
+        const dns = await import("dns").then(m => m.promises);
+        const [aRecords, mxRecords, txtRecords, nsRecords] = await Promise.allSettled([
+          dns.resolve4(target),
+          dns.resolveMx(target),
+          dns.resolveTxt(target),
+          dns.resolveNs(target),
+        ]);
+        results.dns = {
+          a: aRecords.status === "fulfilled" ? aRecords.value : [],
+          mx: mxRecords.status === "fulfilled" ? mxRecords.value : [],
+          txt: txtRecords.status === "fulfilled" ? txtRecords.value : [],
+          ns: nsRecords.status === "fulfilled" ? nsRecords.value : [],
+        };
+      } catch (e: any) {
+        results.dns = { error: e.message };
+      }
+    }
+
+    if (service === "whois" || service === "all") {
+      try {
+        const resp = await fetch(`https://rdap.org/domain/${encodeURIComponent(target)}`, { signal: AbortSignal.timeout(10000) });
+        if (resp.ok) results.whois = await resp.json();
+        else results.whois = { error: `RDAP returned ${resp.status}` };
+      } catch (e: any) {
+        results.whois = { error: e.message };
+      }
+    }
+
+    if (service === "headers" || service === "all") {
+      try {
+        const url = target.startsWith("http") ? target : `https://${target}`;
+        const resp = await fetch(url, { method: "HEAD", signal: AbortSignal.timeout(10000), redirect: "follow" });
+        const headers: Record<string, string> = {};
+        resp.headers.forEach((v, k) => { headers[k] = v; });
+        results.headers = {
+          status: resp.status,
+          headers,
+          securityHeaders: {
+            hsts: !!headers["strict-transport-security"],
+            csp: !!headers["content-security-policy"],
+            xfo: !!headers["x-frame-options"],
+            xcto: !!headers["x-content-type-options"],
+            xss: !!headers["x-xss-protection"],
+          },
+        };
+      } catch (e: any) {
+        results.headers = { error: e.message };
+      }
+    }
+
+    if (service === "abuseipdb" || service === "all") {
+      const abuseKey = process.env.ABUSEIPDB_API_KEY;
+      if (abuseKey) {
+        try {
+          const resp = await fetch(`https://api.abuseipdb.com/api/v2/check?ipAddress=${encodeURIComponent(target)}&maxAgeInDays=90`, {
+            headers: { Key: abuseKey, Accept: "application/json" },
+            signal: AbortSignal.timeout(10000),
+          });
+          if (resp.ok) results.abuseipdb = await resp.json();
+        } catch {}
+      }
+    }
+
+    res.json(results);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ Lotus-Scripts Repository Info ============
+router.get("/lotus-scripts-categories", async (req: Request, res: Response) => {
+  res.json([
+    { id: "active", name: "Active Scanners", description: "SQLi, SSTI, LFI, PHPINFO, Jenkins RCE, Git leakage", scripts: ["sqli_detector.lua", "ssti_detector.lua", "lfi_scanner.lua", "phpinfo_finder.lua", "jenkins_rce.lua", "git_exposure.lua", "extractfromjs.lua"] },
+    { id: "CVE", name: "CVE Exploits", description: "Known vulnerability scanners", scripts: ["CVE-2014-2321.lua", "CVE-2019-11248.lua", "CVE-2020-11450.lua", "CVE-2022-0378.lua", "CVE-2022-0381.lua", "CVE-2021-21972.lua", "CVE-2021-21985.lua", "CVE-2023-23752.lua", "CVE-2023-23333.lua"] },
+    { id: "cti", name: "Cyber Threat Intel", description: "IoC detection, suspicious user agents", scripts: ["ioc_detection.lua", "suspicious_user_agent.lua"] },
+    { id: "monitoring", name: "Monitoring", description: "Sensitive data exposure, suspicious headers, error disclosure", scripts: ["sensitive_data_exposure.lua", "suspicious_headers.lua", "error_disclosure.lua"] },
+    { id: "recon", name: "Reconnaissance", description: "Recon framework scripts", scripts: ["recon.lua"] },
+    { id: "config", name: "Configuration", description: "Scanner configuration utilities", scripts: [] },
+    { id: "func", name: "Utility Functions", description: "Helper functions for script development", scripts: [] },
+  ]);
 });
 
 router.get("/remote/status", async (req: Request, res: Response) => {

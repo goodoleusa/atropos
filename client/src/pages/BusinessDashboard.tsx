@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
 import {
   Target,
   DollarSign,
@@ -18,565 +23,684 @@ import {
   Activity,
   FileText,
   Calendar,
-  ChevronRight
-} from 'lucide-react';
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+  Save,
+  BarChart3,
+  Layers,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+
+interface ProjectGoal {
+  text: string;
+  done: boolean;
+}
 
 interface Project {
-  id: string;
+  id: number;
   name: string;
-  stage: 'planning' | 'development' | 'testing' | 'deployed' | 'revenue';
+  description: string | null;
+  stage: "planning" | "development" | "testing" | "deployed" | "revenue";
+  status: "on-track" | "at-risk" | "delayed" | "complete";
   progress: number;
-  budget: {
-    allocated: number;
-    spent: number;
-    aiSavings: number;
-  };
-  timeline: {
-    started: string;
-    deadline: string;
-    daysLeft: number;
-  };
-  team: {
-    human: number;
-    aiAgents: number;
-  };
-  status: 'on-track' | 'at-risk' | 'delayed' | 'complete';
-  revenue?: number;
+  priority: "low" | "medium" | "high" | "critical";
+  category: "security" | "development" | "business" | "marketing" | "operations" | "general";
+  budget: { allocated: number; spent: number; aiSavings: number };
+  timeline: { started: string; deadline: string };
+  team: { human: number; aiAgents: number };
+  goals: ProjectGoal[];
+  notes: string | null;
+  revenue: number | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-interface BusinessMetrics {
-  mrr: number;
-  arr: number;
-  growthRate: number;
-  clients: number;
-  students: number;
-  aiCostSavings: number;
-  burnRate: number;
-  runway: number;
+type ProjectFormData = Omit<Project, "id" | "createdAt" | "updatedAt">;
+
+const STAGES: Project["stage"][] = ["planning", "development", "testing", "deployed", "revenue"];
+const STATUSES: Project["status"][] = ["on-track", "at-risk", "delayed", "complete"];
+const PRIORITIES: Project["priority"][] = ["low", "medium", "high", "critical"];
+const CATEGORIES: Project["category"][] = ["security", "development", "business", "marketing", "operations", "general"];
+
+const defaultForm: ProjectFormData = {
+  name: "",
+  description: "",
+  stage: "planning",
+  status: "on-track",
+  progress: 0,
+  priority: "medium",
+  category: "general",
+  budget: { allocated: 0, spent: 0, aiSavings: 0 },
+  timeline: { started: new Date().toISOString().split("T")[0], deadline: new Date().toISOString().split("T")[0] },
+  team: { human: 1, aiAgents: 0 },
+  goals: [],
+  notes: "",
+  revenue: null,
+};
+
+function getStatusColor(status: Project["status"]) {
+  switch (status) {
+    case "complete": return "text-teal-400 bg-teal-400/10 border-teal-400/20";
+    case "on-track": return "text-teal-400 bg-teal-400/10 border-teal-400/20";
+    case "at-risk": return "text-amber-400 bg-amber-400/10 border-amber-400/20";
+    case "delayed": return "text-red-400 bg-red-400/10 border-red-400/20";
+    default: return "text-stone-400 bg-stone-400/10 border-stone-400/20";
+  }
 }
 
-export default function BusinessDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [metrics, setMetrics] = useState<BusinessMetrics | null>(null);
+function getPriorityColor(priority: Project["priority"]) {
+  switch (priority) {
+    case "critical": return "text-red-400 bg-red-400/10 border-red-400/20";
+    case "high": return "text-amber-400 bg-amber-400/10 border-amber-400/20";
+    case "medium": return "text-teal-400 bg-teal-400/10 border-teal-400/20";
+    case "low": return "text-stone-400 bg-stone-400/10 border-stone-400/20";
+    default: return "text-stone-400 bg-stone-400/10 border-stone-400/20";
+  }
+}
 
-  useEffect(() => {
-    // Load projects and metrics
-    loadDashboardData();
-  }, []);
+function getCategoryColor(category: Project["category"]) {
+  switch (category) {
+    case "security": return "bg-red-500/20 text-red-400";
+    case "development": return "bg-teal-500/20 text-teal-400";
+    case "business": return "bg-amber-500/20 text-amber-400";
+    case "marketing": return "bg-purple-500/20 text-purple-400";
+    case "operations": return "bg-blue-500/20 text-blue-400";
+    case "general": return "bg-stone-500/20 text-stone-400";
+    default: return "bg-stone-500/20 text-stone-400";
+  }
+}
 
-  const loadDashboardData = async () => {
-    // Mock data for now - will connect to real API
-    setProjects([
-      {
-        id: 'anti-trafficking-campaigns',
-        name: 'Anti-Trafficking Investigation Campaigns',
-        stage: 'deployed',
-        progress: 100,
-        budget: {
-          allocated: 0,
-          spent: 0,
-          aiSavings: 15000 // Would have cost $15k with human developers
-        },
-        timeline: {
-          started: '2024-02-01',
-          deadline: '2024-02-07',
-          daysLeft: 0
-        },
-        team: {
-          human: 1,
-          aiAgents: 4 // Architect, Developer, QA, DevOps
-        },
-        status: 'complete',
-        revenue: 0
-      },
-      {
-        id: 'investor-demo',
-        name: 'Investor Demo Video & Landing Page',
-        stage: 'development',
-        progress: 60,
-        budget: {
-          allocated: 0,
-          spent: 0,
-          aiSavings: 3000
-        },
-        timeline: {
-          started: '2024-02-08',
-          deadline: '2024-02-10',
-          daysLeft: 2
-        },
-        team: {
-          human: 1,
-          aiAgents: 2
-        },
-        status: 'on-track'
-      },
-      {
-        id: 'ngo-partnerships',
-        name: 'NGO Partnership Program',
-        stage: 'planning',
-        progress: 30,
-        budget: {
-          allocated: 0,
-          spent: 0,
-          aiSavings: 0
-        },
-        timeline: {
-          started: '2024-02-08',
-          deadline: '2024-02-14',
-          daysLeft: 6
-        },
-        team: {
-          human: 1,
-          aiAgents: 1
-        },
-        status: 'on-track'
-      },
-      {
-        id: 'corporate-aml-service',
-        name: 'Corporate AML/KYC Service',
-        stage: 'development',
-        progress: 40,
-        budget: {
-          allocated: 0,
-          spent: 0,
-          aiSavings: 25000
-        },
-        timeline: {
-          started: '2024-02-08',
-          deadline: '2024-02-28',
-          daysLeft: 20
-        },
-        team: {
-          human: 1,
-          aiAgents: 5 // Security crew
-        },
-        status: 'on-track'
-      },
-      {
-        id: 'crewai-deployment',
-        name: 'CrewAI Agent Deployment System',
-        stage: 'development',
-        progress: 50,
-        budget: {
-          allocated: 0,
-          spent: 0,
-          aiSavings: 40000
-        },
-        timeline: {
-          started: '2024-02-08',
-          deadline: '2024-02-21',
-          daysLeft: 13
-        },
-        team: {
-          human: 1,
-          aiAgents: 3
-        },
-        status: 'on-track'
-      }
-    ]);
+function getStageIcon(stage: Project["stage"]) {
+  switch (stage) {
+    case "planning": return <FileText className="w-4 h-4" />;
+    case "development": return <Brain className="w-4 h-4" />;
+    case "testing": return <AlertCircle className="w-4 h-4" />;
+    case "deployed": return <Zap className="w-4 h-4" />;
+    case "revenue": return <DollarSign className="w-4 h-4" />;
+  }
+}
 
-    setMetrics({
-      mrr: 0, // Will increase once clients sign
-      arr: 0,
-      growthRate: 0,
-      clients: 0,
-      students: 0,
-      aiCostSavings: 83000, // Total saved so far
-      burnRate: 0, // Still on free tier
-      runway: Infinity // No burn = infinite runway
-    });
-  };
+function ProjectForm({
+  initial,
+  onSave,
+  onCancel,
+  saving,
+}: {
+  initial: ProjectFormData;
+  onSave: (data: ProjectFormData) => void;
+  onCancel: () => void;
+  saving: boolean;
+}) {
+  const [form, setForm] = useState<ProjectFormData>({ ...initial, goals: initial.goals ? [...initial.goals] : [] });
+  const [newGoal, setNewGoal] = useState("");
 
-  const getStatusColor = (status: Project['status']) => {
-    switch (status) {
-      case 'complete': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
-      case 'on-track': return 'text-teal-400 bg-teal-400/10 border-teal-400/20';
-      case 'at-risk': return 'text-amber-400 bg-amber-400/10 border-amber-400/20';
-      case 'delayed': return 'text-red-400 bg-red-400/10 border-red-400/20';
-      default: return 'text-stone-400 bg-stone-400/10 border-stone-400/20';
-    }
-  };
-
-  const getStageIcon = (stage: Project['stage']) => {
-    switch (stage) {
-      case 'planning': return <FileText className="w-4 h-4" />;
-      case 'development': return <Brain className="w-4 h-4" />;
-      case 'testing': return <AlertCircle className="w-4 h-4" />;
-      case 'deployed': return <Zap className="w-4 h-4" />;
-      case 'revenue': return <DollarSign className="w-4 h-4" />;
-    }
-  };
+  const set = <K extends keyof ProjectFormData>(k: K, v: ProjectFormData[K]) => setForm((f) => ({ ...f, [k]: v }));
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 p-6">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-              Business Command Center
-            </h1>
-            <p className="text-stone-400">
-              Zero-budget operations powered by AI agents | Cost savings: ${metrics?.aiCostSavings.toLocaleString()}
-            </p>
-          </div>
+    <div className="space-y-4 p-4 bg-stone-800/50 rounded-lg border border-stone-700" data-testid="project-form">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Name *</label>
+          <Input data-testid="input-name" className="bg-stone-900 border-stone-700 text-stone-100" value={form.name} onChange={(e) => set("name", e.target.value)} />
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Category</label>
+          <select data-testid="select-category" className="w-full rounded-md bg-stone-900 border border-stone-700 text-stone-100 px-3 py-2 text-sm" value={form.category} onChange={(e) => set("category", e.target.value as Project["category"])}>
+            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs text-stone-400 mb-1 block">Description</label>
+        <Textarea data-testid="input-description" className="bg-stone-900 border-stone-700 text-stone-100" value={form.description || ""} onChange={(e) => set("description", e.target.value || null)} rows={2} />
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Stage</label>
+          <select data-testid="select-stage" className="w-full rounded-md bg-stone-900 border border-stone-700 text-stone-100 px-3 py-2 text-sm" value={form.stage} onChange={(e) => set("stage", e.target.value as Project["stage"])}>
+            {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Status</label>
+          <select data-testid="select-status" className="w-full rounded-md bg-stone-900 border border-stone-700 text-stone-100 px-3 py-2 text-sm" value={form.status} onChange={(e) => set("status", e.target.value as Project["status"])}>
+            {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Priority</label>
+          <select data-testid="select-priority" className="w-full rounded-md bg-stone-900 border border-stone-700 text-stone-100 px-3 py-2 text-sm" value={form.priority} onChange={(e) => set("priority", e.target.value as Project["priority"])}>
+            {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Progress ({form.progress}%)</label>
+          <input data-testid="input-progress" type="range" min={0} max={100} className="w-full accent-amber-400" value={form.progress} onChange={(e) => set("progress", Number(e.target.value))} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Budget Allocated</label>
+          <Input data-testid="input-budget-allocated" type="number" className="bg-stone-900 border-stone-700 text-stone-100" value={form.budget.allocated} onChange={(e) => set("budget", { ...form.budget, allocated: Number(e.target.value) })} />
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Budget Spent</label>
+          <Input data-testid="input-budget-spent" type="number" className="bg-stone-900 border-stone-700 text-stone-100" value={form.budget.spent} onChange={(e) => set("budget", { ...form.budget, spent: Number(e.target.value) })} />
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">AI Savings</label>
+          <Input data-testid="input-budget-savings" type="number" className="bg-stone-900 border-stone-700 text-stone-100" value={form.budget.aiSavings} onChange={(e) => set("budget", { ...form.budget, aiSavings: Number(e.target.value) })} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Start Date</label>
+          <Input data-testid="input-start-date" type="date" className="bg-stone-900 border-stone-700 text-stone-100" value={form.timeline.started} onChange={(e) => set("timeline", { ...form.timeline, started: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Deadline</label>
+          <Input data-testid="input-deadline" type="date" className="bg-stone-900 border-stone-700 text-stone-100" value={form.timeline.deadline} onChange={(e) => set("timeline", { ...form.timeline, deadline: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Team (Human)</label>
+          <Input data-testid="input-team-human" type="number" min={0} className="bg-stone-900 border-stone-700 text-stone-100" value={form.team.human} onChange={(e) => set("team", { ...form.team, human: Number(e.target.value) })} />
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">AI Agents</label>
+          <Input data-testid="input-team-ai" type="number" min={0} className="bg-stone-900 border-stone-700 text-stone-100" value={form.team.aiAgents} onChange={(e) => set("team", { ...form.team, aiAgents: Number(e.target.value) })} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Revenue</label>
+          <Input data-testid="input-revenue" type="number" className="bg-stone-900 border-stone-700 text-stone-100" value={form.revenue ?? ""} onChange={(e) => set("revenue", e.target.value ? Number(e.target.value) : null)} />
+        </div>
+        <div>
+          <label className="text-xs text-stone-400 mb-1 block">Notes</label>
+          <Input data-testid="input-notes" className="bg-stone-900 border-stone-700 text-stone-100" value={form.notes || ""} onChange={(e) => set("notes", e.target.value || null)} />
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs text-stone-400 mb-2 block">Goals</label>
+        <div className="space-y-2">
+          {form.goals.map((g, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input data-testid={`goal-checkbox-${i}`} type="checkbox" className="accent-amber-400" checked={g.done} onChange={() => {
+                const goals = [...form.goals];
+                goals[i] = { ...goals[i], done: !goals[i].done };
+                set("goals", goals);
+              }} />
+              <span className={`flex-1 text-sm ${g.done ? "line-through text-stone-500" : "text-stone-200"}`}>{g.text}</span>
+              <Button data-testid={`button-remove-goal-${i}`} variant="ghost" size="sm" className="text-red-400 hover:bg-red-400/10 h-6 w-6 p-0" onClick={() => {
+                set("goals", form.goals.filter((_, idx) => idx !== i));
+              }}>
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          ))}
           <div className="flex gap-2">
-            <Button variant="outline" className="border-amber-500 text-amber-400 hover:bg-amber-500/10">
-              <Calendar className="w-4 h-4 mr-2" />
-              Week 1 of 12
+            <Input data-testid="input-new-goal" className="bg-stone-900 border-stone-700 text-stone-100 text-sm" placeholder="Add a goal..." value={newGoal} onChange={(e) => setNewGoal(e.target.value)} onKeyDown={(e) => {
+              if (e.key === "Enter" && newGoal.trim()) {
+                set("goals", [...form.goals, { text: newGoal.trim(), done: false }]);
+                setNewGoal("");
+              }
+            }} />
+            <Button data-testid="button-add-goal" variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10" disabled={!newGoal.trim()} onClick={() => {
+              if (newGoal.trim()) {
+                set("goals", [...form.goals, { text: newGoal.trim(), done: false }]);
+                setNewGoal("");
+              }
+            }}>
+              <Plus className="w-3 h-3" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-2 justify-end pt-2 border-t border-stone-700">
+        <Button data-testid="button-cancel" variant="ghost" className="text-stone-400 hover:text-stone-200" onClick={onCancel}>
+          <X className="w-4 h-4 mr-1" /> Cancel
+        </Button>
+        <Button data-testid="button-save" className="bg-amber-500 text-stone-950 hover:bg-amber-400" disabled={!form.name.trim() || saving} onClick={() => onSave(form)}>
+          <Save className="w-4 h-4 mr-1" /> {saving ? "Saving..." : "Save"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function ProjectCard({
+  project,
+  onUpdate,
+  onDelete,
+}: {
+  project: Project;
+  onUpdate: (data: ProjectFormData) => void;
+  onDelete: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  return (
+    <Card data-testid={`card-project-${project.id}`} className="bg-stone-900/50 border-stone-800 overflow-hidden">
+      <div className="p-4 md:p-6">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={`p-2 rounded-lg flex-shrink-0 ${getStatusColor(project.status)}`}>
+              {getStageIcon(project.stage)}
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-lg font-bold truncate" data-testid={`text-project-name-${project.id}`}>{project.name}</h3>
+              {project.description && <p className="text-sm text-stone-400 truncate">{project.description}</p>}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Badge className={getStatusColor(project.status)} data-testid={`badge-status-${project.id}`}>{project.status}</Badge>
+            <Button data-testid={`button-edit-${project.id}`} variant="ghost" size="sm" className="text-amber-400 hover:bg-amber-500/10" onClick={() => setEditing(!editing)}>
+              {editing ? <ChevronUp className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
+            </Button>
+            <Button data-testid={`button-delete-${project.id}`} variant="ghost" size="sm" className="text-red-400 hover:bg-red-400/10" onClick={() => {
+              if (window.confirm(`Delete "${project.name}"?`)) onDelete();
+            }}>
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
-        {/* Key Metrics Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="bg-stone-900/50 border-stone-800 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-stone-400 text-sm">MRR</span>
-              <DollarSign className="w-4 h-4 text-emerald-400" />
+        {!editing && (
+          <>
+            <div className="flex flex-wrap gap-2 mb-3">
+              <Badge className={`text-xs ${getCategoryColor(project.category)}`}>{project.category}</Badge>
+              <Badge className={`text-xs ${getPriorityColor(project.priority)}`}>{project.priority}</Badge>
+              <Badge className="text-xs bg-stone-700/50 text-stone-300">{project.stage}</Badge>
             </div>
-            <div className="text-3xl font-bold">${metrics?.mrr.toLocaleString() || '0'}</div>
-            <p className="text-xs text-stone-500 mt-1">Target: $30k-$50k by Day 90</p>
-          </Card>
+            <div className="mb-3">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-stone-400">Progress</span>
+                <span className="text-amber-400">{project.progress}%</span>
+              </div>
+              <Progress value={project.progress} className="h-2" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-stone-400">
+              <div>
+                <span className="block text-stone-500">Budget</span>
+                <span className="text-stone-200">${project.budget.allocated.toLocaleString()}</span>
+              </div>
+              <div>
+                <span className="block text-stone-500">Spent</span>
+                <span className="text-stone-200">${project.budget.spent.toLocaleString()}</span>
+              </div>
+              <div>
+                <span className="block text-stone-500">Team</span>
+                <span className="text-stone-200">{project.team.human}H + {project.team.aiAgents}AI</span>
+              </div>
+              <div>
+                <span className="block text-stone-500">Deadline</span>
+                <span className="text-stone-200">{project.timeline.deadline}</span>
+              </div>
+            </div>
+            {project.goals.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-stone-800">
+                <span className="text-xs text-stone-500 block mb-1">Goals ({project.goals.filter((g) => g.done).length}/{project.goals.length})</span>
+                <div className="flex flex-wrap gap-1">
+                  {project.goals.map((g, i) => (
+                    <span key={i} className={`text-xs px-2 py-0.5 rounded ${g.done ? "bg-teal-500/10 text-teal-400 line-through" : "bg-stone-800 text-stone-300"}`}>{g.text}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
-          <Card className="bg-stone-900/50 border-stone-800 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-stone-400 text-sm">AI Cost Savings</span>
-              <Brain className="w-4 h-4 text-teal-400" />
-            </div>
-            <div className="text-3xl font-bold text-teal-400">
-              ${metrics?.aiCostSavings.toLocaleString()}
-            </div>
-            <p className="text-xs text-stone-500 mt-1">91% reduction vs traditional</p>
-          </Card>
+        {editing && (
+          <ProjectForm
+            initial={{
+              name: project.name,
+              description: project.description,
+              stage: project.stage,
+              status: project.status,
+              progress: project.progress,
+              priority: project.priority,
+              category: project.category,
+              budget: { ...project.budget },
+              timeline: { ...project.timeline },
+              team: { ...project.team },
+              goals: project.goals ? [...project.goals] : [],
+              notes: project.notes,
+              revenue: project.revenue,
+            }}
+            onSave={(data) => {
+              setSaving(true);
+              onUpdate(data);
+              setEditing(false);
+              setSaving(false);
+            }}
+            onCancel={() => setEditing(false)}
+            saving={saving}
+          />
+        )}
+      </div>
+    </Card>
+  );
+}
 
-          <Card className="bg-stone-900/50 border-stone-800 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-stone-400 text-sm">Burn Rate</span>
+export default function BusinessDashboard() {
+  const [activeTab, setActiveTab] = useState("projects");
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [quickAddStage, setQuickAddStage] = useState<Project["stage"] | null>(null);
+
+  const { data: projects = [], isLoading } = useQuery<Project[]>({
+    queryKey: ["/api/business-projects"],
+    queryFn: async () => {
+      const res = await fetch("/api/business-projects");
+      if (!res.ok) throw new Error("Failed to load projects");
+      return res.json();
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: ProjectFormData) => {
+      const res = await fetch("/api/business-projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create project");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/business-projects"] });
+      toast({ title: "Project created", description: "New project added successfully." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create project.", variant: "destructive" });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: ProjectFormData }) => {
+      const res = await fetch(`/api/business-projects/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to update project");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/business-projects"] });
+      toast({ title: "Project updated", description: "Changes saved successfully." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update project.", variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/business-projects/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete project");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/business-projects"] });
+      toast({ title: "Project deleted", description: "Project removed successfully." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete project.", variant: "destructive" });
+    },
+  });
+
+  const totalProjects = projects.length;
+  const inProgress = projects.filter((p) => p.status !== "complete").length;
+  const completed = projects.filter((p) => p.status === "complete").length;
+  const totalBudget = projects.reduce((s, p) => s + (p.budget?.allocated || 0), 0);
+  const totalSpent = projects.reduce((s, p) => s + (p.budget?.spent || 0), 0);
+  const totalSavings = projects.reduce((s, p) => s + (p.budget?.aiSavings || 0), 0);
+
+  return (
+    <div className="min-h-screen bg-stone-950 text-stone-100 p-4 md:p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent" data-testid="text-dashboard-title">
+            Business Dashboard
+          </h1>
+          <p className="text-stone-400 text-sm">Plan, track, and manage all projects</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <Card className="bg-stone-900/50 border-stone-800 p-4" data-testid="card-total-projects">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-stone-400 text-xs">Total Projects</span>
+              <Layers className="w-4 h-4 text-amber-400" />
+            </div>
+            <div className="text-2xl md:text-3xl font-bold">{totalProjects}</div>
+          </Card>
+          <Card className="bg-stone-900/50 border-stone-800 p-4" data-testid="card-in-progress">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-stone-400 text-xs">In Progress</span>
               <Activity className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-3xl font-bold text-emerald-400">
-              ${metrics?.burnRate.toLocaleString()}
-            </div>
-            <p className="text-xs text-stone-500 mt-1">Free tier = ∞ runway</p>
+            <div className="text-2xl md:text-3xl font-bold text-amber-400">{inProgress}</div>
           </Card>
-
-          <Card className="bg-stone-900/50 border-stone-800 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-stone-400 text-sm">Paying Clients</span>
-              <Users className="w-4 h-4 text-amber-400" />
+          <Card className="bg-stone-900/50 border-stone-800 p-4" data-testid="card-completed">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-stone-400 text-xs">Completed</span>
+              <CheckCircle2 className="w-4 h-4 text-teal-400" />
             </div>
-            <div className="text-3xl font-bold">{metrics?.clients}</div>
-            <p className="text-xs text-stone-500 mt-1">Target: 3-5 by Day 90</p>
+            <div className="text-2xl md:text-3xl font-bold text-teal-400">{completed}</div>
+          </Card>
+          <Card className="bg-stone-900/50 border-stone-800 p-4" data-testid="card-total-budget">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-stone-400 text-xs">Total Budget</span>
+              <DollarSign className="w-4 h-4 text-amber-400" />
+            </div>
+            <div className="text-2xl md:text-3xl font-bold">${totalBudget.toLocaleString()}</div>
           </Card>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-stone-900 border-stone-800">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="projects">Projects Pipeline</TabsTrigger>
-            <TabsTrigger value="revenue">Revenue Strategy</TabsTrigger>
-            <TabsTrigger value="agents">AI Agents</TabsTrigger>
+          <TabsList className="bg-stone-900 border border-stone-800 mb-4">
+            <TabsTrigger data-testid="tab-projects" value="projects">Projects</TabsTrigger>
+            <TabsTrigger data-testid="tab-planning" value="planning">Planning</TabsTrigger>
+            <TabsTrigger data-testid="tab-analytics" value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* 90-Day Timeline */}
-            <Card className="bg-stone-900/50 border-stone-800 p-6">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Target className="w-6 h-6 text-amber-400" />
-                90-Day Revenue Timeline
-              </h2>
-              
-              <div className="space-y-4">
-                {/* Month 1 */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">Month 1: Bootstrap & Build</span>
-                    <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
-                      In Progress
-                    </Badge>
-                  </div>
-                  <Progress value={30} className="mb-2" />
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-stone-400">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      5 campaigns deployed
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-amber-400" />
-                      Investor demo in progress
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-amber-400" />
-                      NGO outreach starting
-                    </div>
-                  </div>
-                </div>
-
-                {/* Month 2 */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">Month 2: First Clients</span>
-                    <Badge className="bg-stone-700 text-stone-300 border-stone-600">
-                      Upcoming
-                    </Badge>
-                  </div>
-                  <Progress value={0} className="mb-2" />
-                  <div className="text-sm text-stone-400">
-                    Target: $10k-$20k MRR from 1-2 clients
-                  </div>
-                </div>
-
-                {/* Month 3 */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">Month 3: Scale & Fundraise</span>
-                    <Badge className="bg-stone-700 text-stone-300 border-stone-600">
-                      Upcoming
-                    </Badge>
-                  </div>
-                  <Progress value={0} className="mb-2" />
-                  <div className="text-sm text-stone-400">
-                    Target: $30k-$50k MRR, investor term sheet
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Weekly Goals */}
-            <Card className="bg-stone-900/50 border-stone-800 p-6">
-              <h2 className="text-2xl font-bold mb-4">This Week's Goals</h2>
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 bg-stone-800/50 rounded-lg">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-semibold">Deploy 5 anti-trafficking campaigns</div>
-                    <div className="text-sm text-stone-400">Status: Complete ✅</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3 p-3 bg-stone-800/50 rounded-lg">
-                  <Clock className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-semibold">Record investor demo video</div>
-                    <div className="text-sm text-stone-400">Due: Day 2 (tomorrow)</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3 p-3 bg-stone-800/50 rounded-lg">
-                  <Clock className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-semibold">Email 20 NGOs</div>
-                    <div className="text-sm text-stone-400">Due: Day 5-6</div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* Projects Tab */}
           <TabsContent value="projects" className="space-y-4">
-            {projects.map((project) => (
-              <Card key={project.id} className="bg-stone-900/50 border-stone-800 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${getStatusColor(project.status)}`}>
-                      {getStageIcon(project.stage)}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold">{project.name}</h3>
-                      <p className="text-sm text-stone-400 capitalize">
-                        Stage: {project.stage} | {project.timeline.daysLeft} days left
-                      </p>
-                    </div>
-                  </div>
-                  <Badge className={getStatusColor(project.status)}>
-                    {project.status}
-                  </Badge>
-                </div>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">All Projects</h2>
+              <Button data-testid="button-add-project" className="bg-amber-500 text-stone-950 hover:bg-amber-400" onClick={() => setShowNewForm(!showNewForm)}>
+                <Plus className="w-4 h-4 mr-1" /> Add Project
+              </Button>
+            </div>
 
-                <div className="space-y-4">
-                  {/* Progress */}
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>Progress</span>
-                      <span className="text-amber-400">{project.progress}%</span>
-                    </div>
-                    <Progress value={project.progress} className="h-2" />
-                  </div>
+            {showNewForm && (
+              <ProjectForm
+                initial={defaultForm}
+                onSave={(data) => {
+                  createMutation.mutate(data);
+                  setShowNewForm(false);
+                }}
+                onCancel={() => setShowNewForm(false)}
+                saving={createMutation.isPending}
+              />
+            )}
 
-                  {/* Metrics Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <div className="text-stone-400 mb-1">Budget Spent</div>
-                      <div className="font-semibold text-emerald-400">
-                        ${project.budget.spent}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-stone-400 mb-1">AI Savings</div>
-                      <div className="font-semibold text-teal-400">
-                        ${project.budget.aiSavings.toLocaleString()}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-stone-400 mb-1">Team Size</div>
-                      <div className="font-semibold">
-                        {project.team.human} human + {project.team.aiAgents} AI
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-stone-400 mb-1">Revenue</div>
-                      <div className="font-semibold">
-                        {project.revenue !== undefined ? `$${project.revenue.toLocaleString()}` : 'TBD'}
-                      </div>
-                    </div>
-                  </div>
+            {isLoading && <div className="text-center py-12 text-stone-400">Loading projects...</div>}
 
-                  {/* Action Button */}
-                  <div className="flex justify-end">
-                    <Button 
-                      variant="ghost" 
-                      className="text-amber-400 hover:bg-amber-500/10"
-                      size="sm"
-                    >
-                      View Details
-                      <ChevronRight className="w-4 h-4 ml-1" />
-                    </Button>
-                  </div>
-                </div>
+            {!isLoading && projects.length === 0 && !showNewForm && (
+              <Card className="bg-stone-900/50 border-stone-800 p-12 text-center">
+                <Target className="w-12 h-12 text-stone-600 mx-auto mb-4" />
+                <p className="text-stone-400 mb-4">No projects yet. Create your first project to get started.</p>
+                <Button data-testid="button-add-first-project" className="bg-amber-500 text-stone-950 hover:bg-amber-400" onClick={() => setShowNewForm(true)}>
+                  <Plus className="w-4 h-4 mr-1" /> Create First Project
+                </Button>
               </Card>
+            )}
+
+            {projects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onUpdate={(data) => updateMutation.mutate({ id: project.id, data })}
+                onDelete={() => deleteMutation.mutate(project.id)}
+              />
             ))}
           </TabsContent>
 
-          {/* Revenue Strategy Tab */}
-          <TabsContent value="revenue" className="space-y-6">
-            <Card className="bg-stone-900/50 border-stone-800 p-6">
-              <h2 className="text-2xl font-bold mb-4">Revenue Streams (Target: $500k ARR Y1)</h2>
-              
-              <div className="space-y-4">
-                {/* Educational */}
-                <div className="p-4 bg-stone-800/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Brain className="w-5 h-5 text-teal-400" />
-                      <span className="font-semibold">Educational Subscriptions</span>
+          <TabsContent value="planning" className="space-y-4">
+            <h2 className="text-xl font-bold mb-2">Project Pipeline</h2>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              {STAGES.map((stage) => {
+                const stageProjects = projects.filter((p) => p.stage === stage);
+                return (
+                  <div key={stage} className="bg-stone-900/30 rounded-lg border border-stone-800 p-3" data-testid={`column-${stage}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        {getStageIcon(stage)}
+                        <span className="text-sm font-semibold capitalize">{stage}</span>
+                        <Badge className="bg-stone-700 text-stone-300 text-xs">{stageProjects.length}</Badge>
+                      </div>
+                      <Button data-testid={`button-quick-add-${stage}`} variant="ghost" size="sm" className="h-6 w-6 p-0 text-amber-400 hover:bg-amber-500/10" onClick={() => setQuickAddStage(quickAddStage === stage ? null : stage)}>
+                        <Plus className="w-3 h-3" />
+                      </Button>
                     </div>
-                    <Badge>20% of revenue</Badge>
-                  </div>
-                  <div className="text-2xl font-bold text-teal-400 mb-2">$100k ARR</div>
-                  <div className="text-sm text-stone-400 space-y-1">
-                    <div>• Free tier: 5 campaigns</div>
-                    <div>• Student ($29/mo): Full platform</div>
-                    <div>• Professional ($99/mo): Premium tools</div>
-                    <div>• Enterprise ($10k for 25 seats)</div>
-                  </div>
-                </div>
 
-                {/* Government */}
-                <div className="p-4 bg-stone-800/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-amber-400" />
-                      <span className="font-semibold">Government Contracts</span>
-                    </div>
-                    <Badge>40% of revenue</Badge>
-                  </div>
-                  <div className="text-2xl font-bold text-amber-400 mb-2">$200k ARR</div>
-                  <div className="text-sm text-stone-400 space-y-1">
-                    <div>• FBI VCAC case support</div>
-                    <div>• HSI cryptocurrency tracing</div>
-                    <div>• State/local PD contracts</div>
-                  </div>
-                </div>
+                    {quickAddStage === stage && (
+                      <ProjectForm
+                        initial={{ ...defaultForm, stage }}
+                        onSave={(data) => {
+                          createMutation.mutate(data);
+                          setQuickAddStage(null);
+                        }}
+                        onCancel={() => setQuickAddStage(null)}
+                        saving={createMutation.isPending}
+                      />
+                    )}
 
-                {/* Corporate AML */}
-                <div className="p-4 bg-stone-800/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-5 h-5 text-emerald-400" />
-                      <span className="font-semibold">Corporate AML/KYC</span>
+                    <div className="space-y-2">
+                      {stageProjects.map((p) => (
+                        <Card key={p.id} className="bg-stone-800/50 border-stone-700 p-3" data-testid={`kanban-card-${p.id}`}>
+                          <div className="text-sm font-semibold truncate mb-1">{p.name}</div>
+                          <div className="flex items-center gap-1 mb-2">
+                            <Badge className={`text-[10px] px-1 py-0 ${getStatusColor(p.status)}`}>{p.status}</Badge>
+                            <Badge className={`text-[10px] px-1 py-0 ${getPriorityColor(p.priority)}`}>{p.priority}</Badge>
+                          </div>
+                          <Progress value={p.progress} className="h-1.5" />
+                          <div className="text-[10px] text-stone-500 mt-1">{p.progress}%</div>
+                        </Card>
+                      ))}
+                      {stageProjects.length === 0 && (
+                        <div className="text-xs text-stone-600 text-center py-4">No projects</div>
+                      )}
                     </div>
-                    <Badge>25% of revenue</Badge>
                   </div>
-                  <div className="text-2xl font-bold text-emerald-400 mb-2">$125k ARR</div>
-                  <div className="text-sm text-stone-400 space-y-1">
-                    <div>• Crypto exchanges ($10k-$20k/mo)</div>
-                    <div>• Banks ($15k-$30k/mo)</div>
-                    <div>• Payment processors ($10k-$15k/mo)</div>
-                  </div>
-                </div>
-              </div>
-            </Card>
+                );
+              })}
+            </div>
           </TabsContent>
 
-          {/* AI Agents Tab */}
-          <TabsContent value="agents" className="space-y-6">
-            <Card className="bg-stone-900/50 border-stone-800 p-6">
-              <h2 className="text-2xl font-bold mb-4">Active AI Agent Crews</h2>
-              <p className="text-stone-400 mb-6">
-                All powered by FREE models (Ollama, Groq, HuggingFace) - $0 cost
-              </p>
-
-              <div className="space-y-4">
-                {/* Development Crew */}
-                <div className="p-4 bg-stone-800/50 rounded-lg border border-teal-500/20">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Brain className="w-5 h-5 text-teal-400" />
-                      <span className="font-semibold">Development Crew</span>
-                    </div>
-                    <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
-                  </div>
-                  <div className="text-sm text-stone-400 space-y-2">
-                    <div>• Architect (Deepseek Coder V2 - FREE)</div>
-                    <div>• Developer (CodeLlama 13B - FREE)</div>
-                    <div>• QA Engineer (Groq Mixtral - FREE)</div>
-                    <div>• DevOps (Groq Llama 3 - FREE)</div>
-                    <div className="pt-2 text-teal-400">Savings: $120k/year vs 1 FT developer</div>
-                  </div>
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-stone-900/50 border-stone-800 p-5" data-testid="card-budget-allocated">
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="w-5 h-5 text-amber-400" />
+                  <span className="text-stone-400 text-sm">Total Allocated</span>
                 </div>
-
-                {/* Business Intelligence Crew */}
-                <div className="p-4 bg-stone-800/50 rounded-lg border border-amber-500/20">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-amber-400" />
-                      <span className="font-semibold">Business Intelligence Crew</span>
-                    </div>
-                    <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
-                  </div>
-                  <div className="text-sm text-stone-400 space-y-2">
-                    <div>• Data Analyst (Groq Mixtral - FREE)</div>
-                    <div>• Growth Strategist (Llama 3.1 - FREE)</div>
-                    <div>• Financial Analyst (Groq Llama 3 - FREE)</div>
-                    <div className="pt-2 text-amber-400">Savings: $50k/year vs analysts</div>
-                  </div>
+                <div className="text-3xl font-bold">${totalBudget.toLocaleString()}</div>
+              </Card>
+              <Card className="bg-stone-900/50 border-stone-800 p-5" data-testid="card-budget-spent">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-5 h-5 text-red-400" />
+                  <span className="text-stone-400 text-sm">Total Spent</span>
                 </div>
-
-                {/* Security Crew (per client) */}
-                <div className="p-4 bg-stone-800/50 rounded-lg border border-red-500/20">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-red-400" />
-                      <span className="font-semibold">Offensive Security Crews</span>
-                    </div>
-                    <Badge className="bg-stone-700 text-stone-300">Ready to Deploy</Badge>
-                  </div>
-                  <div className="text-sm text-stone-400 space-y-2">
-                    <div>• Recon Agent (Ollama Mistral - FREE)</div>
-                    <div>• Scanner Agent (Ollama Mistral - FREE)</div>
-                    <div>• Threat Hunter (Groq Mixtral - FREE)</div>
-                    <div>• Incident Responder (Claude Haiku - $0.00025/1k tokens)</div>
-                    <div>• Report Generator (Groq Llama 3 - FREE)</div>
-                    <div className="pt-2 text-red-400">Cost: &lt;$50/month per client vs $50k traditional SOC</div>
-                  </div>
+                <div className="text-3xl font-bold text-red-400">${totalSpent.toLocaleString()}</div>
+              </Card>
+              <Card className="bg-stone-900/50 border-stone-800 p-5" data-testid="card-ai-savings">
+                <div className="flex items-center gap-2 mb-2">
+                  <Brain className="w-5 h-5 text-teal-400" />
+                  <span className="text-stone-400 text-sm">AI Savings</span>
                 </div>
+                <div className="text-3xl font-bold text-teal-400">${totalSavings.toLocaleString()}</div>
+              </Card>
+            </div>
+
+            <Card className="bg-stone-900/50 border-stone-800 p-5">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-amber-400" /> Projects by Category
+              </h3>
+              <div className="space-y-3">
+                {CATEGORIES.map((cat) => {
+                  const count = projects.filter((p) => p.category === cat).length;
+                  const pct = totalProjects > 0 ? (count / totalProjects) * 100 : 0;
+                  return (
+                    <div key={cat} data-testid={`bar-category-${cat}`}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="capitalize text-stone-300">{cat}</span>
+                        <span className="text-stone-400">{count}</span>
+                      </div>
+                      <div className="h-3 bg-stone-800 rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full ${getCategoryColor(cat).includes("red") ? "bg-red-500/60" : getCategoryColor(cat).includes("teal") ? "bg-teal-500/60" : getCategoryColor(cat).includes("amber") ? "bg-amber-500/60" : getCategoryColor(cat).includes("purple") ? "bg-purple-500/60" : getCategoryColor(cat).includes("blue") ? "bg-blue-500/60" : "bg-stone-500/60"}`} style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            <Card className="bg-stone-900/50 border-stone-800 p-5">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-amber-400" /> Projects by Status
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {STATUSES.map((status) => {
+                  const count = projects.filter((p) => p.status === status).length;
+                  return (
+                    <div key={status} className="bg-stone-800/50 rounded-lg p-3 text-center" data-testid={`stat-status-${status}`}>
+                      <div className={`text-2xl font-bold ${status === "complete" || status === "on-track" ? "text-teal-400" : status === "at-risk" ? "text-amber-400" : "text-red-400"}`}>{count}</div>
+                      <div className="text-xs text-stone-400 capitalize mt-1">{status}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            <Card className="bg-stone-900/50 border-stone-800 p-5">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-amber-400" /> Project Deadlines
+              </h3>
+              <div className="space-y-3">
+                {projects.length === 0 && <p className="text-stone-500 text-sm">No projects to show.</p>}
+                {[...projects]
+                  .sort((a, b) => new Date(a.timeline.deadline).getTime() - new Date(b.timeline.deadline).getTime())
+                  .map((p) => {
+                    const deadline = new Date(p.timeline.deadline);
+                    const now = new Date();
+                    const daysLeft = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                    return (
+                      <div key={p.id} className="flex items-center justify-between p-3 bg-stone-800/50 rounded-lg" data-testid={`timeline-project-${p.id}`}>
+                        <div className="flex items-center gap-3 min-w-0">
+                          {getStageIcon(p.stage)}
+                          <div className="min-w-0">
+                            <div className="text-sm font-semibold truncate">{p.name}</div>
+                            <div className="text-xs text-stone-500">{p.timeline.started} → {p.timeline.deadline}</div>
+                          </div>
+                        </div>
+                        <Badge className={daysLeft < 0 ? "bg-red-400/10 text-red-400" : daysLeft < 7 ? "bg-amber-400/10 text-amber-400" : "bg-teal-400/10 text-teal-400"}>
+                          {daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? "Today" : `${daysLeft}d left`}
+                        </Badge>
+                      </div>
+                    );
+                  })}
               </div>
             </Card>
           </TabsContent>
