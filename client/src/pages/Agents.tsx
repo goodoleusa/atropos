@@ -136,6 +136,15 @@ const THREAT_INTEL_FEEDS: ThreatIntelFeed[] = [
     category: 'ransomware',
     free: true,
   },
+  {
+    id: 'openphish',
+    name: 'OpenPhish',
+    description: 'Real-time phishing detection feed',
+    url: 'https://openphish.com/feed.txt',
+    icon: <Globe className="w-4 h-4" />,
+    category: 'malware',
+    free: true,
+  },
 ];
 
 const FREE_MODELS = [

@@ -46,6 +46,8 @@ const THREAT_INTEL_FEEDS: Record<string, { url: string; method: 'GET' | 'POST'; 
   'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: JSON.stringify({ query: 'get_recent', selector: 100 }) },
   'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
   'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
+  'blocklist_de': { url: 'https://www.blocklist.de/en/export.html', method: 'GET' }, // Generic info page, might need parsing or specific export URL
+  'openphish': { url: 'https://openphish.com/feed.txt', method: 'GET' },
 };
 
 // ==================== Prompt Gallery ====================
@@ -1617,36 +1619,62 @@ router.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) =>
     }
     
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), 30000); // Increased to 30s
     
     const headers: Record<string, string> = {
-      'User-Agent': 'NEXUS-Security-Platform/1.0',
-      'Accept': 'application/json'
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json, text/plain, */*'
     };
     
     let response;
-    if (feed.method === 'POST') {
-      const isJson = feed.body?.trim().startsWith('{');
-      response = await fetch(feed.url, {
-        method: 'POST',
-        headers: { 
-          ...headers, 
-          'Content-Type': isJson ? 'application/json' : 'application/x-www-form-urlencoded' 
-        },
-        body: feed.body,
-        signal: controller.signal
-      });
-    } else {
-      response = await fetch(feed.url, { headers, signal: controller.signal });
+    try {
+      if (feed.method === 'POST') {
+        const isJson = feed.body?.trim().startsWith('{');
+        response = await fetch(feed.url, {
+          method: 'POST',
+          headers: { 
+            ...headers, 
+            'Content-Type': isJson ? 'application/json' : 'application/x-www-form-urlencoded' 
+          },
+          body: feed.body,
+          signal: controller.signal
+        });
+      } else {
+        response = await fetch(feed.url, { headers, signal: controller.signal });
+      }
+    } catch (e: any) {
+      clearTimeout(timeout);
+      if (e.name === 'AbortError') {
+        throw new Error(`Connection timed out after 30s for ${feedId}`);
+      }
+      throw e;
     }
     
     clearTimeout(timeout);
     
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(`Feed Access Denied (${response.status}) - The service might require an API key or is blocking the request.`);
+      }
       throw new Error(`Feed returned ${response.status}`);
     }
     
-    const data = await response.json();
+    const contentType = response.headers.get('content-type');
+    let data;
+    if (contentType?.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      // Simple parsing for plaintext feeds (like OpenPhish)
+      if (feedId === 'openphish' || text.includes('http')) {
+        data = text.split('\n')
+          .filter(l => l.trim() && !l.startsWith('#'))
+          .slice(0, 50)
+          .map(url => ({ url, threat: 'phishing', status: 'online', date: new Date().toISOString() }));
+      } else {
+        throw new Error("Feed returned non-JSON data");
+      }
+    }
     
     const trimmed = Array.isArray(data) 
       ? data.slice(0, 50) 
