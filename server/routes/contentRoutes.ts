@@ -1673,10 +1673,10 @@ router.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) =>
           .filter(l => l.trim() && !l.startsWith(';') && !l.startsWith('#'))
           .slice(0, 50)
           .map(line => {
-            const parts = line.split(' ');
+            const parts = line.split(/[ \t]+/); // Use regex for multiple spaces/tabs
             return { 
               value: parts[0], 
-              threat: feedId.includes('phish') ? 'phishing' : 'malicious_ip', 
+              threat: (feedId.includes('phish') || parts[0].includes('http')) ? 'phishing' : 'malicious_ip', 
               status: 'online', 
               date: new Date().toISOString(),
               source: feedId

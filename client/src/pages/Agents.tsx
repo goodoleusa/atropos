@@ -15,7 +15,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { 
   ArrowLeft, Bot, Shield, Eye, Lock, Bug, Network, Brain, Zap,
   Play, Download, Copy, Check, Loader2, RefreshCw, FileText, AlertTriangle,
-  Globe, Skull, Radio, Database, ExternalLink, Settings, Radar
+  Globe, Skull, Radio, Database, ExternalLink, Settings, Radar, ShieldAlert
 } from 'lucide-react';
 
 interface SecurityAgent {
