@@ -8,12 +8,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, Bot, Zap, Target, 
-  MessageSquare, Beaker, GraduationCap, Radar, Brain
+  MessageSquare, Beaker, GraduationCap, Radar, Brain, Bug,
+  Activity, ChevronDown, ChevronUp, Trash2, FileText
 } from 'lucide-react';
 import { AgentChat } from '@/components/AgentChat';
 import { ScannerContent } from '@/pages/ScannerDashboard';
 import { AILabContent } from '@/pages/AILab';
 import { PromptBuilderContent } from '@/pages/PromptBuilder';
+import { SpiderFootTab } from '@/components/SpiderFootTab';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { useReportContext } from '@/hooks/useReportContext';
 import { LEARNING_STYLES, LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS } from '@/config/learningConfig';
@@ -22,6 +24,7 @@ export default function InvestigationWorkspace() {
   const [activeTab, setActiveTab] = useState('chat');
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [atroposPayload, setAtroposPayload] = useState<string | undefined>(undefined);
+  const [showOutputs, setShowOutputs] = useState(false);
   
   const { 
     style, 
@@ -34,8 +37,10 @@ export default function InvestigationWorkspace() {
   } = useLearningStore();
   
   const { 
+    toolOutputs,
     pendingFindings, 
-    currentSession
+    currentSession,
+    clearToolOutputs
   } = useReportContext();
 
   const recommendedTools = getRecommendedTools();
@@ -63,10 +68,26 @@ export default function InvestigationWorkspace() {
             </div>
             
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowOutputs(!showOutputs)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all min-h-[36px] ${
+                  toolOutputs.length > 0
+                    ? 'bg-teal-900/30 border-teal-700 text-teal-400 hover:bg-teal-900/50'
+                    : 'bg-stone-900/30 border-stone-700 text-stone-500 hover:border-stone-600'
+                }`}
+                data-testid="toggle-outputs-btn"
+              >
+                <Activity className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">{toolOutputs.length}</span>
+                {showOutputs ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
               {pendingFindings.length > 0 && (
-                <Badge className="bg-amber-900/50 text-amber-400 border-amber-700" data-testid="findings-badge">
-                  {pendingFindings.length} Findings
-                </Badge>
+                <Link href="/report">
+                  <Badge className="bg-amber-900/50 text-amber-400 border-amber-700 cursor-pointer hover:bg-amber-900/70" data-testid="findings-badge">
+                    <FileText className="w-3 h-3 mr-1" />
+                    {pendingFindings.length} Findings
+                  </Badge>
+                </Link>
               )}
               {currentSession && (
                 <Badge className="bg-teal-900/50 text-teal-400 border-teal-700" data-testid="session-badge">
@@ -75,6 +96,58 @@ export default function InvestigationWorkspace() {
               )}
             </div>
           </div>
+
+          {showOutputs && (
+            <div className="mt-3 bg-stone-950/80 rounded-lg border border-stone-800 overflow-hidden" data-testid="outputs-panel">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-stone-800">
+                <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">Tool Outputs Feed</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-stone-500">{toolOutputs.length} total</span>
+                  {toolOutputs.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { clearToolOutputs(); toast({ title: "Cleared", description: "All tool outputs cleared" }); }}
+                      className="h-6 text-xs text-stone-500 hover:text-red-400"
+                      data-testid="clear-outputs-btn"
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" /> Clear
+                    </Button>
+                  )}
+                </div>
+              </div>
+              <ScrollArea className="max-h-[200px]">
+                {toolOutputs.length > 0 ? (
+                  <div className="divide-y divide-stone-800/50">
+                    {toolOutputs.slice().reverse().slice(0, 20).map(output => (
+                      <div key={output.id} className="px-3 py-2 hover:bg-stone-900/30 transition-colors">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <Badge variant="outline" className={`text-[9px] py-0 ${
+                            output.type === 'scan' ? 'border-orange-700 text-orange-400' :
+                            output.type === 'recon' ? 'border-teal-700 text-teal-400' :
+                            output.type === 'finding' ? 'border-red-700 text-red-400' :
+                            output.type === 'analysis' ? 'border-purple-700 text-purple-400' :
+                            'border-stone-700 text-stone-400'
+                          }`}>
+                            {output.type}
+                          </Badge>
+                          <span className="text-[10px] text-stone-600">{output.source}</span>
+                          <span className="text-[10px] text-stone-700 ml-auto">
+                            {new Date(output.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-stone-400 line-clamp-2">{output.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-3 py-6 text-center text-stone-600 text-xs">
+                    No tool outputs yet. Run scans or use the agent to generate findings.
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
+          )}
         </div>
       </header>
 
@@ -98,6 +171,15 @@ export default function InvestigationWorkspace() {
               <Radar className="w-4 h-4" />
               <span className="hidden sm:inline">Scanner</span>
               <span className="sm:hidden">Scan</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="spiderfoot" 
+              className="data-[state=active]:bg-red-900/50 data-[state=active]:text-red-400 min-h-[44px] gap-2"
+              data-testid="tab-spiderfoot"
+            >
+              <Bug className="w-4 h-4" />
+              <span className="hidden sm:inline">SpiderFoot</span>
+              <span className="sm:hidden">SF</span>
             </TabsTrigger>
             <TabsTrigger 
               value="ai-lab" 
@@ -215,6 +297,10 @@ export default function InvestigationWorkspace() {
 
           <TabsContent value="scanner" data-testid="content-scanner">
             <ScannerContent />
+          </TabsContent>
+
+          <TabsContent value="spiderfoot" data-testid="content-spiderfoot">
+            <SpiderFootTab />
           </TabsContent>
 
           <TabsContent value="ai-lab" data-testid="content-ai-lab">

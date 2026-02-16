@@ -7,6 +7,7 @@ import { registerChatRoutes } from "./replit_integrations/chat";
 import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
 import atroposRoutes from "./routes/atropos";
+import spiderfootRoutes from "./routes/spiderfoot";
 import progressionRoutes from "./routes/progressionRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import { 
@@ -204,6 +205,9 @@ export async function registerRoutes(
   
   // Register Atropos Scanner routes
   app.use("/api/atropos", atroposRoutes);
+  
+  // Register SpiderFoot OSINT routes
+  app.use("/api/spiderfoot", spiderfootRoutes);
   
   // Register Progression routes (XP, achievements, leaderboards, challenges)
   app.use(progressionRoutes);
