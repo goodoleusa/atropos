@@ -158,7 +158,7 @@ export default function Agents() {
   const [selectedAgentsForExport, setSelectedAgentsForExport] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
   const [agentRuns, setAgentRuns] = useState<AgentRun[]>([]);
-  const [enabledFeeds, setEnabledFeeds] = useState<string[]>(['abuse_ch_threatfox', 'cisa_kev']);
+  const [enabledFeeds, setEnabledFeeds] = useState<string[]>(['abuse_ch_threatfox', 'cisa_kev', 'ransomware_live']);
   const [loadingScan, setLoadingScan] = useState(false);
 
   const { data: agents = [], isLoading: agentsLoading } = useQuery<(SecurityAgent & { moduleId?: string; starterPrompt?: string })[]>({

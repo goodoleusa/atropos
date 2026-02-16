@@ -153,6 +153,26 @@ export async function registerRoutes(
         ];
       }
 
+      // Fetch recent ransomware victims if possible
+      let ransomwareItems: any[] = [];
+      try {
+        const rwRes = await fetch('https://api.ransomware.live/recentvictims', {
+          signal: AbortSignal.timeout(5000)
+        });
+        if (rwRes.ok) {
+          const rwData = await rwRes.json() as any[];
+          ransomwareItems = rwData.slice(0, 10).map((item: any) => ({
+            id: item.id || Math.random(),
+            victim: item.victim,
+            group: item.group,
+            date: item.discovered,
+            website: item.website
+          }));
+        }
+      } catch (e) {
+        ransomwareItems = [];
+      }
+
       res.json({
         success: true,
         feeds: {
@@ -161,7 +181,8 @@ export async function registerRoutes(
             { id: 1, url: 'http://malicious-example.com/payload', status: 'online', date: new Date().toISOString(), threat: 'malware_download' },
             { id: 2, url: 'http://phish-kit.example.net/login', status: 'online', date: new Date().toISOString(), threat: 'phishing' }
           ]},
-          threatfox: { name: 'ThreatFox', items: threatfoxItems }
+          threatfox: { name: 'ThreatFox', items: threatfoxItems },
+          ransomware: { name: 'Ransomware Live', items: ransomwareItems }
         }
       });
     } catch (error) {
