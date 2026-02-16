@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server, Beaker, Radar, Briefcase } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server, Briefcase } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
@@ -51,18 +51,14 @@ export default function QuickNav() {
     // Foundation & Training
     { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
-    { path: '/agents', icon: User, label: 'Your Agent', color: 'teal' as const },
+    { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
     { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
     { path: '/business', icon: Briefcase, label: 'Business HQ', color: 'teal' as const },
     
     // Active Investigation
-    { path: '/scanner', icon: Radar, label: 'Scanner', color: 'amber' as const },
+    { path: '/investigate', icon: Search, label: 'Investigation Hub', color: 'teal' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
-    { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
-    { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
-    { path: '/prompt-builder', icon: Zap, label: 'AI Playground', color: 'purple' as const },
-    { path: '/ai-lab', icon: Beaker, label: 'AI Lab', color: 'teal' as const },
-    { path: '/videos', icon: Bot, label: 'AI Gallery', color: 'teal' as const },
+    { path: '/videos', icon: Activity, label: 'AI Gallery', color: 'teal' as const },
     
     // Results & Documentation
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },

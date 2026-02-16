@@ -234,7 +234,7 @@ interface BattleResult {
   timestamp: string;
 }
 
-export default function AILab() {
+export function AILabContent() {
   const [enabledModules, setEnabledModules] = useState<ModuleKey[]>(['payload_exec', 'terminal_cmds', 'osint_recon']);
   const [selectedModel, setSelectedModel] = useState('meta-llama/llama-3.3-70b-instruct:free');
   const [selectedModelB, setSelectedModelB] = useState('google/gemini-2.0-flash-exp:free');
@@ -621,33 +621,18 @@ ${modelRankings.slice(0, 3).map(m => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300">
-      <div className="sticky top-0 z-40 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30 p-4">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <Link href="/">
-            <Button variant="ghost" className="text-amber-600 hover:text-amber-500 min-h-[44px]" data-testid="back-button">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <h1 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
-            <Brain className="w-5 h-5" />
-            AI Lab
-          </h1>
-          <div className="flex gap-1">
-            <Button onClick={() => setShowCrewAIExporter(true)} variant="outline" className="border-purple-800 text-purple-400 min-h-[44px] px-2" title="Export to CrewAI" data-testid="export-crewai-btn">
-              <Bot className="w-4 h-4" />
-            </Button>
-            <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-400 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
-              <FileText className="w-4 h-4" />
-            </Button>
-            <Button onClick={() => exportSessionReport('json')} variant="outline" className="border-teal-800 text-teal-400 min-h-[44px] px-2" title="Export JSON" data-testid="export-json-btn">
-              <Download className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
+    <div className="space-y-6">
+      <div className="flex gap-2 justify-end">
+        <Button onClick={() => setShowCrewAIExporter(true)} variant="outline" className="border-purple-800 text-purple-400 min-h-[44px] px-2" title="Export to CrewAI" data-testid="export-crewai-btn">
+          <Bot className="w-4 h-4" />
+        </Button>
+        <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-400 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
+          <FileText className="w-4 h-4" />
+        </Button>
+        <Button onClick={() => exportSessionReport('json')} variant="outline" className="border-teal-800 text-teal-400 min-h-[44px] px-2" title="Export JSON" data-testid="export-json-btn">
+          <Download className="w-4 h-4" />
+        </Button>
       </div>
-
-      <div className="max-w-4xl mx-auto p-4 space-y-6 pb-24">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="border-amber-900/50 bg-stone-900/50">
@@ -1251,14 +1236,36 @@ ${modelRankings.slice(0, 3).map(m => {
           </CardContent>
         </Card>
 
-      </div>
-
       <CrewAIExporter 
         open={showCrewAIExporter} 
         onOpenChange={setShowCrewAIExporter}
         initialPrompt={testPrompt}
         initialModel={selectedModel}
       />
+    </div>
+  );
+}
+
+export default function AILab() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300">
+      <div className="sticky top-0 z-40 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30 p-4">
+        <div className="flex items-center justify-between max-w-4xl mx-auto">
+          <Link href="/investigate">
+            <Button variant="ghost" className="text-amber-600 hover:text-amber-500 min-h-[44px]" data-testid="back-button">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <h1 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+            <Brain className="w-5 h-5" />
+            AI Lab
+          </h1>
+          <div className="w-[44px]" />
+        </div>
+      </div>
+      <div className="max-w-4xl mx-auto p-4 pb-24">
+        <AILabContent />
+      </div>
     </div>
   );
 }
