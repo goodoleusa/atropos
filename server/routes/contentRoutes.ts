@@ -41,9 +41,9 @@ const detectPromptRisks = (input: string) => {
 };
 
 const THREAT_INTEL_FEEDS: Record<string, { url: string; method: 'GET' | 'POST'; body?: string }> = {
-  'abuse_ch_urlhaus': { url: 'https://urlhaus-api.abuse.ch/v1/', method: 'POST', body: 'query=get_recent&limit=25' },
-  'abuse_ch_threatfox': { url: 'https://threatfox-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_iocs&days=1' },
-  'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: 'query=get_recent&selector=100' },
+  'abuse_ch_urlhaus': { url: 'https://urlhaus-api.abuse.ch/v1/', method: 'POST', body: JSON.stringify({ query: 'get_recent', limit: 25 }) },
+  'abuse_ch_threatfox': { url: 'https://threatfox-api.abuse.ch/api/v1/', method: 'POST', body: JSON.stringify({ query: 'get_iocs', days: 1 }) },
+  'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: JSON.stringify({ query: 'get_recent', selector: 100 }) },
   'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
   'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
 };
@@ -1626,9 +1626,13 @@ router.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) =>
     
     let response;
     if (feed.method === 'POST') {
+      const isJson = feed.body?.trim().startsWith('{');
       response = await fetch(feed.url, {
         method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 
+          ...headers, 
+          'Content-Type': isJson ? 'application/json' : 'application/x-www-form-urlencoded' 
+        },
         body: feed.body,
         signal: controller.signal
       });

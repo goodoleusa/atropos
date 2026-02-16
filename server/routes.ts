@@ -126,6 +126,33 @@ export async function registerRoutes(
         console.error('[ThreatFeeds] CISA fetch failed:', e.message);
       }
 
+      // Fetch a few real IOCs from ThreatFox for the overview if possible
+      let threatfoxItems: any[] = [];
+      try {
+        const tfRes = await fetch('https://threatfox-api.abuse.ch/api/v1/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: 'get_iocs', days: 1 }),
+          signal: AbortSignal.timeout(5000)
+        });
+        if (tfRes.ok) {
+          const tfData = await tfRes.json() as any;
+          threatfoxItems = (tfData.data || []).slice(0, 10).map((item: any) => ({
+            id: item.id,
+            ioc: item.ioc,
+            type: item.ioc_type,
+            confidence: item.confidence,
+            malware: item.malware_printable
+          }));
+        }
+      } catch (e) {
+        // Fallback to mock if real fetch fails
+        threatfoxItems = [
+          { id: 1, ioc: '185.220.101.34', type: 'ip:port', confidence: 100, malware: 'Cobalt Strike' },
+          { id: 2, ioc: 'evil-domain.example.com', type: 'domain', confidence: 90, malware: 'Emotet' }
+        ];
+      }
+
       res.json({
         success: true,
         feeds: {
@@ -134,10 +161,7 @@ export async function registerRoutes(
             { id: 1, url: 'http://malicious-example.com/payload', status: 'online', date: new Date().toISOString(), threat: 'malware_download' },
             { id: 2, url: 'http://phish-kit.example.net/login', status: 'online', date: new Date().toISOString(), threat: 'phishing' }
           ]},
-          threatfox: { name: 'ThreatFox', items: [
-            { id: 1, ioc: '185.220.101.34', type: 'ip:port', confidence: 100, malware: 'Cobalt Strike' },
-            { id: 2, ioc: 'evil-domain.example.com', type: 'domain', confidence: 90, malware: 'Emotet' }
-          ]}
+          threatfox: { name: 'ThreatFox', items: threatfoxItems }
         }
       });
     } catch (error) {
