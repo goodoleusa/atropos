@@ -165,6 +165,11 @@ ${getFullPromptModifier()}
       name: 'OSINT Recon', 
       desc: 'Enumerate routes, analyze patterns, decode messages',
       icon: '🎯'
+    },
+    atropos_scans: {
+      name: 'Atropos Scans',
+      desc: 'Integrate and analyze Atropos scanner results',
+      icon: '📡'
     }
   };
 
@@ -299,10 +304,10 @@ ${getFullPromptModifier()}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">{moduleDescriptions[mod].icon}</span>
+                          <span className="text-lg">{(moduleDescriptions[mod] as any)?.icon || '🧩'}</span>
                           <div>
-                            <p className="text-amber-500 text-sm font-bold">{moduleDescriptions[mod].name}</p>
-                            <p className="text-stone-500 text-xs">{moduleDescriptions[mod].desc}</p>
+                            <p className="text-amber-500 text-sm font-bold">{(moduleDescriptions[mod] as any)?.name || mod}</p>
+                            <p className="text-stone-500 text-xs">{(moduleDescriptions[mod] as any)?.desc || 'Capability module'}</p>
                           </div>
                         </div>
                         <Switch checked={enabledModules.includes(mod)} data-testid={`switch-${mod}`} />
