@@ -72,6 +72,28 @@ interface AtroposScannerProps {
   onAnalyzeWithNexus?: (prompt: string, scanData: any) => void;
 }
 
+function mergeScanResults(existing: AtroposScanResult | null, incoming: AtroposScanResult): AtroposScanResult {
+  if (!existing) return incoming;
+  const existingValues = new Set(existing.findings.map(f => `${f.type}:${f.value}`));
+  const newFindings = incoming.findings.filter(f => !existingValues.has(`${f.type}:${f.value}`));
+  return {
+    ...incoming,
+    findings: [...existing.findings, ...newFindings],
+    summary: {
+      subdomains: existing.summary.subdomains + incoming.summary.subdomains,
+      ipAddresses: existing.summary.ipAddresses + incoming.summary.ipAddresses,
+      urls: existing.summary.urls + incoming.summary.urls,
+      emails: existing.summary.emails + incoming.summary.emails,
+      openPorts: existing.summary.openPorts + incoming.summary.openPorts,
+      technologies: Math.max(existing.summary.technologies, incoming.summary.technologies),
+      vulnerabilities: existing.summary.vulnerabilities + incoming.summary.vulnerabilities,
+      secrets: existing.summary.secrets + incoming.summary.secrets,
+      riskScore: Math.max(existing.summary.riskScore, incoming.summary.riskScore),
+      riskLevel: incoming.summary.riskScore >= existing.summary.riskScore ? incoming.summary.riskLevel : existing.summary.riskLevel,
+    },
+  };
+}
+
 export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
   const { addToolOutput } = useReportContext();
   const [scripts, setScripts] = useState<AtroposScript[]>([]);
@@ -79,6 +101,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
   const [target, setTarget] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<AtroposScanResult | null>(null);
+  const [scanCount, setScanCount] = useState(0);
   const [importData, setImportData] = useState("");
   const [importFormat, setImportFormat] = useState<"atropos" | "bbot" | "nuclei">("atropos");
   const [remoteUrl, setRemoteUrl] = useState("");
@@ -116,7 +139,8 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
 
       if (res.ok) {
         const result = await res.json();
-        setScanResult(result);
+        setScanResult(prev => mergeScanResults(prev, result));
+        setScanCount(c => c + 1);
         addToolOutput({ 
           type: 'scan', 
           source: 'atropos', 
@@ -125,7 +149,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         });
         toast({ 
           title: "Scan Complete", 
-          description: `Found ${result.findings.length} findings with risk score ${result.summary.riskScore}` 
+          description: `Found ${result.findings.length} findings added (risk score ${result.summary.riskScore})` 
         });
       } else {
         throw new Error("Scan failed");
@@ -189,8 +213,11 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         const { analysisPrompt, reportData } = await res.json();
         if (onAnalyzeWithNexus) {
           onAnalyzeWithNexus(analysisPrompt, reportData);
+        } else {
+          const scanData = encodeURIComponent(JSON.stringify(scanResult));
+          window.location.href = `/agents?scanData=${scanData}`;
         }
-        toast({ title: "Sent to NEXUS", description: "Scan results ready for AI analysis" });
+        toast({ title: "Opening NEXUS", description: "Loading scan results into agent workspace" });
       }
     } catch (error) {
       toast({ title: "Error", description: "Failed to prepare analysis", variant: "destructive" });
@@ -239,13 +266,16 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                     <SelectTrigger className="bg-zinc-800/50 border-amber-900/30" data-testid="select-script">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-80">
                       {scripts.map((script) => (
                         <SelectItem key={script.id} value={script.id}>
-                          <span className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 py-0.5">
                             {CATEGORY_ICONS[script.category] || <Terminal className="w-4 h-4" />}
-                            {script.name}
-                          </span>
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium text-sm">{script.name}</span>
+                              <span className="text-xs text-zinc-500">{script.description}</span>
+                            </div>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
