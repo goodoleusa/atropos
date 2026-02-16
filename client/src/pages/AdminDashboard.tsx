@@ -59,6 +59,7 @@ import { QuickPushSection } from "@/pages/admin/QuickPushSection";
 import { EffectsPlaygroundSection } from "@/pages/admin/EffectsPlaygroundSection";
 import AgentConfigSection from "@/pages/admin/AgentConfigSection";
 import { AgentModulesSection } from "@/pages/admin/AgentModulesSection";
+import { GameplaySection } from "@/pages/admin/GameplaySection";
 import { ShieldAlert, Activity, Clock, Users, AlertTriangle } from "lucide-react";
 
 function AtroposScannerSection() {
@@ -412,6 +413,7 @@ const NAV_GROUPS = [
     label: "Content",
     color: "teal",
     items: [
+      { id: "gameplay", label: "Gameplay Editor", icon: "Layers" },
       { id: "collectibles", label: "Collectibles", icon: "Database" },
       { id: "quests", label: "Quests", icon: "Trophy" },
       { id: "messages", label: "Messages", icon: "MessageSquare" },
@@ -574,6 +576,7 @@ export default function AdminDashboard() {
       case 'sessions': return <SessionsPanel />;
       case 'behavior': return <BehaviorAnalyticsPanel />;
       case 'designer': return <CampaignDesignerPanel setCampaignDesignerOpen={setCampaignDesignerOpen} />;
+      case 'gameplay': return <GameplaySection />;
       case 'collectibles': return <CollectiblesSection />;
       case 'quests': return <QuestsSection quests={quests} />;
       case 'graph': return <GraphPanel clues={clues} selectedClueId={selectedClueId} setSelectedClueId={setSelectedClueId} clueTrail={clueTrail} setClueTrail={setClueTrail} showGraphView={showGraphView} setShowGraphView={setShowGraphView} gameState={gameState} />;

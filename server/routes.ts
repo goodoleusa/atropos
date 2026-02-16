@@ -1186,11 +1186,33 @@ BEHAVIOR:
 
   // ==================== Agent Modules API ====================
   
-  // Get all agent modules (mirrors /api/agents for frontend compatibility)
+  // Get all agent modules - merges hardcoded SECURITY_AGENTS with DB modules
   app.get(["/api/agent-modules", "/api/agents"], async (req, res) => {
     try {
-      const modules = await storage.getAllAgentModules();
-      res.json(modules);
+      const { SECURITY_AGENTS } = await import("@shared/agents");
+      const dbModules = await storage.getAllAgentModules();
+      const dbModuleIds = new Set(dbModules.map(m => m.moduleId));
+      const hardcodedAsModules = SECURITY_AGENTS
+        .filter(a => !dbModuleIds.has(a.id))
+        .map((a, i) => ({
+          id: 9000 + i,
+          moduleId: a.id,
+          name: a.name,
+          description: a.description,
+          category: a.scanCategories?.[0] || 'general',
+          systemPrompt: a.systemPrompt,
+          defaultModel: a.model,
+          defaultTemperature: a.temperature,
+          maxTokens: a.maxTokens,
+          starterPrompt: '',
+          isActive: true,
+          sortOrder: 100 + i,
+          baseInstructions: a.systemPrompt,
+          scanCategories: a.scanCategories || [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }));
+      res.json([...hardcodedAsModules, ...dbModules]);
     } catch (error) {
       console.error("Get agent modules error:", error);
       res.status(500).json({ error: "Failed to fetch agent modules" });
@@ -2284,11 +2306,16 @@ BEHAVIOR:
         }
       }
       
-      // Import agent definitions
-      const { SECURITY_AGENTS, getAgentById } = await import("@shared/agents");
-      const agent = getAgentById(agentId);
+      // Check hardcoded agents first, then DB modules
+      const { getAgentById } = await import("@shared/agents");
+      let agent = getAgentById(agentId);
+      let dbModule: any = null;
       
       if (!agent) {
+        dbModule = await storage.getAgentModuleById(agentId);
+      }
+      
+      if (!agent && !dbModule) {
         return res.status(404).json({ error: "Agent not found" });
       }
       
@@ -2296,10 +2323,16 @@ BEHAVIOR:
       const adminConfig = await storage.getAdminConfig();
       const agentOverrides = adminConfig?.agentConfig?.[agentId] || {};
       
-      // Combine base instructions (admin protected) with user prompt and scan context
-      const baseInstructions = agentOverrides.baseInstructions || (agent as any).baseInstructions;
-      const model = agentOverrides.model || (agent as any).defaultModel;
-      const temperature = agentOverrides.temperature ?? (agent as any).defaultTemperature;
+      // Combine base instructions from whichever source found the agent
+      const baseInstructions = agentOverrides.baseInstructions 
+        || (dbModule?.systemPrompt || dbModule?.baseInstructions)
+        || (agent as any)?.baseInstructions || (agent as any)?.systemPrompt || '';
+      const model = agentOverrides.model 
+        || (dbModule?.defaultModel) 
+        || (agent as any)?.defaultModel || (agent as any)?.model || 'meta-llama/llama-3.3-70b-instruct';
+      const temperature = agentOverrides.temperature 
+        ?? (dbModule?.defaultTemperature) 
+        ?? (agent as any)?.defaultTemperature ?? (agent as any)?.temperature ?? 0.5;
       
       const fullPrompt = `${baseInstructions}\n\n---\nUser Request:\n${prompt}${scanContext}`;
       
@@ -2333,7 +2366,7 @@ BEHAVIOR:
       
       res.json({
         agentId,
-        agentName: agent.name,
+        agentName: agent?.name || dbModule?.name || agentId,
         analysis,
         model,
         timestamp: new Date().toISOString()
