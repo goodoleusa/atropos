@@ -32,6 +32,7 @@ import Leaderboards from "@/pages/Leaderboards";
 import BusinessDashboard from "@/pages/BusinessDashboard";
 import InvestorDashboard from "@/pages/InvestorDashboard";
 import MissionLanding from "@/pages/MissionLanding";
+import ScannerDashboard from "@/pages/ScannerDashboard";
 
 function Router() {
   return (
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/builder" component={CampaignBuilder} />
       <Route path="/campaigns" component={CampaignsHub} />
       <Route path="/play/:campaignId" component={CampaignPlayer} />
+      <Route path="/scanner" component={ScannerDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

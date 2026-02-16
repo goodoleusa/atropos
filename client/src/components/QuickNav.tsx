@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server, Beaker } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server, Beaker, Radar, Briefcase } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
@@ -53,9 +53,10 @@ export default function QuickNav() {
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
     { path: '/agents', icon: User, label: 'Your Agent', color: 'teal' as const },
     { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
-    { path: '/business', icon: TrendingUp, label: 'Bounty Feed', color: 'teal' as const },
+    { path: '/business', icon: Briefcase, label: 'Business HQ', color: 'teal' as const },
     
     // Active Investigation
+    { path: '/scanner', icon: Radar, label: 'Scanner', color: 'amber' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     { path: '/investigate', icon: Search, label: 'Investigate', color: 'teal' as const },
     { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },

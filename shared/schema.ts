@@ -1555,6 +1555,35 @@ export type InsertAgentFinding = z.infer<typeof insertAgentFindingSchema>;
 export type AgentDeployment = typeof agentDeployments.$inferSelect;
 export type InsertAgentDeployment = z.infer<typeof insertAgentDeploymentSchema>;
 
+// Business Projects - editable project planning
+export const businessProjects = pgTable("business_projects", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  stage: text("stage").notNull().default("planning"),
+  status: text("status").notNull().default("on-track"),
+  progress: integer("progress").notNull().default(0),
+  priority: text("priority").notNull().default("medium"),
+  category: text("category").notNull().default("general"),
+  budget: jsonb("budget").$type<{ allocated: number; spent: number; aiSavings: number }>().notNull().default({ allocated: 0, spent: 0, aiSavings: 0 }),
+  timeline: jsonb("timeline").$type<{ started: string; deadline: string }>().notNull().default({ started: '', deadline: '' }),
+  team: jsonb("team").$type<{ human: number; aiAgents: number }>().notNull().default({ human: 1, aiAgents: 0 }),
+  goals: jsonb("goals").$type<{ text: string; done: boolean }[]>().notNull().default([]),
+  notes: text("notes"),
+  revenue: integer("revenue"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertBusinessProjectSchema = createInsertSchema(businessProjects).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type BusinessProject = typeof businessProjects.$inferSelect;
+export type InsertBusinessProject = z.infer<typeof insertBusinessProjectSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
