@@ -13,9 +13,10 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { 
-  ArrowLeft, Bot, Shield, Eye, Lock, Bug, Network, Brain, Zap,
+  ArrowLeft, ArrowRight, Bot, Shield, Eye, Lock, Bug, Network, Brain, Zap,
   Play, Download, Copy, Check, Loader2, RefreshCw, FileText, AlertTriangle,
-  Globe, Skull, Radio, Database, ExternalLink, Settings, Radar, ShieldAlert
+  Globe, Skull, Radio, Database, ExternalLink, Settings, Radar, ShieldAlert,
+  ChevronRight, RotateCcw
 } from 'lucide-react';
 
 interface SecurityAgent {
@@ -148,7 +149,7 @@ const THREAT_INTEL_FEEDS: ThreatIntelFeed[] = [
   {
     id: 'spamhaus_drop',
     name: 'Spamhaus DROP',
-    description: 'Don\'t Route Or Peer list',
+    description: "Don't Route Or Peer list",
     url: 'https://www.spamhaus.org/drop/drop.txt',
     icon: <ShieldAlert className="w-4 h-4" />,
     category: 'ioc',
@@ -173,8 +174,13 @@ const FREE_MODELS = [
   { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', name: 'Nemotron 70B', strength: 'Technical' },
 ];
 
+const WIZARD_STEPS = [
+  { num: 1, label: 'Select Agent', icon: <Shield className="w-4 h-4" /> },
+  { num: 2, label: 'Load Data', icon: <Radar className="w-4 h-4" /> },
+  { num: 3, label: 'Analysis', icon: <Brain className="w-4 h-4" /> },
+];
+
 export default function Agents() {
-  const [activeTab, setActiveTab] = useState('agents');
   const [wizardStep, setWizardStep] = useState(1);
   const [selectedAgent, setSelectedAgent] = useState<SecurityAgent | null>(null);
   const [userPrompt, setUserPrompt] = useState('');
@@ -188,6 +194,8 @@ export default function Agents() {
   const [agentRuns, setAgentRuns] = useState<AgentRun[]>([]);
   const [enabledFeeds, setEnabledFeeds] = useState<string[]>(['abuse_ch_threatfox', 'cisa_kev', 'ransomware_live']);
   const [loadingScan, setLoadingScan] = useState(false);
+  const [loadingFeed, setLoadingFeed] = useState<string | null>(null);
+  const [showExport, setShowExport] = useState(false);
 
   const { data: agents = [], isLoading: agentsLoading } = useQuery<(SecurityAgent & { moduleId?: string; starterPrompt?: string })[]>({
     queryKey: ['/api/agents'],
@@ -266,7 +274,7 @@ export default function Agents() {
       }
       
       setTestInput(JSON.stringify(data, null, 2));
-      toast({ title: 'Scan Data Loaded', description: `Loaded ${data.length} recent scanner results` });
+      toast({ title: 'Scan Data Loaded', description: `Loaded ${data.length} recent Atropos scanner results` });
     } catch (error: any) {
       toast({ title: 'Load Failed', description: error.message, variant: 'destructive' });
     } finally {
@@ -276,11 +284,12 @@ export default function Agents() {
 
   const handleRunAgent = async () => {
     if (!selectedAgent || !testInput.trim()) {
-      toast({ title: 'Missing Input', description: 'Select an agent and provide test input', variant: 'destructive' });
+      toast({ title: 'Missing Input', description: 'Select an agent and provide data to analyze', variant: 'destructive' });
       return;
     }
     setIsRunning(true);
     setTestOutput('');
+    setWizardStep(3);
     try {
       const agentIdToUse = (selectedAgent as any).moduleId || selectedAgent.id;
       await runAgentMutation.mutateAsync({
@@ -288,6 +297,8 @@ export default function Agents() {
         input: testInput,
         userPrompt: userPrompt.trim() || undefined,
       });
+    } catch {
+      setWizardStep(2);
     } finally {
       setIsRunning(false);
     }
@@ -325,7 +336,7 @@ export default function Agents() {
     const feed = THREAT_INTEL_FEEDS.find(f => f.id === feedId);
     if (!feed) return;
     
-    toast({ title: 'Fetching Intel', description: `Loading data from ${feed.name}...` });
+    setLoadingFeed(feedId);
     
     try {
       const res = await fetch('/api/threat-intel/fetch', {
@@ -344,6 +355,8 @@ export default function Agents() {
       toast({ title: 'Intel Loaded', description: `${feed.name} data ready for analysis` });
     } catch (error: any) {
       toast({ title: 'Feed Error', description: error.message || 'Could not fetch threat intel', variant: 'destructive' });
+    } finally {
+      setLoadingFeed(null);
     }
   };
 
@@ -355,42 +368,90 @@ export default function Agents() {
     );
   };
 
+  const resetWizard = () => {
+    setWizardStep(1);
+    setSelectedAgent(null);
+    setTestInput('');
+    setTestOutput('');
+    setUserPrompt('');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center gap-4 mb-6">
-          <Link href="/">
-            <Button variant="ghost" size="icon" className="text-stone-400 hover:text-amber-500" data-testid="back-button">
-              <ArrowLeft className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="text-stone-400 hover:text-amber-500" data-testid="back-button">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-2xl font-orbitron font-bold text-amber-500 flex items-center gap-2">
+                <Bot className="w-6 h-6" /> Security Agents
+              </h1>
+              <p className="text-stone-400 text-sm">Specialized AI agents for security analysis</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowExport(!showExport)}
+              className="border-stone-700 text-stone-400"
+            >
+              <Download className="w-4 h-4 mr-1" /> Export
             </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-orbitron font-bold text-amber-500 flex items-center gap-2">
-              <Bot className="w-6 h-6" /> Security Agents
-            </h1>
-            <p className="text-stone-400 text-sm">Specialized AI agents for security analysis</p>
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="bg-stone-900/50 border border-amber-900/30">
-            <TabsTrigger value="agents" className="data-[state=active]:bg-amber-600/20">
-              <Shield className="w-4 h-4 mr-2" /> Agents
-            </TabsTrigger>
-            <TabsTrigger value="playground" className="data-[state=active]:bg-amber-600/20">
-              <Zap className="w-4 h-4 mr-2" /> Playground
-            </TabsTrigger>
-            <TabsTrigger value="intel" className="data-[state=active]:bg-amber-600/20">
-              <Radar className="w-4 h-4 mr-2" /> Threat Intel
-            </TabsTrigger>
-            <TabsTrigger value="export" className="data-[state=active]:bg-amber-600/20">
-              <Download className="w-4 h-4 mr-2" /> Export
-            </TabsTrigger>
-          </TabsList>
+        {/* ===== WIZARD STEP INDICATOR ===== */}
+        <div className="flex items-center gap-2 mb-6 bg-stone-900/50 rounded-xl p-3 border border-amber-900/20">
+          {WIZARD_STEPS.map((step, idx) => (
+            <div key={step.num} className="flex items-center flex-1">
+              <button
+                onClick={() => {
+                  if (step.num < wizardStep) setWizardStep(step.num);
+                  if (step.num === 1) resetWizard();
+                }}
+                disabled={step.num > wizardStep}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all w-full ${
+                  wizardStep === step.num
+                    ? 'bg-amber-600/20 border border-amber-500/40 text-amber-400'
+                    : wizardStep > step.num
+                    ? 'bg-stone-800/50 border border-stone-700 text-stone-300 hover:border-amber-500/30 cursor-pointer'
+                    : 'bg-stone-900/30 border border-stone-800 text-stone-600 cursor-not-allowed'
+                }`}
+                data-testid={`wizard-step-${step.num}`}
+              >
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                  wizardStep === step.num ? 'bg-amber-500 text-black' :
+                  wizardStep > step.num ? 'bg-stone-700 text-white' : 'bg-stone-800 text-stone-600'
+                }`}>
+                  {wizardStep > step.num ? <Check className="w-4 h-4" /> : step.num}
+                </div>
+                <div className="text-left hidden sm:block">
+                  <div className="text-xs font-medium">{step.label}</div>
+                </div>
+                {step.icon}
+              </button>
+              {idx < WIZARD_STEPS.length - 1 && (
+                <ChevronRight className={`w-4 h-4 mx-1 shrink-0 ${wizardStep > step.num ? 'text-amber-500' : 'text-stone-700'}`} />
+              )}
+            </div>
+          ))}
+        </div>
 
-          <TabsContent value="agents" className="space-y-4">
+        {/* ===== STEP 1: SELECT AGENT ===== */}
+        {wizardStep === 1 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-orbitron text-white">Choose Your Agent</h2>
+              <p className="text-xs text-stone-500">Click an agent to proceed</p>
+            </div>
+
             {agentsLoading ? (
-              <div className="flex items-center justify-center py-12">
+              <div className="flex items-center justify-center py-16">
                 <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
               </div>
             ) : (
@@ -398,10 +459,10 @@ export default function Agents() {
                 {agents.map((agent) => (
                   <Card 
                     key={agent.id}
-                    className={`bg-gradient-to-br ${AGENT_COLORS[(agent as any).moduleId] || 'from-stone-800 to-stone-900'} border cursor-pointer hover:scale-[1.02] transition-transform`}
+                    className={`bg-gradient-to-br ${AGENT_COLORS[(agent as any).moduleId] || 'from-stone-800 to-stone-900'} border cursor-pointer hover:scale-[1.02] transition-all hover:shadow-lg hover:shadow-amber-500/5`}
                     onClick={() => {
                       setSelectedAgent(agent);
-                      setActiveTab('playground');
+                      setWizardStep(2);
                     }}
                     data-testid={`agent-card-${agent.id}`}
                   >
@@ -413,9 +474,7 @@ export default function Agents() {
                           </div>
                           <CardTitle className="text-lg text-white">{agent.name}</CardTitle>
                         </div>
-                        <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-400">
-                          FREE
-                        </Badge>
+                        <ArrowRight className="w-4 h-4 text-stone-600" />
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -434,41 +493,39 @@ export default function Agents() {
                 ))}
               </div>
             )}
-          </TabsContent>
+          </div>
+        )}
 
-          <TabsContent value="playground" className="space-y-4">
+        {/* ===== STEP 2: CONFIGURE + DATA ===== */}
+        {wizardStep === 2 && selectedAgent && (
+          <div className="space-y-4">
+            {/* Selected agent summary banner */}
+            <div className="flex items-center justify-between p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-lg bg-stone-900/60">
+                  {AGENT_ICONS[(selectedAgent as any).moduleId] || <Bot className="w-6 h-6" />}
+                </div>
+                <div>
+                  <h3 className="text-white font-medium text-lg">{selectedAgent.name}</h3>
+                  <p className="text-sm text-stone-400">{selectedAgent.description}</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setWizardStep(1)} className="text-stone-500 hover:text-white">
+                <RotateCcw className="w-4 h-4 mr-1" /> Change
+              </Button>
+            </div>
+
             <div className="grid lg:grid-cols-2 gap-4">
+              {/* Left: Config */}
               <Card className="bg-stone-900/50 border-amber-900/30">
                 <CardHeader>
-                  <CardTitle className="text-amber-500 flex items-center gap-2">
-                    <Settings className="w-5 h-5" /> Agent Configuration
+                  <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
+                    <Settings className="w-5 h-5" /> Configuration
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block">Select Agent</label>
-                    <Select 
-                      value={selectedAgent?.id?.toString() || ''} 
-                      onValueChange={(id) => setSelectedAgent(agents.find(a => a.id.toString() === id) || null)}
-                    >
-                      <SelectTrigger className="bg-stone-800 border-stone-700" data-testid="select-agent">
-                        <SelectValue placeholder="Choose an agent..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {agents.map(agent => (
-                          <SelectItem key={agent.id} value={agent.id.toString()}>
-                            <div className="flex items-center gap-2">
-                              {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-4 h-4" />}
-                              <span>{agent.name}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="text-sm text-stone-400 mb-2 block">Model (Free Tier)</label>
+                    <label className="text-sm text-stone-400 mb-2 block">Model</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel}>
                       <SelectTrigger className="bg-stone-800 border-stone-700" data-testid="select-model">
                         <SelectValue />
@@ -486,117 +543,161 @@ export default function Agents() {
                     </Select>
                   </div>
 
+                  <div>
+                    <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-teal-400" />
+                      Custom Instructions (Optional)
+                    </label>
+                    <Textarea
+                      value={userPrompt}
+                      onChange={(e) => setUserPrompt(e.target.value)}
+                      placeholder="Add focus areas, specific questions, or additional context..."
+                      className="bg-stone-800 border-stone-700 min-h-[80px]"
+                      data-testid="user-prompt-input"
+                    />
+                  </div>
+
+                  <Separator className="bg-stone-800" />
+
                   {selectedAgent && (
                     <div className="p-3 rounded-lg bg-stone-800/50 border border-stone-700">
                       <div className="flex items-center gap-2 mb-2">
                         <Lock className="w-4 h-4 text-amber-500" />
-                        <span className="text-sm font-medium text-amber-400">Admin Base Instructions</span>
+                        <span className="text-sm font-medium text-amber-400">Base Instructions</span>
                         <Badge variant="outline" className="text-xs border-red-500/50 text-red-400">Protected</Badge>
                       </div>
-                      <p className="text-xs text-stone-500 mb-2">
-                        These instructions are set by the administrator and cannot be overridden.
-                      </p>
-                      <ScrollArea className="h-24">
+                      <ScrollArea className="h-20">
                         <pre className="text-xs text-stone-400 whitespace-pre-wrap">
-                          {(selectedAgent as any).systemPrompt?.slice(0, 500) || (selectedAgent as any).starterPrompt?.slice(0, 500)}...
+                          {(selectedAgent as any).systemPrompt?.slice(0, 400) || (selectedAgent as any).starterPrompt?.slice(0, 400)}...
                         </pre>
                       </ScrollArea>
                     </div>
                   )}
 
+                  <Separator className="bg-stone-800" />
+
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-teal-400" />
-                      Your Additional Instructions (Optional)
-                    </label>
-                    <Textarea
-                      value={userPrompt}
-                      onChange={(e) => setUserPrompt(e.target.value)}
-                      placeholder="Add your own focus areas, specific questions, or context... These will be appended to the admin base instructions."
-                      className="bg-stone-800 border-stone-700 min-h-[100px]"
-                      data-testid="user-prompt-input"
-                    />
-                    <p className="text-xs text-stone-500 mt-1">
-                      Your instructions are added on top of admin base instructions - you can enhance but not override.
-                    </p>
+                    <label className="text-sm text-stone-400 mb-3 block">Quick Data Import</label>
+                    <div className="space-y-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={fetchLatestScan}
+                        disabled={loadingScan}
+                        className="w-full justify-start border-stone-700 text-teal-400 hover:text-teal-300 hover:border-teal-500/40 h-11"
+                        data-testid="import-atropos-scan"
+                      >
+                        {loadingScan ? <Loader2 className="w-4 h-4 mr-3 animate-spin" /> : <Radar className="w-4 h-4 mr-3" />}
+                        Import Latest Atropos Scan
+                      </Button>
+
+                      <ScrollArea className="h-[140px]">
+                        <div className="grid grid-cols-2 gap-2 pr-3">
+                          {THREAT_INTEL_FEEDS.map(feed => (
+                            <Button
+                              key={feed.id}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fetchThreatIntel(feed.id)}
+                              disabled={loadingFeed === feed.id}
+                              className="justify-start border-stone-700 text-stone-300 hover:text-white hover:border-amber-500/30 text-xs h-9"
+                              data-testid={`feed-${feed.id}`}
+                            >
+                              {loadingFeed === feed.id ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <span className="mr-2">{feed.icon}</span>}
+                              {feed.name}
+                            </Button>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
+              {/* Right: Data preview + run */}
               <Card className="bg-stone-900/50 border-amber-900/30">
                 <CardHeader>
-                  <CardTitle className="text-amber-500 flex items-center gap-2">
-                    <Play className="w-5 h-5" /> Test Input
+                  <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
+                    <Play className="w-5 h-5" /> Data Input
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Textarea
                     value={testInput}
                     onChange={(e) => setTestInput(e.target.value)}
-                    placeholder="Paste scan results, IOCs, vulnerability data, or other security data to analyze..."
-                    className="bg-stone-800 border-stone-700 min-h-[200px] font-mono text-sm"
+                    placeholder="Paste scan results, IOCs, vulnerability data, or use the import buttons on the left..."
+                    className="bg-stone-800 border-stone-700 min-h-[260px] font-mono text-xs"
                     data-testid="test-input"
                   />
-                  
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleRunAgent}
-                      disabled={isRunning || !selectedAgent}
-                      className="flex-1 bg-amber-600 hover:bg-amber-700"
-                      data-testid="run-agent-button"
-                    >
-                      {isRunning ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4 mr-2" />
-                          Run Analysis
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={fetchLatestScan}
-                      disabled={loadingScan}
-                      className="border-stone-700 text-teal-500 hover:text-teal-400"
-                      title="Load latest Atropos scan results"
-                    >
-                      {loadingScan ? <Loader2 className="w-4 h-4 animate-spin" /> : <Radar className="w-4 h-4" />}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setTestInput('')}
-                      className="border-stone-700"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                    </Button>
-                  </div>
+
+                  {testInput && (
+                    <div className="flex items-center gap-2 text-xs text-stone-500">
+                      <Check className="w-3 h-3 text-teal-500" />
+                      <span>{testInput.length.toLocaleString()} characters loaded</span>
+                      <Button variant="ghost" size="sm" onClick={() => setTestInput('')} className="text-stone-600 ml-auto h-6 px-2">
+                        Clear
+                      </Button>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleRunAgent}
+                    disabled={isRunning || !testInput.trim()}
+                    className="w-full bg-amber-600 hover:bg-amber-700 h-12 text-base font-orbitron tracking-wider"
+                    data-testid="run-agent-button"
+                  >
+                    {isRunning ? (
+                      <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Analyzing...</>
+                    ) : (
+                      <><Play className="mr-2 h-5 w-5" /> Run Analysis</>
+                    )}
+                  </Button>
                 </CardContent>
               </Card>
             </div>
+          </div>
+        )}
 
-            {testOutput && (
-              <Card className="bg-stone-900/50 border-amber-900/30">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-amber-500 flex items-center gap-2">
-                      <FileText className="w-5 h-5" /> Analysis Report
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => copyToClipboard(testOutput)}
-                        className="border-stone-700"
-                      >
-                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+        {/* ===== STEP 3: RESULTS ===== */}
+        {wizardStep === 3 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-orbitron text-white flex items-center gap-2">
+                <Brain className="w-5 h-5 text-amber-500" />
+                {selectedAgent?.name} - Analysis
+              </h2>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setWizardStep(2)} className="text-stone-400 border-stone-700">
+                  <ArrowLeft className="w-4 h-4 mr-1" /> Adjust Input
+                </Button>
+                <Button variant="outline" size="sm" onClick={resetWizard} className="text-stone-400 border-stone-700">
+                  <RotateCcw className="w-4 h-4 mr-1" /> New Session
+                </Button>
+              </div>
+            </div>
+
+            <Card className="bg-stone-900/50 border-amber-900/30">
+              <CardContent className="pt-6">
+                {isRunning ? (
+                  <div className="py-24 flex flex-col items-center justify-center gap-4 text-stone-400">
+                    <div className="relative">
+                      <Loader2 className="w-16 h-16 animate-spin text-amber-500" />
+                      <Bot className="w-6 h-6 text-amber-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                    </div>
+                    <p className="font-orbitron animate-pulse tracking-widest uppercase text-xs mt-4">
+                      {selectedAgent?.name} processing via {FREE_MODELS.find(m => m.id === selectedModel)?.name}...
+                    </p>
+                  </div>
+                ) : testOutput ? (
+                  <div className="relative group">
+                    <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      <Button variant="secondary" size="sm" onClick={() => copyToClipboard(testOutput)} className="h-8">
+                        {copied ? <Check className="w-4 h-4 mr-1 text-teal-500" /> : <Copy className="w-4 h-4 mr-1" />}
+                        {copied ? 'Copied' : 'Copy'}
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         size="sm"
+                        className="h-8"
                         onClick={() => {
                           const blob = new Blob([testOutput], { type: 'text/markdown' });
                           const url = URL.createObjectURL(blob);
@@ -605,105 +706,30 @@ export default function Agents() {
                           a.download = `agent_report_${Date.now()}.md`;
                           a.click();
                         }}
-                        className="border-stone-700"
                       >
-                        <Download className="w-4 h-4 mr-1" /> Export
+                        <Download className="w-4 h-4 mr-1" /> Save
                       </Button>
                     </div>
+                    <ScrollArea className="h-[550px] w-full rounded-lg border border-stone-800 bg-stone-950 p-6">
+                      <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono leading-relaxed" data-testid="analysis-output">
+                        {testOutput}
+                      </pre>
+                    </ScrollArea>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[400px]">
-                    <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono">
-                      {testOutput}
-                    </pre>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="intel" className="space-y-4">
-            <Card className="bg-stone-900/50 border-amber-900/30">
-              <CardHeader>
-                <CardTitle className="text-amber-500 flex items-center gap-2">
-                  <Radar className="w-5 h-5" /> Threat Intelligence Feeds
-                </CardTitle>
-                <CardDescription>Free threat intel sources - click to load data for agent analysis</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {THREAT_INTEL_FEEDS.map((feed) => (
-                    <Card 
-                      key={feed.id}
-                      className={`bg-stone-800/50 border-stone-700 hover:border-amber-500/50 cursor-pointer transition-colors ${
-                        enabledFeeds.includes(feed.id) ? 'border-teal-500/50' : ''
-                      }`}
-                      onClick={() => fetchThreatIntel(feed.id)}
-                      data-testid={`feed-${feed.id}`}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="p-2 rounded bg-stone-700/50 text-amber-400">
-                              {feed.icon}
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-white">{feed.name}</h4>
-                              <Badge variant="outline" className="text-xs mt-1">
-                                {feed.category}
-                              </Badge>
-                            </div>
-                          </div>
-                          {feed.free && (
-                            <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">FREE</Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-stone-400">{feed.description}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                ) : (
+                  <div className="py-20 flex flex-col items-center justify-center gap-3 text-stone-500">
+                    <FileText className="w-10 h-10 text-stone-700" />
+                    <p>Waiting for analysis results...</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
+          </div>
+        )}
 
-            <Card className="bg-stone-900/50 border-amber-900/30">
-              <CardHeader>
-                <CardTitle className="text-amber-500">Quick Intel Links</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="border-stone-700">
-                      CISA KEV <ExternalLink className="w-3 h-3 ml-1" />
-                    </Button>
-                  </a>
-                  <a href="https://bazaar.abuse.ch/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="border-stone-700">
-                      MalwareBazaar <ExternalLink className="w-3 h-3 ml-1" />
-                    </Button>
-                  </a>
-                  <a href="https://threatfox.abuse.ch/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="border-stone-700">
-                      ThreatFox <ExternalLink className="w-3 h-3 ml-1" />
-                    </Button>
-                  </a>
-                  <a href="https://www.ransomware.live/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="border-stone-700">
-                      Ransomware.live <ExternalLink className="w-3 h-3 ml-1" />
-                    </Button>
-                  </a>
-                  <a href="https://nvd.nist.gov/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="border-stone-700">
-                      NVD <ExternalLink className="w-3 h-3 ml-1" />
-                    </Button>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="export" className="space-y-4">
+        {/* ===== EXPORT PANEL (toggleable) ===== */}
+        {showExport && (
+          <div className="mt-6 space-y-4">
             <div className="grid lg:grid-cols-2 gap-4">
               <Card className="bg-stone-900/50 border-amber-900/30">
                 <CardHeader>
@@ -735,7 +761,7 @@ export default function Agents() {
                           className="flex items-center justify-between p-2 rounded bg-stone-800/50 border border-stone-700"
                         >
                           <div className="flex items-center gap-2">
-                            {AGENT_ICONS[agent.id]}
+                            {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-4 h-4" />}
                             <span className="text-sm text-white">{agent.name}</span>
                           </div>
                           <Switch
@@ -797,21 +823,18 @@ ${agents.slice(0, 2).map(a => `  {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
 
-        <Card className="mt-6 bg-stone-900/50 border-amber-900/30">
-          <CardHeader>
-            <CardTitle className="text-amber-500 flex items-center gap-2">
-              <FileText className="w-5 h-5" /> Recent Analysis Reports
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {agentRuns.length === 0 ? (
-              <p className="text-stone-500 text-center py-8">
-                No recent analyses. Run an agent to see reports here.
-              </p>
-            ) : (
+        {/* ===== RECENT RUNS ===== */}
+        {agentRuns.length > 0 && (
+          <Card className="mt-6 bg-stone-900/50 border-amber-900/30">
+            <CardHeader>
+              <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5" /> Recent Analyses
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-2">
                 {agentRuns.slice(0, 5).map((run, idx) => (
                   <div 
@@ -819,7 +842,7 @@ ${agents.slice(0, 2).map(a => `  {
                     className="flex items-center justify-between p-3 rounded bg-stone-800/50 border border-stone-700"
                   >
                     <div className="flex items-center gap-3">
-                      {AGENT_ICONS[run.agentId] || <Bot className="w-4 h-4" />}
+                      {AGENT_ICONS[run.agentId] || AGENT_ICONS[agents.find(a => a.id.toString() === run.agentId)?.moduleId || ''] || <Bot className="w-4 h-4" />}
                       <div>
                         <span className="text-sm text-white">{run.agentId}</span>
                         <div className="flex items-center gap-2 text-xs text-stone-500">
@@ -834,9 +857,9 @@ ${agents.slice(0, 2).map(a => `  {
                   </div>
                 ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
