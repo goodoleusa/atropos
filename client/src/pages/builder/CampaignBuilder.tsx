@@ -295,103 +295,105 @@ export default function CampaignBuilder() {
             style={{ backgroundImage: 'radial-gradient(#f59e0b 1px, transparent 1px)', backgroundSize: '24px 24px' }} 
           />
 
-          <TabsContent value="canvas" className="m-0 h-full w-full relative overflow-auto">
-            <div className="min-w-[2000px] min-h-[2000px] relative p-20">
-              {nodes.map(node => (
-                <motion.div
-                  key={node.id}
-                  drag
-                  dragMomentum={false}
-                  onDragEnd={(_, info) => {
-                    updateNode(node.id, { x: node.x + info.offset.x, y: node.y + info.offset.y });
-                  }}
-                  onClick={() => setSelectedNodeId(node.id)}
-                  style={{ left: node.x, top: node.y }}
-                  className="absolute cursor-move z-10"
-                >
-                  <Card className={`
-                    w-48 bg-stone-950/90 border-2 backdrop-blur-md transition-all
-                    ${selectedNodeId === node.id ? 'border-amber-500 shadow-xl shadow-amber-500/10 scale-105' : 'border-stone-800 hover:border-stone-700'}
-                  `}>
-                    <CardContent className="p-3 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="text-[8px] border-stone-800 text-stone-500 font-bold uppercase tracking-tighter">
-                          {node.type}
-                        </Badge>
-                        <Settings className="w-3 h-3 text-stone-800" />
-                      </div>
-                      <h3 className="text-[11px] font-bold truncate text-stone-100 uppercase tracking-wide">{node.title}</h3>
-                      <div className="text-[9px] text-stone-600 line-clamp-2 italic leading-tight">
-                        {node.content.substring(0, 50)}...
-                      </div>
-                    </CardContent>
-                  </Card>
-                  {/* Visual Connector Handle */}
-                  <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-stone-700 border border-stone-950 group-hover:bg-amber-500 transition-colors" />
-                </motion.div>
-              ))}
-            </div>
-          </TabsContent>
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="flex-1 flex flex-col overflow-hidden">
+            <TabsContent value="canvas" className="m-0 h-full w-full relative overflow-auto flex-1">
+              <div className="min-w-[2000px] min-h-[2000px] relative p-20">
+                {nodes.map(node => (
+                  <motion.div
+                    key={node.id}
+                    drag
+                    dragMomentum={false}
+                    onDragEnd={(_, info) => {
+                      updateNode(node.id, { x: node.x + info.offset.x, y: node.y + info.offset.y });
+                    }}
+                    onClick={() => setSelectedNodeId(node.id)}
+                    style={{ left: node.x, top: node.y }}
+                    className="absolute cursor-move z-10"
+                  >
+                    <Card className={`
+                      w-48 bg-stone-950/90 border-2 backdrop-blur-md transition-all
+                      ${selectedNodeId === node.id ? 'border-amber-500 shadow-xl shadow-amber-500/10 scale-105' : 'border-stone-800 hover:border-stone-700'}
+                    `}>
+                      <CardContent className="p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Badge variant="outline" className="text-[8px] border-stone-800 text-stone-500 font-bold uppercase tracking-tighter">
+                            {node.type}
+                          </Badge>
+                          <Settings className="w-3 h-3 text-stone-800" />
+                        </div>
+                        <h3 className="text-[11px] font-bold truncate text-stone-100 uppercase tracking-wide">{node.title}</h3>
+                        <div className="text-[9px] text-stone-600 line-clamp-2 italic leading-tight">
+                          {node.content.substring(0, 50)}...
+                        </div>
+                      </CardContent>
+                    </Card>
+                    {/* Visual Connector Handle */}
+                    <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-stone-700 border border-stone-950 group-hover:bg-amber-500 transition-colors" />
+                  </motion.div>
+                ))}
+              </div>
+            </TabsContent>
 
-          <TabsContent value="editor" className="m-0 h-full w-full flex flex-col p-4 sm:p-8">
-            {selectedNode ? (
-              <div className="max-w-4xl mx-auto w-full space-y-6 flex-1 flex flex-col">
-                <div className="space-y-2">
-                  <Input 
-                    value={selectedNode.title}
-                    onChange={e => updateNode(selectedNode.id, { title: e.target.value })}
-                    className="text-2xl font-black bg-transparent border-none p-0 focus-visible:ring-0 text-amber-500 h-auto uppercase tracking-tighter"
+            <TabsContent value="editor" className="m-0 h-full w-full flex flex-col p-4 sm:p-8 flex-1">
+              {selectedNode ? (
+                <div className="max-w-4xl mx-auto w-full space-y-6 flex-1 flex flex-col">
+                  <div className="space-y-2">
+                    <Input 
+                      value={selectedNode.title}
+                      onChange={e => updateNode(selectedNode.id, { title: e.target.value })}
+                      className="text-2xl font-black bg-transparent border-none p-0 focus-visible:ring-0 text-amber-500 h-auto uppercase tracking-tighter"
+                    />
+                    <div className="flex gap-2">
+                      <Badge className="bg-stone-900 text-stone-500 border-stone-800 h-5 text-[9px]">{selectedNode.id}</Badge>
+                      <Badge className="bg-amber-950/30 text-amber-500 border-amber-900/30 h-5 text-[9px] uppercase">{selectedNode.type}</Badge>
+                    </div>
+                  </div>
+                  <Textarea 
+                    value={selectedNode.content}
+                    onChange={e => updateNode(selectedNode.id, { content: e.target.value })}
+                    className="flex-1 bg-stone-900/30 border-stone-800 text-stone-300 resize-none font-mono text-sm leading-relaxed focus:border-amber-900/50 p-6 rounded-xl"
+                    placeholder="# Start typing your markdown here..."
                   />
-                  <div className="flex gap-2">
-                    <Badge className="bg-stone-900 text-stone-500 border-stone-800 h-5 text-[9px]">{selectedNode.id}</Badge>
-                    <Badge className="bg-amber-950/30 text-amber-500 border-amber-900/30 h-5 text-[9px] uppercase">{selectedNode.type}</Badge>
+                </div>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-stone-600 italic text-sm">
+                  Select a node to edit its content.
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="preview" className="m-0 h-full w-full overflow-y-auto p-4 sm:p-12 flex-1">
+              {selectedNode ? (
+                <div className="max-w-3xl mx-auto w-full prose prose-invert prose-stone">
+                  <div className="border-l-4 border-amber-500 pl-6 py-2 mb-8 bg-amber-500/5">
+                    <h1 className="text-4xl font-black text-white uppercase tracking-tighter mb-0">{selectedNode.title}</h1>
+                    <p className="text-stone-500 text-[10px] uppercase font-bold tracking-[0.2em] mt-2">Node Type: {selectedNode.type}</p>
+                  </div>
+                  <div className="text-lg text-stone-400 leading-relaxed whitespace-pre-wrap">
+                    {renderWikilinks(selectedNode.content)}
+                  </div>
+                  {/* Simulated Outgoing Links Section */}
+                  <div className="mt-12 pt-8 border-t border-stone-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {nodes.filter(n => selectedNode.content.toLowerCase().includes(`[[${n.title.toLowerCase()}]]`)).map(n => (
+                      <Button 
+                        key={n.id} 
+                        variant="outline" 
+                        className="justify-between h-14 border-stone-800 hover:border-amber-900/50 bg-stone-900/50 hover:bg-amber-950/20 group"
+                        onClick={() => setSelectedNodeId(n.id)}
+                      >
+                        <span className="text-xs uppercase font-bold text-stone-400 group-hover:text-amber-500 transition-colors">{n.title}</span>
+                        <ChevronRight className="w-4 h-4 text-stone-600 group-hover:text-amber-500 transition-colors" />
+                      </Button>
+                    ))}
                   </div>
                 </div>
-                <Textarea 
-                  value={selectedNode.content}
-                  onChange={e => updateNode(selectedNode.id, { content: e.target.value })}
-                  className="flex-1 bg-stone-900/30 border-stone-800 text-stone-300 resize-none font-mono text-sm leading-relaxed focus:border-amber-900/50 p-6 rounded-xl"
-                  placeholder="# Start typing your markdown here..."
-                />
-              </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-stone-600 italic text-sm">
-                Select a node to edit its content.
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="preview" className="m-0 h-full w-full overflow-y-auto p-4 sm:p-12">
-            {selectedNode ? (
-              <div className="max-w-3xl mx-auto w-full prose prose-invert prose-stone">
-                <div className="border-l-4 border-amber-500 pl-6 py-2 mb-8 bg-amber-500/5">
-                  <h1 className="text-4xl font-black text-white uppercase tracking-tighter mb-0">{selectedNode.title}</h1>
-                  <p className="text-stone-500 text-[10px] uppercase font-bold tracking-[0.2em] mt-2">Node Type: {selectedNode.type}</p>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-stone-600">
+                  Select a node to preview.
                 </div>
-                <div className="text-lg text-stone-400 leading-relaxed whitespace-pre-wrap">
-                  {renderWikilinks(selectedNode.content)}
-                </div>
-                {/* Simulated Outgoing Links Section */}
-                <div className="mt-12 pt-8 border-t border-stone-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {nodes.filter(n => selectedNode.content.toLowerCase().includes(`[[${n.title.toLowerCase()}]]`)).map(n => (
-                    <Button 
-                      key={n.id} 
-                      variant="outline" 
-                      className="justify-between h-14 border-stone-800 hover:border-amber-900/50 bg-stone-900/50 hover:bg-amber-950/20 group"
-                      onClick={() => setSelectedNodeId(n.id)}
-                    >
-                      <span className="text-xs uppercase font-bold text-stone-400 group-hover:text-amber-500 transition-colors">{n.title}</span>
-                      <ChevronRight className="w-4 h-4 text-stone-600 group-hover:text-amber-500 transition-colors" />
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-stone-600">
-                Select a node to preview.
-              </div>
-            )}
-          </TabsContent>
+              )}
+            </TabsContent>
+          </Tabs>
         </main>
 
         {/* Node Detail Sheet (Desktop Only, Right Side) */}
