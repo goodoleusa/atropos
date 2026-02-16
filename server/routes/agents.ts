@@ -54,7 +54,16 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 router.post("/analyze", rateLimit(10, 60000), async (req: Request, res: Response) => {
   try {
-    const validation = AnalyzeRequestSchema.safeParse(req.body);
+    // Check if input is a legacy format from client (input vs scanData)
+    const body = { ...req.body };
+    if (body.prompt && !body.scanData) {
+      body.scanData = body.prompt;
+    }
+    if (!body.scanId) {
+      body.scanId = `manual_${Date.now()}`;
+    }
+
+    const validation = AnalyzeRequestSchema.safeParse(body);
     if (!validation.success) {
       return res.status(400).json({ 
         error: "Validation failed",
