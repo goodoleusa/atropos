@@ -42,7 +42,7 @@ import { PromptGallerySection } from '@/components/PromptGallerySection';
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
-export default function PromptBuilder() {
+export function PromptBuilderContent() {
   const [enabledModules, setEnabledModules] = useState<ModuleKey[]>(['payload_exec', 'terminal_cmds']);
   const [compressedContext, setCompressedContext] = useState('');
   const [taskFocus, setTaskFocus] = useState('');
@@ -201,21 +201,8 @@ ${getFullPromptModifier()}
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <Link href="/">
-            <Button variant="ghost" className="text-amber-600 hover:text-amber-500" data-testid="back-button">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back
-            </Button>
-          </Link>
-          <h1 className="text-xl md:text-2xl font-orbitron text-amber-500">
-            <Brain className="inline w-6 h-6 mr-2" />
-            Agent Prompt Builder
-          </h1>
-        </div>
-
-        <Card className="bg-black/50 border-amber-900/30 mb-6">
+    <div className="space-y-6">
+        <Card className="bg-black/50 border-amber-900/30">
           <CardHeader className="pb-3">
             <CardTitle className="text-amber-500 text-lg">How Iterative Agent Handoff Works</CardTitle>
             <CardDescription className="text-stone-500">
@@ -633,6 +620,26 @@ ${getFullPromptModifier()}
         <div className="mt-8">
           <PromptGallerySection defaultPrompt={generatedPrompt} defaultTitle={taskFocus} />
         </div>
+    </div>
+  );
+}
+
+export default function PromptBuilder() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/">
+            <Button variant="ghost" className="text-amber-600 hover:text-amber-500" data-testid="back-button">
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+          </Link>
+          <h1 className="text-xl md:text-2xl font-orbitron text-amber-500">
+            <Brain className="inline w-6 h-6 mr-2" />
+            Agent Prompt Builder
+          </h1>
+        </div>
+        <PromptBuilderContent />
       </div>
     </div>
   );

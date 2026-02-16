@@ -1493,6 +1493,36 @@ function ToolsTab() {
   );
 }
 
+export function ScannerContent() {
+  return (
+    <Tabs defaultValue="scan" className="w-full">
+      <TabsList className="grid w-full grid-cols-5 bg-stone-900/60 border border-stone-800" data-testid="scanner-tabs">
+        <TabsTrigger value="scan" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-scan">
+          <Play className="w-4 h-4 mr-2 hidden sm:inline" /> Scan
+        </TabsTrigger>
+        <TabsTrigger value="scripts" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-scripts">
+          <FileCode className="w-4 h-4 mr-2 hidden sm:inline" /> Lua Scripts
+        </TabsTrigger>
+        <TabsTrigger value="tools" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-tools">
+          <Zap className="w-4 h-4 mr-2 hidden sm:inline" /> Tools
+        </TabsTrigger>
+        <TabsTrigger value="lookups" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-lookups">
+          <Globe className="w-4 h-4 mr-2 hidden sm:inline" /> API Lookups
+        </TabsTrigger>
+        <TabsTrigger value="history" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-history">
+          <Terminal className="w-4 h-4 mr-2 hidden sm:inline" /> History
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="scan"><ScanTab /></TabsContent>
+      <TabsContent value="scripts"><LuaScriptsTab /></TabsContent>
+      <TabsContent value="tools"><ToolsTab /></TabsContent>
+      <TabsContent value="lookups"><ApiLookupsTab /></TabsContent>
+      <TabsContent value="history"><ScanHistoryTab /></TabsContent>
+    </Tabs>
+  );
+}
+
 export default function ScannerDashboard() {
   return (
     <div className="min-h-screen bg-stone-950 text-stone-200" data-testid="scanner-dashboard">
@@ -1504,32 +1534,7 @@ export default function ScannerDashboard() {
             <p className="text-sm text-stone-500">Reconnaissance · Vulnerability Analysis · Threat Intelligence</p>
           </div>
         </div>
-
-        <Tabs defaultValue="scan" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-stone-900/60 border border-stone-800" data-testid="scanner-tabs">
-            <TabsTrigger value="scan" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-scan">
-              <Play className="w-4 h-4 mr-2 hidden sm:inline" /> Scan
-            </TabsTrigger>
-            <TabsTrigger value="scripts" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-scripts">
-              <FileCode className="w-4 h-4 mr-2 hidden sm:inline" /> Lua Scripts
-            </TabsTrigger>
-            <TabsTrigger value="tools" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-tools">
-              <Zap className="w-4 h-4 mr-2 hidden sm:inline" /> Tools
-            </TabsTrigger>
-            <TabsTrigger value="lookups" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-lookups">
-              <Globe className="w-4 h-4 mr-2 hidden sm:inline" /> API Lookups
-            </TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-history">
-              <Terminal className="w-4 h-4 mr-2 hidden sm:inline" /> History
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="scan"><ScanTab /></TabsContent>
-          <TabsContent value="scripts"><LuaScriptsTab /></TabsContent>
-          <TabsContent value="tools"><ToolsTab /></TabsContent>
-          <TabsContent value="lookups"><ApiLookupsTab /></TabsContent>
-          <TabsContent value="history"><ScanHistoryTab /></TabsContent>
-        </Tabs>
+        <ScannerContent />
       </div>
     </div>
   );
