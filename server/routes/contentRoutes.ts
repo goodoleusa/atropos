@@ -46,8 +46,10 @@ const THREAT_INTEL_FEEDS: Record<string, { url: string; method: 'GET' | 'POST'; 
   'abuse_ch_malwarebazaar': { url: 'https://mb-api.abuse.ch/api/v1/', method: 'POST', body: JSON.stringify({ query: 'get_recent', selector: 100 }) },
   'cisa_kev': { url: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', method: 'GET' },
   'ransomware_live': { url: 'https://api.ransomware.live/recentvictims', method: 'GET' },
-  'blocklist_de': { url: 'https://www.blocklist.de/en/export.html', method: 'GET' }, // Generic info page, might need parsing or specific export URL
+  'blocklist_de_ssh': { url: 'https://www.blocklist.de/downloads/export-ips_all.txt', method: 'GET' },
   'openphish': { url: 'https://openphish.com/feed.txt', method: 'GET' },
+  'spamhaus_drop': { url: 'https://www.spamhaus.org/drop/drop.txt', method: 'GET' },
+  'emerging_threats_ips': { url: 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt', method: 'GET' },
 };
 
 // ==================== Prompt Gallery ====================
@@ -1665,12 +1667,21 @@ router.post("/api/threat-intel/fetch", rateLimit(10, 60000), async (req, res) =>
       data = await response.json();
     } else {
       const text = await response.text();
-      // Simple parsing for plaintext feeds (like OpenPhish)
-      if (feedId === 'openphish' || text.includes('http')) {
+      // Simple parsing for plaintext feeds (like OpenPhish, Spamhaus, Emerging Threats)
+      if (feedId === 'openphish' || feedId === 'spamhaus_drop' || feedId === 'emerging_threats_ips' || feedId === 'blocklist_de_ssh' || text.includes('http')) {
         data = text.split('\n')
-          .filter(l => l.trim() && !l.startsWith('#'))
+          .filter(l => l.trim() && !l.startsWith(';') && !l.startsWith('#'))
           .slice(0, 50)
-          .map(url => ({ url, threat: 'phishing', status: 'online', date: new Date().toISOString() }));
+          .map(line => {
+            const parts = line.split(' ');
+            return { 
+              value: parts[0], 
+              threat: feedId.includes('phish') ? 'phishing' : 'malicious_ip', 
+              status: 'online', 
+              date: new Date().toISOString(),
+              source: feedId
+            };
+          });
       } else {
         throw new Error("Feed returned non-JSON data");
       }
