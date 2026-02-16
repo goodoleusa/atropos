@@ -309,13 +309,19 @@ export default function Agents() {
     setWizardStep(3);
     try {
       const agentIdToUse = (selectedAgent as any).moduleId || selectedAgent.id;
+      
+      // Extract first 5000 chars of input if it's too large
+      const inputToUse = testInput.length > 5000 ? testInput.slice(0, 5000) : testInput;
+      
       await runAgentMutation.mutateAsync({
         agentId: agentIdToUse,
-        input: testInput,
+        input: inputToUse,
         userPrompt: userPrompt.trim() || undefined,
       });
-    } catch {
+    } catch (error: any) {
+      console.error('Agent run failed:', error);
       setWizardStep(2);
+      toast({ title: 'Agent Error', description: error.message || 'Analysis failed', variant: 'destructive' });
     } finally {
       setIsRunning(false);
     }
