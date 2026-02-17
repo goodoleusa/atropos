@@ -1381,11 +1381,7 @@ export default function Wiki() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 flex flex-col">
       {/* Mobile Header */}
-      <header className="md:hidden flex items-center justify-between p-4 border-b border-amber-900/30 bg-stone-950/80 backdrop-blur-sm sticky top-0 z-20">
-        <div className="flex items-center gap-2">
-          <Book className="w-5 h-5 text-amber-500" />
-          <h1 className="font-bold text-amber-500 text-sm">Wiki Docs</h1>
-        </div>
+      <header className="md:hidden flex items-center justify-start p-4 border-b border-amber-900/30 bg-stone-950/80 backdrop-blur-sm sticky top-0 z-20 gap-4">
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="text-amber-500">
@@ -1402,6 +1398,10 @@ export default function Wiki() {
             <SidebarContent />
           </SheetContent>
         </Sheet>
+        <div className="flex items-center gap-2">
+          <Book className="w-5 h-5 text-amber-500" />
+          <h1 className="font-bold text-amber-500 text-sm">Wiki Docs</h1>
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
