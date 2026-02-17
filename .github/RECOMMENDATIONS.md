@@ -6,14 +6,101 @@
 
 | # | Category | Priority | Title | Pain Points | Status |
 |---|----------|----------|-------|-------------|--------|
-| 1 | Systemic Improvement | 🟠 high | AI Lab duplicated: standalone /ai-lab + Investigation Hub tab | 3 | proposed |
-| 2 | Integration | 🟡 medium | Real-time scan progress WebSocket integration | 3 | proposed |
-| 3 | Systemic Improvement | 🔴 critical | Unified investigation context sharing between agents | 4 | proposed |
-| 4 | Code Snippet | 🟠 high | Add keyboard shortcuts for Terminal navigation | 4 | proposed |
+| 1 | Systemic Improvement | 🟡 medium | CollectiblesSection duplicates GameplaySection clue management — zodiac in localStorage | 3 | proposed |
+| 2 | Systemic Improvement | 🟠 high | Gameplay Editor clues/quests/achievements not connected — manual ID typing required | 4 | proposed |
+| 3 | Systemic Improvement | 🟠 high | Curriculum Dashboard unusable on mobile — 3-tap-deep editing with tiny touch targets | 4 | proposed |
+| 4 | Systemic Improvement | 🟠 high | AI Lab duplicated: standalone /ai-lab + Investigation Hub tab | 3 | proposed |
+| 5 | Integration | 🟡 medium | Real-time scan progress WebSocket integration | 3 | proposed |
+| 6 | Systemic Improvement | 🔴 critical | Unified investigation context sharing between agents | 4 | proposed |
+| 7 | Code Snippet | 🟠 high | Add keyboard shortcuts for Terminal navigation | 4 | proposed |
+| 8 | File Edit | 🟡 medium | Admin Dashboard sidebar navigation cramped on mobile — no group collapse memory | 3 | proposed |
 
 ---
 
 ## Systemic Improvements
+
+## Task: CollectiblesSection duplicates GameplaySection clue management — zodiac in localStorage
+**Category**: Systemic Improvement
+**Priority**: medium
+
+### Description
+CollectiblesSection has its own clue CRUD that overlaps with GameplaySection clue management. Zodiac effects stored in localStorage instead of database.
+
+### Target Files
+- `client/src/pages/admin/CollectiblesSection.tsx`
+
+### Pain Points This Solves
+- Duplicate clue management
+- Zodiac effects lost on device switch
+- Artifacts disconnected from XP
+
+### Starter Code
+```typescript
+// Consolidate clue management into GameplaySection
+// Move zodiac effects to database
+```
+
+### Expected Impact
+65
+
+---
+
+## Task: Gameplay Editor clues/quests/achievements not connected — manual ID typing required
+**Category**: Systemic Improvement
+**Priority**: high
+
+### Description
+Quests have requiredClues and unlocks fields but use manual text input instead of visual pickers. No achievement editor exists anywhere in the admin dashboard despite achievements being a core gamification feature. Clues exist in two parallel systems (designer/clues vs game/clues) with no clear bridge.
+
+### Target Files
+- `client/src/pages/admin/GameplaySection.tsx`
+- `client/src/pages/admin/CollectiblesSection.tsx`
+
+### Pain Points This Solves
+- No visual clue picker
+- No achievement editor
+- Dual clue systems confusing
+- Quest linking requires manual IDs
+
+### Starter Code
+```typescript
+// Add CluePickerDialog with search/filter for quest.requiredClues
+// Add AchievementEditor tab
+// Bridge designer clues → game clues
+```
+
+### Expected Impact
+90
+
+---
+
+## Task: Curriculum Dashboard unusable on mobile — 3-tap-deep editing with tiny touch targets
+**Category**: Systemic Improvement
+**Priority**: high
+
+### Description
+The Curriculum Dashboard requires 3 nested taps to reach mission editing (expand track → expand mission → tap tiny 24px edit icon). The mission edit form uses grid-cols-2 even on mobile, cramming difficulty/time/XP into 3 microscopic columns. Objectives and takeaways are plain textareas with no add/remove/reorder. Individual exercises cannot be edited at all — only viewed. No mobile-friendly quick-edit mode exists.
+
+### Target Files
+- `client/src/pages/admin/CurriculumSection.tsx`
+
+### Pain Points This Solves
+- Mobile curriculum editing broken
+- Touch targets too small
+- No exercise editing
+- Objectives editing fragile
+
+### Starter Code
+```typescript
+// Fix: use Sheet/Drawer for mobile editing, responsive grids, 44px+ touch targets
+// Add inline exercise editor with hints, instructions, success criteria fields
+// Replace textarea objectives with add/remove list UI
+```
+
+### Expected Impact
+85
+
+---
 
 ## Task: AI Lab duplicated: standalone /ai-lab + Investigation Hub tab
 **Category**: Systemic Improvement
@@ -156,6 +243,35 @@ Reduces terminal interaction time by 40% for experienced users. Matches expected
 
 ---
 
+## File Edits
+
+## Task: Admin Dashboard sidebar navigation cramped on mobile — no group collapse memory
+**Category**: File Edit
+**Priority**: medium
+
+### Description
+Admin sidebar has 6 groups with 20+ items. Group collapse state not persisted. No breadcrumb shows current section after closing sidebar.
+
+### Target Files
+- `client/src/pages/AdminDashboard.tsx`
+
+### Pain Points This Solves
+- Sidebar state not persisted
+- No current section indicator
+- All groups expanded by default on mobile
+
+### Starter Code
+```typescript
+// Persist collapsedGroups to localStorage
+// Add breadcrumb for current section
+// Auto-collapse other groups on mobile
+```
+
+### Expected Impact
+50
+
+---
+
 
 ## How to Use These Recommendations
 
@@ -164,15 +280,15 @@ Copy a single recommendation section above and paste it as a prompt to your codi
 
 ### Via API
 ```bash
-# Fetch all recommendations as JSON
-curl -s https://YOUR_APP_URL/api/recommendations/export?format=json
+# Fetch all recs as JSON
+curl -s https://YOUR_APP_URL/api/recs/export?format=json
 
-# Fetch a single recommendation as an agent-ready prompt
-curl -s https://YOUR_APP_URL/api/recommendations/export/1?format=prompt
+# Fetch a single rec as an agent-ready prompt
+curl -s https://YOUR_APP_URL/api/recs/export/1?format=prompt
 ```
 
 ### Programmatic ingestion
 ```bash
-# Pipe a recommendation directly into another tool
-curl -s https://YOUR_APP_URL/api/recommendations/export/1?format=prompt | pbcopy
+# Pipe a rec directly into another tool
+curl -s https://YOUR_APP_URL/api/recs/export/1?format=prompt | pbcopy
 ```

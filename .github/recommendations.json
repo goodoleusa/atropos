@@ -1,5 +1,74 @@
 [
   {
+    "id": 7,
+    "category": "systemic",
+    "priority": "medium",
+    "status": "proposed",
+    "title": "CollectiblesSection duplicates GameplaySection clue management — zodiac in localStorage",
+    "description": "CollectiblesSection has its own clue CRUD that overlaps with GameplaySection clue management. Zodiac effects stored in localStorage instead of database.",
+    "targetFiles": [
+      "client/src/pages/admin/CollectiblesSection.tsx"
+    ],
+    "codeSnippet": "// Consolidate clue management into GameplaySection\n// Move zodiac effects to database",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "Duplicate clue management",
+      "Zodiac effects lost on device switch",
+      "Artifacts disconnected from XP"
+    ],
+    "estimatedImpact": "65",
+    "source": "agent",
+    "votes": 1,
+    "createdAt": "2026-02-17T20:23:42.282Z"
+  },
+  {
+    "id": 6,
+    "category": "systemic",
+    "priority": "high",
+    "status": "proposed",
+    "title": "Gameplay Editor clues/quests/achievements not connected — manual ID typing required",
+    "description": "Quests have requiredClues and unlocks fields but use manual text input instead of visual pickers. No achievement editor exists anywhere in the admin dashboard despite achievements being a core gamification feature. Clues exist in two parallel systems (designer/clues vs game/clues) with no clear bridge.",
+    "targetFiles": [
+      "client/src/pages/admin/GameplaySection.tsx",
+      "client/src/pages/admin/CollectiblesSection.tsx"
+    ],
+    "codeSnippet": "// Add CluePickerDialog with search/filter for quest.requiredClues\n// Add AchievementEditor tab\n// Bridge designer clues → game clues",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "No visual clue picker",
+      "No achievement editor",
+      "Dual clue systems confusing",
+      "Quest linking requires manual IDs"
+    ],
+    "estimatedImpact": "90",
+    "source": "agent",
+    "votes": 1,
+    "createdAt": "2026-02-17T20:23:39.177Z"
+  },
+  {
+    "id": 5,
+    "category": "systemic",
+    "priority": "high",
+    "status": "proposed",
+    "title": "Curriculum Dashboard unusable on mobile — 3-tap-deep editing with tiny touch targets",
+    "description": "The Curriculum Dashboard requires 3 nested taps to reach mission editing (expand track → expand mission → tap tiny 24px edit icon). The mission edit form uses grid-cols-2 even on mobile, cramming difficulty/time/XP into 3 microscopic columns. Objectives and takeaways are plain textareas with no add/remove/reorder. Individual exercises cannot be edited at all — only viewed. No mobile-friendly quick-edit mode exists.",
+    "targetFiles": [
+      "client/src/pages/admin/CurriculumSection.tsx"
+    ],
+    "codeSnippet": "// Fix: use Sheet/Drawer for mobile editing, responsive grids, 44px+ touch targets\n// Add inline exercise editor with hints, instructions, success criteria fields\n// Replace textarea objectives with add/remove list UI",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "Mobile curriculum editing broken",
+      "Touch targets too small",
+      "No exercise editing",
+      "Objectives editing fragile"
+    ],
+    "estimatedImpact": "85",
+    "source": "agent",
+    "votes": 1,
+    "createdAt": "2026-02-17T20:23:17.789Z"
+  },
+  {
     "id": 4,
     "category": "systemic",
     "priority": "high",
@@ -91,7 +160,29 @@
     ],
     "estimatedImpact": "Reduces terminal interaction time by 40% for experienced users. Matches expected behavior from real terminal emulators.",
     "source": "agent:VulnAnalyst",
-    "votes": 2,
+    "votes": 3,
     "createdAt": "2026-02-17T14:26:41.732Z"
+  },
+  {
+    "id": 8,
+    "category": "file_edit",
+    "priority": "medium",
+    "status": "proposed",
+    "title": "Admin Dashboard sidebar navigation cramped on mobile — no group collapse memory",
+    "description": "Admin sidebar has 6 groups with 20+ items. Group collapse state not persisted. No breadcrumb shows current section after closing sidebar.",
+    "targetFiles": [
+      "client/src/pages/AdminDashboard.tsx"
+    ],
+    "codeSnippet": "// Persist collapsedGroups to localStorage\n// Add breadcrumb for current section\n// Auto-collapse other groups on mobile",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "Sidebar state not persisted",
+      "No current section indicator",
+      "All groups expanded by default on mobile"
+    ],
+    "estimatedImpact": "50",
+    "source": "agent",
+    "votes": 1,
+    "createdAt": "2026-02-17T20:23:45.346Z"
   }
 ]
