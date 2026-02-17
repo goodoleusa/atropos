@@ -67,15 +67,16 @@ interface ApiKeyService {
   maskedValue: string | null;
 }
 
-const PRESET_OPTIONS: Record<string, string> = {
-  dns_basic: 'DNS Basic',
-  email_harvest: 'Email Harvest',
-  subdomain_enum: 'Subdomain Enumeration',
-  threat_intel: 'Threat Intelligence',
-  social_media: 'Social Media',
-  web_recon: 'Web Reconnaissance',
-  full_passive: 'Full Passive',
-  custom: 'Custom Modules',
+const PRESET_OPTIONS: Record<string, { label: string; description: string }> = {
+  all: { label: 'All Modules', description: 'Run every available module - comprehensive but slow' },
+  full_passive: { label: 'Full Passive', description: 'All passive modules - no direct target contact' },
+  dns_basic: { label: 'DNS Basic', description: 'DNS records, nameservers, MX entries' },
+  email_harvest: { label: 'Email Harvest', description: 'Find email addresses from public sources' },
+  subdomain_enum: { label: 'Subdomain Enumeration', description: 'Discover subdomains via certs, DNS, search engines' },
+  threat_intel: { label: 'Threat Intelligence', description: 'Check threat feeds, malware databases, reputation' },
+  social_media: { label: 'Social Media', description: 'Find social profiles and online presence' },
+  web_recon: { label: 'Web Reconnaissance', description: 'HTTP headers, technologies, CMS detection' },
+  custom: { label: 'Custom Modules', description: 'Select individual modules manually' },
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -221,7 +222,9 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
       return;
     }
     const params: { target: string; modules?: string[]; useCase?: string } = { target: target.trim() };
-    if (selectedPreset === 'custom') {
+    if (selectedPreset === 'all') {
+      params.useCase = 'all';
+    } else if (selectedPreset === 'custom') {
       params.useCase = 'passive';
     } else if (modulesData?.presets?.[selectedPreset]) {
       params.modules = modulesData.presets[selectedPreset];
@@ -367,7 +370,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
         </Button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-4">
           <Card className="bg-stone-900/50 border-stone-800">
             <CardHeader className="pb-3">
@@ -396,9 +399,12 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(PRESET_OPTIONS).map(([key, label]) => (
+                    {Object.entries(PRESET_OPTIONS).map(([key, { label, description }]) => (
                       <SelectItem key={key} value={key} data-testid={`preset-option-${key}`}>
-                        {label}
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium">{label}</span>
+                          <span className="text-xs text-stone-500">{description}</span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>

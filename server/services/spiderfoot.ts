@@ -242,13 +242,14 @@ function getActiveScans(): string[] {
 }
 
 const MODULE_PRESETS: Record<string, string[]> = {
+  all: [],
+  full_passive: ['sfp_dnsresolve', 'sfp_crt', 'sfp_certspotter', 'sfp_dnsdumpster', 'sfp_hackertarget', 'sfp_shodan', 'sfp_virustotal', 'sfp_email', 'sfp_accounts', 'sfp_whois', 'sfp_spider', 'sfp_httpheaders', 'sfp_webanalytics', 'sfp_abusech', 'sfp_abuseipdb', 'sfp_alienvault'],
   dns_basic: ['sfp_dnsresolve', 'sfp_dnsbrute', 'sfp_dnszonexfer', 'sfp_dnscommonsrv', 'sfp_dnsdumpster'],
   email_harvest: ['sfp_email', 'sfp_emailformat', 'sfp_hunter', 'sfp_skymem', 'sfp_snov'],
   subdomain_enum: ['sfp_crt', 'sfp_certspotter', 'sfp_dnsdumpster', 'sfp_hackertarget', 'sfp_subdomainfinder', 'sfp_sublist3r'],
   threat_intel: ['sfp_abusech', 'sfp_abuseipdb', 'sfp_alienvault', 'sfp_blocklistde', 'sfp_cinsscore', 'sfp_cleantalk'],
   social_media: ['sfp_accounts', 'sfp_instagram', 'sfp_twitter', 'sfp_linkedin', 'sfp_skymem'],
   web_recon: ['sfp_spider', 'sfp_cookie', 'sfp_websvr', 'sfp_httpheaders', 'sfp_webanalytics', 'sfp_builtwith'],
-  full_passive: ['sfp_dnsresolve', 'sfp_crt', 'sfp_certspotter', 'sfp_dnsdumpster', 'sfp_hackertarget', 'sfp_shodan', 'sfp_virustotal', 'sfp_email'],
 };
 
 const API_KEY_SERVICES = [
