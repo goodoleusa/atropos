@@ -94,14 +94,14 @@ export default function QuickNav() {
 
   return (
     <div 
-      className="flex fixed bottom-6 left-6 z-[10000] flex-col items-start gap-2" 
+      className="flex fixed bottom-6 left-6 md:left-6 right-6 md:right-auto z-[10000] flex-col items-end md:items-start gap-2" 
       data-testid="quick-nav"
       style={{ isolation: 'isolate' }}
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
     >
       {expanded && (
-        <div className="bg-black border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar shadow-[0_0_50px_rgba(0,0,0,0.9)]">
+        <div className="bg-black border border-stone-800 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar shadow-2xl">
           {progression && (
             <div className="px-3 py-2 border-b border-stone-800 mb-2">
               <div className="flex items-center justify-between mb-1">
@@ -215,67 +215,32 @@ export default function QuickNav() {
       )}
 
       <InteractiveHover>
-        <div className="relative w-20 h-20 flex items-center justify-center">
-          {!expanded && (
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              style={{
-                background: 'conic-gradient(from 0deg, #b45309 0%, #f59e0b 20%, #fbbf24 30%, #d97706 45%, #78350f 60%, #f59e0b 75%, #b45309 100%)',
-                filter: 'blur(4px)',
-              }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-            />
-          )}
-          {!expanded && (
-            <motion.div
-              className="absolute inset-2 rounded-full border-2 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.8)]"
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.5, 0.8, 0.5],
-              }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          )}
+        <div className="relative w-16 h-16 flex items-center justify-center">
           <Button
             onClick={handleToggle}
-            className={`rounded-full w-14 h-14 transition-all duration-500 border-0 relative z-10 ${
+            className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/20 relative z-10 ${
               expanded 
-                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 shadow-2xl' 
-                : 'bg-stone-950 hover:bg-stone-900 ring-2 ring-amber-600/50 shadow-[0_0_30px_rgba(180,83,9,0.5)]'
+                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 shadow-xl' 
+                : 'bg-stone-950 hover:bg-stone-900'
             }`}
             data-testid="quick-nav-toggle"
           >
             <div className="flex items-center justify-center w-full h-full relative overflow-hidden rounded-full">
-              {!expanded && (
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: 'radial-gradient(circle at center, #fbbf24 0%, #d97706 50%, transparent 100%)',
-                  }}
-                  animate={{ 
-                    opacity: [0.1, 0.3, 0.1],
-                    scale: [0.8, 1.2, 0.8]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                />
-              )}
               <div className="relative z-20 flex items-center justify-center">
                 <motion.div
                   className="flex flex-col items-center"
                   animate={expanded ? { rotate: 0 } : { 
-                    filter: ['brightness(1) contrast(1)', 'brightness(1.8) contrast(1.2)', 'brightness(1) contrast(1)'],
-                    scale: [1, 1.15, 1],
+                    scale: [1, 1.05, 1],
                   }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <Server className="w-6 h-6 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,1)]" />
+                  <Server className="w-5 h-5 text-amber-500/80" />
                 </motion.div>
               </div>
             </div>
           </Button>
           {!expanded && pendingFindings.length > 0 && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#f59e0b] rounded-full text-[10px] text-black font-bold flex items-center justify-center border-2 border-[#000000] z-[10001] pointer-events-none shadow-[0_0_15px_rgba(245,158,11,0.9)]">
+            <div className="absolute top-1 right-1 w-4 h-4 bg-amber-600 rounded-full text-[9px] text-black font-bold flex items-center justify-center border border-black z-[10001] pointer-events-none">
               {pendingFindings.length}
             </div>
           )}

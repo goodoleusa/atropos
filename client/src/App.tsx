@@ -8,7 +8,7 @@ import { ReportProvider } from "@/hooks/useReportContext";
 import { GlobalEffectsProvider } from "@/hooks/useGlobalEffects";
 import { AgentChatProvider } from "@/hooks/useAgentChat";
 import GlobalEffectsOverlay from "@/components/GlobalEffectsOverlay";
-import GlobalNav from "@/components/GlobalNav";
+import QuickNav from "@/components/QuickNav";
 import { AchievementManager } from "@/components/AchievementManager";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
@@ -92,7 +92,7 @@ function App() {
               <GlobalEffectsProvider>
                 <Toaster />
                 <Router />
-                <GlobalNav />
+                <QuickNav />
                 <GlobalEffectsOverlay />
                 <AchievementManager />
                 <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
