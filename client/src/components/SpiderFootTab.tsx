@@ -14,7 +14,8 @@ import {
   Radar, Shield, Globe, Search, Play, Loader2, Key, RefreshCw,
   ExternalLink, CheckCircle2, AlertTriangle, X, Settings,
   Clock, Target, Eye, EyeOff, Trash2, ChevronDown, ChevronRight,
-  Activity, Wifi, WifiOff
+  Activity, Wifi, WifiOff, Download, FileJson, FileSpreadsheet,
+  Send, Crosshair, MessageSquare, ArrowRight
 } from 'lucide-react';
 
 interface HealthStatus {
@@ -84,7 +85,12 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: 'bg-stone-500/20 text-stone-400 border-stone-500/30',
 };
 
-export function SpiderFootTab() {
+interface SpiderFootTabProps {
+  onSendToAgent?: (context: string) => void;
+  onSendToAtropos?: (targets: string[]) => void;
+}
+
+export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabProps = {}) {
   const { addToolOutput } = useReportContext();
   const queryClient = useQueryClient();
 
@@ -240,6 +246,98 @@ export function SpiderFootTab() {
 
   const isScanning = activeScanId !== null && scanResult?.status === 'running';
   const configuredCount = apiKeysData?.services?.filter(s => s.configured).length || 0;
+  const hasResults = scanResult?.results && scanResult.results.length > 0;
+
+  const exportAsJSON = () => {
+    if (!scanResult?.results) return;
+    const exportData = {
+      scanId: scanResult.scanId,
+      target: scanResult.target,
+      status: scanResult.status,
+      resultCount: scanResult.resultCount || scanResult.results.length,
+      completedAt: scanResult.completedAt,
+      results: scanResult.results,
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `spiderfoot_${scanResult.target}_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: 'Exported', description: `JSON exported for ${scanResult.target}` });
+  };
+
+  const exportAsCSV = () => {
+    if (!scanResult?.results) return;
+    const meta = [
+      `# SpiderFoot Scan Export`,
+      `# Target: ${scanResult.target}`,
+      `# Scan ID: ${scanResult.scanId}`,
+      `# Results: ${scanResult.results.length}`,
+      `# Date: ${scanResult.completedAt || new Date().toISOString()}`,
+    ];
+    const header = 'Type,Data,Module,Source';
+    const rows = scanResult.results.map(r =>
+      [`"${(r.type || '').replace(/"/g, '""')}"`, `"${(r.data || '').replace(/"/g, '""')}"`, `"${(r.module || '').replace(/"/g, '""')}"`, `"${(r.source || '').replace(/"/g, '""')}"`].join(',')
+    );
+    const csv = [...meta, header, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `spiderfoot_${scanResult.target}_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: 'Exported', description: `CSV exported for ${scanResult.target}` });
+  };
+
+  const extractPivotTargets = (): string[] => {
+    if (!scanResult?.results) return [];
+    const targets = new Set<string>();
+    const pivotTypes = ['Internet Name', 'Domain Name', 'IP Address', 'IPv6 Address', 'Affiliate - Domain Name', 'Co-Hosted Site', 'Email Address', 'Host', 'Nameserver'];
+    scanResult.results.forEach(r => {
+      if (pivotTypes.includes(r.type) && r.data && r.data !== scanResult.target) {
+        targets.add(r.data.trim());
+      }
+    });
+    return Array.from(targets);
+  };
+
+  const buildAgentContext = (): string => {
+    if (!scanResult?.results) return '';
+    const lines = [`SpiderFoot OSINT scan results for target: ${scanResult.target}`, `Total findings: ${scanResult.results.length}`, ''];
+    Object.entries(groupedResults)
+      .sort(([, a], [, b]) => b.length - a.length)
+      .forEach(([type, results]) => {
+        lines.push(`[${type}] (${results.length} results)`);
+        results.slice(0, 25).forEach(r => lines.push(`  - ${r.data} (via ${r.module})`));
+        if (results.length > 25) lines.push(`  ... and ${results.length - 25} more`);
+        lines.push('');
+      });
+    return lines.join('\n');
+  };
+
+  const handleSendToAgent = () => {
+    const context = buildAgentContext();
+    if (!context) return;
+    if (onSendToAgent) {
+      onSendToAgent(context);
+    }
+    toast({ title: 'Sent to Agent', description: 'SpiderFoot results loaded into NEXUS agent for analysis' });
+  };
+
+  const handleSendToAtropos = () => {
+    const pivotTargets = extractPivotTargets();
+    if (pivotTargets.length === 0) {
+      toast({ title: 'No pivot targets', description: 'No domains or IPs found in results to scan', variant: 'destructive' });
+      return;
+    }
+    if (onSendToAtropos) {
+      onSendToAtropos(pivotTargets);
+    }
+    toast({ title: 'Sent to Scanner', description: `${pivotTargets.length} targets loaded into Atropos scanner` });
+  };
 
   return (
     <div className="space-y-4">
@@ -407,6 +505,25 @@ export function SpiderFootTab() {
               </div>
               {scanResult?.target && (
                 <div className="text-xs text-stone-500">Target: {scanResult.target}</div>
+              )}
+              {hasResults && (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-stone-700 text-stone-400 hover:text-amber-400 hover:border-amber-700 gap-1" onClick={exportAsJSON} data-testid="button-export-json">
+                    <FileJson className="w-3 h-3" /> JSON
+                  </Button>
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-stone-700 text-stone-400 hover:text-amber-400 hover:border-amber-700 gap-1" onClick={exportAsCSV} data-testid="button-export-csv">
+                    <FileSpreadsheet className="w-3 h-3" /> CSV
+                  </Button>
+                  <div className="w-px h-4 bg-stone-700 mx-1" />
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-teal-800 text-teal-400 hover:bg-teal-900/30 hover:border-teal-600 gap-1" onClick={handleSendToAgent} disabled={!onSendToAgent} data-testid="button-send-to-agent">
+                    <MessageSquare className="w-3 h-3" /> Agent
+                    <ArrowRight className="w-2.5 h-2.5" />
+                  </Button>
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-orange-800 text-orange-400 hover:bg-orange-900/30 hover:border-orange-600 gap-1" onClick={handleSendToAtropos} disabled={!onSendToAtropos} data-testid="button-send-to-atropos">
+                    <Crosshair className="w-3 h-3" /> Scanner
+                    <ArrowRight className="w-2.5 h-2.5" />
+                  </Button>
+                </div>
               )}
             </CardHeader>
             <CardContent>
