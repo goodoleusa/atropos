@@ -105,6 +105,19 @@ Preferred communication style: Simple, everyday language.
 - **Pedagogy**: Employs Experiential and Project-Based Learning (PBL) for cybersecurity skills, structured into Paths > Tracks > Modules > Projects.
 - **Portfolio System**: Users can showcase investigations, reports, and achievements with shareable content.
 
+### Templates / Starter Kit System
+- **Location**: `templates/` folder
+- **Manifest**: `templates/manifest.json` — registry of all 13 feature modules with descriptions, dependencies, file listings, schema tables, nav entries
+- **Base Template**: `templates/base/` — core Express server, React frontend, PostgreSQL/Drizzle, Tailwind CSS, molten-bronze theme
+- **Feature Modules**: `templates/modules/<name>/` — each has `module.json` (injection config) and optional `schema.ts` (DB tables)
+- **Setup Script**: `templates/setup.sh` — interactive or CLI-driven assembler
+  - Presets: `minimal`, `learner`, `security-analyst`, `marketing`, `full`
+  - Custom: pick individual modules by name
+  - Usage: `bash templates/setup.sh <preset> <output_dir>` or run interactively
+- **13 Modules**: nexus-ai, terminal, campaigns, scanner-osint, qr-c2, gamification, behavior-analysis, report-builder, portfolio, ai-lab, wiki, spiderfoot, crew-builder
+- **Module JSON fields**: `inject.schema_tables`, `inject.nav_items`, `inject.routes_import/register`, `inject.app_import/route`, `inject.providers`, `inject.env_keys`
+- **How it works**: setup.sh copies base files, appends module schemas to `shared/schema.ts`, injects nav entries into `navConfig.ts`, adds routes/imports to `App.tsx` and `routes.ts` via placeholder comments (`/* MODULE_IMPORTS */`, `/* MODULE_ROUTES */`, etc.)
+
 ## External Dependencies
 
 ### Core Services

@@ -1,0 +1,18 @@
+{
+  "id": "campaigns",
+  "name": "Campaign System",
+  "description": "Investigation campaigns with visual flow editor and branching narratives",
+  "inject": {
+    "schema_tables": ["campaignRuns", "campaignTemplates", "flowNodes", "designerCampaigns", "campaignLinks", "campaignStats"],
+    "nav_items": [
+      { "section": "user", "path": "/campaigns", "icon": "Shield", "label": "AI Academy", "color": "teal" },
+      { "section": "admin", "path": "/builder", "icon": "Settings", "label": "Campaign Builder", "color": "amber" }
+    ],
+    "routes_import": null,
+    "routes_register": null,
+    "app_import": "import CampaignsHub from '@/pages/CampaignsHub';\nimport CampaignPlayer from '@/pages/CampaignPlayer';\nimport CampaignBuilder from '@/pages/builder/CampaignBuilder';",
+    "app_route": "<Route path=\"/campaigns\" component={CampaignsHub} />\n      <Route path=\"/play/:campaignId\" component={CampaignPlayer} />\n      <Route path=\"/builder\" component={CampaignBuilder} />",
+    "providers": [],
+    "env_keys": []
+  }
+}

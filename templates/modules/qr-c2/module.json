@@ -1,0 +1,17 @@
+{
+  "id": "qr-c2",
+  "name": "QR C2 Framework",
+  "description": "Educational QR-based command & control system with guided missions and hijacking labs",
+  "inject": {
+    "schema_tables": [],
+    "nav_items": [],
+    "routes_import": null,
+    "routes_register": null,
+    "app_import": null,
+    "app_route": null,
+    "providers": [],
+    "env_keys": [],
+    "components": ["QRCodeModal"],
+    "server_utils": ["server/qrcode.ts"]
+  }
+}

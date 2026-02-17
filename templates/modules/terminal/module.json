@@ -1,0 +1,17 @@
+{
+  "id": "terminal",
+  "name": "Terminal System",
+  "description": "Custom command-line terminal with command parsing and history",
+  "inject": {
+    "schema_tables": ["commandLogs"],
+    "nav_items": [
+      { "section": "user", "path": "/terminal", "icon": "Terminal", "label": "Terminal", "color": "amber" }
+    ],
+    "routes_import": null,
+    "routes_register": null,
+    "app_import": "import TerminalPage from '@/pages/Terminal';",
+    "app_route": "<Route path=\"/terminal\" component={TerminalPage} />",
+    "providers": [],
+    "env_keys": []
+  }
+}

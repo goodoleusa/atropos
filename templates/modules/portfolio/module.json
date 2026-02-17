@@ -1,0 +1,15 @@
+{
+  "id": "portfolio",
+  "name": "Portfolio System",
+  "description": "Shareable investigation portfolio with viz picker, evidence tagging, and visibility controls",
+  "inject": {
+    "schema_tables": [],
+    "nav_items": [],
+    "routes_import": "import portfolioRoutes from './routes/portfolio';",
+    "routes_register": "portfolioRoutes(app);",
+    "app_import": "import PortfolioShare from '@/pages/PortfolioShare';",
+    "app_route": "<Route path=\"/portfolio/:shareId\" component={PortfolioShare} />",
+    "providers": [],
+    "env_keys": []
+  }
+}

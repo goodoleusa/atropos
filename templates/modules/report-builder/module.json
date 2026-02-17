@@ -1,0 +1,15 @@
+{
+  "id": "report-builder",
+  "name": "Report Builder",
+  "description": "Bug bounty report structuring, vulnerability tracking, AI benchmarking, shared investigation context",
+  "inject": {
+    "schema_tables": [],
+    "nav_items": [],
+    "routes_import": null,
+    "routes_register": null,
+    "app_import": "import ReportBuilder from '@/pages/ReportBuilder';",
+    "app_route": "<Route path=\"/reports\" component={ReportBuilder} />",
+    "providers": ["ReportProvider"],
+    "env_keys": []
+  }
+}

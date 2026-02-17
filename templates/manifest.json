@@ -1,0 +1,248 @@
+{
+  "name": "atropos-starter-kit",
+  "version": "2.2.0",
+  "description": "Modular cybersecurity training platform starter kit. Select features to build your custom deployment.",
+  "base": {
+    "id": "base",
+    "name": "Core Platform",
+    "description": "Express server, React frontend, PostgreSQL, Tailwind CSS, Drizzle ORM, Replit Auth, molten-bronze theme",
+    "required": true,
+    "files": {
+      "server": ["server/index.ts", "server/db.ts", "server/vite.ts", "server/storage.ts", "server/security.ts", "server/routes.ts", "server/static.ts"],
+      "client": ["client/src/App.tsx", "client/src/main.tsx", "client/src/index.css", "client/src/config/navConfig.ts", "client/src/components/QuickNav.tsx", "client/src/lib/queryClient.ts"],
+      "shared": ["shared/schema.ts"],
+      "config": ["package.json", "tsconfig.json", "vite.config.ts", "drizzle.config.ts", "tailwind.config.ts", "client/index.html"]
+    }
+  },
+  "modules": [
+    {
+      "id": "nexus-ai",
+      "name": "NEXUS AI Agents",
+      "description": "AI-powered investigation assistant with model selection, multi-agent orchestration, and 6 specialized security agents",
+      "category": "ai",
+      "dependencies": [],
+      "optional_deps": ["scanner-osint", "report-builder"],
+      "nav": { "section": "user", "path": "/agents", "label": "NEXUS Agents", "icon": "Bot", "color": "teal" },
+      "schema_tables": ["investigationContexts", "interactionLogs"],
+      "routes": "server/routes/agents.ts",
+      "pages": ["client/src/pages/Agents.tsx"],
+      "components": ["client/src/components/AgentChat.tsx"],
+      "hooks": ["client/src/hooks/useAgentChat.tsx"],
+      "env_keys": ["OPENROUTER_API_KEY"]
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal System",
+      "description": "Custom command-line terminal with command parsing, history, secret command discovery, and styled output",
+      "category": "core",
+      "dependencies": [],
+      "optional_deps": ["gamification"],
+      "nav": { "section": "user", "path": "/terminal", "label": "Terminal", "icon": "Terminal", "color": "amber" },
+      "schema_tables": ["commandLogs"],
+      "routes": null,
+      "pages": ["client/src/pages/Terminal.tsx"],
+      "components": ["client/src/components/CustomTerminal.tsx"],
+      "hooks": []
+    },
+    {
+      "id": "campaigns",
+      "name": "Campaign System",
+      "description": "23 investigation campaigns with visual flow editor, campaign player, wikilinks, and branching narratives",
+      "category": "content",
+      "dependencies": [],
+      "optional_deps": ["gamification", "nexus-ai"],
+      "nav": [
+        { "section": "user", "path": "/campaigns", "label": "AI Academy", "icon": "Shield", "color": "teal" },
+        { "section": "admin", "path": "/builder", "label": "Campaign Builder", "icon": "Settings", "color": "amber" }
+      ],
+      "schema_tables": ["campaignRuns", "campaignTemplates", "flowNodes", "designerCampaigns", "campaignLinks", "campaignStats"],
+      "routes": null,
+      "pages": ["client/src/pages/CampaignsHub.tsx", "client/src/pages/CampaignPlayer.tsx", "client/src/pages/builder/CampaignBuilder.tsx"],
+      "components": ["client/src/components/CampaignDesigner.tsx", "client/src/components/campaign/"],
+      "hooks": []
+    },
+    {
+      "id": "scanner-osint",
+      "name": "Scanner & OSINT Toolkit",
+      "description": "Atropos scanner dashboard, real OSINT integration (IOC lookup, DNS, WHOIS, port scanning), newsfeed from 16 cybersecurity sources",
+      "category": "security",
+      "dependencies": [],
+      "optional_deps": ["nexus-ai", "report-builder", "spiderfoot"],
+      "nav": { "section": "admin", "path": "/scanner", "label": "Atropos Admin", "icon": "Shield", "color": "amber" },
+      "schema_tables": ["osintTools", "osintToolCalls"],
+      "routes": ["server/routes/osint.ts", "server/routes/atropos.ts"],
+      "pages": ["client/src/pages/ScannerDashboard.tsx"],
+      "components": ["client/src/components/AtroposScanner.tsx", "client/src/components/AtroposPanel.tsx", "client/src/components/AtroposCard.tsx"],
+      "hooks": [],
+      "external": ["tools/osint_toolkit/"]
+    },
+    {
+      "id": "qr-c2",
+      "name": "QR C2 Framework",
+      "description": "Educational QR-based command & control system with 3 guided missions, 6 hijacking labs, multi-target simulation, attack flow presets",
+      "category": "security",
+      "dependencies": [],
+      "optional_deps": ["gamification"],
+      "nav": null,
+      "schema_tables": [],
+      "routes": null,
+      "pages": [],
+      "components": ["client/src/components/QRCodeModal.tsx"],
+      "hooks": [],
+      "server_utils": ["server/qrcode.ts"]
+    },
+    {
+      "id": "gamification",
+      "name": "Player Progression & Gamification",
+      "description": "XP, levels, 500+ achievements, leaderboards, daily challenges, skill specializations, player profiles",
+      "category": "engagement",
+      "dependencies": [],
+      "optional_deps": [],
+      "nav": [
+        { "section": "user", "path": "/profile", "label": "Profile", "icon": "User", "color": "teal" },
+        { "section": "user", "path": "/leaderboards", "label": "Rankings", "icon": "TrendingUp", "color": "teal" }
+      ],
+      "schema_tables": ["playerProgression", "achievements", "playerAchievements", "leaderboardEntries", "dailyChallenges", "challengeCompletions", "achievementDefinitions", "gameEvents"],
+      "routes": "server/routes/progressionRoutes.ts",
+      "pages": ["client/src/pages/Profile.tsx", "client/src/pages/Leaderboards.tsx"],
+      "components": ["client/src/components/AchievementManager.tsx", "client/src/components/AchievementNotification.tsx", "client/src/components/PlayerStatsPanel.tsx"],
+      "hooks": ["client/src/hooks/useGameSession.tsx"]
+    },
+    {
+      "id": "behavior-analysis",
+      "name": "Behavior Analysis",
+      "description": "User behavior tracking, customer journey mapping, persona classification, engagement funnels, marketing insights with export",
+      "category": "analytics",
+      "dependencies": [],
+      "optional_deps": ["report-builder"],
+      "nav": { "section": "admin", "path": "/behavior", "label": "Behavior Analysis", "icon": "Eye", "color": "amber" },
+      "schema_tables": ["behavioralProfiles"],
+      "routes": ["server/routes/behavior.ts", "server/routes/behaviorRoutes2.ts"],
+      "pages": ["client/src/pages/BehaviorAnalysis.tsx"],
+      "components": [],
+      "hooks": [],
+      "server_utils": ["server/behaviorAnalyzer.ts"]
+    },
+    {
+      "id": "report-builder",
+      "name": "Report Builder",
+      "description": "Bug bounty report structuring, vulnerability tracking, AI benchmarking, shared investigation context, multi-format export",
+      "category": "tools",
+      "dependencies": [],
+      "optional_deps": ["nexus-ai", "scanner-osint"],
+      "nav": null,
+      "schema_tables": [],
+      "routes": null,
+      "pages": ["client/src/pages/ReportBuilder.tsx"],
+      "components": [],
+      "hooks": ["client/src/hooks/useReportContext.tsx"]
+    },
+    {
+      "id": "portfolio",
+      "name": "Portfolio System",
+      "description": "Shareable investigation portfolio with viz picker (radar, donut, timeline), evidence tagging, visibility controls",
+      "category": "engagement",
+      "dependencies": [],
+      "optional_deps": ["gamification", "report-builder"],
+      "nav": null,
+      "schema_tables": [],
+      "routes": "server/routes/portfolio.ts",
+      "pages": ["client/src/pages/PortfolioShare.tsx"],
+      "components": ["client/src/components/PortfolioTab.tsx"],
+      "hooks": []
+    },
+    {
+      "id": "ai-lab",
+      "name": "AI Lab (Battleground)",
+      "description": "Prompt engineering playground with live preview, cost tracking, model comparison, AI pentesting challenges",
+      "category": "ai",
+      "dependencies": ["nexus-ai"],
+      "optional_deps": [],
+      "nav": { "section": "user", "path": "/ai-lab", "label": "AI Lab", "icon": "FlaskConical", "color": "teal" },
+      "schema_tables": ["adminPrompts", "promptGallery"],
+      "routes": null,
+      "pages": ["client/src/pages/AILab.tsx"],
+      "components": ["client/src/components/PromptLab.tsx", "client/src/components/PromptStudio.tsx", "client/src/components/PromptGallerySection.tsx"],
+      "hooks": []
+    },
+    {
+      "id": "wiki",
+      "name": "Wiki & Documentation",
+      "description": "Built-in documentation system with search, cross-linking, and content management",
+      "category": "content",
+      "dependencies": [],
+      "optional_deps": [],
+      "nav": { "section": "user", "path": "/wiki", "label": "Wiki", "icon": "BookOpen", "color": "teal" },
+      "schema_tables": [],
+      "routes": "server/routes/contentRoutes.ts",
+      "pages": ["client/src/pages/Wiki.tsx"],
+      "components": ["client/src/components/ContentSearch.tsx", "client/src/components/WikiLinkInput.tsx"],
+      "hooks": []
+    },
+    {
+      "id": "spiderfoot",
+      "name": "SpiderFoot Integration",
+      "description": "OSINT reconnaissance with streaming scan results, real-time progress, and export capabilities",
+      "category": "security",
+      "dependencies": ["scanner-osint"],
+      "optional_deps": ["report-builder"],
+      "nav": null,
+      "schema_tables": [],
+      "routes": "server/routes/spiderfoot.ts",
+      "pages": [],
+      "components": ["client/src/components/SpiderFootTab.tsx"],
+      "hooks": []
+    },
+    {
+      "id": "crew-builder",
+      "name": "Crew Builder",
+      "description": "Multi-agent orchestration system for assembling specialized agent teams with CrewAI export",
+      "category": "ai",
+      "dependencies": ["nexus-ai"],
+      "optional_deps": [],
+      "nav": { "section": "admin", "path": "/crew-builder", "label": "Crew Builder", "icon": "Users", "color": "amber" },
+      "schema_tables": ["agentModules"],
+      "routes": null,
+      "pages": ["client/src/pages/CrewBuilder.tsx"],
+      "components": ["client/src/components/CrewAIExporter.tsx"],
+      "hooks": [],
+      "external": ["server/crewai/"]
+    }
+  ],
+  "categories": {
+    "core": "Essential platform infrastructure",
+    "ai": "AI-powered features requiring OpenRouter API",
+    "security": "Cybersecurity scanning and analysis tools",
+    "content": "Learning content and campaign systems",
+    "engagement": "User engagement, progression, and social features",
+    "analytics": "Data analysis and marketing intelligence",
+    "tools": "Utility tools and builders"
+  },
+  "presets": {
+    "minimal": {
+      "name": "Minimal",
+      "description": "Just the core platform with terminal and basic navigation",
+      "modules": ["terminal"]
+    },
+    "learner": {
+      "name": "Learner",
+      "description": "Full learning platform with campaigns, AI agents, and gamification",
+      "modules": ["nexus-ai", "terminal", "campaigns", "gamification", "wiki"]
+    },
+    "security-analyst": {
+      "name": "Security Analyst",
+      "description": "OSINT tools, scanning, reports, and investigation workflows",
+      "modules": ["nexus-ai", "terminal", "scanner-osint", "spiderfoot", "report-builder", "portfolio"]
+    },
+    "full": {
+      "name": "Full Platform",
+      "description": "Everything included — all features and tools",
+      "modules": ["nexus-ai", "terminal", "campaigns", "scanner-osint", "qr-c2", "gamification", "behavior-analysis", "report-builder", "portfolio", "ai-lab", "wiki", "spiderfoot", "crew-builder"]
+    },
+    "marketing": {
+      "name": "Marketing & Analytics",
+      "description": "Behavior analysis, user journeys, engagement tracking",
+      "modules": ["behavior-analysis", "gamification", "report-builder"]
+    }
+  }
+}
