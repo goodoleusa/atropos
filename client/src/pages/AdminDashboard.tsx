@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -54,7 +54,6 @@ import { WikiLinkInput, extractLinkIds } from "@/components/WikiLinkInput";
 import { ClueGraph } from "@/components/ClueGraph";
 import { ClueBreadcrumbs } from "@/components/ClueBreadcrumbs";
 import { ApiPlayground } from "@/components/ApiPlayground";
-import CampaignDesigner from "@/components/CampaignDesigner";
 import { CollectiblesSection } from "@/pages/admin/CollectiblesSection";
 import { QuestsSection } from "@/pages/admin/QuestsSection";
 import { QuickPushSection } from "@/pages/admin/QuickPushSection";
@@ -623,7 +622,7 @@ const NAV_ICONS: Record<string, any> = {
 export default function AdminDashboard() {
   const { gameState, toggleDevMode } = useGame();
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
-  const [campaignDesignerOpen, setCampaignDesignerOpen] = useState(false);
+  const [, navigate] = useLocation();
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({ 'root': true });
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
@@ -734,7 +733,7 @@ export default function AdminDashboard() {
       case 'sitemap': return <SitemapPanel />;
       case 'sessions': return <SessionsPanel />;
       case 'behavior': return <BehaviorAnalyticsPanel />;
-      case 'designer': return <CampaignDesignerPanel setCampaignDesignerOpen={setCampaignDesignerOpen} />;
+      case 'designer': return <CampaignDesignerPanel onOpenBuilder={() => navigate('/builder')} />;
       case 'gameplay': return <GameplaySection />;
       case 'collectibles': return <CollectiblesSection />;
       case 'quests': return <QuestsSection quests={quests} />;
@@ -750,7 +749,7 @@ export default function AdminDashboard() {
       case 'messages': return <MessagesPanel chaosEnabled={chaosEnabled} setChaosEnabled={setChaosEnabled} subliminalMessages={subliminalMessages} newSubliminal={newSubliminal} setNewSubliminal={setNewSubliminal} addSubliminalMessage={addSubliminalMessage} removeSubliminalMessage={removeSubliminalMessage} renderTree={renderTree} />;
       case 'terminal': return <TerminalPanel />;
       case 'config': return <ConfigPanel gameState={gameState} clues={clues} quests={quests} />;
-      case 'campaigns': return <CampaignsPanel setSelectedCampaign={setSelectedCampaign} setCampaignDesignerOpen={setCampaignDesignerOpen} />;
+      case 'campaigns': return <CampaignsPanel onOpenBuilder={(campaignId?: string) => navigate(campaignId ? `/builder?campaign=${campaignId}` : '/builder')} />;
       default: return <ActivityLogPanel />;
     }
   };
@@ -882,11 +881,6 @@ export default function AdminDashboard() {
 
       {/* Modals */}
       <ApiPlayground open={apiPlaygroundOpen} onOpenChange={setApiPlaygroundOpen} />
-      <CampaignDesigner 
-        open={campaignDesignerOpen} 
-        onOpenChange={setCampaignDesignerOpen} 
-        sessionToken={gameState?.sessionToken}
-      />
     </div>
   );
 }
@@ -1453,7 +1447,7 @@ Context: Escape room game with hidden routes, QR mechanics, clue collection`}
   );
 }
 
-function CampaignDesignerPanel({ setCampaignDesignerOpen }: { setCampaignDesignerOpen: (v: boolean) => void }) {
+function CampaignDesignerPanel({ onOpenBuilder }: { onOpenBuilder: () => void }) {
   const { toast } = useToast();
   const { data: designerCampaigns = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/designer/campaigns'],
@@ -1520,7 +1514,7 @@ function CampaignDesignerPanel({ setCampaignDesignerOpen }: { setCampaignDesigne
             Export to Obsidian
           </Button>
           <Button
-            onClick={() => setCampaignDesignerOpen(true)}
+            onClick={onOpenBuilder}
             className="bg-purple-900/30 text-purple-300 hover:bg-purple-900/50 border border-purple-700/50"
             size="sm"
           >
@@ -1545,7 +1539,7 @@ function CampaignDesignerPanel({ setCampaignDesignerOpen }: { setCampaignDesigne
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-4">
               <Card className="bg-purple-950/20 border-purple-800/30 cursor-pointer hover:border-purple-600/50 transition-all"
-                    onClick={() => setCampaignDesignerOpen(true)}>
+                    onClick={onOpenBuilder}>
                 <CardContent className="p-4 text-center">
                   <Layers className="w-8 h-8 text-purple-400 mx-auto mb-2" />
                   <h4 className="font-bold text-stone-200 text-sm mb-1">Visual Designer</h4>
@@ -1593,8 +1587,7 @@ function CampaignDesignerPanel({ setCampaignDesignerOpen }: { setCampaignDesigne
                       key={campaign.campaignId} 
                       className="bg-stone-900/30 border-stone-800 hover:border-purple-600/50 transition-all cursor-pointer"
                       onClick={() => {
-                        // Load campaign into designer
-                        setCampaignDesignerOpen(true);
+                        onOpenBuilder();
                       }}
                     >
                       <CardContent className="p-4">
@@ -1959,7 +1952,7 @@ function ConfigPanel({ gameState, clues, quests }: { gameState: any; clues: any[
   );
 }
 
-function CampaignsPanel({ setSelectedCampaign, setCampaignDesignerOpen }: { setSelectedCampaign: (c: any) => void; setCampaignDesignerOpen: (v: boolean) => void }) {
+function CampaignsPanel({ onOpenBuilder }: { onOpenBuilder: (campaignId?: string) => void }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -1967,7 +1960,7 @@ function CampaignsPanel({ setSelectedCampaign, setCampaignDesignerOpen }: { setS
           <Rocket className="w-5 h-5" /> Investigation Campaigns
         </h3>
         <Button
-          onClick={() => setCampaignDesignerOpen(true)}
+          onClick={() => onOpenBuilder()}
           className="bg-amber-900/30 text-amber-400 hover:bg-amber-900/50 border border-amber-700/30"
           size="sm"
         >
@@ -1976,7 +1969,7 @@ function CampaignsPanel({ setSelectedCampaign, setCampaignDesignerOpen }: { setS
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {AGENT_CAMPAIGNS.map((campaign) => (
-          <Card key={campaign.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-700/50 transition-all cursor-pointer" onClick={() => { setSelectedCampaign(campaign); setCampaignDesignerOpen(true); }}>
+          <Card key={campaign.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-700/50 transition-all cursor-pointer" onClick={() => { onOpenBuilder(campaign.id); }}>
             <CardHeader className="pb-2">
               <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
                 <Target className="w-4 h-4" /> {campaign.name}

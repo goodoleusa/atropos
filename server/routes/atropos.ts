@@ -261,15 +261,24 @@ interface SimulatedScanResult {
 }
 
 const AVAILABLE_SCRIPTS = [
-  { id: "bbot_scanner", name: "BBOT Scanner", description: "Recursive subdomain enumeration", category: "osint" },
-  { id: "amass_osint", name: "Amass OSINT", description: "OWASP subdomain discovery", category: "osint" },
-  { id: "nuclei_scanner", name: "Nuclei", description: "Template-based vulnerability scanning", category: "vuln" },
-  { id: "xss_scanner", name: "XSS Scanner", description: "Cross-site scripting detection", category: "vuln" },
-  { id: "sqli_scanner", name: "SQLi Scanner", description: "SQL injection detection", category: "vuln" },
-  { id: "threat_intel_scanner", name: "Threat Intel", description: "Shodan, VirusTotal, SecurityTrails", category: "intel" },
-  { id: "spiderfoot_osint", name: "SpiderFoot", description: "Automated OSINT collection", category: "osint" },
-  { id: "finalrecon_scanner", name: "FinalRecon", description: "Full web reconnaissance", category: "recon" },
-  { id: "api_fuzzer", name: "API Fuzzer", description: "API endpoint discovery and testing", category: "api" },
+  { id: "bbot_scanner", name: "BBOT Scanner", description: "Recursive subdomain enumeration & web discovery", category: "osint", difficulty: "beginner", education: "BBOT (Bighuge BLS OSINT Tool) crawls DNS records, certificates, and web pages to recursively find subdomains and related infrastructure. Great first tool for mapping an organization's attack surface. Finds: subdomains, IPs, URLs, emails, cloud buckets.", realTool: "bbot", installed: false },
+  { id: "amass_osint", name: "Amass OSINT", description: "OWASP subdomain discovery & network mapping", category: "osint", difficulty: "intermediate", education: "Amass by OWASP performs DNS enumeration, scraping, and API queries to discover subdomains and map external network ranges. It cross-references dozens of data sources. Use when you need thorough subdomain discovery with graph-based relationship mapping.", realTool: "amass", installed: true },
+  { id: "subfinder_enum", name: "Subfinder", description: "Fast passive subdomain enumeration", category: "osint", difficulty: "beginner", education: "Subfinder by ProjectDiscovery passively finds subdomains using search engines, certificate logs, and threat intel APIs. It's extremely fast because it never touches the target directly - purely passive. Best for quick initial recon without alerting the target.", realTool: "subfinder", installed: true },
+  { id: "theharvester_recon", name: "theHarvester", description: "Email, subdomain & host discovery from public sources", category: "osint", difficulty: "beginner", education: "theHarvester gathers emails, names, subdomains, IPs, and URLs from public sources like search engines, PGP key servers, and Shodan. Classic OSINT tool used in every pentest engagement. Great for initial information gathering before deeper scans.", realTool: "theHarvester", installed: true },
+  { id: "argus_recon", name: "Argus Recon", description: "All-in-one OSINT reconnaissance toolkit", category: "osint", difficulty: "intermediate", education: "Argus is a comprehensive recon toolkit combining DNS analysis, port scanning, SSL inspection, technology fingerprinting, WAF detection, and threat intel lookups (VirusTotal, Shodan, Censys) into one tool. Good for getting a complete picture of a target from a single scan.", realTool: "argus", installed: true },
+  { id: "nuclei_scanner", name: "Nuclei", description: "Template-based vulnerability scanning with 8000+ checks", category: "vuln", difficulty: "intermediate", education: "Nuclei by ProjectDiscovery uses community-maintained YAML templates to scan for known vulnerabilities, misconfigurations, exposed panels, and CVEs. With 8000+ templates covering web apps, network services, and cloud configs, it's the go-to scanner for finding known issues fast.", realTool: "nuclei", installed: true },
+  { id: "xss_scanner", name: "XSS Scanner", description: "Cross-site scripting detection in web forms & parameters", category: "vuln", difficulty: "intermediate", education: "Tests web application input fields and URL parameters for Cross-Site Scripting (XSS) vulnerabilities. XSS lets attackers inject malicious scripts into web pages viewed by other users - used for session hijacking, defacement, and credential theft. Essential for web app security testing.", realTool: null, installed: true },
+  { id: "sqli_scanner", name: "SQLi Scanner", description: "SQL injection detection in database-backed applications", category: "vuln", difficulty: "intermediate", education: "Tests for SQL Injection vulnerabilities where attacker-controlled input gets executed as database queries. SQLi can lead to data theft, authentication bypass, and full database compromise. One of the OWASP Top 10 - every web app pentester needs to understand this.", realTool: null, installed: true },
+  { id: "nmap_scanner", name: "Nmap", description: "Network port scanning & service detection", category: "recon", difficulty: "beginner", education: "Nmap (Network Mapper) is the most widely-used network scanner. It discovers open ports, identifies running services and their versions, detects operating systems, and can run vulnerability scripts (NSE). Fundamental tool for network reconnaissance - learn this first.", realTool: "nmap", installed: true },
+  { id: "nikto_scanner", name: "Nikto", description: "Web server vulnerability & misconfiguration scanner", category: "vuln", difficulty: "beginner", education: "Nikto scans web servers for dangerous files, outdated software, and misconfigurations. It checks for 7000+ potentially dangerous files/programs and 1250+ outdated server versions. Good for quickly finding low-hanging fruit on web servers.", realTool: "nikto", installed: true },
+  { id: "gobuster_scan", name: "Gobuster", description: "Directory & file brute-forcing on web servers", category: "recon", difficulty: "beginner", education: "Gobuster brute-forces directories, files, DNS subdomains, and virtual host names on web servers using wordlists. Essential for finding hidden admin panels, backup files, and undocumented API endpoints that aren't linked from the main site.", realTool: "gobuster", installed: true },
+  { id: "ffuf_fuzzer", name: "FFUF", description: "Fast web fuzzer for directories, parameters & headers", category: "recon", difficulty: "intermediate", education: "FFUF (Fuzz Faster U Fool) is a high-speed web fuzzer that brute-forces directories, GET/POST parameters, HTTP headers, and more. More flexible than Gobuster - can fuzz any part of an HTTP request. Used for content discovery and parameter mining.", realTool: "ffuf", installed: true },
+  { id: "httpx_probe", name: "HTTPX", description: "HTTP probing & technology fingerprinting", category: "recon", difficulty: "beginner", education: "HTTPX by ProjectDiscovery probes a list of hosts to find live web servers, detect technologies, extract titles, follow redirects, and grab screenshots. Perfect for processing large lists of subdomains to find which ones are actually running web services.", realTool: "httpx", installed: true },
+  { id: "masscan_scan", name: "Masscan", description: "Ultra-fast port scanner for large networks", category: "recon", difficulty: "advanced", education: "Masscan can scan the entire internet in under 6 minutes. It's designed for speed over stealth, sending millions of packets per second. Use for quickly scanning large IP ranges to find specific open ports. Warning: very noisy - targets will notice.", realTool: "masscan", installed: true },
+  { id: "threat_intel_scanner", name: "Threat Intel", description: "Multi-source threat intelligence aggregation", category: "intel", difficulty: "intermediate", education: "Combines results from Shodan (internet-connected devices), VirusTotal (malware analysis), and SecurityTrails (DNS history) to build a comprehensive threat profile. Shows you what the threat intel community already knows about your target.", realTool: null, installed: true },
+  { id: "spiderfoot_osint", name: "SpiderFoot", description: "230+ module automated OSINT collection engine", category: "osint", difficulty: "advanced", education: "SpiderFoot automates OSINT collection across 230+ data sources including DNS, WHOIS, social media, dark web, breach databases, and more. It correlates findings to show relationships between entities. The most comprehensive automated OSINT tool available.", realTool: "sf.py", installed: true },
+  { id: "finalrecon_scanner", name: "FinalRecon", description: "All-in-one web reconnaissance suite", category: "recon", difficulty: "beginner", education: "FinalRecon combines header analysis, WHOIS, SSL cert info, subdomain enumeration, directory brute-forcing, and Wayback Machine lookups into one tool. Good for beginners who want a single-command recon sweep of a web target.", realTool: null, installed: false },
+  { id: "api_fuzzer", name: "API Fuzzer", description: "REST API endpoint discovery & parameter testing", category: "api", difficulty: "intermediate", education: "Discovers undocumented API endpoints by brute-forcing common paths (/api/v1/users, /api/admin, etc.) and tests parameters for injection vulnerabilities. Essential for testing modern web applications that rely heavily on REST APIs.", realTool: null, installed: true },
 ];
 
 const scanResults: Map<string, SimulatedScanResult> = new Map();
@@ -278,46 +287,54 @@ function generateSimulatedScan(target: string, scriptId: string): SimulatedScanR
   const now = new Date().toISOString();
   const findings: AtroposFinding[] = [];
   
-  // Script-specific simulation logic
   if (scriptId.includes('sqli')) {
-    findings.push({ 
-      type: "vulnerability", 
-      value: `SQL Injection detected in ${target}/api/products?id=`, 
-      severity: "critical", 
-      source: "atropos-sqli",
-      metadata: { payload: "' OR 1=1 --", dbType: "PostgreSQL" }
-    });
+    findings.push({ type: "vulnerability", value: `SQL Injection detected in ${target}/api/products?id=`, severity: "critical", source: "atropos-sqli", metadata: { payload: "' OR 1=1 --", dbType: "PostgreSQL" } });
+    findings.push({ type: "vulnerability", value: `Blind SQLi in ${target}/login (time-based)`, severity: "high", source: "atropos-sqli", metadata: { payload: "' AND SLEEP(5)--", parameter: "username" } });
     findings.push({ type: "dns", value: target, severity: "info", source: "dns" });
   } else if (scriptId.includes('xss')) {
-    findings.push({ 
-      type: "vulnerability", 
-      value: `Reflected XSS on ${target}/search?q=`, 
-      severity: "high", 
-      source: "atropos-xss",
-      metadata: { payload: "<script>alert(1)</script>", parameter: "q" }
-    });
+    findings.push({ type: "vulnerability", value: `Reflected XSS on ${target}/search?q=`, severity: "high", source: "atropos-xss", metadata: { payload: "<script>alert(1)</script>", parameter: "q" } });
+    findings.push({ type: "vulnerability", value: `Stored XSS in ${target}/comments`, severity: "critical", source: "atropos-xss", metadata: { payload: "<img onerror=alert(1) src=x>", parameter: "body" } });
   } else if (scriptId.includes('secret') || scriptId.includes('leak')) {
-    findings.push({ 
-      type: "secret", 
-      value: `AWS Access Key found in ${target}/.env.bak`, 
-      severity: "critical", 
-      source: "atropos-leaks",
-      metadata: { keyType: "AWS_ACCESS_KEY", file: ".env.bak" }
+    findings.push({ type: "secret", value: `AWS Access Key found in ${target}/.env.bak`, severity: "critical", source: "atropos-leaks", metadata: { keyType: "AWS_ACCESS_KEY", file: ".env.bak" } });
+  } else if (scriptId.includes('nmap') || scriptId.includes('masscan')) {
+    [22, 80, 443, 3306, 5432, 8080, 8443, 9200].forEach(port => {
+      const svc = { 22: 'SSH', 80: 'HTTP', 443: 'HTTPS', 3306: 'MySQL', 5432: 'PostgreSQL', 8080: 'HTTP-Alt', 8443: 'HTTPS-Alt', 9200: 'Elasticsearch' }[port] || 'unknown';
+      findings.push({ type: "port", value: `${port}/tcp (${svc})`, severity: [3306, 5432, 9200].includes(port) ? "high" : "info", source: scriptId.includes('nmap') ? "nmap" : "masscan", metadata: { service: svc } });
     });
-  } else if (scriptId.includes('port') || scriptId.includes('nmap')) {
-    [22, 80, 443, 3306, 5432, 8080].forEach(port => {
-      findings.push({ type: "port", value: port.toString(), severity: port === 3306 ? "high" : "info", source: "atropos-scan" });
+  } else if (scriptId.includes('nuclei') || scriptId.includes('nikto')) {
+    findings.push({ type: "vulnerability", value: `${target} - Missing X-Frame-Options header`, severity: "medium", source: "nuclei" });
+    findings.push({ type: "vulnerability", value: `${target} - Exposed .git directory`, severity: "high", source: "nuclei" });
+    findings.push({ type: "vulnerability", value: `${target}/robots.txt - Disallowed admin paths`, severity: "low", source: "nuclei" });
+    findings.push({ type: "technology", value: "nginx/1.24.0", severity: "info", source: "nuclei" });
+  } else if (scriptId.includes('gobuster') || scriptId.includes('ffuf')) {
+    ['/admin', '/api/v1', '/backup', '/.env', '/wp-admin', '/phpmyadmin', '/api/docs', '/swagger.json'].forEach(path => {
+      findings.push({ type: "url", value: `${target}${path}`, severity: path === '/.env' ? 'high' : 'info', source: scriptId.includes('gobuster') ? 'gobuster' : 'ffuf' });
     });
+  } else if (scriptId.includes('httpx')) {
+    findings.push({ type: "technology", value: `${target} [200] [nginx] [Login Page]`, severity: "info", source: "httpx" });
+    [`api.${target}`, `dev.${target}`, `staging.${target}`].forEach(h => {
+      findings.push({ type: "url", value: `https://${h} [200]`, severity: "info", source: "httpx" });
+    });
+  } else if (scriptId.includes('harvester') || scriptId.includes('argus')) {
+    [`admin@${target}`, `info@${target}`, `support@${target}`].forEach(e => {
+      findings.push({ type: "email", value: e, severity: "info", source: scriptId.includes('harvester') ? "theHarvester" : "argus" });
+    });
+    [`mail.${target}`, `vpn.${target}`, `dev.${target}`].forEach(s => {
+      findings.push({ type: "subdomain", value: s, severity: "info", source: scriptId.includes('harvester') ? "theHarvester" : "argus" });
+    });
+    findings.push({ type: "ip", value: "203.0.113.42", severity: "info", source: scriptId.includes('harvester') ? "theHarvester" : "argus" });
+  } else if (scriptId.includes('subfinder')) {
+    [`api.${target}`, `cdn.${target}`, `dev.${target}`, `staging.${target}`, `mail.${target}`, `vpn.${target}`, `admin.${target}`].forEach(s => {
+      findings.push({ type: "subdomain", value: s, severity: "info", source: "subfinder" });
+    });
+  } else if (scriptId.includes('threat')) {
+    findings.push({ type: "vulnerability", value: `${target} flagged on 2 threat feeds`, severity: "medium", source: "alienvault" });
+    findings.push({ type: "ip", value: "203.0.113.42 (Shodan: 14 open ports)", severity: "info", source: "shodan" });
+    findings.push({ type: "technology", value: `${target} - nginx, React, Node.js`, severity: "info", source: "virustotal" });
   } else {
-    // Default generic simulation
     const subdomainCount = Math.floor(Math.random() * 5) + 3;
     for (let i = 0; i < subdomainCount; i++) {
-      findings.push({
-        type: "subdomain",
-        value: `${['api', 'dev', 'vpn', 'stage', 'mail'][i % 5]}.${target}`,
-        severity: "info",
-        source: "atropos-discovery"
-      });
+      findings.push({ type: "subdomain", value: `${['api', 'dev', 'vpn', 'stage', 'mail'][i % 5]}.${target}`, severity: "info", source: "atropos-discovery" });
     }
   }
   

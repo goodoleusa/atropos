@@ -23,6 +23,10 @@ interface AtroposScript {
   name: string;
   description: string;
   category: string;
+  difficulty?: string;
+  education?: string;
+  realTool?: string | null;
+  installed?: boolean;
 }
 
 interface LuaScript {
@@ -225,7 +229,19 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
                       <div className="flex items-center gap-2 py-0.5">
                         {SCAN_CATEGORY_ICONS[s.category] || <Terminal className="w-3.5 h-3.5 text-stone-400" />}
                         <div className="flex flex-col items-start">
-                          <span className="font-medium text-sm">{s.name}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-medium text-sm">{s.name}</span>
+                            {s.difficulty && (
+                              <span className={`text-[9px] px-1.5 py-0 rounded-full font-bold ${
+                                s.difficulty === 'beginner' ? 'bg-teal-900/50 text-teal-400' :
+                                s.difficulty === 'intermediate' ? 'bg-amber-900/50 text-amber-400' :
+                                'bg-red-900/50 text-red-400'
+                              }`}>{s.difficulty}</span>
+                            )}
+                            {s.installed === false && (
+                              <span className="text-[9px] px-1 py-0 rounded bg-stone-800 text-stone-500">not installed</span>
+                            )}
+                          </div>
                           <span className="text-xs text-stone-500">{s.description}</span>
                         </div>
                       </div>
@@ -235,6 +251,32 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
               </Select>
             </div>
           </div>
+          {(() => {
+            const selected = scripts.find(s => s.id === selectedScript);
+            if (!selected?.education) return null;
+            return (
+              <div className="p-3 rounded-lg bg-stone-900/40 border border-stone-800/50 space-y-2" data-testid="tool-education-panel">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">About This Tool</span>
+                  {selected.difficulty && (
+                    <Badge variant="outline" className={`text-[10px] ml-auto ${
+                      selected.difficulty === 'beginner' ? 'border-teal-700 text-teal-400' :
+                      selected.difficulty === 'intermediate' ? 'border-amber-700 text-amber-400' :
+                      'border-red-700 text-red-400'
+                    }`}>{selected.difficulty}</Badge>
+                  )}
+                </div>
+                <p className="text-xs text-stone-400 leading-relaxed">{selected.education}</p>
+                {selected.realTool && (
+                  <div className="text-[10px] text-stone-500">
+                    Real tool: <span className="text-stone-400 font-mono">{selected.realTool}</span>
+                    {selected.installed ? ' (installed)' : ' (simulated)'}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
           <Button
             onClick={runScan}
             disabled={isScanning || !target.trim()}
@@ -1529,21 +1571,21 @@ interface ScannerContentProps {
 export function ScannerContent({ injectedTargets }: ScannerContentProps = {}) {
   return (
     <Tabs defaultValue="scan" className="w-full">
-      <TabsList className="grid w-full grid-cols-5 bg-stone-900/60 border border-stone-800" data-testid="scanner-tabs">
-        <TabsTrigger value="scan" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-scan">
-          <Play className="w-4 h-4 mr-2 hidden sm:inline" /> Scan
+      <TabsList className="flex flex-wrap w-full bg-stone-900/60 border border-stone-800 gap-1 p-1 h-auto" data-testid="scanner-tabs">
+        <TabsTrigger value="scan" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-scan">
+          <Play className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Scan</span>
         </TabsTrigger>
-        <TabsTrigger value="scripts" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-scripts">
-          <FileCode className="w-4 h-4 mr-2 hidden sm:inline" /> Lua Scripts
+        <TabsTrigger value="scripts" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-scripts">
+          <FileCode className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Lua</span>
         </TabsTrigger>
-        <TabsTrigger value="tools" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-tools">
-          <Zap className="w-4 h-4 mr-2 hidden sm:inline" /> Tools
+        <TabsTrigger value="tools" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-tools">
+          <Zap className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Tools</span>
         </TabsTrigger>
-        <TabsTrigger value="lookups" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-lookups">
-          <Globe className="w-4 h-4 mr-2 hidden sm:inline" /> API Lookups
+        <TabsTrigger value="lookups" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-lookups">
+          <Globe className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">API</span>
         </TabsTrigger>
-        <TabsTrigger value="history" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-history">
-          <Terminal className="w-4 h-4 mr-2 hidden sm:inline" /> History
+        <TabsTrigger value="history" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-history">
+          <Terminal className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">History</span>
         </TabsTrigger>
       </TabsList>
 
