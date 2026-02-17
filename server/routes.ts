@@ -10,6 +10,7 @@ import atroposRoutes from "./routes/atropos";
 import spiderfootRoutes from "./routes/spiderfoot";
 import feedbackRoutes from "./routes/feedback";
 import portfolioRoutes from "./routes/portfolio";
+import sitemapRoutes from "./routes/sitemap";
 import progressionRoutes from "./routes/progressionRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import { 
@@ -216,6 +217,9 @@ export async function registerRoutes(
 
   // Register Portfolio routes
   app.use(portfolioRoutes);
+
+  // Register Sitemap routes
+  app.use(sitemapRoutes);
   
   // Register Progression routes (XP, achievements, leaderboards, challenges)
   app.use(progressionRoutes);

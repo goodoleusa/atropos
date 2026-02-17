@@ -48,8 +48,12 @@ export default function QuickNav() {
   });
 
   const baseNavItems = [
-    // Foundation & Training
+    // Home & Profile
     { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
+    { path: '/profile', icon: User, label: 'Profile & Portfolio', color: 'teal' as const },
+    { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
+
+    // Foundation & Training
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
     { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
     { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
@@ -63,10 +67,6 @@ export default function QuickNav() {
     // Results & Documentation
     { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
     { path: '/wiki', icon: Shield, label: 'Wiki', color: 'teal' as const },
-    
-    // Profile & Rankings
-    { path: '/profile', icon: User, label: 'Portfolio', color: 'teal' as const },
-    { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
 
     // Dev Tools
     { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const },

@@ -58,7 +58,34 @@ export default function CampaignBuilder() {
     fetchCampaignList();
     const params = new URLSearchParams(location.split('?')[1] || '');
     const cid = params.get('campaign');
-    if (cid) loadCampaign(cid);
+    if (cid) {
+      loadCampaign(cid);
+    } else {
+      const arcId = params.get('arc');
+      const pageName = params.get('page');
+      const pageLayout = params.get('layout');
+      if (arcId) {
+        const tmpl = ARC_TEMPLATES.find((t: any) => t.id === arcId || t.name?.toLowerCase().replace(/\s+/g, '-') === arcId);
+        if (tmpl) {
+          setCampaign({
+            ...emptyCampaign,
+            id: uid(),
+            name: tmpl.name || arcId,
+            description: tmpl.description || '',
+            category: (tmpl as any).category || 'recon',
+            nodes: tmpl.nodes?.map((n: any) => mkNode(n.title || n.name || 'Node', n.type || 'scene', n.content || '')) || [],
+          });
+          toast({ title: `Loaded arc template: ${tmpl.name || arcId}` });
+        }
+      } else if (pageName) {
+        setCampaign({
+          ...emptyCampaign,
+          id: uid(),
+          name: decodeURIComponent(pageName),
+          description: `Page layout: ${pageLayout || 'card'}`,
+        });
+      }
+    }
   }, []);
 
   const fetchCampaignList = async () => {

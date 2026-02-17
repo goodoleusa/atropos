@@ -112,18 +112,19 @@ router.get("/api/portfolio/sources", rateLimit(15, 60000), async (req: Request, 
     const sessionToken = getToken(req);
     if (!sessionToken) return res.status(401).json({ error: "No session token" });
 
-    const [investigations, campaignRuns, scans] = await Promise.all([
+    const [investigations, campaignRuns, scans, dossiers] = await Promise.all([
       storage.getInvestigationsBySession(sessionToken),
       storage.getCampaignRunsBySession(sessionToken),
       db.select().from(atroposScans)
         .where(eq(atroposScans.sessionToken, sessionToken))
         .orderBy(desc(atroposScans.startedAt))
-        .catch(() => [])
+        .catch(() => []),
+      storage.getDossiersBySession(sessionToken).catch(() => [])
     ]);
 
     res.json({
       success: true,
-      sources: { investigations, campaignRuns, scans }
+      sources: { investigations, campaignRuns, scans, dossiers }
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

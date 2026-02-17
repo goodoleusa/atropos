@@ -113,7 +113,12 @@ import {
   type InsertFeedbackItem,
   portfolioEntries,
   type PortfolioEntry,
-  type InsertPortfolioEntry
+  type InsertPortfolioEntry,
+  dossiers,
+  type Dossier,
+  sitemapEntries,
+  type SitemapEntry,
+  type InsertSitemapEntry,
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -399,6 +404,9 @@ export interface IStorage {
   deleteFeedbackItem(id: number): Promise<boolean>;
   voteFeedbackItem(id: number): Promise<FeedbackItem | undefined>;
 
+  // Dossiers (Report Builder)
+  getDossiersBySession(sessionToken: string): Promise<Dossier[]>;
+
   // Portfolio Entries
   getPortfolioEntriesBySession(sessionToken: string): Promise<PortfolioEntry[]>;
   getPortfolioEntryById(id: number): Promise<PortfolioEntry | undefined>;
@@ -407,6 +415,16 @@ export interface IStorage {
   updatePortfolioEntry(id: number, updates: Partial<PortfolioEntry>): Promise<PortfolioEntry | undefined>;
   deletePortfolioEntry(id: number): Promise<boolean>;
   getPublicPortfolioEntries(sessionToken: string): Promise<PortfolioEntry[]>;
+
+  // Sitemap Entries
+  getAllSitemapEntries(): Promise<SitemapEntry[]>;
+  getSitemapEntryById(id: number): Promise<SitemapEntry | undefined>;
+  getSitemapEntryByPath(path: string): Promise<SitemapEntry | undefined>;
+  upsertSitemapEntryByPath(path: string, entry: Partial<InsertSitemapEntry>): Promise<SitemapEntry>;
+  createSitemapEntry(entry: InsertSitemapEntry): Promise<SitemapEntry>;
+  updateSitemapEntry(id: number, updates: Partial<SitemapEntry>): Promise<SitemapEntry | undefined>;
+  deleteSitemapEntry(id: number): Promise<boolean>;
+  bulkUpsertSitemapEntries(entries: InsertSitemapEntry[]): Promise<SitemapEntry[]>;
 }
 
 // Admin configuration type (stored in memory/file, not DB)
@@ -2310,6 +2328,12 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
+  async getDossiersBySession(sessionToken: string): Promise<Dossier[]> {
+    return db.select().from(dossiers)
+      .where(eq(dossiers.sessionToken, sessionToken))
+      .orderBy(desc(dossiers.updatedAt));
+  }
+
   async getPortfolioEntriesBySession(sessionToken: string): Promise<PortfolioEntry[]> {
     return db.select().from(portfolioEntries)
       .where(eq(portfolioEntries.sessionToken, sessionToken))
@@ -2351,6 +2375,82 @@ export class DatabaseStorage implements IStorage {
         eq(portfolioEntries.visibility, "public")
       ))
       .orderBy(desc(portfolioEntries.featured), desc(portfolioEntries.updatedAt));
+  }
+
+  async getAllSitemapEntries(): Promise<SitemapEntry[]> {
+    return db.select().from(sitemapEntries).orderBy(sitemapEntries.sortOrder, sitemapEntries.category);
+  }
+
+  async getSitemapEntryById(id: number): Promise<SitemapEntry | undefined> {
+    const [entry] = await db.select().from(sitemapEntries).where(eq(sitemapEntries.id, id));
+    return entry;
+  }
+
+  async getSitemapEntryByPath(path: string): Promise<SitemapEntry | undefined> {
+    const [entry] = await db.select().from(sitemapEntries).where(eq(sitemapEntries.path, path));
+    return entry;
+  }
+
+  async upsertSitemapEntryByPath(path: string, entry: Partial<InsertSitemapEntry>): Promise<SitemapEntry> {
+    const existing = await this.getSitemapEntryByPath(path);
+    if (existing) {
+      const [updated] = await db.update(sitemapEntries)
+        .set({ ...entry, updatedAt: new Date() })
+        .where(eq(sitemapEntries.id, existing.id))
+        .returning();
+      return updated;
+    }
+    const maxOrder = await db.select().from(sitemapEntries).then(rows => rows.length > 0 ? Math.max(...rows.map(r => r.sortOrder)) + 1 : 0);
+    const [created] = await db.insert(sitemapEntries).values({
+      name: entry.name || 'Untitled',
+      path,
+      icon: entry.icon || 'Rocket',
+      description: entry.description || '',
+      category: entry.category || 'Campaigns & Learning',
+      color: entry.color || 'purple',
+      pageLayout: entry.pageLayout || 'card',
+      isCustom: true,
+      isPublished: entry.isPublished ?? false,
+      sortOrder: entry.sortOrder ?? maxOrder,
+      ...entry,
+    } as InsertSitemapEntry).returning();
+    return created;
+  }
+
+  async createSitemapEntry(entry: InsertSitemapEntry): Promise<SitemapEntry> {
+    const [created] = await db.insert(sitemapEntries).values(entry).returning();
+    return created;
+  }
+
+  async updateSitemapEntry(id: number, updates: Partial<SitemapEntry>): Promise<SitemapEntry | undefined> {
+    const [updated] = await db.update(sitemapEntries)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(sitemapEntries.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteSitemapEntry(id: number): Promise<boolean> {
+    const result = await db.delete(sitemapEntries).where(eq(sitemapEntries.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async bulkUpsertSitemapEntries(entries: InsertSitemapEntry[]): Promise<SitemapEntry[]> {
+    const results: SitemapEntry[] = [];
+    for (const entry of entries) {
+      const [existing] = await db.select().from(sitemapEntries).where(eq(sitemapEntries.path, entry.path));
+      if (existing) {
+        const [updated] = await db.update(sitemapEntries)
+          .set({ ...entry, updatedAt: new Date(), isCustom: existing.isCustom })
+          .where(eq(sitemapEntries.id, existing.id))
+          .returning();
+        results.push(updated);
+      } else {
+        const [created] = await db.insert(sitemapEntries).values(entry).returning();
+        results.push(created);
+      }
+    }
+    return results;
   }
 }
 
