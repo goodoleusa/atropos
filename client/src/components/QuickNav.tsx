@@ -94,13 +94,14 @@ export default function QuickNav() {
 
   return (
     <div 
-      className="flex fixed bottom-6 left-6 z-[10000] flex-col items-start gap-2 max-w-[calc(100vw-3rem)]" 
+      className="flex fixed bottom-6 left-6 z-[10000] flex-col items-start gap-2" 
       data-testid="quick-nav"
+      style={{ isolation: 'isolate' }}
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
     >
       {expanded && (
-        <div className="bg-black/95 backdrop-blur border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar molten-edge shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+        <div className="bg-black border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar shadow-[0_0_50px_rgba(0,0,0,0.9)]">
           {progression && (
             <div className="px-3 py-2 border-b border-stone-800 mb-2">
               <div className="flex items-center justify-between mb-1">
@@ -108,7 +109,7 @@ export default function QuickNav() {
                   <Trophy className="w-3 h-3 text-amber-500" />
                   <span className="text-xs font-bold text-amber-400">Level {progression.level}</span>
                 </div>
-                <Badge variant="outline" className="text-[9px] border-teal-600 text-teal-400">
+                <Badge variant="outline" className="text-[9px] border-amber-600 text-amber-400">
                   {progression.xp} / {progression.level * 100} XP
                 </Badge>
               </div>
@@ -124,7 +125,7 @@ export default function QuickNav() {
               <p className="text-[10px] text-stone-500 uppercase">Active Session</p>
               <p className="text-xs text-amber-400 font-bold truncate max-w-[150px]">{currentSession.name}</p>
               <div className="flex gap-2 mt-1 text-[10px]">
-                <span className="text-teal-400">{targets.length} targets</span>
+                <span className="text-amber-500">{targets.length} targets</span>
                 <span className="text-amber-400">{pendingFindings.length} findings</span>
               </div>
             </div>
@@ -186,7 +187,7 @@ export default function QuickNav() {
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex-1 h-1.5 bg-stone-800 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-amber-600 to-teal-500 rounded-full transition-all"
+                    className="h-full bg-amber-600 rounded-full transition-all"
                     style={{ width: `${Math.min(100, (gameState.inventory?.length || 0) * 5)}%` }}
                   />
                 </div>
@@ -259,7 +260,7 @@ export default function QuickNav() {
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 />
               )}
-            <div className="relative z-20 flex items-center justify-center">
+              <div className="relative z-20 flex items-center justify-center">
                 <motion.div
                   className="flex flex-col items-center"
                   animate={expanded ? { rotate: 0 } : { 
@@ -272,12 +273,12 @@ export default function QuickNav() {
                 </motion.div>
               </div>
             </div>
-            {!expanded && pendingFindings.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-600 rounded-full text-[10px] text-black font-bold flex items-center justify-center border-2 border-stone-950 z-20">
-                {pendingFindings.length}
-              </span>
-            )}
           </Button>
+          {!expanded && pendingFindings.length > 0 && (
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#f59e0b] rounded-full text-[10px] text-black font-bold flex items-center justify-center border-2 border-[#000000] z-[10001] pointer-events-none shadow-[0_0_15px_rgba(245,158,11,0.9)]">
+              {pendingFindings.length}
+            </div>
+          )}
         </div>
       </InteractiveHover>
     </div>
