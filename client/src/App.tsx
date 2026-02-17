@@ -33,6 +33,7 @@ import BusinessDashboard from "@/pages/BusinessDashboard";
 import InvestorDashboard from "@/pages/InvestorDashboard";
 import MissionLanding from "@/pages/MissionLanding";
 import ScannerDashboard from "@/pages/ScannerDashboard";
+import PortfolioShare from "@/pages/PortfolioShare";
 
 function Router() {
   return (
@@ -41,6 +42,7 @@ function Router() {
       <Route path="/mission" component={MissionLanding} />
       <Route path="/terminal" component={TerminalPage} />
       <Route path="/profile" component={Profile} />
+      <Route path="/portfolio/:shareId" component={PortfolioShare} />
       <Route path="/leaderboards" component={Leaderboards} />
       <Route path="/business" component={BusinessDashboard} />
       <Route path="/investors" component={InvestorDashboard} />
