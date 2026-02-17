@@ -9,6 +9,7 @@ import {
   Search, Play, Shield, Globe, Bug, Network, Users,
   FileText, Clock, ChevronRight, Zap, Filter, Sparkles, Terminal
 } from 'lucide-react';
+import { GlitchHover, GlitchText } from '@/components/GlitchHover';
 
 interface PublishedCampaign {
   campaignId: string;
@@ -276,6 +277,7 @@ export default function CampaignsHub() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
+                  <GlitchHover effect="scanline" intensity={0.3}>
                   <Card
                     className="bg-stone-950 border-stone-800 hover:border-amber-800 transition-all cursor-pointer group"
                     onClick={() => navigate(`/play/${campaign.campaignId}`)}
@@ -283,15 +285,17 @@ export default function CampaignsHub() {
                   >
                     <CardContent className="p-5">
                       <div className="flex items-start justify-between mb-3">
+                        <GlitchHover effect="color-shift" intensity={0.4}>
                         <div className={`p-2 rounded-lg border ${meta.bg}`}>
                           {meta.icon}
                         </div>
+                        </GlitchHover>
                         <Badge variant="outline" className={DIFFICULTY_COLORS[campaign.difficulty] || 'border-stone-700 text-stone-500'}>
                           {campaign.difficulty}
                         </Badge>
                       </div>
                       <h3 className="font-mono text-sm font-bold text-stone-200 group-hover:text-amber-400 transition-colors mb-1" data-testid={`campaign-name-${campaign.campaignId}`}>
-                        {campaign.name}
+                        <GlitchText text={campaign.name} effect="text-scramble" intensity={0.6} />
                       </h3>
                       <p className="text-stone-500 text-xs line-clamp-2 mb-3">{campaign.description}</p>
                       <div className="flex items-center justify-between">
@@ -314,6 +318,7 @@ export default function CampaignsHub() {
                       )}
                     </CardContent>
                   </Card>
+                  </GlitchHover>
                 </motion.div>
               );
             })}

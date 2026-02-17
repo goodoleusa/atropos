@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Trash2, Link as LinkIcon, Play, GitBranch, Zap, FileText, Folder, File } from 'lucide-react';
-import { Campaign, CampaignNode, COLORS, PAGE_LAYOUTS, COLOR_MAP } from './CampaignTypes';
+import { X, Trash2, Link as LinkIcon, Play, GitBranch, Zap, FileText, Folder, File, Sparkles } from 'lucide-react';
+import { Campaign, CampaignNode, COLORS, PAGE_LAYOUTS, COLOR_MAP, GlitchEffectType } from './CampaignTypes';
+import { GLITCH_EFFECTS, GlitchHover } from '@/components/GlitchHover';
 import { useToast } from '@/hooks/use-toast';
 
 const NODE_TYPES: { type: CampaignNode['type']; icon: React.ReactNode; color: string }[] = [
@@ -143,6 +144,89 @@ export default function NodePropertiesPanel({
         <LinkIcon className="w-3 h-3 mr-1.5" />
         {linkingFrom === node.id ? 'Click target...' : 'Add Link From Here'}
       </Button>
+
+      <Separator className="bg-stone-800" />
+
+      <div className="space-y-2">
+        <label className="text-[9px] text-amber-500/70 font-bold uppercase flex items-center gap-1">
+          <Sparkles className="w-3 h-3" /> UI Effects
+        </label>
+
+        <div className="space-y-1">
+          <label className="text-[8px] text-stone-500 uppercase">Hover Effect</label>
+          <Select
+            value={node.uiEffects?.hoverEffect || 'none'}
+            onValueChange={v => onUpdateNode(node.id, { uiEffects: { ...node.uiEffects, hoverEffect: v as GlitchEffectType } })}
+          >
+            <SelectTrigger data-testid="select-hover-effect" className="bg-stone-900 border-stone-800 h-7 text-[10px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {GLITCH_EFFECTS.map(e => (
+                <SelectItem key={e.id} value={e.id} className="text-xs">{e.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {node.uiEffects?.hoverEffect && node.uiEffects.hoverEffect !== 'none' && (
+          <div className="space-y-1">
+            <label className="text-[8px] text-stone-500 uppercase">Intensity ({((node.uiEffects?.hoverIntensity ?? 0.5) * 100).toFixed(0)}%)</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={(node.uiEffects?.hoverIntensity ?? 0.5) * 100}
+              onChange={e => onUpdateNode(node.id, { uiEffects: { ...node.uiEffects, hoverIntensity: parseInt(e.target.value) / 100 } })}
+              className="w-full h-1 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+              data-testid="slider-effect-intensity"
+            />
+          </div>
+        )}
+
+        <div className="space-y-1">
+          <label className="text-[8px] text-stone-500 uppercase">Entry Animation</label>
+          <Select
+            value={node.uiEffects?.entryAnimation || 'none'}
+            onValueChange={v => onUpdateNode(node.id, { uiEffects: { ...node.uiEffects, entryAnimation: v as any } })}
+          >
+            <SelectTrigger data-testid="select-entry-anim" className="bg-stone-900 border-stone-800 h-7 text-[10px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none" className="text-xs">None</SelectItem>
+              <SelectItem value="glitch-in" className="text-xs">Glitch In</SelectItem>
+              <SelectItem value="fade" className="text-xs">Fade</SelectItem>
+              <SelectItem value="slide-up" className="text-xs">Slide Up</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[8px] text-stone-500 uppercase">Clue Reveal Effect</label>
+          <Select
+            value={node.uiEffects?.clueRevealEffect || 'none'}
+            onValueChange={v => onUpdateNode(node.id, { uiEffects: { ...node.uiEffects, clueRevealEffect: v as GlitchEffectType } })}
+          >
+            <SelectTrigger data-testid="select-clue-reveal" className="bg-stone-900 border-stone-800 h-7 text-[10px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {GLITCH_EFFECTS.map(e => (
+                <SelectItem key={e.id} value={e.id} className="text-xs">{e.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {node.uiEffects?.hoverEffect && node.uiEffects.hoverEffect !== 'none' && (
+          <GlitchHover effect={node.uiEffects.hoverEffect} intensity={node.uiEffects.hoverIntensity ?? 0.5}>
+            <div className="p-2 rounded border border-stone-800 bg-stone-900/50 text-center">
+              <span className="text-[9px] text-stone-500">Hover to preview</span>
+            </div>
+          </GlitchHover>
+        )}
+      </div>
 
       <Button
         data-testid="delete-node"

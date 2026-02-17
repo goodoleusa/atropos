@@ -64,7 +64,7 @@ import { AgentModulesSection } from "@/pages/admin/AgentModulesSection";
 import { GameplaySection } from "@/pages/admin/GameplaySection";
 import { FeedbackSection } from "@/pages/admin/FeedbackSection";
 import { CurriculumSection } from "@/pages/admin/CurriculumSection";
-import { ShieldAlert, Activity, Clock, Users, AlertTriangle } from "lucide-react";
+import { ShieldAlert, Activity, Clock, Users, AlertTriangle, Megaphone } from "lucide-react";
 
 function AtroposScannerSection() {
   const { data: health } = useQuery({
@@ -851,11 +851,24 @@ const NAV_GROUPS = [
       { id: "feedback", label: "Agent Feedback", icon: "Bug" },
     ],
   },
+  {
+    label: "Quick Links",
+    color: "amber",
+    items: [
+      { id: "link:/marketing", label: "Marketing Dashboard", icon: "Megaphone" },
+      { id: "link:/recs", label: "RECS", icon: "Sparkles" },
+      { id: "link:/crew-builder", label: "Crew Builder", icon: "Users" },
+      { id: "link:/builder", label: "Campaign Builder", icon: "Layers" },
+      { id: "link:/scanner", label: "Scanner Dashboard", icon: "ShieldAlert" },
+      { id: "link:/wiki", label: "Wiki", icon: "BookOpen" },
+    ],
+  },
 ];
 
 const NAV_ICONS: Record<string, any> = {
   Activity, Server, Eye, Database, Trophy, MessageSquare, Map, Bot, Settings,
   Target, Rocket, ShieldAlert, Terminal, Sparkles, Zap, Globe, BookOpen,
+  Megaphone, Users, Layers, Bug,
 };
 
 export default function AdminDashboard() {
@@ -868,9 +881,19 @@ export default function AdminDashboard() {
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
   const [clueTrail, setClueTrail] = useState<string[]>([]);
   const [showGraphView, setShowGraphView] = useState(false);
-  const [activeSection, setActiveSection] = useState("activity");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [activeSection, setActiveSection] = useState(() => {
+    try { return localStorage.getItem('admin_section') || 'activity'; } catch { return 'activity'; }
+  });
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem('admin_sidebar');
+      if (saved !== null) return saved === 'true';
+      return window.innerWidth >= 768;
+    } catch { return window.innerWidth >= 768; }
+  });
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem('admin_collapsed_groups') || '{}'); } catch { return {}; }
+  });
   const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
   const [subliminalMessages, setSubliminalMessages] = useState(CHAOS_MESSAGES.subliminal);
   const [newSubliminal, setNewSubliminal] = useState('');
@@ -884,6 +907,18 @@ export default function AdminDashboard() {
     queryKey: ['/api/quests'],
     queryFn: () => fetch('/api/quests').then(r => r.json())
   });
+
+  useEffect(() => {
+    try { localStorage.setItem('admin_sidebar', String(sidebarOpen)); } catch {}
+  }, [sidebarOpen]);
+
+  useEffect(() => {
+    try { localStorage.setItem('admin_section', activeSection); } catch {}
+  }, [activeSection]);
+
+  useEffect(() => {
+    try { localStorage.setItem('admin_collapsed_groups', JSON.stringify(collapsedGroups)); } catch {}
+  }, [collapsedGroups]);
 
   if (authLoading) {
     return (
@@ -1071,7 +1106,24 @@ export default function AdminDashboard() {
                     <div className="space-y-0.5">
                       {group.items.map((item) => {
                         const Icon = NAV_ICONS[item.icon] || Settings;
-                        const isActive = activeSection === item.id;
+                        const isLink = item.id.startsWith('link:');
+                        const isActive = !isLink && activeSection === item.id;
+
+                        if (isLink) {
+                          const linkPath = item.id.replace('link:', '');
+                          return (
+                            <Link key={item.id} href={linkPath}>
+                              <button
+                                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded text-[11px] transition-all duration-200 group text-stone-500 hover:text-amber-400 hover:bg-amber-900/10"
+                              >
+                                <Icon className="w-3.5 h-3.5 text-stone-600 group-hover:text-amber-500" />
+                                <span className="font-medium truncate">{item.label}</span>
+                                <ExternalLink className="w-2.5 h-2.5 ml-auto text-stone-700 group-hover:text-amber-600" />
+                              </button>
+                            </Link>
+                          );
+                        }
+
                         return (
                           <button
                             key={item.id}

@@ -13,6 +13,7 @@ import {
   FileCode, Network, Code2, Bug, Shield, Zap, Sparkles
 } from 'lucide-react';
 import { useGame } from '@/hooks/useGameSession';
+import { GlitchHover, CluePopover, GlitchText } from '@/components/GlitchHover';
 
 interface CampaignNode {
   id: string;
@@ -466,7 +467,13 @@ export default function CampaignPlayer() {
                     )}
                     <span className="truncate flex-1">{node.title}</span>
                     {hasClue && (
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${clueFound ? 'bg-teal-500' : 'bg-amber-500 animate-pulse'}`} />
+                      <CluePopover
+                        title={clueFound ? "Intel Captured" : "Hidden Intel"}
+                        description={clueFound ? "You've uncovered this intelligence." : "Something is hidden here..."}
+                        difficulty={campaign.hiddenClues.find(c => c.nodeId === node.id) ? 3 : 1}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${clueFound ? 'bg-teal-500' : 'bg-amber-500 animate-pulse'}`} />
+                      </CluePopover>
                     )}
                   </button>
                 );
@@ -583,8 +590,12 @@ export default function CampaignPlayer() {
                       const typeInfo = CLUE_TYPE_ICONS[clue.type] || CLUE_TYPE_ICONS['source-code'];
                       const showHint = showHints[clue.id];
                       return (
-                        <motion.div
+                        <GlitchHover
                           key={clue.id}
+                          effect={isFound ? "none" : "static-burst"}
+                          intensity={0.3}
+                        >
+                        <motion.div
                           layout
                           className={`p-3 rounded border relative overflow-hidden transition-colors duration-500 ${
                             isFound
@@ -661,6 +672,7 @@ export default function CampaignPlayer() {
                             </motion.p>
                           )}
                         </motion.div>
+                        </GlitchHover>
                       );
                     })}
 
