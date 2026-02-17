@@ -17,7 +17,7 @@ import { InteractiveHover } from './InteractiveHover';
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
   teal: { active: 'bg-teal-900/30 text-teal-400', icon: 'text-teal-500' },
-  purple: { active: 'bg-purple-900/30 text-purple-400', icon: 'text-purple-500' },
+  purple: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
 } as const;
 
 export default function QuickNav() {
@@ -66,7 +66,7 @@ export default function QuickNav() {
     
     { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const },
     { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const },
-    { path: '/void', icon: Sparkles, label: 'Void', color: 'purple' as const },
+    { path: '/void', icon: Sparkles, label: 'Void', color: 'amber' as const },
     { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
     { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
   ];
@@ -126,7 +126,7 @@ export default function QuickNav() {
               <p className="text-xs text-amber-400 font-bold truncate max-w-[150px]">{currentSession.name}</p>
               <div className="flex gap-2 mt-1 text-[10px]">
                 <span className="text-teal-400">{targets.length} targets</span>
-                <span className="text-purple-400">{pendingFindings.length} findings</span>
+                <span className="text-amber-400">{pendingFindings.length} findings</span>
               </div>
             </div>
           )}
@@ -159,7 +159,7 @@ export default function QuickNav() {
                     {item.label}
                   </span>
                   {(item as any).badge && (
-                    <Badge className="ml-auto bg-purple-700 text-white text-[10px] px-1.5 relative z-10">
+                    <Badge className="ml-auto bg-amber-700 text-white text-[10px] px-1.5 relative z-10">
                       {(item as any).badge}
                     </Badge>
                   )}
@@ -215,28 +215,57 @@ export default function QuickNav() {
       )}
 
       <InteractiveHover>
-        <Button
-          onClick={handleToggle}
-          className={`rounded-full w-14 h-14 shadow-lg transition-all duration-300 ${
-            expanded 
-              ? 'bg-amber-700 hover:bg-amber-600 rotate-180' 
-              : 'bg-gradient-to-br from-amber-700 to-teal-700 hover:from-amber-600 hover:to-teal-600'
-          }`}
-          data-testid="quick-nav-toggle"
+        <motion.div
+          className="relative"
+          animate={expanded ? {} : {
+            boxShadow: [
+              '0 0 8px 1px rgba(217,119,6,0.3), 0 0 20px 2px rgba(217,119,6,0.1)',
+              '0 0 12px 3px rgba(245,158,11,0.5), 0 0 30px 4px rgba(217,119,6,0.2)',
+              '0 0 8px 1px rgba(217,119,6,0.3), 0 0 20px 2px rgba(217,119,6,0.1)',
+            ],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ borderRadius: '9999px' }}
         >
-          {expanded ? (
-            <ChevronDown className="w-6 h-6 text-black" />
-          ) : (
-            <div className="flex flex-col items-center">
-              <Server className="w-6 h-6 text-black" />
-              {pendingFindings.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 rounded-full text-[10px] text-white flex items-center justify-center border-2 border-black">
-                  {pendingFindings.length}
-                </span>
+          <Button
+            onClick={handleToggle}
+            className={`rounded-full w-14 h-14 shadow-lg transition-all duration-300 border-0 relative overflow-hidden ${
+              expanded 
+                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 ring-1 ring-amber-800/60' 
+                : 'bg-stone-950 hover:bg-stone-900 ring-1 ring-amber-700/50'
+            }`}
+            data-testid="quick-nav-toggle"
+          >
+            {!expanded && (
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: 'conic-gradient(from 0deg, transparent 0%, rgba(217,119,6,0.4) 15%, rgba(245,158,11,0.6) 25%, rgba(251,191,36,0.3) 35%, transparent 50%, rgba(180,83,9,0.3) 65%, rgba(217,119,6,0.5) 80%, transparent 100%)',
+                }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              />
+            )}
+            <div className="absolute inset-[2px] rounded-full bg-stone-950 flex items-center justify-center">
+              {expanded ? (
+                <ChevronDown className="w-6 h-6 text-amber-500" />
+              ) : (
+                <motion.div
+                  className="flex flex-col items-center"
+                  animate={{ filter: ['brightness(1)', 'brightness(1.3)', 'brightness(1)'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <Server className="w-6 h-6 text-amber-500 drop-shadow-[0_0_4px_rgba(217,119,6,0.6)]" />
+                </motion.div>
               )}
             </div>
-          )}
-        </Button>
+            {!expanded && pendingFindings.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-600 rounded-full text-[10px] text-black font-bold flex items-center justify-center border-2 border-stone-950 z-10">
+                {pendingFindings.length}
+              </span>
+            )}
+          </Button>
+        </motion.div>
       </InteractiveHover>
     </div>
   );

@@ -1723,6 +1723,27 @@ export const insertSitemapEntrySchema = createInsertSchema(sitemapEntries).omit(
 export type InsertSitemapEntry = z.infer<typeof insertSitemapEntrySchema>;
 export type SitemapEntry = typeof sitemapEntries.$inferSelect;
 
+// Curriculum Tracks - editable AI + OSINT curriculum stored in DB
+export const curriculumTracks = pgTable("curriculum_tracks", {
+  id: serial("id").primaryKey(),
+  trackId: text("track_id").notNull().unique(),
+  category: text("category").notNull().default("ai"),
+  name: text("name").notNull(),
+  icon: text("icon").notNull().default(""),
+  description: text("description").notNull().default(""),
+  color: text("color").notNull().default("amber"),
+  order: integer("order").notNull().default(0),
+  prerequisiteTrackIds: jsonb("prerequisite_track_ids").$type<string[]>().notNull().default([]),
+  missions: jsonb("missions").$type<any[]>().notNull().default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertCurriculumTrackSchema = createInsertSchema(curriculumTracks).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertCurriculumTrack = z.infer<typeof insertCurriculumTrackSchema>;
+export type CurriculumTrack = typeof curriculumTracks.$inferSelect;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";

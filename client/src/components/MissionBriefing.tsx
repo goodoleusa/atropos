@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 import { useLearningStore } from '@/stores/useLearningStore';
-import { ALL_CURRICULUM_TRACKS, AI_CURRICULUM_TRACKS, OSINT_CURRICULUM_TRACKS, type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
+import { useCurriculum } from '@/hooks/useCurriculum';
+import { type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
 import {
   Target, BookOpen, ChevronRight, ChevronDown, Lightbulb, Sparkles, Star,
   CheckCircle2, Circle, ArrowRight, Flame, GraduationCap, Clock, X, Brain,
@@ -39,6 +40,7 @@ interface MissionBriefingProps {
 }
 
 export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, activeMissionId }: MissionBriefingProps) {
+  const { allTracks, aiTracks, osintTracks } = useCurriculum();
   const [expandedTrack, setExpandedTrack] = useState<string | null>('scientific_prompting');
   const [selectedMission, setSelectedMission] = useState<AIMission | null>(null);
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(
@@ -66,7 +68,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
   };
 
   if (selectedMission) {
-    const track = ALL_CURRICULUM_TRACKS.find(t => t.id === selectedMission.trackId);
+    const track = allTracks.find(t => t.id === selectedMission.trackId);
     const progress = getMissionProgress(selectedMission);
     const adaptation = selectedMission.teachingAdaptations[style];
     const isActive = activeMissionId === selectedMission.id;
@@ -237,8 +239,8 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
       <ScrollArea className="max-h-[35vh] md:max-h-[50vh]">
         <div className="space-y-1.5 md:space-y-2 pr-1 md:pr-2">
           {[
-            { label: 'AI Mastery', tracks: AI_CURRICULUM_TRACKS },
-            { label: 'Cyber OSINT', tracks: OSINT_CURRICULUM_TRACKS },
+            { label: 'AI Mastery', tracks: aiTracks },
+            { label: 'Cyber OSINT', tracks: osintTracks },
           ].map(section => (
             <div key={section.label} className="space-y-1.5">
               <div className="flex items-center gap-2 px-1 pt-1">
@@ -252,7 +254,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                 const completedCount = track.missions.reduce((s, m) => s + m.exercises.filter(e => completedExercises.has(e.id)).length, 0);
                 const trackProgress = totalExercises > 0 ? Math.round((completedCount / totalExercises) * 100) : 0;
                 const isPrereqMet = track.prerequisiteTrackIds.length === 0 || track.prerequisiteTrackIds.every(pid => {
-                  const pTrack = ALL_CURRICULUM_TRACKS.find(t => t.id === pid);
+                  const pTrack = allTracks.find(t => t.id === pid);
                   if (!pTrack) return true;
                   const pTotal = pTrack.missions.reduce((s, m) => s + m.exercises.length, 0);
                   const pDone = pTrack.missions.reduce((s, m) => s + m.exercises.filter(e => completedExercises.has(e.id)).length, 0);
