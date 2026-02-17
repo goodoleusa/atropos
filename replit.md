@@ -13,6 +13,15 @@ The platform features a molten bronze/industrial aesthetic, emphasizes hands-on 
 
 ## Latest Updates (Feb 2026)
 
+### v2.2 - Builder-Sitemap Integration & Obsidian Export
+- **Interactive Sitemap Panel**: Admin Dashboard sitemap with tree/grid view, category filtering, inline edit/delete, custom page creation with arc template picker
+- **Bidirectional Builder-Sitemap Sync**: Campaign save auto-creates sitemap entry at `/play/[id]`; publish/unpublish toggles sitemap `isPublished`; sitemap "Open in Builder" pre-loads campaign or arc template
+- **Obsidian Export Overhaul**: Full Templater (`<%* %>` script blocks), Breadcrumbs (`parent`/`child`/`sibling` fields, `BC-folder-note`), Excalibrain (`excalibrain-color`/`excalibrain-shape`), and Dataview (TABLE/LIST queries, clue summaries) compatibility
+- **Portfolio Viz Picker**: Radar, severity donut, timeline, donut, or none per entry; post-creation editing of viz type, tags, evidence, visibility
+- **Wiki Docs**: New sections for Campaign Builder & Sitemap, Obsidian Vault Export, Portfolio System, QR C2 Framework
+- **Storage Methods**: `getSitemapEntryByPath`, `upsertSitemapEntryByPath` for database-backed sitemap sync
+- **URL Params**: Builder accepts `?arc=` and `?page=` for pre-loading arc templates and page configurations
+
 ### QR C2 Framework & Guided Missions
 - **3 Guided C2 Missions**: First Beacon (beaconing), Receiving Orders (tasking), Ghost in the Wire (evasion)
 - **4 Simulated Target Machines**: Linux server, Windows workstation, IoT camera, Docker container
