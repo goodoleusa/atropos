@@ -6,10 +6,68 @@
 
 | # | Category | Priority | Title | Pain Points | Status |
 |---|----------|----------|-------|-------------|--------|
-| 1 | Integration | 🟡 medium | Real-time scan progress WebSocket integration | 3 | proposed |
-| 2 | Systemic Improvement | 🔴 critical | Unified investigation context sharing between agents | 4 | proposed |
-| 3 | Code Snippet | 🟠 high | Add keyboard shortcuts for Terminal navigation | 4 | proposed |
-| 4 | Systemic Improvement | 🟠 high | AI Lab duplicated: standalone /ai-lab + Investigation Hub tab | 3 | proposed |
+| 1 | Systemic Improvement | 🟠 high | AI Lab duplicated: standalone /ai-lab + Investigation Hub tab | 3 | proposed |
+| 2 | Integration | 🟡 medium | Real-time scan progress WebSocket integration | 3 | proposed |
+| 3 | Systemic Improvement | 🔴 critical | Unified investigation context sharing between agents | 4 | proposed |
+| 4 | Code Snippet | 🟠 high | Add keyboard shortcuts for Terminal navigation | 4 | proposed |
+
+---
+
+## Systemic Improvements
+
+## Task: AI Lab duplicated: standalone /ai-lab + Investigation Hub tab
+**Category**: Systemic Improvement
+**Priority**: high
+
+### Description
+AILabContent is rendered both as a standalone page at /ai-lab and embedded inside the Investigation Hub at /investigate (AI Lab tab). Users may not know which to use, and state is not shared between them. Consider making /ai-lab redirect to /investigate?tab=ai-lab, or making the standalone version the canonical one with a deep-link from the Hub.
+
+Suggestion: Canonicalize AI Lab to one location. Use /investigate?tab=ai-lab as the primary, and redirect /ai-lab there.
+
+### Target Files
+- `client/src/pages/AILab.tsx`
+- `client/src/pages/InvestigationWorkspace.tsx`
+
+### Pain Points This Solves
+- Duplicate UI code paths
+- Confusing navigation — two ways to reach same tool
+- State not shared between standalone and embedded versions
+
+---
+
+## Task: Unified investigation context sharing between agents
+**Category**: Systemic Improvement
+**Priority**: critical
+
+### Description
+Create a shared investigation context store that persists across agent conversations. Currently each NEXUS agent session starts from scratch — investigators lose accumulated evidence and insights when switching agents.
+
+### Target Files
+- `server/storage.ts`
+- `shared/schema.ts`
+- `client/src/components/AgentChat.tsx`
+
+### Pain Points This Solves
+- Evidence lost between agent switches
+- Cannot share findings across sessions
+- Investigators repeat themselves to each agent
+- No persistent investigation state
+
+### Starter Code
+```typescript
+export const investigationContext = pgTable("investigation_context", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id"),
+  campaignId: integer("campaign_id"),
+  findings: jsonb("findings").default([]),
+  evidence: text("evidence").array(),
+  sharedWith: text("shared_with").array(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+```
+
+### Expected Impact
+Eliminates 60% of repeated context-setting in multi-agent workflows. Enables true collaborative investigation across specialist agents.
 
 ---
 
@@ -49,64 +107,6 @@ wss.on("connection", (ws) => {
 
 ### Expected Impact
 Reduces scan result latency from 5s polling to <100ms real-time. Cuts server load from scan status endpoints by 80%.
-
----
-
-## Systemic Improvements
-
-## Task: Unified investigation context sharing between agents
-**Category**: Systemic Improvement
-**Priority**: critical
-
-### Description
-Create a shared investigation context store that persists across agent conversations. Currently each NEXUS agent session starts from scratch — investigators lose accumulated evidence and insights when switching agents.
-
-### Target Files
-- `server/storage.ts`
-- `shared/schema.ts`
-- `client/src/components/AgentChat.tsx`
-
-### Pain Points This Solves
-- Evidence lost between agent switches
-- Cannot share findings across sessions
-- Investigators repeat themselves to each agent
-- No persistent investigation state
-
-### Starter Code
-```typescript
-export const investigationContext = pgTable("investigation_context", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id"),
-  campaignId: integer("campaign_id"),
-  findings: jsonb("findings").default([]),
-  evidence: text("evidence").array(),
-  sharedWith: text("shared_with").array(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-```
-
-### Expected Impact
-Eliminates 60% of repeated context-setting in multi-agent workflows. Enables true collaborative investigation across specialist agents.
-
----
-
-## Task: AI Lab duplicated: standalone /ai-lab + Investigation Hub tab
-**Category**: Systemic Improvement
-**Priority**: high
-
-### Description
-AILabContent is rendered both as a standalone page at /ai-lab and embedded inside the Investigation Hub at /investigate (AI Lab tab). Users may not know which to use, and state is not shared between them. Consider making /ai-lab redirect to /investigate?tab=ai-lab, or making the standalone version the canonical one with a deep-link from the Hub.
-
-Suggestion: Canonicalize AI Lab to one location. Use /investigate?tab=ai-lab as the primary, and redirect /ai-lab there.
-
-### Target Files
-- `client/src/pages/AILab.tsx`
-- `client/src/pages/InvestigationWorkspace.tsx`
-
-### Pain Points This Solves
-- Duplicate UI code paths
-- Confusing navigation — two ways to reach same tool
-- State not shared between standalone and embedded versions
 
 ---
 

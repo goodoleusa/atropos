@@ -1,5 +1,28 @@
 [
   {
+    "id": 4,
+    "category": "systemic",
+    "priority": "high",
+    "status": "proposed",
+    "title": "AI Lab duplicated: standalone /ai-lab + Investigation Hub tab",
+    "description": "AILabContent is rendered both as a standalone page at /ai-lab and embedded inside the Investigation Hub at /investigate (AI Lab tab). Users may not know which to use, and state is not shared between them. Consider making /ai-lab redirect to /investigate?tab=ai-lab, or making the standalone version the canonical one with a deep-link from the Hub.\n\nSuggestion: Canonicalize AI Lab to one location. Use /investigate?tab=ai-lab as the primary, and redirect /ai-lab there.",
+    "targetFiles": [
+      "client/src/pages/AILab.tsx",
+      "client/src/pages/InvestigationWorkspace.tsx"
+    ],
+    "codeSnippet": null,
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "Duplicate UI code paths",
+      "Confusing navigation — two ways to reach same tool",
+      "State not shared between standalone and embedded versions"
+    ],
+    "estimatedImpact": null,
+    "source": "walkthrough-audit",
+    "votes": 1,
+    "createdAt": "2026-02-17T15:03:05.887Z"
+  },
+  {
     "id": 3,
     "category": "integration",
     "priority": "medium",
@@ -68,30 +91,7 @@
     ],
     "estimatedImpact": "Reduces terminal interaction time by 40% for experienced users. Matches expected behavior from real terminal emulators.",
     "source": "agent:VulnAnalyst",
-    "votes": 1,
+    "votes": 2,
     "createdAt": "2026-02-17T14:26:41.732Z"
-  },
-  {
-    "id": 4,
-    "category": "systemic",
-    "priority": "high",
-    "status": "proposed",
-    "title": "AI Lab duplicated: standalone /ai-lab + Investigation Hub tab",
-    "description": "AILabContent is rendered both as a standalone page at /ai-lab and embedded inside the Investigation Hub at /investigate (AI Lab tab). Users may not know which to use, and state is not shared between them. Consider making /ai-lab redirect to /investigate?tab=ai-lab, or making the standalone version the canonical one with a deep-link from the Hub.\n\nSuggestion: Canonicalize AI Lab to one location. Use /investigate?tab=ai-lab as the primary, and redirect /ai-lab there.",
-    "targetFiles": [
-      "client/src/pages/AILab.tsx",
-      "client/src/pages/InvestigationWorkspace.tsx"
-    ],
-    "codeSnippet": null,
-    "codeLanguage": "typescript",
-    "painPointsAddressed": [
-      "Duplicate UI code paths",
-      "Confusing navigation — two ways to reach same tool",
-      "State not shared between standalone and embedded versions"
-    ],
-    "estimatedImpact": null,
-    "source": "walkthrough-audit",
-    "votes": 1,
-    "createdAt": "2026-02-17T15:03:05.887Z"
   }
 ]
