@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Key, Sparkles, Zap, Edit, Trash2, Database, Star, Moon, Lightbulb } from "lucide-react";
+import { Plus, Key, Sparkles, Zap, Edit, Trash2, Database, Star, Moon, Lightbulb, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { MYSTICAL_CARDS } from "@/config/messages";
 import { QUANTUM_EVENTS, QUANTUM_MESSAGES } from "@/config/quantumConfig";
@@ -64,8 +64,6 @@ const slugify = (value: string) =>
 
 export function CollectiblesSection() {
   const queryClient = useQueryClient();
-  const [newClue, setNewClue] = useState<Partial<Clue>>({});
-  const [editingClue, setEditingClue] = useState<Clue | null>(null);
   const [newArtifact, setNewArtifact] = useState<Partial<Artifact>>({});
   const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null);
   const [newQuantumMessage, setNewQuantumMessage] = useState("");
@@ -121,52 +119,6 @@ export function CollectiblesSection() {
     () => mysticalCards.filter((c) => c.type === "zodiac"),
     [mysticalCards]
   );
-
-  const createClue = useMutation({
-    mutationFn: (clue: Partial<Clue>) =>
-      fetch("/api/clues", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...clue, content: clue.content || "" })
-      }).then(async (r) => {
-        if (!r.ok) throw new Error((await r.json()).error || "Failed to create clue");
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/clues"] });
-      setNewClue({});
-      toast({ title: "Clue created" });
-    }
-  });
-
-  const updateClue = useMutation({
-    mutationFn: (clue: Clue) =>
-      fetch(`/api/clues/${clue.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(clue)
-      }).then(async (r) => {
-        if (!r.ok) throw new Error((await r.json()).error || "Failed to update clue");
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/clues"] });
-      setEditingClue(null);
-      toast({ title: "Clue updated" });
-    }
-  });
-
-  const deleteClue = useMutation({
-    mutationFn: (id: string) =>
-      fetch(`/api/clues/${id}`, { method: "DELETE" }).then(async (r) => {
-        if (!r.ok) throw new Error((await r.json()).error || "Failed to delete clue");
-        return r.json();
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/clues"] });
-      toast({ title: "Clue deleted" });
-    }
-  });
 
   const createArtifact = useMutation({
     mutationFn: (artifact: Partial<Artifact>) =>
@@ -351,101 +303,19 @@ export function CollectiblesSection() {
         </Badge>
       </div>
 
-      {/* Clues */}
+      {/* Clues — managed in Gameplay Editor */}
       <Card className="bg-[#0a0500] border-amber-900/30">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-              <Key className="w-4 h-4" /> Clues ({clues.length})
-            </CardTitle>
-            <CardDescription className="text-stone-500 text-xs">
-              Collectable fragments used in quests and campaigns
-            </CardDescription>
+        <CardContent className="p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Key className="w-5 h-5 text-amber-500 shrink-0" />
+            <div>
+              <p className="text-amber-500 text-sm font-mono font-bold">Clues ({clues.length})</p>
+              <p className="text-stone-500 text-xs">Clue management has moved to the Gameplay Editor for a single source of truth.</p>
+            </div>
           </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-amber-700 hover:bg-amber-600 text-black">
-                <Plus className="w-4 h-4 mr-2" /> Add Clue
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-              <DialogHeader>
-                <DialogTitle className="text-amber-600 font-orbitron">Create New Clue</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
-                <Input
-                  placeholder="Clue ID (e.g., clue-03)"
-                  value={newClue.id || ""}
-                  onChange={(e) => setNewClue({ ...newClue, id: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
-                />
-                <Input
-                  placeholder="Name"
-                  value={newClue.name || ""}
-                  onChange={(e) => setNewClue({ ...newClue, name: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
-                />
-                <Textarea
-                  placeholder="Description"
-                  value={newClue.description || ""}
-                  onChange={(e) => setNewClue({ ...newClue, description: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
-                />
-                <Input
-                  placeholder="Content"
-                  value={newClue.content || ""}
-                  onChange={(e) => setNewClue({ ...newClue, content: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
-                />
-                <Input
-                  placeholder="Location"
-                  value={newClue.location || ""}
-                  onChange={(e) => setNewClue({ ...newClue, location: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
-                />
-                <Button
-                  onClick={() => createClue.mutate(newClue)}
-                  className="w-full bg-amber-700 hover:bg-amber-600 text-black"
-                >
-                  Create Clue
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </CardHeader>
-        <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-          {clues.map((clue) => (
-            <Card key={clue.id} className="bg-black/30 border-amber-900/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
-                  <Key className="w-4 h-4" /> {clue.name}
-                </CardTitle>
-                <CardDescription className="text-stone-600 text-xs">{clue.id}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-stone-400">{clue.description}</p>
-                <p className="text-amber-700 font-bold">Location: {clue.location}</p>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setEditingClue(clue)}
-                    className="border-amber-700 text-amber-400"
-                  >
-                    <Edit className="w-3 h-3 mr-1" /> Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => deleteClue.mutate(clue.id)}
-                    className="text-red-400"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <Badge variant="outline" className="border-amber-700 text-amber-400 shrink-0 flex items-center gap-1 cursor-default" data-testid="clues-xref-gameplay">
+            Gameplay Editor <ArrowRight className="w-3 h-3" />
+          </Badge>
         </CardContent>
       </Card>
 
@@ -726,25 +596,6 @@ export function CollectiblesSection() {
       </div>
 
       {/* Edit dialogs */}
-      <Dialog open={!!editingClue} onOpenChange={(open) => !open && setEditingClue(null)}>
-        <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
-          <DialogHeader>
-            <DialogTitle className="text-amber-600 font-orbitron">Edit Clue</DialogTitle>
-          </DialogHeader>
-          {editingClue && (
-            <div className="space-y-3">
-              <Input value={editingClue.name} onChange={(e) => setEditingClue({ ...editingClue, name: e.target.value })} />
-              <Textarea value={editingClue.description} onChange={(e) => setEditingClue({ ...editingClue, description: e.target.value })} />
-              <Input value={editingClue.content} onChange={(e) => setEditingClue({ ...editingClue, content: e.target.value })} />
-              <Input value={editingClue.location} onChange={(e) => setEditingClue({ ...editingClue, location: e.target.value })} />
-              <Button onClick={() => updateClue.mutate(editingClue)} className="w-full bg-amber-700 hover:bg-amber-600 text-black">
-                Save Clue
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={!!editingArtifact} onOpenChange={(open) => !open && setEditingArtifact(null)}>
         <DialogContent className="bg-[#0a0500] border-purple-900/50 text-stone-300">
           <DialogHeader>
