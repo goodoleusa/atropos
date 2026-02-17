@@ -39,8 +39,8 @@ export default function MissionLanding() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-            <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-7xl font-semibold mb-6 leading-tight tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <span className="text-amber-400">
               Train Ethical Hackers
             </span>
             <br />

@@ -112,9 +112,9 @@ const TOOLS: ToolEntry[] = [
     category: 'tools'
   },
   {
-    id: 'suggestions', name: 'Suggestions Dashboard', route: '/suggestions', icon: Lightbulb, color: 'cyan',
-    purpose: 'View and manage agent-generated recommendations with charts, voting, and 6+ export formats',
-    features: ['Recommendations + Reports tabs', 'Category charts', 'Voting', 'AI prompt / code / git patch / curl / JSON / markdown export', 'Repository sync'],
+    id: 'suggestions', name: 'RECS', route: '/suggestions', icon: Lightbulb, color: 'cyan',
+    purpose: 'View and manage agent-generated recs with charts, voting, and 6+ export formats',
+    features: ['RECS + Reports tabs', 'Category charts', 'Voting', 'AI prompt / code / git patch / curl / JSON / markdown export', 'Repository sync'],
     category: 'meta'
   },
   {
@@ -308,7 +308,7 @@ export default function Walkthrough() {
       }
 
       setFindings(prev => prev.map(f => f.id === finding.id ? { ...f, submitted: true } : f));
-      toast({ title: 'Recommendation submitted', description: `"${finding.title}" sent to the suggestions system.` });
+      toast({ title: 'Sent to RECS', description: `"${finding.title}" submitted to the recommendation system.` });
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
@@ -324,7 +324,7 @@ export default function Walkthrough() {
       await new Promise(r => setTimeout(r, 2200));
     }
     setSubmitAllLoading(false);
-    toast({ title: 'Batch complete', description: `Submitted ${pending.length} recommendations.` });
+    toast({ title: 'Batch complete', description: `Submitted ${pending.length} recs.` });
   }, [findings, submitFinding]);
 
   const submittedCount = findings.filter(f => f.submitted).length;
@@ -356,7 +356,7 @@ export default function Walkthrough() {
               <Link href="/suggestions">
                 <Button variant="outline" size="sm" className="border-amber-800/50 text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="view-suggestions-btn">
                   <ExternalLink className="w-4 h-4 mr-2" />
-                  View Suggestions
+                  View RECS
                 </Button>
               </Link>
             </div>
@@ -469,7 +469,7 @@ export default function Walkthrough() {
                     </CardTitle>
                     <CardDescription className="text-stone-500 mt-1">
                       Feature overlaps, naming collisions, and improvement opportunities discovered during the walkthrough.
-                      Each finding can be submitted as a recommendation to test the agentic feedback pipeline.
+                      Each finding can be submitted to RECS to test the agentic feedback pipeline.
                     </CardDescription>
                   </div>
                   <Button

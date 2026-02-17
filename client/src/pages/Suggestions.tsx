@@ -299,7 +299,7 @@ export default function SuggestionsPage() {
       return res.json();
     },
     onSuccess: (data) => {
-      toast({ title: `Synced ${data.synced} recommendations`, description: data.files.join(', '), duration: 3000 });
+      toast({ title: `Synced ${data.synced} recs`, description: data.files.join(', '), duration: 3000 });
     },
   });
 
@@ -339,13 +339,13 @@ export default function SuggestionsPage() {
   const copyCheckedForAgent = useCallback(() => {
     if (checkedRecs.length === 0) return;
     const prompt = recsToAgentBatch(checkedRecs);
-    copyToClipboard(prompt, toast, `${checkedRecs.length} recommendation${checkedRecs.length > 1 ? 's' : ''} as agent prompt`);
+    copyToClipboard(prompt, toast, `${checkedRecs.length} rec${checkedRecs.length > 1 ? 's' : ''} as agent prompt`);
   }, [checkedRecs, toast]);
 
   const copyAllForAgent = useCallback(() => {
     if (recs.length === 0) return;
     const prompt = recsToAgentBatch(recs);
-    copyToClipboard(prompt, toast, `all ${recs.length} recommendations as agent prompt`);
+    copyToClipboard(prompt, toast, `all ${recs.length} recs as agent prompt`);
   }, [recs, toast]);
 
   const typeChartData = useMemo(() => {
@@ -370,9 +370,9 @@ export default function SuggestionsPage() {
             <Bot className="w-5 h-5" />
             <span className="text-sm">AGENT INSIGHTS</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold molten-text" data-testid="page-title">Platform Intelligence</h1>
+          <h1 className="text-3xl md:text-4xl font-bold molten-text" data-testid="page-title">RECS</h1>
           <p className="text-stone-400 mt-1 text-sm max-w-3xl">
-            Automated recommendations from NEXUS agents. Actionable code suggestions, new tool ideas,
+            Automated recs from NEXUS agents. Actionable code suggestions, new tool ideas,
             and improvement reports — ready to copy, export, or pipe into any coding agent.
           </p>
         </header>
@@ -382,7 +382,7 @@ export default function SuggestionsPage() {
             <TabsList className="bg-stone-900/50 border border-stone-800/50">
               <TabsTrigger value="recommendations" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-recommendations">
                 <Code className="w-4 h-4 mr-2" />
-                Recommendations ({recStats?.total || 0})
+                RECS ({recStats?.total || 0})
               </TabsTrigger>
               <TabsTrigger value="reports" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-reports">
                 <Activity className="w-4 h-4 mr-2" />
