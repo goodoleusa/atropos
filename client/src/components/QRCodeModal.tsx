@@ -966,7 +966,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
   const [c2CommandIndex, setC2CommandIndex] = useState(0);
   const [c2SelectedTemplate, setC2SelectedTemplate] = useState('shell');
   const [c2ServerStatus, setC2ServerStatus] = useState<'offline' | 'online' | 'waiting'>('offline');
-  const [c2Section, setC2Section] = useState<'encode' | 'missions' | 'vectors' | 'labs'>('encode');
+  const [c2Section, setC2Section] = useState<'encode' | 'missions' | 'vectors' | 'labs'>('missions');
   const [selectedVector, setSelectedVector] = useState<string | null>(null);
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
   const [selectedTarget, setSelectedTarget] = useState('linux_server');
@@ -1535,15 +1535,6 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
           <TabsContent value="c2" className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto">
             <div className="flex gap-1 p-1 bg-black/30 rounded border border-red-900/20 overflow-x-auto no-scrollbar">
               <Button
-                variant={c2Section === 'encode' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setC2Section('encode')}
-                className={`shrink-0 min-h-[44px] ${c2Section === 'encode' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
-                data-testid="c2-section-encode"
-              >
-                <Terminal className="w-3 h-3 mr-1" /> Encode
-              </Button>
-              <Button
                 variant={c2Section === 'missions' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('missions')}
@@ -1551,6 +1542,15 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 data-testid="c2-section-missions"
               >
                 <Zap className="w-3 h-3 mr-1" /> Missions
+              </Button>
+              <Button
+                variant={c2Section === 'encode' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setC2Section('encode')}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'encode' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
+                data-testid="c2-section-encode"
+              >
+                <Terminal className="w-3 h-3 mr-1" /> Encode
               </Button>
               <Button
                 variant={c2Section === 'vectors' ? 'default' : 'ghost'}
