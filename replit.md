@@ -13,6 +13,14 @@ The platform features a molten bronze/industrial aesthetic, emphasizes hands-on 
 
 ## Latest Updates (Feb 2026)
 
+### Admin Authentication System
+- **Replit Auth Integration**: OpenID Connect login via Replit (Google, GitHub, email) for admin access
+- **Admin Gate**: `/admin` dashboard requires sign-in; unauthenticated users see login screen
+- **Backend Protection**: All `/api/admin/*` routes protected with `isAdmin` middleware; curriculum, gameplay, and content write routes also protected
+- **ADMIN_USER_IDS**: Optional env var to restrict admin access to specific user IDs (comma-separated). When unset, any authenticated user has admin access
+- **User Info**: Sidebar shows logged-in user with logout button
+- **Key Files**: `server/adminAuth.ts` (middleware), `server/replit_integrations/auth/` (Replit Auth integration), `client/src/hooks/use-auth.ts` (React hook)
+
 ### v2.2 - Builder-Sitemap Integration & Obsidian Export
 - **Interactive Sitemap Panel**: Admin Dashboard sitemap with tree/grid view, category filtering, inline edit/delete, custom page creation with arc template picker
 - **Bidirectional Builder-Sitemap Sync**: Campaign save auto-creates sitemap entry at `/play/[id]`; publish/unpublish toggles sitemap `isPublished`; sitemap "Open in Builder" pre-loads campaign or arc template

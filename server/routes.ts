@@ -26,6 +26,7 @@ import {
   logSecurityEvent,
   appAccessGate
 } from "./security";
+import { isAdmin } from "./adminAuth";
 import { 
   behaviorAnalyzer, 
   LEARNING_GOAL_METADATA, 
@@ -78,6 +79,9 @@ export async function registerRoutes(
   // Apply access gate (requires token in URL or valid cookie)
   app.use(appAccessGate);
   
+  // Protect all admin API routes
+  app.use("/api/admin", isAdmin);
+
   // Register chat routes for AI agent
   registerChatRoutes(app);
 
