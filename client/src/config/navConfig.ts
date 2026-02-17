@@ -1,7 +1,7 @@
 import {
   Home, Terminal, Search, Bot, Shield, User, TrendingUp, Activity,
   BookOpen, Sparkles, Settings, FileText, Bug, Eye, QrCode, Briefcase,
-  Brain, Zap, Target, Users, Map, FlaskConical
+  Brain, Zap, Target, Users, Map, FlaskConical, Megaphone
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -34,7 +34,7 @@ export const USER_NAV: NavSection = {
     { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' },
     { path: '/videos', icon: Activity, label: 'AI Gallery', color: 'teal' },
     { path: '/wiki', icon: BookOpen, label: 'Wiki', color: 'teal' },
-    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' },
+    { path: '/suggestions', icon: Sparkles, label: 'RECS', color: 'amber' },
   ],
 };
 
@@ -48,6 +48,7 @@ export const ADMIN_NAV: NavSection = {
     { path: '/admin', icon: Settings, label: 'Admin Panel', color: 'amber' },
     { path: '/crew-builder', icon: Users, label: 'Crew Builder', color: 'amber' },
     { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' },
+    { path: '/marketing', icon: Megaphone, label: 'Marketing HQ', color: 'amber' },
     { path: '/debug', icon: Bug, label: 'Debug Tools', color: 'amber' },
   ],
 };

@@ -38,6 +38,8 @@ import PortfolioShare from "@/pages/PortfolioShare";
 import Wiki from "@/pages/Wiki";
 import Walkthrough from "@/pages/Walkthrough";
 import BehaviorAnalysis from "@/pages/BehaviorAnalysis";
+import MarketingDashboard from "@/pages/MarketingDashboard";
+import FontCustomizer from "@/components/FontCustomizer";
 
 function Router() {
   return (
@@ -69,6 +71,7 @@ function Router() {
       <Route path="/walkthrough" component={Walkthrough} />
       <Route path="/behavior" component={BehaviorAnalysis} />
       <Route path="/videos" component={VideoGallery} />
+      <Route path="/marketing" component={MarketingDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -98,6 +101,7 @@ function App() {
                 <QuickNav />
                 <GlobalEffectsOverlay />
                 <AchievementManager />
+                <FontCustomizer />
                 <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
               </GlobalEffectsProvider>
             </AgentChatProvider>
