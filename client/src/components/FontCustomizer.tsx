@@ -102,8 +102,6 @@ export default function FontCustomizer() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
 
-  if (!gameState?.devMode) return null;
-
   const update = useCallback((patch: Partial<FontSettings>) => {
     setSettings(prev => ({ ...prev, ...patch }));
   }, []);
@@ -111,6 +109,8 @@ export default function FontCustomizer() {
   const reset = useCallback(() => {
     setSettings(DEFAULT_SETTINGS);
   }, []);
+
+  if (!gameState?.devMode) return null;
 
   return (
     <div className="fixed bottom-4 left-4 z-50" data-testid="font-customizer">
