@@ -479,12 +479,20 @@ Atropos operates on a **mission-driven, multi-stream revenue model** with clear 
 - **Investigation Context**: Shared state across features
 - **Visual Campaign Designer**: Create and share investigation workflows
 
-### 6. **Platform Features**
+### 6. **QR C2 Training Framework**
+- **6 Guided Missions**: Beginner to advanced C2 tradecraft (beaconing, tasking, evasion, exfiltration, lateral movement, sleep obfuscation)
+- **7 Attack Flow Templates**: Multi-step sequences mapped to MITRE ATT&CK (Reconnaissance, Initial Access, Persistence, Exfiltration, Beacon Setup, Lateral Movement, Defense Evasion)
+- **8 Command Templates**: Quick-fire C2 commands (shell, sysinfo, network, beacon, task fetch, credential dump, process list, custom)
+- **QR Encoding**: Generate QR codes from any C2 payload for educational deployment scenarios
+- **Gameplay Integration**: Missions award XP (50-175), drop intel clues, track stats, and link to campaign tags
+- **Real-World Case Studies**: APT29, APT41, Lazarus Group, Anthem breach - every mission ties to actual incidents
+- **Defender Perspective**: Each mission includes blue team detection strategies
+
+### 7. **Platform Features**
 - **Clue & Quest System**: Progressive unlocks and discovery
-- **QR C2 Framework**: Educational command & control mechanics
 - **Mystical Overlays**: Tarot cards, quantum popups, atmospheric effects
 - **Admin Dashboard**: Content management, analytics, player tracking
-- **Mobile-Responsive**: 48px+ touch targets, optimized layouts
+- **Mobile-Responsive**: 44px+ touch targets, scrollable layouts, overflow handling
 
 ### 7. **Obsidian Vault Integration** 📝 NEW!
 - **Offline Campaign Editor**: Create campaigns in Obsidian with Templater templates
@@ -497,6 +505,48 @@ Atropos operates on a **mission-driven, multi-stream revenue model** with clear 
 ---
 
 ## 📢 Release Notes
+
+### Version 2.1 - "C2 Training & Scanner Streaming" (February 17, 2026)
+
+**QR C2 Guided Missions** (6 missions, 675 XP total):
+- **First Beacon** (beginner, 50 XP) - Establish C2 beacon communication, understand callback intervals
+- **Receiving Orders** (beginner, 75 XP) - C2 tasking queue model, command fetch-execute-report lifecycle
+- **Ghost in the Wire** (intermediate, 100 XP) - Beacon jitter, DNS-based C2, domain fronting evasion
+- **The Great Escape** (intermediate, 125 XP) - Data staging, chunked exfiltration, DLP evasion
+- **Network Hop** (advanced, 150 XP) - SOCKS proxy pivoting, lateral movement through isolated segments
+- **Playing Dead** (advanced, 175 XP) - Sleep obfuscation, memory encryption during beacon idle
+
+Each mission includes:
+- Multi-step walkthrough with commands, expected output, and teaching explanations
+- Real-world APT case studies (SolarWinds, Lazarus Group, APT41, APT29, Anthem breach)
+- Defender perspective with detection strategies
+- Campaign tags for progression integration (c2-fundamentals, red-team-basics, c2-advanced, etc.)
+- XP rewards, clue drops, and stat tracking on completion
+
+**Expanded Attack Flow Templates** (7 total, 3 new):
+- Beacon Setup Flow (MITRE T1571) - C2 registration, beacon loop, tasking, status reporting
+- Lateral Movement Flow (MITRE T1021) - Neighbor mapping, host sweeping, SSH pivoting, implant deployment
+- Defense Evasion Flow (MITRE T1070) - History deletion, log clearing, timestomping, binary disguise
+
+**Expanded C2 Command Templates** (8 total, 4 new):
+- Beacon Check-in, Fetch Tasks, Credential Dump, Process List (injection targets)
+
+**SpiderFoot Scanner Streaming**:
+- Real-time partial results during scan execution (no more waiting for completion)
+- Progress messages streamed from stdout/stderr
+- Scan status endpoint returns intermediate results and progress indicators
+
+**Mobile Responsiveness Improvements**:
+- QR modal max-height `90vh` with overflow scrolling
+- C2 section tabs horizontally scrollable with `overflow-x-auto`
+- All interactive buttons meet 44px minimum touch target
+- `flex-wrap` on tag layouts and mission metadata
+
+**Navigation**:
+- QR Tool button moved higher in QuickNav (directly after page links)
+- Consistent uppercase Orbitron font styling on QR Tool button
+
+---
 
 ### Version 2.0 - "Progression & Learning" (February 2026) ✨
 
