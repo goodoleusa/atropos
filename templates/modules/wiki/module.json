@@ -1,0 +1,17 @@
+{
+  "id": "wiki",
+  "name": "Wiki & Documentation",
+  "description": "Built-in documentation system with search and cross-linking",
+  "inject": {
+    "schema_tables": [],
+    "nav_items": [
+      { "section": "user", "path": "/wiki", "icon": "BookOpen", "label": "Wiki", "color": "teal" }
+    ],
+    "routes_import": "import contentRoutes from './routes/contentRoutes';",
+    "routes_register": "contentRoutes(app);",
+    "app_import": "import Wiki from '@/pages/Wiki';",
+    "app_route": "<Route path=\"/wiki\" component={Wiki} />",
+    "providers": [],
+    "env_keys": []
+  }
+}

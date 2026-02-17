@@ -1,0 +1,17 @@
+{
+  "id": "ai-lab",
+  "name": "AI Lab (Battleground)",
+  "description": "Prompt engineering playground with live preview, cost tracking, model comparison, AI pentesting challenges",
+  "inject": {
+    "schema_tables": ["adminPrompts", "promptGallery"],
+    "nav_items": [
+      { "section": "user", "path": "/ai-lab", "icon": "FlaskConical", "label": "AI Lab", "color": "teal" }
+    ],
+    "routes_import": null,
+    "routes_register": null,
+    "app_import": "import AILab from '@/pages/AILab';",
+    "app_route": "<Route path=\"/ai-lab\" component={AILab} />",
+    "providers": [],
+    "env_keys": ["OPENROUTER_API_KEY"]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "gamification",
+  "name": "Player Progression & Gamification",
+  "description": "XP, levels, 500+ achievements, leaderboards, daily challenges, skill specializations",
+  "inject": {
+    "schema_tables": ["playerProgression", "achievements", "playerAchievements", "leaderboardEntries", "dailyChallenges", "challengeCompletions", "achievementDefinitions", "gameEvents"],
+    "nav_items": [
+      { "section": "user", "path": "/profile", "icon": "User", "label": "Profile", "color": "teal" },
+      { "section": "user", "path": "/leaderboards", "icon": "TrendingUp", "label": "Rankings", "color": "teal" }
+    ],
+    "routes_import": "import progressionRoutes from './routes/progressionRoutes';",
+    "routes_register": "progressionRoutes(app);",
+    "app_import": "import Profile from '@/pages/Profile';\nimport Leaderboards from '@/pages/Leaderboards';",
+    "app_route": "<Route path=\"/profile\" component={Profile} />\n      <Route path=\"/leaderboards\" component={Leaderboards} />",
+    "providers": ["GameProvider"],
+    "env_keys": []
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "spiderfoot",
+  "name": "SpiderFoot Integration",
+  "description": "OSINT reconnaissance with streaming scan results and export capabilities",
+  "inject": {
+    "schema_tables": [],
+    "nav_items": [],
+    "routes_import": "import spiderfootRoutes from './routes/spiderfoot';",
+    "routes_register": "spiderfootRoutes(app);",
+    "app_import": null,
+    "app_route": null,
+    "providers": [],
+    "env_keys": []
+  }
+}

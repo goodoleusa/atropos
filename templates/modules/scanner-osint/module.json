@@ -1,0 +1,18 @@
+{
+  "id": "scanner-osint",
+  "name": "Scanner & OSINT Toolkit",
+  "description": "Atropos scanner dashboard with real OSINT integration (IOC lookup, DNS, WHOIS, port scanning, newsfeed)",
+  "inject": {
+    "schema_tables": ["osintTools", "osintToolCalls"],
+    "nav_items": [
+      { "section": "admin", "path": "/scanner", "icon": "Shield", "label": "Atropos Admin", "color": "amber" }
+    ],
+    "routes_import": "import osintRoutes from './routes/osint';\nimport atroposRoutes from './routes/atropos';",
+    "routes_register": "osintRoutes(app);\n  atroposRoutes(app);",
+    "app_import": "import ScannerDashboard from '@/pages/ScannerDashboard';",
+    "app_route": "<Route path=\"/scanner\" component={ScannerDashboard} />",
+    "providers": [],
+    "env_keys": [],
+    "external_dirs": ["tools/osint_toolkit/"]
+  }
+}

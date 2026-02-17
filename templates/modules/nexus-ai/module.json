@@ -1,0 +1,17 @@
+{
+  "id": "nexus-ai",
+  "name": "NEXUS AI Agents",
+  "description": "AI-powered investigation assistant with multi-agent orchestration",
+  "inject": {
+    "schema_tables": ["investigationContexts", "interactionLogs"],
+    "nav_items": [
+      { "section": "user", "path": "/agents", "icon": "Bot", "label": "NEXUS Agents", "color": "teal" }
+    ],
+    "routes_import": "import agentRoutes from './routes/agents';",
+    "routes_register": "agentRoutes(app);",
+    "app_import": "import Agents from '@/pages/Agents';",
+    "app_route": "<Route path=\"/agents\" component={Agents} />",
+    "providers": ["AgentChatProvider"],
+    "env_keys": ["OPENROUTER_API_KEY"]
+  }
+}

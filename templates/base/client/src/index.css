@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+}
+
+:root {
+  --amber-primary: #f59e0b;
+  --amber-dark: #92400e;
+  --amber-glow: rgba(245, 158, 11, 0.15);
+  --stone-bg: #0c0a09;
+  --stone-surface: #1c1917;
+  --stone-border: #292524;
+  --teal-accent: #14b8a6;
+}
+
+body {
+  background: var(--stone-bg);
+  color: #e7e5e4;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.font-orbitron {
+  font-family: 'Orbitron', monospace;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #1c1917;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #44403c;
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #57534e;
+}

@@ -1,0 +1,17 @@
+{
+  "id": "behavior-analysis",
+  "name": "Behavior Analysis",
+  "description": "User behavior tracking, customer journey mapping, persona classification, engagement funnels, marketing insights",
+  "inject": {
+    "schema_tables": ["behavioralProfiles"],
+    "nav_items": [
+      { "section": "admin", "path": "/behavior", "icon": "Eye", "label": "Behavior Analysis", "color": "amber" }
+    ],
+    "routes_import": "import behaviorRoutes from './routes/behavior';",
+    "routes_register": "behaviorRoutes(app);",
+    "app_import": "import BehaviorAnalysis from '@/pages/BehaviorAnalysis';",
+    "app_route": "<Route path=\"/behavior\" component={BehaviorAnalysis} />",
+    "providers": [],
+    "env_keys": []
+  }
+}

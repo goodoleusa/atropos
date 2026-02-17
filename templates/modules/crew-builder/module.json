@@ -1,0 +1,17 @@
+{
+  "id": "crew-builder",
+  "name": "Crew Builder",
+  "description": "Multi-agent orchestration system for assembling specialized agent teams with CrewAI export",
+  "inject": {
+    "schema_tables": ["agentModules"],
+    "nav_items": [
+      { "section": "admin", "path": "/crew-builder", "icon": "Users", "label": "Crew Builder", "color": "amber" }
+    ],
+    "routes_import": null,
+    "routes_register": null,
+    "app_import": "import CrewBuilder from '@/pages/CrewBuilder';",
+    "app_route": "<Route path=\"/crew-builder\" component={CrewBuilder} />",
+    "providers": [],
+    "env_keys": []
+  }
+}
