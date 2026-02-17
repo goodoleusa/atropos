@@ -47,12 +47,34 @@ function loadSettings(): FontSettings {
   return DEFAULT_SETTINGS;
 }
 
+const STYLE_ID = "atropos-font-override";
+
 function applySettings(s: FontSettings) {
   const root = document.documentElement;
   root.style.setProperty("--font-heading", s.headingFont);
   root.style.setProperty("--font-body", s.bodyFont);
   root.style.setProperty("--font-scale", String(s.sizeScale));
   root.style.setProperty("--font-heading-weight", s.headingWeight);
+
+  let style = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+  if (!style) {
+    style = document.createElement("style");
+    style.id = STYLE_ID;
+    document.head.appendChild(style);
+  }
+  style.textContent = `
+    h1, h2, h3, h4, h5, h6,
+    .molten-text, .font-display, .font-orbitron,
+    [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"],
+    [class*="text-6xl"], [class*="text-7xl"], [class*="text-8xl"] {
+      font-family: ${s.headingFont} !important;
+      font-weight: ${s.headingWeight} !important;
+    }
+    body {
+      font-family: ${s.bodyFont} !important;
+      font-size: calc(1rem * ${s.sizeScale}) !important;
+    }
+  `;
 }
 
 export default function FontCustomizer() {
