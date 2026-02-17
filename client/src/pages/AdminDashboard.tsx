@@ -871,6 +871,19 @@ export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("activity");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
+  const [subliminalMessages, setSubliminalMessages] = useState(CHAOS_MESSAGES.subliminal);
+  const [newSubliminal, setNewSubliminal] = useState('');
+
+  const { data: clues = [] } = useQuery<Clue[]>({
+    queryKey: ['/api/clues'],
+    queryFn: () => fetch('/api/clues').then(r => r.json())
+  });
+
+  const { data: quests = [] } = useQuery<Quest[]>({
+    queryKey: ['/api/quests'],
+    queryFn: () => fetch('/api/quests').then(r => r.json())
+  });
 
   if (authLoading) {
     return (
@@ -964,22 +977,6 @@ export default function AdminDashboard() {
       );
     });
   };
-  
-  // Local state for live config editing (these would sync to server/localStorage)
-  const [chaosEnabled, setChaosEnabled] = useState(CHAOS_MESSAGES.enabled);
-  const [subliminalMessages, setSubliminalMessages] = useState(CHAOS_MESSAGES.subliminal);
-  const [newSubliminal, setNewSubliminal] = useState('');
-
-  const { data: clues = [] } = useQuery<Clue[]>({
-    queryKey: ['/api/clues'],
-    queryFn: () => fetch('/api/clues').then(r => r.json())
-  });
-
-  const { data: quests = [] } = useQuery<Quest[]>({
-    queryKey: ['/api/quests'],
-    queryFn: () => fetch('/api/quests').then(r => r.json())
-  });
-
   const addSubliminalMessage = () => {
     if (newSubliminal.trim()) {
       setSubliminalMessages([...subliminalMessages, newSubliminal.trim()]);
