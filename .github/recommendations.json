@@ -1,0 +1,74 @@
+[
+  {
+    "id": 2,
+    "category": "systemic",
+    "priority": "critical",
+    "status": "proposed",
+    "title": "Unified investigation context sharing between agents",
+    "description": "Create a shared investigation context store that persists across agent conversations. Currently each NEXUS agent session starts from scratch — investigators lose accumulated evidence and insights when switching agents.",
+    "targetFiles": [
+      "server/storage.ts",
+      "shared/schema.ts",
+      "client/src/components/AgentChat.tsx"
+    ],
+    "codeSnippet": "export const investigationContext = pgTable(\"investigation_context\", {\n  id: serial(\"id\").primaryKey(),\n  userId: text(\"user_id\"),\n  campaignId: integer(\"campaign_id\"),\n  findings: jsonb(\"findings\").default([]),\n  evidence: text(\"evidence\").array(),\n  sharedWith: text(\"shared_with\").array(),\n  updatedAt: timestamp(\"updated_at\").defaultNow(),\n});",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "Evidence lost between agent switches",
+      "Cannot share findings across sessions",
+      "Investigators repeat themselves to each agent",
+      "No persistent investigation state"
+    ],
+    "estimatedImpact": "Eliminates 60% of repeated context-setting in multi-agent workflows. Enables true collaborative investigation across specialist agents.",
+    "source": "agent:OSINTAnalyst",
+    "votes": 1,
+    "createdAt": "2026-02-17T14:27:00.600Z"
+  },
+  {
+    "id": 1,
+    "category": "code_snippet",
+    "priority": "high",
+    "status": "proposed",
+    "title": "Add keyboard shortcuts for Terminal navigation",
+    "description": "Implement Ctrl+K command palette and Ctrl+L clear, Ctrl+R history search in the custom terminal. Currently the terminal only supports basic text input — power users need vim-style navigation.",
+    "targetFiles": [
+      "client/src/components/Terminal.tsx",
+      "client/src/hooks/useTerminal.ts"
+    ],
+    "codeSnippet": "const KEYBOARD_SHORTCUTS: Record<string, () => void> = {\n  \"ctrl+k\": () => setShowPalette(true),\n  \"ctrl+l\": () => clearOutput(),\n  \"ctrl+r\": () => setHistorySearch(true),\n  \"ctrl+c\": () => cancelCommand(),\n};\n\nuseEffect(() => {\n  const handler = (e: KeyboardEvent) => {\n    const key = `${e.ctrlKey ? \"ctrl+\" : \"\"}${e.key.toLowerCase()}`;\n    if (KEYBOARD_SHORTCUTS[key]) {\n      e.preventDefault();\n      KEYBOARD_SHORTCUTS[key]();\n    }\n  };\n  window.addEventListener(\"keydown\", handler);\n  return () => window.removeEventListener(\"keydown\", handler);\n}, []);",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "No keyboard shortcuts in terminal",
+      "Cannot clear terminal output quickly",
+      "No command history search",
+      "Power users must use mouse for everything"
+    ],
+    "estimatedImpact": "Reduces terminal interaction time by 40% for experienced users. Matches expected behavior from real terminal emulators.",
+    "source": "agent:VulnAnalyst",
+    "votes": 1,
+    "createdAt": "2026-02-17T14:26:41.732Z"
+  },
+  {
+    "id": 3,
+    "category": "integration",
+    "priority": "medium",
+    "status": "proposed",
+    "title": "Real-time scan progress WebSocket integration",
+    "description": "Replace polling-based scan status updates with WebSocket connections for Atropos Scanner and SpiderFoot. Users currently see delayed results and miss live module completions.",
+    "targetFiles": [
+      "server/routes/scanner.ts",
+      "client/src/pages/Scanner.tsx"
+    ],
+    "codeSnippet": "import { WebSocketServer } from \"ws\";\n\nconst wss = new WebSocketServer({ noServer: true });\n\nwss.on(\"connection\", (ws) => {\n  ws.on(\"message\", (msg) => {\n    const { scanId } = JSON.parse(msg.toString());\n    subscribeToScan(scanId, (update) => {\n      ws.send(JSON.stringify(update));\n    });\n  });\n});",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "Delayed scan result visibility",
+      "High polling overhead on server",
+      "Users miss live module events"
+    ],
+    "estimatedImpact": "Reduces scan result latency from 5s polling to <100ms real-time. Cuts server load from scan status endpoints by 80%.",
+    "source": "agent:NetworkRecon",
+    "votes": 1,
+    "createdAt": "2026-02-17T14:27:03.953Z"
+  }
+]

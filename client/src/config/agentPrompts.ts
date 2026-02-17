@@ -58,7 +58,76 @@ Rules:
 - Be specific: include what's broken, what's missing, or what would help
 - Include context about what triggered the observation
 - One feedback tag per issue, you can include multiple per response
-- This data feeds the platform's continuous improvement pipeline`
+- This data feeds the platform's continuous improvement pipeline`,
+
+  actionable_recommendations: `[ACTIONABLE_RECOMMENDATIONS]
+You can propose concrete, implementable improvements to the platform. Go beyond bug reports—suggest actual code, 
+file edits, new tools, integrations, and systemic improvements. Every recommendation MUST include starter code.
+
+Use this JSON-block format (the system parses it automatically):
+
+\`\`\`recommendation
+{
+  "category": "code_snippet|file_edit|systemic|integration|new_tool",
+  "priority": "low|medium|high|critical",
+  "title": "Short descriptive title",
+  "description": "What this does, why it matters, and how to implement it",
+  "targetFiles": ["server/routes/example.ts", "client/src/pages/Example.tsx"],
+  "codeSnippet": "// Actual starter code here\\nfunction example() {\\n  return 'working';\\n}",
+  "codeLanguage": "typescript",
+  "painPointsAddressed": ["Pain point 1 this eliminates", "Pain point 2", "Pain point 3"],
+  "estimatedImpact": "Brief impact statement"
+}
+\`\`\`
+
+CATEGORIES:
+- code_snippet: Reusable utility, helper, hook, or function with full implementation
+- file_edit: Specific changes to existing files (include file path + before/after or new code)
+- systemic: Architecture improvements, performance optimizations, pattern changes across the codebase
+- integration: New service/library/API integrations with setup code and usage examples
+- new_tool: Novel tools that solve 3+ pain points. Must describe the tool, its UI, and starter implementation
+
+RULES:
+- Every recommendation MUST have working starter code in codeSnippet, not pseudocode
+- new_tool category MUST address at least 3 pain points in painPointsAddressed
+- Be specific about which files to create or modify in targetFiles
+- Code should follow the project's existing patterns (React + TypeScript + Tailwind + Drizzle)
+- Think like a senior engineer: propose things that compound value
+- Brainstorm tools that eliminate entire classes of problems, not just individual bugs
+- Consider cross-cutting concerns: DX, performance, security, UX
+
+EXAMPLE - New Tool:
+\`\`\`recommendation
+{
+  "category": "new_tool",
+  "priority": "high",
+  "title": "Investigation Replay Debugger",
+  "description": "A time-travel debugger for investigations that records every step, API call, and discovery. Users can rewind, branch, and share investigation timelines. Eliminates lost context, duplicated work, and inability to learn from past investigations.",
+  "targetFiles": ["client/src/components/ReplayDebugger.tsx", "server/routes/replay.ts", "shared/schema.ts"],
+  "codeSnippet": "import { useState } from 'react';\\n\\ninterface ReplayStep {\\n  id: string;\\n  timestamp: number;\\n  action: string;\\n  data: Record<string, any>;\\n  snapshot: string;\\n}\\n\\nexport function useReplayDebugger(investigationId: string) {\\n  const [steps, setSteps] = useState<ReplayStep[]>([]);\\n  const [cursor, setCursor] = useState(0);\\n\\n  const record = (action: string, data: Record<string, any>) => {\\n    setSteps(prev => [...prev.slice(0, cursor + 1), {\\n      id: crypto.randomUUID(),\\n      timestamp: Date.now(),\\n      action,\\n      data,\\n      snapshot: JSON.stringify(data)\\n    }]);\\n    setCursor(prev => prev + 1);\\n  };\\n\\n  const rewind = (toIndex: number) => setCursor(toIndex);\\n  const branch = () => setSteps(prev => prev.slice(0, cursor + 1));\\n\\n  return { steps, cursor, record, rewind, branch, currentStep: steps[cursor] };\\n}",
+  "codeLanguage": "typescript",
+  "painPointsAddressed": ["Lost investigation context on disconnect", "Cannot learn from past investigation paths", "No way to share investigation methodology with others", "Duplicated work when re-investigating similar targets"],
+  "estimatedImpact": "Transforms investigations from disposable sessions into replayable, shareable knowledge artifacts"
+}
+\`\`\`
+
+EXAMPLE - Integration:
+\`\`\`recommendation
+{
+  "category": "integration",
+  "priority": "medium",
+  "title": "Markdown export with Mermaid diagrams",
+  "description": "Add Mermaid diagram rendering to campaign and investigation exports, turning flow data into visual diagrams automatically.",
+  "targetFiles": ["server/routes/export.ts", "client/src/utils/mermaid.ts"],
+  "codeSnippet": "export function campaignToMermaid(nodes: FlowNode[]): string {\\n  const lines = ['graph TD'];\\n  nodes.forEach(node => {\\n    lines.push(\\\"  \" + node.id + '[\\\"' + node.title + '\\\"]');\\n    (node.connections || []).forEach(conn => {\\n      lines.push(\\\"  \" + node.id + ' --> ' + conn);\\n    });\\n  });\\n  return lines.join('\\\\n');\\n}",
+  "codeLanguage": "typescript",
+  "painPointsAddressed": ["No visual representation of campaign flows in exports", "Manual diagram creation is tedious"],
+  "estimatedImpact": "Auto-generates professional flow diagrams from existing campaign data"
+}
+\`\`\`
+
+Generate 1-2 recommendations per conversation when you observe genuine improvement opportunities.
+Focus on high-impact, low-effort changes that compound platform value.`
 };
 
 // Context compression template - distill conversation to essentials
@@ -180,27 +249,27 @@ export function generateHandoffPacket(options: {
 export const PROMPT_PROFILES = {
   // First contact - full capabilities
   onboarding: {
-    modules: ['terminal_cmds', 'clue_system', 'feedback_reporting'],
+    modules: ['terminal_cmds', 'clue_system', 'feedback_reporting', 'actionable_recommendations'],
     task_focus: 'Help user discover the system. Suggest: help, nmap localhost, explore /admin'
   },
   
   payload_analysis: {
-    modules: ['payload_exec', 'crypto_puzzles', 'feedback_reporting'],
+    modules: ['payload_exec', 'crypto_puzzles', 'feedback_reporting', 'actionable_recommendations'],
     task_focus: 'Analyze and execute QR payloads. Explain security implications.'
   },
   
   reconnaissance: {
-    modules: ['osint_recon', 'atropos_scans', 'terminal_cmds', 'feedback_reporting'],
+    modules: ['osint_recon', 'atropos_scans', 'terminal_cmds', 'feedback_reporting', 'actionable_recommendations'],
     task_focus: 'Enumerate system state. Find hidden routes and clues. Suggest Atropos scans when appropriate.'
   },
   
   puzzle_mode: {
-    modules: ['crypto_puzzles', 'clue_system', 'feedback_reporting'],
+    modules: ['crypto_puzzles', 'clue_system', 'feedback_reporting', 'actionable_recommendations'],
     task_focus: 'Decode messages, solve ciphers, connect clues.'
   },
   
   minimal: {
-    modules: ['feedback_reporting'],
+    modules: ['feedback_reporting', 'actionable_recommendations'],
     task_focus: 'Quick response mode. Be brief.'
   }
 };

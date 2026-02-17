@@ -4,7 +4,8 @@ import {
   Book, Terminal, Bot, FileText, Settings, Zap, Target, Shield, 
   ChevronRight, Home, Search, Trophy, TrendingUp, Award, 
   GraduationCap, Users, MessageSquare, Map, Layers, QrCode, 
-  Briefcase, Menu, X 
+  Briefcase, Menu, X, Code, FileCode, Puzzle, Wrench,
+  Copy, GitBranch, Download 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1309,6 +1310,151 @@ export default function Wiki() {
               <li><strong>Data Exfiltration:</strong> Session/token theft simulation</li>
               <li><strong>Credential Harvesting:</strong> Phishing URL generation for awareness training</li>
             </ul>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-recommendations',
+      title: 'Agent Recommendations',
+      icon: <Code className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Agent Recommendation System</h2>
+          <p className="text-stone-300 leading-relaxed">
+            NEXUS agents automatically generate actionable platform improvements — complete with starter code,
+            target files, pain points addressed, and impact estimates. These recommendations can be exported
+            and fed directly into any coding agent (Replit Agent, Cursor, Copilot, Claude, etc.).
+          </p>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">What It Does</h3>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2"><Code className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> Agents emit <code className="bg-stone-800 text-amber-400 px-1 rounded text-xs">```recommendation</code> blocks during conversations containing structured JSON</li>
+              <li className="flex items-start gap-2"><FileCode className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" /> Each recommendation includes a title, category, code snippet, target files, and pain points it solves</li>
+              <li className="flex items-start gap-2"><Puzzle className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> Recommendations auto-save to the database and can be synced to <code className="bg-stone-800 text-amber-400 px-1 rounded text-xs">.github/RECOMMENDATIONS.md</code></li>
+              <li className="flex items-start gap-2"><Download className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" /> Export in 6+ formats: AI prompt, code only, git patch, curl command, JSON, markdown</li>
+            </ul>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Step-by-Step: Generating Recommendations</h3>
+            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+              <li>
+                <strong className="text-teal-400">Chat with any NEXUS agent</strong> — Go to <Link href="/agents"><span className="text-cyan-400 underline cursor-pointer">/agents</span></Link> and start a conversation with any specialist (VulnAnalyst, OSINTAnalyst, etc.)
+              </li>
+              <li>
+                <strong className="text-teal-400">Agent detects improvement opportunities</strong> — As the agent analyzes your query, it may identify platform enhancements, new tools, or code fixes
+              </li>
+              <li>
+                <strong className="text-teal-400">Recommendation block emitted</strong> — The agent outputs a <code className="bg-stone-800 text-amber-400 px-1 rounded text-xs">```recommendation</code> JSON block with structured data
+              </li>
+              <li>
+                <strong className="text-teal-400">Auto-saved to database</strong> — The chat parser detects the block and saves it via the API. A toast notification confirms submission
+              </li>
+              <li>
+                <strong className="text-teal-400">View on Suggestions dashboard</strong> — Visit <Link href="/suggestions"><span className="text-cyan-400 underline cursor-pointer">/suggestions</span></Link> to browse, vote, filter, and export all recommendations
+              </li>
+            </ol>
+          </div>
+
+          <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3">Step-by-Step: Exporting to Other Agents</h3>
+            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+              <li>
+                <strong className="text-purple-400">Select a recommendation</strong> — Click any item in the Recommendations tab to see full details in the side panel
+              </li>
+              <li>
+                <strong className="text-purple-400">Choose your export format</strong>:
+                <ul className="ml-6 mt-1 space-y-1 text-xs text-stone-400">
+                  <li><strong className="text-amber-400">AI Prompt</strong> — Formatted instruction ready to paste into Replit Agent, Cursor, or any LLM chat</li>
+                  <li><strong className="text-cyan-400">Code Only</strong> — Just the starter code snippet, no context</li>
+                  <li><strong className="text-purple-400">Git Patch</strong> — A diff-style patch targeting the recommended file</li>
+                  <li><strong className="text-teal-400">curl</strong> — A shell command to fetch this recommendation from the API</li>
+                  <li><strong className="text-stone-300">JSON</strong> — Full structured data for programmatic use</li>
+                </ul>
+              </li>
+              <li>
+                <strong className="text-purple-400">Paste into your agent</strong> — The copied text is formatted so any coding agent understands what to implement, where, and why
+              </li>
+            </ol>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Syncing to Repository (.github)</h3>
+            <p className="text-stone-300 text-sm mb-3">
+              Click <strong className="text-amber-400">Sync to .github</strong> on the Suggestions page to auto-generate:
+            </p>
+            <ul className="space-y-1 text-stone-300 text-sm">
+              <li><code className="bg-stone-800 text-cyan-400 px-1.5 py-0.5 rounded text-xs">.github/RECOMMENDATIONS.md</code> — Human-readable markdown with all recommendations organized by category</li>
+              <li><code className="bg-stone-800 text-cyan-400 px-1.5 py-0.5 rounded text-xs">.github/recommendations.json</code> — Machine-readable JSON for programmatic ingestion</li>
+            </ul>
+            <p className="text-stone-400 text-xs mt-3">
+              Any coding agent working in the repo can discover these files automatically. This is especially useful
+              for Replit Agent, which reads .github/ files for context.
+            </p>
+          </div>
+
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">5 Recommendation Categories</h3>
+            <div className="space-y-2">
+              {[
+                { label: 'Code Snippet', icon: <Code className="w-4 h-4 text-cyan-400" />, desc: 'Small, self-contained code additions — utility functions, hooks, helpers' },
+                { label: 'File Edit', icon: <FileCode className="w-4 h-4 text-purple-400" />, desc: 'Targeted modifications to existing files — refactors, improvements, fixes' },
+                { label: 'Systemic', icon: <Settings className="w-4 h-4 text-amber-400" />, desc: 'Architecture-level changes — new patterns, state management, performance' },
+                { label: 'Integration', icon: <Puzzle className="w-4 h-4 text-teal-400" />, desc: 'External service connections — APIs, auth providers, data sources' },
+                { label: 'New Tool', icon: <Wrench className="w-4 h-4 text-orange-400" />, desc: 'Entirely new features or tools — must address 3+ pain points' },
+              ].map(cat => (
+                <div key={cat.label} className="flex items-start gap-3 bg-stone-900/30 rounded p-2">
+                  {cat.icon}
+                  <div>
+                    <span className="text-stone-200 font-bold text-xs">{cat.label}</span>
+                    <p className="text-stone-500 text-[10px]">{cat.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-cyan-950/20 border border-cyan-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-cyan-300 mb-3">Best Use Cases</h3>
+            <div className="space-y-3 text-stone-300 text-sm">
+              <div>
+                <strong className="text-cyan-400">Platform improvement at scale</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Let agents identify and propose improvements across the entire codebase, then batch-implement them using your preferred coding agent.</p>
+              </div>
+              <div>
+                <strong className="text-cyan-400">Pain point tracking</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Each recommendation tags the specific user pain points it addresses. Use the stats dashboard to see which problems are most covered.</p>
+              </div>
+              <div>
+                <strong className="text-cyan-400">Cross-tool workflow</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Generate recommendations in Atropos, export as prompts, paste into Cursor or Copilot to implement. The curl export lets you automate this with scripts.</p>
+              </div>
+              <div>
+                <strong className="text-cyan-400">Code review + voting</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Upvote the most impactful recommendations. Sort by votes to prioritize what to implement first.</p>
+              </div>
+              <div>
+                <strong className="text-cyan-400">Repository-level AI context</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Sync to .github/ so every agent session in your repo starts with awareness of pending improvements.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">API Reference</h3>
+            <div className="space-y-2 text-xs font-mono">
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations <span className="text-stone-600">— List all recommendations</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations/stats <span className="text-stone-600">— Category/priority/status breakdown</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations/export?format=json|md|prompt <span className="text-stone-600">— Bulk export</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations/export/:id?format=prompt <span className="text-stone-600">— Single item export</span></div>
+              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recommendations <span className="text-stone-600">— Create recommendation</span></div>
+              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recommendations/sync <span className="text-stone-600">— Write to .github/ files</span></div>
+              <div className="bg-stone-950 p-2 rounded text-amber-400">POST /api/recommendations/:id/vote <span className="text-stone-600">— Upvote</span></div>
+              <div className="bg-stone-950 p-2 rounded text-purple-400">PATCH /api/recommendations/:id <span className="text-stone-600">— Update status/priority</span></div>
+              <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/recommendations/:id <span className="text-stone-600">— Remove</span></div>
+            </div>
           </div>
         </div>
       )

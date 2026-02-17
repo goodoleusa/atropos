@@ -137,6 +137,44 @@ A comprehensive security investigation and training platform that combines profe
 - ✨ **Portfolio System**: Auto-population sources, visualization types, sharing, post-edit
 - ✨ **QR C2 Framework**: Guided missions, 6 hijacking labs, multi-target console, attack presets
 
+### 🤖 Agent Recommendation System (NEW)
+NEXUS agents auto-generate actionable platform improvements with starter code, target files, and impact estimates. Export to any coding agent.
+
+- ✨ **Auto-Detection**: Agents emit `recommendation` blocks during conversations with structured JSON payloads
+- ✨ **5 Categories**: Code Snippet, File Edit, Systemic, Integration, New Tool (requires 3+ pain points)
+- ✨ **6+ Export Formats**: AI prompt, code only, git patch, curl command, JSON, markdown
+- ✨ **Suggestions Dashboard**: `/suggestions` — browse, vote, filter, export all recommendations with charts
+- ✨ **Repository Sync**: Auto-generates `.github/RECOMMENDATIONS.md` and `.github/recommendations.json`
+- ✨ **Cross-Agent Workflow**: Copy a recommendation as a prompt → paste into Replit Agent, Cursor, Copilot, or Claude
+- ✨ **Bulk Export API**: `GET /api/recommendations/export?format=prompt` for scripted workflows
+- ✨ **Pain Point Tracking**: Each recommendation tags specific user problems it addresses; dashboard shows coverage
+
+#### Quick Start: Agent Recommendations
+
+```bash
+# List all recommendations
+curl -s https://YOUR_APP/api/recommendations
+
+# Export all as agent-ready prompts
+curl -s https://YOUR_APP/api/recommendations/export?format=prompt
+
+# Export single recommendation for another coding agent
+curl -s https://YOUR_APP/api/recommendations/export/1?format=prompt | pbcopy
+
+# Sync to .github/ files
+curl -X POST https://YOUR_APP/api/recommendations/sync
+
+# Filter by category
+curl -s https://YOUR_APP/api/recommendations/export?format=json&category=new_tool
+```
+
+#### Use Cases
+1. **Platform Improvement at Scale** — Let agents identify enhancements across the codebase, then batch-implement using your preferred agent
+2. **Pain Point Tracking** — See which user problems are most covered by agent suggestions
+3. **Cross-Tool Workflow** — Generate in Atropos → export as prompt → paste into Cursor/Copilot to implement
+4. **Repository-Level AI Context** — Sync to `.github/` so every agent session starts with awareness of pending improvements
+5. **Code Review & Voting** — Upvote the most impactful recommendations to prioritize implementation
+
 ---
 
 ## 🎉 v2.1 - QR C2 Framework & Attack Simulation (Feb 2026)
