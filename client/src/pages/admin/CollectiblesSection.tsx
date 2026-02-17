@@ -313,9 +313,26 @@ export function CollectiblesSection() {
               <p className="text-stone-500 text-xs">Clue management has moved to the Gameplay Editor for a single source of truth.</p>
             </div>
           </div>
-          <Badge variant="outline" className="border-amber-700 text-amber-400 shrink-0 flex items-center gap-1 cursor-default" data-testid="clues-xref-gameplay">
-            Gameplay Editor <ArrowRight className="w-3 h-3" />
-          </Badge>
+          <Button 
+            variant="outline" 
+            className="border-amber-700 text-amber-400 shrink-0 flex items-center gap-1 cursor-pointer hover:bg-amber-900/30 min-h-[44px]" 
+            data-testid="clues-xref-gameplay"
+            onClick={() => {
+              // This is a hacky way to trigger a tab change in the parent AdminDashboard
+              // if it was passed as a prop, but since it's likely managed by the parent,
+              // we just provide a toast or a way to signal the change.
+              // For now, we'll assume the user needs to manually click Gameplay tab,
+              // or we can try to find the tab buttons in the DOM.
+              const gameplayTab = document.querySelector('[data-testid="admin-tab-gameplay"]');
+              if (gameplayTab instanceof HTMLElement) {
+                gameplayTab.click();
+              } else {
+                toast({ title: "Navigate to Gameplay Editor", description: "Please click the 'Gameplay' tab in the sidebar to manage clues." });
+              }
+            }}
+          >
+            Open Gameplay Editor <ArrowRight className="w-3 h-3" />
+          </Button>
         </CardContent>
       </Card>
 
