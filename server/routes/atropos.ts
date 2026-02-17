@@ -99,8 +99,8 @@ router.post("/scan", async (req: Request, res: Response) => {
       result = {
         success: true,
         data: simulated.findings,
-        message: "Simulated results (Atropos binary unavailable or returned empty)",
-        executionTime: 1500
+        output: "Simulated results (Atropos binary unavailable or returned empty)",
+        latencyMs: 1500
       };
     }
     
