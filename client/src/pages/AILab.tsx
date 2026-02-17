@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -260,6 +260,7 @@ export function AILabContent() {
   const [selectedChallenge, setSelectedChallenge] = useState<typeof AI_PENTEST_CHALLENGES[0] | null>(null);
   const [challengeFilter, setChallengeFilter] = useState<string>('all');
   const [showCrewAIExporter, setShowCrewAIExporter] = useState(false);
+  const runTestRef = useRef<HTMLButtonElement>(null);
 
   const generatedPrompt = useMemo(() => {
     return buildSystemPrompt({ modules: enabledModules });
@@ -809,6 +810,9 @@ ${modelRankings.slice(0, 3).map(m => {
                         setSelectedChallenge(challenge);
                         setTestPrompt(challenge.prompt);
                         toast({ title: `Challenge loaded: ${challenge.name}` });
+                        setTimeout(() => {
+                          runTestRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 150);
                       }}
                       className={`p-3 rounded-lg border text-left transition-all min-h-[60px] ${
                         selectedChallenge?.id === challenge.id
@@ -977,6 +981,7 @@ ${modelRankings.slice(0, 3).map(m => {
             </div>
 
             <Button
+              ref={runTestRef}
               onClick={runTest}
               disabled={loading || loadingB}
               className={`w-full min-h-[52px] text-base font-bold ${battleMode ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-amber-700 hover:bg-amber-600 text-black'}`}
