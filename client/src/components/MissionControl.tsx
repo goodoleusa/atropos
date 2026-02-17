@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useGame } from "@/hooks/useGameSession";
+import { useLearningStore } from "@/stores/useLearningStore";
 import {
   Target,
   Terminal,
@@ -20,7 +21,13 @@ import {
   FlaskConical,
   Radar,
   Play,
+  Brain,
+  Eye,
+  Users,
+  Wrench,
+  GraduationCap,
 } from "lucide-react";
+import type { LearningStyle } from "@/config/learningConfig";
 
 interface CampaignRun {
   runId: string;
@@ -148,9 +155,21 @@ const STATUS_STYLES: Record<string, { dot: string; text: string; label: string }
   abandoned: { dot: "bg-red-600", text: "text-red-500", label: "Abandoned" },
 };
 
+const STYLE_CONFIG: Record<LearningStyle, { label: string; desc: string; icon: typeof Brain; color: string; border: string; bg: string }> = {
+  experiential: { label: 'Experiential', desc: 'Hands-on labs, try first, theory later', icon: FlaskConical, color: 'text-emerald-400', border: 'border-emerald-800/40', bg: 'bg-emerald-900/15' },
+  visual: { label: 'Visual', desc: 'Diagrams, flowcharts, visual mapping', icon: Eye, color: 'text-sky-400', border: 'border-sky-800/40', bg: 'bg-sky-900/15' },
+  analytical: { label: 'Analytical', desc: 'Deep theory, citations, detailed why', icon: Brain, color: 'text-purple-400', border: 'border-purple-800/40', bg: 'bg-purple-900/15' },
+  social: { label: 'Social', desc: 'Community, discussion, collaboration', icon: Users, color: 'text-amber-400', border: 'border-amber-800/40', bg: 'bg-amber-900/15' },
+  pragmatic: { label: 'Pragmatic', desc: 'Quick wins, cheat sheets, shortcuts', icon: Wrench, color: 'text-rose-400', border: 'border-rose-800/40', bg: 'bg-rose-900/15' },
+};
+
 export default function MissionControl() {
   const { gameState, completeMission } = useGame();
   const sessionToken = gameState.sessionToken;
+  const learningStyle = useLearningStore(s => s.style);
+  const setLearningStyle = useLearningStore(s => s.setStyle);
+  const skillLevel = useLearningStore(s => s.skillLevel);
+  const setSkillLevel = useLearningStore(s => s.setSkillLevel);
 
   const { data: campaignRuns = [] } = useQuery<CampaignRun[]>({
     queryKey: ["/api/campaign-runs/session", sessionToken],
@@ -240,6 +259,81 @@ export default function MissionControl() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="bg-[#0a0500] border-stone-800" data-testid="learning-style-card">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-mono flex items-center gap-2 text-stone-300">
+              <GraduationCap className="w-4 h-4 text-teal-500" />
+              Learning Profile
+            </CardTitle>
+            <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+              Persists across sessions
+            </Badge>
+          </div>
+          <p className="text-[10px] text-stone-600 mt-1">
+            Your style adapts all AI missions, NEXUS guidance, and exercise content
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <p className="text-[10px] text-stone-500 uppercase tracking-wider font-bold mb-2">How do you learn best?</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5 md:gap-2">
+              {(Object.entries(STYLE_CONFIG) as [LearningStyle, typeof STYLE_CONFIG[LearningStyle]][]).map(([key, meta]) => {
+                const SIcon = meta.icon;
+                const isActive = key === learningStyle;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setLearningStyle(key)}
+                    className={`flex items-center gap-2 p-2.5 md:p-2 rounded-lg border transition-all min-h-[48px] md:min-h-0 ${
+                      isActive
+                        ? `${meta.border} ${meta.bg} ring-1 ring-inset ${meta.border}`
+                        : 'border-stone-800 bg-stone-950/30 hover:border-stone-700 active:bg-stone-900/40'
+                    }`}
+                    data-testid={`style-select-${key}`}
+                  >
+                    <SIcon className={`w-4 h-4 md:w-3.5 md:h-3.5 shrink-0 ${isActive ? meta.color : 'text-stone-600'}`} />
+                    <div className="text-left min-w-0">
+                      <p className={`text-[11px] md:text-[10px] font-medium ${isActive ? meta.color : 'text-stone-400'}`}>{meta.label}</p>
+                      <p className="text-[9px] text-stone-600 truncate hidden sm:block">{meta.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 pt-1 border-t border-stone-800/50">
+            <div className="flex-1">
+              <p className="text-[10px] text-stone-500 uppercase tracking-wider font-bold mb-1.5">Skill Level</p>
+              <div className="flex gap-1 flex-wrap">
+                {(['beginner', 'intermediate', 'advanced', 'expert'] as const).map(level => (
+                  <button
+                    key={level}
+                    onClick={() => setSkillLevel(level)}
+                    className={`px-2.5 py-1.5 md:py-1 rounded text-[10px] md:text-[9px] font-medium transition-colors min-h-[36px] md:min-h-0 ${
+                      skillLevel === level
+                        ? 'bg-teal-900/30 border border-teal-800/40 text-teal-400'
+                        : 'bg-stone-900/30 border border-stone-800 text-stone-500 hover:text-stone-300 active:bg-stone-800/40'
+                    }`}
+                    data-testid={`skill-level-${level}`}
+                  >
+                    {level.charAt(0).toUpperCase() + level.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="text-[10px] text-stone-600 sm:text-right">
+              <span className={`${STYLE_CONFIG[learningStyle].color} font-medium`}>
+                {STYLE_CONFIG[learningStyle].label}
+              </span>
+              {' · '}
+              <span className="text-teal-500">{skillLevel}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {activeCampaigns.length > 0 && (
         <CategorySection category="campaigns">
