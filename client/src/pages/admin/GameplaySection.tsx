@@ -203,17 +203,17 @@ export function GameplaySection() {
         </Badge>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin" data-testid="gameplay-tabs">
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 md:mx-0 md:px-0" data-testid="gameplay-tabs">
         {TABS.map((t) => (
           <Button
             key={t.id}
             size="sm"
             variant={tab === t.id ? "default" : "ghost"}
-            className={`shrink-0 min-h-[44px] ${tab === t.id ? "bg-amber-700 text-black" : "text-stone-400 hover:text-amber-400"}`}
+            className={`shrink-0 min-h-[44px] min-w-[120px] md:min-w-0 ${tab === t.id ? "bg-amber-700 text-black" : "text-stone-400 hover:text-amber-400 border border-stone-800/30 md:border-0"}`}
             onClick={() => { setTab(t.id); setSearch(""); }}
             data-testid={`tab-${t.id}`}
           >
-            <t.icon className="w-4 h-4 mr-1.5" /> {t.label}
+            <t.icon className="w-4 h-4 mr-2" /> {t.label}
           </Button>
         ))}
       </div>
@@ -272,26 +272,41 @@ export function GameplaySection() {
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-full max-w-lg">
                 <DialogHeader><DialogTitle className="text-amber-600 font-orbitron">{editItem.clueId ? "Edit Clue" : "Create Clue"}</DialogTitle></DialogHeader>
-                <div className="space-y-3">
-                  <Input placeholder="Clue ID" value={editItem.clueId} onChange={(e) => setEditItem({ ...editItem, clueId: e.target.value })} className={inp} data-testid="input-clue-id" />
-                  <Input placeholder="Name" value={editItem.name} onChange={(e) => setEditItem({ ...editItem, name: e.target.value })} className={inp} data-testid="input-clue-name" />
-                  <Textarea placeholder="Description" value={editItem.description} onChange={(e) => setEditItem({ ...editItem, description: e.target.value })} className={inp} data-testid="input-clue-desc" />
-                  <Textarea placeholder="Content" value={editItem.content} onChange={(e) => setEditItem({ ...editItem, content: e.target.value })} className={inp} data-testid="input-clue-content" />
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <Label className="text-amber-600 text-xs">Category</Label>
+                <div className="space-y-4 max-h-[80vh] overflow-y-auto pr-2 scrollbar-thin">
+                  <div className="space-y-1.5">
+                    <Label className="text-amber-600 text-[10px] uppercase font-bold">Identity</Label>
+                    <Input placeholder="Clue ID" value={editItem.clueId} onChange={(e) => setEditItem({ ...editItem, clueId: e.target.value })} className={inp} data-testid="input-clue-id" />
+                    <Input placeholder="Name" value={editItem.name} onChange={(e) => setEditItem({ ...editItem, name: e.target.value })} className={inp} data-testid="input-clue-name" />
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <Label className="text-amber-600 text-[10px] uppercase font-bold">Content</Label>
+                    <Textarea placeholder="Description" value={editItem.description} onChange={(e) => setEditItem({ ...editItem, description: e.target.value })} className={`${inp} min-h-[80px]`} data-testid="input-clue-desc" />
+                    <Textarea placeholder="Content" value={editItem.content} onChange={(e) => setEditItem({ ...editItem, content: e.target.value })} className={`${inp} min-h-[100px]`} data-testid="input-clue-content" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-amber-600 text-[10px] uppercase font-bold">Category</Label>
                       <Select value={editItem.category || "general"} onValueChange={(v) => setEditItem({ ...editItem, category: v })}>
-                        <SelectTrigger className={inp} data-testid="select-clue-category"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className={`${inp} h-11`} data-testid="select-clue-category"><SelectValue /></SelectTrigger>
                         <SelectContent className="bg-stone-950 border-amber-900/30">{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <div className="flex-1">
-                      <Label className="text-amber-600 text-xs">Difficulty</Label>
-                      <DifficultyStars value={editItem.difficulty || 1} onChange={(v) => setEditItem({ ...editItem, difficulty: v })} />
+                    <div className="space-y-1.5">
+                      <Label className="text-amber-600 text-[10px] uppercase font-bold">Difficulty</Label>
+                      <div className="pt-2">
+                        <DifficultyStars value={editItem.difficulty || 1} onChange={(v) => setEditItem({ ...editItem, difficulty: v })} />
+                      </div>
                     </div>
                   </div>
-                  <Input placeholder="Tags (comma-separated)" value={editItem.tags?.join(", ") || ""} onChange={(e) => setEditItem({ ...editItem, tags: e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean) })} className={inp} data-testid="input-clue-tags" />
-                  <Button className="w-full bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => upsertClue.mutate(editItem)} data-testid="save-clue-btn">{upsertClue.isPending ? "Saving..." : "Save Clue"}</Button>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-amber-600 text-[10px] uppercase font-bold">Metadata</Label>
+                    <Input placeholder="Tags (comma-separated)" value={editItem.tags?.join(", ") || ""} onChange={(e) => setEditItem({ ...editItem, tags: e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean) })} className={inp} data-testid="input-clue-tags" />
+                  </div>
+
+                  <Button className="w-full bg-amber-700 hover:bg-amber-600 text-black min-h-[48px] font-bold text-sm mt-4" onClick={() => upsertClue.mutate(editItem)} data-testid="save-clue-btn">{upsertClue.isPending ? "Saving..." : "Save Clue"}</Button>
                 </div>
               </DialogContent>
             </Dialog>
