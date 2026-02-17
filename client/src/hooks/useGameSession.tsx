@@ -450,7 +450,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
     toast({
       title: "MISSION ACCEPTED",
-      description: `${mission.name} added to Campaign Progress`,
+      description: `${mission.name} added to Mission Control`,
       className: "border-teal-500 text-teal-400 bg-black/90 font-mono",
     });
   }, [toast]);

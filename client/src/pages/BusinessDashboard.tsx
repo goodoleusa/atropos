@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useSearch } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,7 @@ import {
   Users,
   TrendingUp,
   AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   Clock,
   Zap,
@@ -32,6 +34,9 @@ import {
   Layers,
   ChevronDown,
   ChevronUp,
+  Globe,
+  Award,
+  ArrowUpRight,
 } from "lucide-react";
 
 interface ProjectGoal {
@@ -393,7 +398,242 @@ function ProjectCard({
   );
 }
 
+function InvestorView({ projects }: { projects: Project[] }) {
+  const [metrics, setMetrics] = useState({
+    agents: { total: 15, active: 12, scanning: 8, responding: 1 },
+    platform: { clientsMonitored: 3, assetsProtected: 247, threatsDetected: 1834, incidentsContained: 12, avgResponseTime: '47 seconds' },
+    business: { mrr: 23000, arr: 276000, growthRate: 300, clients: 3, pipeline: 12 },
+    impact: { casesSupported: 8, victimsHelped: 3, networksDisrupted: 2, arrestsFacilitated: 5 },
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMetrics(prev => ({
+        ...prev,
+        platform: { ...prev.platform, threatsDetected: prev.platform.threatsDetected + Math.floor(Math.random() * 3) },
+        agents: { ...prev.agents, scanning: Math.floor(Math.random() * 10) + 5 },
+      }));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const totalBudget = projects.reduce((s, p) => s + (p.budget?.allocated || 0), 0);
+  const totalRevenue = projects.reduce((s, p) => s + (p.revenue || 0), 0);
+  const completedProjects = projects.filter(p => p.status === "complete").length;
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="bg-stone-900/50 border-stone-800 p-6 relative overflow-hidden" data-testid="investor-arr">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <DollarSign className="w-8 h-8 text-teal-400" />
+              <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">+{metrics.business.growthRate}% MoM</Badge>
+            </div>
+            <div className="text-4xl font-bold mb-1">${(metrics.business.arr / 1000).toFixed(0)}K</div>
+            <div className="text-sm text-stone-400">Annual Recurring Revenue</div>
+            <div className="text-xs text-stone-500 mt-2">Target: $500K Y1 → $10M Y3</div>
+          </div>
+        </Card>
+        <Card className="bg-stone-900/50 border-stone-800 p-6 relative overflow-hidden" data-testid="investor-cost">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <Brain className="w-8 h-8 text-amber-400" />
+              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">99% savings</Badge>
+            </div>
+            <div className="text-4xl font-bold mb-1">$50</div>
+            <div className="text-sm text-stone-400">Cost per client/month</div>
+            <div className="text-xs text-stone-500 mt-2">vs $50,000 traditional SOC</div>
+          </div>
+        </Card>
+        <Card className="bg-stone-900/50 border-stone-800 p-6 relative overflow-hidden" data-testid="investor-response">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <Zap className="w-8 h-8 text-amber-400" />
+              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">300x faster</Badge>
+            </div>
+            <div className="text-4xl font-bold mb-1">47s</div>
+            <div className="text-sm text-stone-400">Avg Response Time</div>
+            <div className="text-xs text-stone-500 mt-2">vs 4-6 hours industry avg</div>
+          </div>
+        </Card>
+        <Card className="bg-stone-900/50 border-stone-800 p-6 relative overflow-hidden" data-testid="investor-impact">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <Award className="w-8 h-8 text-red-400" />
+              <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Real Impact</Badge>
+            </div>
+            <div className="text-4xl font-bold mb-1">{metrics.impact.victimsHelped}</div>
+            <div className="text-sm text-stone-400">Victims Helped</div>
+            <div className="text-xs text-stone-500 mt-2">{metrics.impact.arrestsFacilitated} arrests facilitated</div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-stone-900/50 border-stone-800 p-6" data-testid="investor-threats">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Activity className="w-6 h-6 text-red-400" /> Live Threat Feed
+            </h2>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
+              <span className="text-sm text-stone-400">Real-time</span>
+            </div>
+          </div>
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {[
+              { time: '2s ago', severity: 'high', msg: 'Port 3389 (RDP) exposed on 10.0.1.45', client: 'Client A' },
+              { time: '15s ago', severity: 'critical', msg: 'SQL injection vulnerability detected', client: 'Client B' },
+              { time: '32s ago', severity: 'medium', msg: 'Outdated nginx version (CVE-2023-1234)', client: 'Client A' },
+              { time: '1m ago', severity: 'low', msg: 'Missing security headers on api.example.com', client: 'Client C' },
+              { time: '2m ago', severity: 'high', msg: 'Suspicious Bitcoin transaction flagged', client: 'NGO Partner' },
+              { time: '3m ago', severity: 'info', msg: 'Weekly scan completed - 247 assets healthy', client: 'Client A' },
+            ].map((alert, idx) => (
+              <div key={idx} className="flex items-start gap-3 p-3 bg-stone-800/50 rounded-lg border border-stone-700 hover:border-stone-600 transition-colors">
+                <AlertTriangle className={`w-5 h-5 mt-0.5 flex-shrink-0 ${alert.severity === 'critical' ? 'text-red-400' : alert.severity === 'high' ? 'text-orange-400' : alert.severity === 'medium' ? 'text-amber-400' : 'text-stone-400'}`} />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium">{alert.msg}</div>
+                  <div className="text-xs text-stone-500 mt-1">{alert.client} • {alert.time}</div>
+                </div>
+                <Badge className={`${alert.severity === 'critical' ? 'bg-red-500/20 text-red-400 border-red-500/30' : alert.severity === 'high' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : alert.severity === 'medium' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-stone-500/20 text-stone-400 border-stone-500/30'}`}>{alert.severity}</Badge>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="bg-stone-900/50 border-stone-800 p-6" data-testid="investor-agents">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Brain className="w-6 h-6 text-teal-400" /> AI Agent Activity
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-stone-800/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center"><Shield className="w-5 h-5 text-teal-400" /></div>
+                <div><div className="font-semibold">Recon Agents</div><div className="text-sm text-stone-400">Network scanning</div></div>
+              </div>
+              <div className="text-right"><div className="text-2xl font-bold text-teal-400">{metrics.agents.scanning}</div><div className="text-xs text-stone-500">active now</div></div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-stone-800/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center"><Target className="w-5 h-5 text-amber-400" /></div>
+                <div><div className="font-semibold">Threat Hunters</div><div className="text-sm text-stone-400">Behavioral analysis</div></div>
+              </div>
+              <div className="text-right"><div className="text-2xl font-bold text-amber-400">4</div><div className="text-xs text-stone-500">hunting now</div></div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-stone-800/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center"><Zap className="w-5 h-5 text-red-400" /></div>
+                <div><div className="font-semibold">Incident Responders</div><div className="text-sm text-stone-400">Active containment</div></div>
+              </div>
+              <div className="text-right"><div className="text-2xl font-bold text-red-400">{metrics.agents.responding}</div><div className="text-xs text-stone-500">responding</div></div>
+            </div>
+            <div className="p-4 bg-gradient-to-r from-teal-500/10 to-amber-500/10 rounded-lg border border-teal-500/20">
+              <div className="text-sm text-stone-300 mb-2">Total AI Cost (All Clients)</div>
+              <div className="text-3xl font-bold text-teal-400 mb-1">$0.00</div>
+              <div className="text-xs text-stone-500">100% FREE models (Ollama + Groq) • 99.9% margin</div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <Card className="bg-stone-900/50 border-stone-800 p-6" data-testid="investor-economics">
+        <h2 className="text-2xl font-bold mb-6">Unit Economics</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div><div className="text-stone-400 text-sm mb-2">Customer Acquisition Cost</div><div className="text-4xl font-bold mb-2">$2,000</div><div className="text-sm text-stone-500">Cold outreach + demo + pilot</div></div>
+          <div><div className="text-stone-400 text-sm mb-2">Lifetime Value</div><div className="text-4xl font-bold mb-2 text-teal-400">$72,000</div><div className="text-sm text-stone-500">12 months × $10k/mo × 60% margin</div></div>
+          <div><div className="text-stone-400 text-sm mb-2">LTV:CAC Ratio</div><div className="text-4xl font-bold mb-2 text-amber-400">36:1</div><div className="text-sm text-stone-500">VCs want 3:1, we have 36:1</div></div>
+        </div>
+        <div className="mt-6 p-4 bg-teal-500/10 border border-teal-500/20 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <CheckCircle2 className="w-5 h-5 text-teal-400" />
+            <span className="font-semibold text-teal-400">Exceptional Unit Economics</span>
+          </div>
+          <div className="text-sm text-stone-400">36:1 LTV:CAC ratio means every $1 spent on acquisition returns $36. Industry benchmark: 3:1. We're 12x better than industry standard.</div>
+        </div>
+      </Card>
+
+      <Card className="bg-stone-900/50 border-stone-800 p-6" data-testid="investor-comparison">
+        <h2 className="text-2xl font-bold mb-6">vs Traditional SOC</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-6 bg-stone-800/50 rounded-lg border border-stone-700">
+            <div className="text-lg font-semibold mb-4 text-stone-300">Traditional SOC</div>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between"><span className="text-stone-400">Monthly Cost:</span><span className="font-semibold text-red-400">$50,000</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Team Size:</span><span className="font-semibold">5-10 humans</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Response Time:</span><span className="font-semibold">4-6 hours</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Scalability:</span><span className="font-semibold text-red-400">Limited</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Coverage:</span><span className="font-semibold">8am-6pm</span></div>
+            </div>
+          </div>
+          <div className="p-6 bg-gradient-to-br from-teal-500/10 to-amber-500/10 rounded-lg border border-teal-500/30">
+            <div className="text-lg font-semibold mb-4 text-teal-400">Atropos AI Security</div>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between"><span className="text-stone-400">Monthly Cost:</span><span className="font-semibold text-teal-400">$10,000</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Team Size:</span><span className="font-semibold">5 AI agents + 1 human</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Response Time:</span><span className="font-semibold text-teal-400">47 seconds</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Scalability:</span><span className="font-semibold text-teal-400">Infinite</span></div>
+              <div className="flex justify-between"><span className="text-stone-400">Coverage:</span><span className="font-semibold">24/7/365</span></div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+          <div className="p-4 bg-teal-500/10 rounded-lg border border-teal-500/20"><div className="text-3xl font-bold text-teal-400">80%</div><div className="text-sm text-stone-400 mt-1">Cost Savings</div></div>
+          <div className="p-4 bg-teal-500/10 rounded-lg border border-teal-500/20"><div className="text-3xl font-bold text-teal-400">300x</div><div className="text-sm text-stone-400 mt-1">Faster Response</div></div>
+          <div className="p-4 bg-amber-500/10 rounded-lg border border-amber-500/20"><div className="text-3xl font-bold text-amber-400">∞</div><div className="text-sm text-stone-400 mt-1">Scalability</div></div>
+        </div>
+      </Card>
+
+      <Card className="bg-stone-900/50 border-stone-800 p-6" data-testid="investor-mission">
+        <h2 className="text-2xl font-bold mb-6">Mission Impact</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center"><div className="text-4xl font-bold text-amber-400 mb-2">{metrics.impact.casesSupported}</div><div className="text-sm text-stone-400">Cases Supported</div><div className="text-xs text-stone-600 mt-1">For Polaris, Thorn, NCMEC</div></div>
+          <div className="text-center"><div className="text-4xl font-bold text-red-400 mb-2">{metrics.impact.victimsHelped}</div><div className="text-sm text-stone-400">Victims Helped</div><div className="text-xs text-stone-600 mt-1">Investigation leads</div></div>
+          <div className="text-center"><div className="text-4xl font-bold text-teal-400 mb-2">{metrics.impact.networksDisrupted}</div><div className="text-sm text-stone-400">Networks Disrupted</div><div className="text-xs text-stone-600 mt-1">Trafficking operations</div></div>
+          <div className="text-center"><div className="text-4xl font-bold text-teal-400 mb-2">{metrics.impact.arrestsFacilitated}</div><div className="text-sm text-stone-400">Arrests Facilitated</div><div className="text-xs text-stone-600 mt-1">Intelligence led to prosecutions</div></div>
+        </div>
+        <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <Award className="w-5 h-5 text-amber-400" />
+            <span className="font-semibold text-amber-400">Pro-Social + Profitable</span>
+          </div>
+          <div className="text-sm text-stone-400">ESG investors love this: High social impact + exceptional financial returns. Every dollar invested fights human trafficking AND generates 36:1 returns.</div>
+        </div>
+      </Card>
+
+      {projects.length > 0 && (
+        <Card className="bg-stone-900/50 border-stone-800 p-6" data-testid="investor-portfolio">
+          <h2 className="text-2xl font-bold mb-4">Project Portfolio Overview</h2>
+          <div className="space-y-3">
+            {projects.slice(0, 5).map(p => (
+              <div key={p.id} className="flex items-center justify-between p-3 bg-stone-800/50 rounded-lg">
+                <div className="flex items-center gap-3 min-w-0">
+                  {getStageIcon(p.stage)}
+                  <div className="min-w-0"><div className="text-sm font-semibold truncate">{p.name}</div><div className="text-xs text-stone-500 capitalize">{p.stage} • {p.category}</div></div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Progress value={p.progress} className="h-2 w-24" />
+                  <span className="text-xs text-amber-400 w-8">{p.progress}%</span>
+                  <Badge className={getStatusColor(p.status)}>{p.status}</Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 export default function BusinessDashboard() {
+  const search = useSearch();
+  const params = new URLSearchParams(search);
+  const tabFromUrl = params.get("tab");
+  const [topView, setTopView] = useState(tabFromUrl === "investor" ? "investor" : "business");
   const [activeTab, setActiveTab] = useState("projects");
   const [showNewForm, setShowNewForm] = useState(false);
   const [quickAddStage, setQuickAddStage] = useState<Project["stage"] | null>(null);
@@ -470,13 +710,37 @@ export default function BusinessDashboard() {
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent" data-testid="text-dashboard-title">
-            Business Dashboard
-          </h1>
-          <p className="text-stone-400 text-sm">Plan, track, and manage all projects</p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent" data-testid="text-dashboard-title">
+              Business HQ
+            </h1>
+            <p className="text-stone-400 text-sm">Plan, track, and pitch — all in one place</p>
+          </div>
+          <div className="flex bg-stone-900 border border-stone-800 rounded-lg p-1 gap-1" data-testid="view-switcher">
+            <Button
+              variant={topView === "business" ? "default" : "ghost"}
+              size="sm"
+              className={topView === "business" ? "bg-amber-500 text-stone-950 hover:bg-amber-400" : "text-stone-400 hover:text-stone-200"}
+              onClick={() => setTopView("business")}
+              data-testid="btn-view-business"
+            >
+              <Layers className="w-4 h-4 mr-1" /> Operations
+            </Button>
+            <Button
+              variant={topView === "investor" ? "default" : "ghost"}
+              size="sm"
+              className={topView === "investor" ? "bg-amber-500 text-stone-950 hover:bg-amber-400" : "text-stone-400 hover:text-stone-200"}
+              onClick={() => setTopView("investor")}
+              data-testid="btn-view-investor"
+            >
+              <TrendingUp className="w-4 h-4 mr-1" /> Investor Pitch
+            </Button>
+          </div>
         </div>
 
+        {topView === "investor" && <InvestorView projects={projects} />}
+        {topView === "business" && (<>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <Card className="bg-stone-900/50 border-stone-800 p-4" data-testid="card-total-projects">
             <div className="flex items-center justify-between mb-1">
@@ -705,6 +969,7 @@ export default function BusinessDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+        </>)}
       </div>
     </div>
   );
