@@ -122,6 +122,9 @@ import {
   sitemapEntries,
   type SitemapEntry,
   type InsertSitemapEntry,
+  curriculumTracks,
+  type CurriculumTrack,
+  type InsertCurriculumTrack,
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -436,6 +439,14 @@ export interface IStorage {
   updateSitemapEntry(id: number, updates: Partial<SitemapEntry>): Promise<SitemapEntry | undefined>;
   deleteSitemapEntry(id: number): Promise<boolean>;
   bulkUpsertSitemapEntries(entries: InsertSitemapEntry[]): Promise<SitemapEntry[]>;
+
+  // Curriculum Tracks
+  getAllCurriculumTracks(): Promise<CurriculumTrack[]>;
+  getCurriculumTrackByTrackId(trackId: string): Promise<CurriculumTrack | undefined>;
+  upsertCurriculumTrack(trackId: string, data: Partial<InsertCurriculumTrack>): Promise<CurriculumTrack>;
+  updateCurriculumTrack(trackId: string, updates: Partial<CurriculumTrack>): Promise<CurriculumTrack | undefined>;
+  deleteCurriculumTrack(trackId: string): Promise<boolean>;
+  seedCurriculumFromStatic(tracks: InsertCurriculumTrack[]): Promise<CurriculumTrack[]>;
 }
 
 // Admin configuration type (stored in memory/file, not DB)
@@ -2495,6 +2506,55 @@ export class DatabaseStorage implements IStorage {
         const [created] = await db.insert(sitemapEntries).values(entry).returning();
         results.push(created);
       }
+    }
+    return results;
+  }
+  // Curriculum Tracks
+  async getAllCurriculumTracks(): Promise<CurriculumTrack[]> {
+    return db.select().from(curriculumTracks).orderBy(curriculumTracks.category, curriculumTracks.order);
+  }
+
+  async getCurriculumTrackByTrackId(trackId: string): Promise<CurriculumTrack | undefined> {
+    const [track] = await db.select().from(curriculumTracks).where(eq(curriculumTracks.trackId, trackId));
+    return track;
+  }
+
+  async upsertCurriculumTrack(trackId: string, data: Partial<InsertCurriculumTrack>): Promise<CurriculumTrack> {
+    const existing = await this.getCurriculumTrackByTrackId(trackId);
+    if (existing) {
+      const [updated] = await db.update(curriculumTracks)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(curriculumTracks.trackId, trackId))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(curriculumTracks).values({
+      trackId,
+      name: data.name || 'Untitled Track',
+      category: data.category || 'ai',
+      ...data,
+    } as InsertCurriculumTrack).returning();
+    return created;
+  }
+
+  async updateCurriculumTrack(trackId: string, updates: Partial<CurriculumTrack>): Promise<CurriculumTrack | undefined> {
+    const [updated] = await db.update(curriculumTracks)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(curriculumTracks.trackId, trackId))
+      .returning();
+    return updated;
+  }
+
+  async deleteCurriculumTrack(trackId: string): Promise<boolean> {
+    const result = await db.delete(curriculumTracks).where(eq(curriculumTracks.trackId, trackId)).returning();
+    return result.length > 0;
+  }
+
+  async seedCurriculumFromStatic(tracks: InsertCurriculumTrack[]): Promise<CurriculumTrack[]> {
+    const results: CurriculumTrack[] = [];
+    for (const track of tracks) {
+      const result = await this.upsertCurriculumTrack(track.trackId, track);
+      results.push(result);
     }
     return results;
   }

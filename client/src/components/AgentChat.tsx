@@ -15,7 +15,8 @@ import { toast } from "@/hooks/use-toast";
 import { PromptStudio, type PromptConfig } from './PromptStudio';
 import { MissionBriefing } from './MissionBriefing';
 import { LearningStyleBadge } from './LearningStyleBadge';
-import { ALL_CURRICULUM_TRACKS, type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
+import { type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
+import { useCurriculum } from '@/hooks/useCurriculum';
 import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
 import { exportAgentSessionToReport } from '@/lib/reportExporter';
 import { useLearningStore } from '@/stores/useLearningStore';
@@ -100,6 +101,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const { gameState } = useGame();
   const { addAgentMessage, addToolOutput, currentSession, startSession, setCampaign: setContextCampaign, addTarget } = useReportContext();
   const getLearningProfile = useLearningStore((state) => state.getFullPromptModifier);
+  const { allTracks: ALL_CURRICULUM_TRACKS } = useCurriculum();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);

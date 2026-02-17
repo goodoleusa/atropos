@@ -5,7 +5,7 @@ import {
   ChevronRight, Home, Search, Trophy, TrendingUp, Award, 
   GraduationCap, Users, MessageSquare, Map, Layers, QrCode, 
   Briefcase, Menu, X, Code, FileCode, Puzzle, Wrench,
-  Copy, GitBranch, Download 
+  Copy, GitBranch, Download, Brain, AlertTriangle, BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1455,6 +1455,257 @@ export default function Wiki() {
               <div className="bg-stone-950 p-2 rounded text-purple-400">PATCH /api/recommendations/:id <span className="text-stone-600">— Update status/priority</span></div>
               <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/recommendations/:id <span className="text-stone-600">— Remove</span></div>
             </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'ai-curriculum',
+      title: 'AI Mastery Curriculum',
+      icon: <Brain className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">AI Mastery Curriculum</h2>
+          <p className="text-stone-300 leading-relaxed">
+            Seven interconnected tracks that take you from scientific prompting fundamentals to building 
+            and deploying multi-agent AI systems. Each track contains missions with hands-on exercises 
+            adapted to your learning style.
+          </p>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">7 AI Mastery Tracks</h3>
+            <div className="space-y-3">
+              {[
+                { name: 'Scientific Prompting & Bias Reduction', desc: 'Start every investigation from zero assumptions. Calibrate confidence, test hypotheses, and eliminate cognitive bias from your AI interactions.', color: 'text-purple-400' },
+                { name: 'AI-Human Partnership Dynamics', desc: 'Learn when to lead and when to follow the AI. Master escalation protocols, trust calibration, and collaborative decision-making.', color: 'text-cyan-400' },
+                { name: 'Advanced Prompt Engineering', desc: 'Chain-of-thought reasoning, few-shot patterns, meta-prompting, and systematic prompt architecture for complex investigations.', color: 'text-amber-400' },
+                { name: 'Model Evaluation & Selection', desc: 'Compare models scientifically. Understand capabilities, costs, context windows, and match models to investigation requirements.', color: 'text-teal-400' },
+                { name: 'Multi-Agent System Design', desc: 'Architect AI agent teams with specialized roles. Design communication protocols, task decomposition, and consensus mechanisms.', color: 'text-orange-400' },
+                { name: 'CrewAI & LangChain Patterns', desc: 'Export your agent designs to production frameworks. Build real crews, chains, and orchestration systems.', color: 'text-rose-400' },
+                { name: 'DecoherenceLab', desc: '15 failure exercises where AI systems break down. Study hallucination cascades, prompt injection, context collapse, and emergent failures.', color: 'text-red-400' },
+              ].map(track => (
+                <div key={track.name} className="bg-stone-900/30 rounded p-3">
+                  <span className={`font-bold text-sm ${track.color}`}>{track.name}</span>
+                  <p className="text-stone-400 text-xs mt-1">{track.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">How It Works</h3>
+            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+              <li><strong className="text-teal-400">Open Mission Briefing</strong> — Click the compass icon in NEXUS chat to browse all available tracks and missions</li>
+              <li><strong className="text-teal-400">Select a mission</strong> — Each mission shows objectives, exercises, difficulty, and estimated time</li>
+              <li><strong className="text-teal-400">Exercises adapt to your style</strong> — Visual learners get diagrams, experiential learners get hands-on labs, analytical learners get deep-dive theory</li>
+              <li><strong className="text-teal-400">Complete exercises</strong> — Check off exercises as you work through them. Progress is tracked per-track</li>
+              <li><strong className="text-teal-400">Unlock advanced tracks</strong> — Some tracks require 50% completion of prerequisites before they unlock</li>
+            </ol>
+          </div>
+
+          <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3">Admin Editing</h3>
+            <p className="text-stone-300 text-sm mb-3">
+              The entire curriculum is stored in the database and editable from the Admin Dashboard.
+            </p>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2"><Settings className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> Navigate to Admin Dashboard &gt; Curriculum tab</li>
+              <li className="flex items-start gap-2"><FileText className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> Edit track descriptions, mission objectives, and exercise content inline</li>
+              <li className="flex items-start gap-2"><Zap className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> Changes push immediately to all players via the database API</li>
+              <li className="flex items-start gap-2"><Download className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" /> Re-seed from static config to reset any track to defaults</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'osint-curriculum',
+      title: 'Cyber OSINT Curriculum',
+      icon: <Target className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Cyber OSINT Curriculum</h2>
+          <p className="text-stone-300 leading-relaxed">
+            Six specialization tracks covering the full spectrum of Open Source Intelligence. From geolocation 
+            analysis to dark web monitoring, each track maps to real-world security job roles and builds 
+            portfolio-ready investigation skills.
+          </p>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">6 OSINT Specialization Tracks</h3>
+            <div className="space-y-3">
+              {[
+                { name: 'Geolocation Intelligence', desc: 'Determine locations from images, video, and metadata. Master satellite imagery, street-level analysis, and environmental clues.', color: 'text-cyan-400' },
+                { name: 'Social Media Intelligence (SOCMINT)', desc: 'Analyze social networks, track influence operations, map connections, and identify fake accounts and bot networks.', color: 'text-blue-400' },
+                { name: 'Financial Investigation', desc: 'Follow the money through corporate structures, shell companies, sanctions lists, and financial disclosure databases.', color: 'text-emerald-400' },
+                { name: 'Crypto & Blockchain Analysis', desc: 'Trace cryptocurrency transactions, identify wallet clusters, analyze DeFi exploits, and investigate ransomware payments.', color: 'text-amber-400' },
+                { name: 'Nation-State Threat Intelligence', desc: 'Track APT groups, analyze TTPs, map infrastructure, and understand geopolitical motivations behind cyber operations.', color: 'text-red-400' },
+                { name: 'Dark Web Intelligence', desc: 'Navigate .onion services, monitor marketplaces, track threat actors, and collect evidence from hidden services safely.', color: 'text-purple-400' },
+              ].map(track => (
+                <div key={track.name} className="bg-stone-900/30 rounded p-3">
+                  <span className={`font-bold text-sm ${track.color}`}>{track.name}</span>
+                  <p className="text-stone-400 text-xs mt-1">{track.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Learning Model</h3>
+            <div className="space-y-3 text-stone-300 text-sm">
+              <div>
+                <strong className="text-teal-400">80/20 Hands-On Ratio</strong>
+                <p className="text-xs text-stone-400 mt-0.5">80% practical investigation exercises, 20% theory and context. You learn by doing real investigations, not reading textbooks.</p>
+              </div>
+              <div>
+                <strong className="text-teal-400">Portfolio Assessment</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Demonstrate skills through completed investigations and reports, not multiple-choice exams. Build a portfolio that proves your capabilities.</p>
+              </div>
+              <div>
+                <strong className="text-teal-400">Career Mapping</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Every track maps to real security job roles. Track descriptions include the specific career paths each specialization supports.</p>
+              </div>
+              <div>
+                <strong className="text-teal-400">5 Learning Style Adaptations</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Set your preferred style (Experiential, Visual, Analytical, Social, Pragmatic) and all mission guidance adapts to match how you learn best.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">Real-World Campaign Examples</h3>
+            <div className="space-y-2 text-stone-300 text-sm">
+              <div className="bg-stone-900/30 rounded p-2">
+                <span className="text-amber-400 font-bold text-xs">Panama Papers</span>
+                <span className="text-stone-500 text-xs ml-2">Financial Investigation track — trace offshore shell companies</span>
+              </div>
+              <div className="bg-stone-900/30 rounded p-2">
+                <span className="text-amber-400 font-bold text-xs">Silk Road</span>
+                <span className="text-stone-500 text-xs ml-2">Dark Web Intelligence track — marketplace analysis and takedown</span>
+              </div>
+              <div className="bg-stone-900/30 rounded p-2">
+                <span className="text-amber-400 font-bold text-xs">APT29 / Cozy Bear</span>
+                <span className="text-stone-500 text-xs ml-2">Nation-State Threat Intel track — TTP mapping and infrastructure tracking</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'decoherence-lab',
+      title: 'DecoherenceLab',
+      icon: <AlertTriangle className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">DecoherenceLab — AI Failure Analysis</h2>
+          <p className="text-stone-300 leading-relaxed">
+            15 structured exercises where you intentionally break AI systems to understand their failure modes.
+            Study hallucination cascades, prompt injection, context window collapse, and emergent failures 
+            in multi-agent systems. Understanding how AI fails is essential to building reliable AI partnerships.
+          </p>
+
+          <div className="bg-red-950/30 border border-red-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-red-300 mb-3">Failure Categories</h3>
+            <div className="space-y-3">
+              {[
+                { name: 'Hallucination Cascades', desc: 'Watch how one confident hallucination propagates through a chain of reasoning, growing more certain with each step.', color: 'text-red-400' },
+                { name: 'Prompt Injection', desc: 'Test how adversarial inputs can override system instructions. Learn to build robust prompt architectures that resist manipulation.', color: 'text-orange-400' },
+                { name: 'Context Window Collapse', desc: 'Observe what happens when conversations exceed model context limits. Study information loss patterns and compression strategies.', color: 'text-amber-400' },
+                { name: 'Confidence Miscalibration', desc: 'Identify when models express high confidence in wrong answers. Build intuition for spotting overconfident outputs.', color: 'text-yellow-400' },
+                { name: 'Multi-Agent Failure Modes', desc: 'Study how agent teams can amplify errors, create feedback loops, or reach false consensus on incorrect conclusions.', color: 'text-purple-400' },
+              ].map(cat => (
+                <div key={cat.name} className="bg-stone-900/30 rounded p-3">
+                  <span className={`font-bold text-sm ${cat.color}`}>{cat.name}</span>
+                  <p className="text-stone-400 text-xs mt-1">{cat.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Exercise Structure</h3>
+            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+              <li><strong className="text-amber-400">Setup</strong> — Each exercise provides a specific scenario and AI configuration designed to trigger a known failure mode</li>
+              <li><strong className="text-amber-400">Observation</strong> — Run the scenario and document exactly how the AI fails. What goes wrong? When? Why?</li>
+              <li><strong className="text-amber-400">Analysis</strong> — Use the Failure Lab exercise type to write up your findings. Compare with known failure patterns</li>
+              <li><strong className="text-amber-400">Mitigation</strong> — Design and test countermeasures. Can you prevent this failure? Detect it early? Recover from it?</li>
+              <li><strong className="text-amber-400">Portfolio Entry</strong> — Document your analysis as a portfolio piece demonstrating your understanding of AI reliability</li>
+            </ol>
+          </div>
+
+          <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3">Why This Matters</h3>
+            <div className="space-y-3 text-stone-300 text-sm">
+              <div>
+                <strong className="text-purple-400">AI Safety Literacy</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Understanding failure modes is the foundation of responsible AI deployment. Every AI practitioner should know how systems break.</p>
+              </div>
+              <div>
+                <strong className="text-purple-400">Red Team Skills</strong>
+                <p className="text-xs text-stone-400 mt-0.5">The ability to find and exploit AI weaknesses is a highly valued cybersecurity skill. DecoherenceLab builds this systematically.</p>
+              </div>
+              <div>
+                <strong className="text-purple-400">Career Differentiator</strong>
+                <p className="text-xs text-stone-400 mt-0.5">Most AI practitioners only know how to use AI when it works. Understanding failure modes sets you apart in interviews and on the job.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'curriculum-admin',
+      title: 'Curriculum Admin',
+      icon: <BookOpen className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Curriculum Administration</h2>
+          <p className="text-stone-300 leading-relaxed">
+            The entire AI Mastery and OSINT curriculum is stored in a PostgreSQL database and editable
+            through the Admin Dashboard. Changes propagate immediately to all players across the platform.
+          </p>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Admin Dashboard Features</h3>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2"><TrendingUp className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> Stats overview: total tracks, missions, exercises, and objectives at a glance</li>
+              <li className="flex items-start gap-2"><FileText className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> Inline editing of track descriptions, mission names, and exercise content</li>
+              <li className="flex items-start gap-2"><Target className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> Edit learning objectives for any mission directly in the dashboard</li>
+              <li className="flex items-start gap-2"><Zap className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" /> Seed or re-sync any individual track from the static configuration baseline</li>
+              <li className="flex items-start gap-2"><Settings className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" /> Full CRUD API for programmatic curriculum management</li>
+            </ul>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">How Changes Flow</h3>
+            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+              <li><strong className="text-teal-400">Edit in Admin Dashboard</strong> — Modify any field and save. The change writes to the database immediately</li>
+              <li><strong className="text-teal-400">API updates database</strong> — PUT /api/curriculum/:trackId persists the change in the curriculum_tracks table</li>
+              <li><strong className="text-teal-400">Frontend fetches from DB</strong> — Mission Briefing and NEXUS chat load curriculum from the API with a 60-second cache</li>
+              <li><strong className="text-teal-400">Players see updates</strong> — Next time any player opens Mission Briefing, they see your changes. No deploy needed</li>
+            </ol>
+          </div>
+
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">Curriculum API</h3>
+            <div className="space-y-2 text-xs font-mono">
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/curriculum <span className="text-stone-600">— All tracks with missions and exercises</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/curriculum/:trackId <span className="text-stone-600">— Single track details</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/curriculum/stats/overview <span className="text-stone-600">— Aggregate stats</span></div>
+              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/curriculum/seed <span className="text-stone-600">— Seed all tracks from static config</span></div>
+              <div className="bg-stone-950 p-2 rounded text-amber-400">PUT /api/curriculum/:trackId <span className="text-stone-600">— Update track data</span></div>
+              <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/curriculum/:trackId <span className="text-stone-600">— Remove track</span></div>
+            </div>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Resilience</h3>
+            <p className="text-stone-300 text-sm">
+              If the database is unavailable or empty, the frontend automatically falls back to the static 
+              curriculum configuration compiled into the app. This ensures players always have access to 
+              the curriculum even during database maintenance or initial setup before seeding.
+            </p>
           </div>
         </div>
       )

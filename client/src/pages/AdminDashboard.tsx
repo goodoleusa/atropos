@@ -62,6 +62,7 @@ import AgentConfigSection from "@/pages/admin/AgentConfigSection";
 import { AgentModulesSection } from "@/pages/admin/AgentModulesSection";
 import { GameplaySection } from "@/pages/admin/GameplaySection";
 import { FeedbackSection } from "@/pages/admin/FeedbackSection";
+import { CurriculumSection } from "@/pages/admin/CurriculumSection";
 import { ShieldAlert, Activity, Clock, Users, AlertTriangle } from "lucide-react";
 
 function AtroposScannerSection() {
@@ -819,6 +820,7 @@ const NAV_GROUPS = [
       { id: "designer", label: "Campaign Designer 🎨", icon: "Layers" },
       { id: "campaigns", label: "Campaign Library", icon: "Rocket" },
       { id: "agentmodules", label: "Investigation Modules", icon: "Target" },
+      { id: "curriculum", label: "Curriculum", icon: "BookOpen" },
     ],
   },
   {
@@ -852,7 +854,7 @@ const NAV_GROUPS = [
 
 const NAV_ICONS: Record<string, any> = {
   Activity, Server, Eye, Database, Trophy, MessageSquare, Map, Bot, Settings,
-  Target, Rocket, ShieldAlert, Terminal, Sparkles, Zap, Globe,
+  Target, Rocket, ShieldAlert, Terminal, Sparkles, Zap, Globe, BookOpen,
 };
 
 export default function AdminDashboard() {
@@ -986,6 +988,7 @@ export default function AdminDashboard() {
       case 'terminal': return <TerminalPanel />;
       case 'config': return <ConfigPanel gameState={gameState} clues={clues} quests={quests} />;
       case 'campaigns': return <CampaignsPanel onOpenBuilder={(campaignId?: string) => navigate(campaignId ? `/builder?campaign=${campaignId}` : '/builder')} />;
+      case 'curriculum': return <CurriculumSection />;
       default: return <ActivityLogPanel />;
     }
   };

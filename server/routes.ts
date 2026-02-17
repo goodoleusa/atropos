@@ -14,6 +14,7 @@ import portfolioRoutes from "./routes/portfolio";
 import sitemapRoutes from "./routes/sitemap";
 import progressionRoutes from "./routes/progressionRoutes";
 import contentRoutes from "./routes/contentRoutes";
+import curriculumRoutes from "./routes/curriculumRoutes";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -225,6 +226,9 @@ export async function registerRoutes(
   
   // Register Progression routes (XP, achievements, leaderboards, challenges)
   app.use(progressionRoutes);
+
+  // Register Curriculum routes
+  app.use(curriculumRoutes);
 
   // ==================== Business Projects API ====================
   app.get("/api/business-projects", async (req, res) => {
