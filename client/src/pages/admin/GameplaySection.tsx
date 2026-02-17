@@ -356,7 +356,7 @@ export function GameplaySection() {
 
       {tab === "terminal" && (
         <>
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-4">
             <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => openCreate({ id: "", name: "", description: "", content: "", location: "terminal", difficulty: 1 })} data-testid="create-terminal-btn">
               <Plus className="w-4 h-4 mr-2" /> Add Terminal Command
             </Button>
