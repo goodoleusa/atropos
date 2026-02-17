@@ -405,6 +405,7 @@ function LuaScriptsTab() {
   const [isSaving, setIsSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [editorExpanded, setEditorExpanded] = useState(false);
+  const [showGuide, setShowGuide] = useState(true);
 
   const { data: luaScripts = [], isLoading } = useQuery<LuaScript[]>({
     queryKey: ['/api/atropos/lua-scripts'],
@@ -534,69 +535,79 @@ function LuaScriptsTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-          <Input
-            placeholder="Search scripts by name, description, or tag..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-stone-900/60 border-stone-800 text-stone-200"
-            data-testid="input-search-scripts"
-          />
-          {searchQuery && (
-            <Button size="sm" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 text-stone-500 hover:text-stone-300" onClick={() => setSearchQuery("")}>
-              <X className="w-3.5 h-3.5" />
-            </Button>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant={showTemplates ? "default" : "outline"}
-            className={showTemplates ? "bg-amber-700 hover:bg-amber-600 text-black" : "border-stone-700 text-amber-400 hover:border-amber-700"}
-            onClick={() => { setShowTemplates(!showTemplates); setShowNewForm(false); }}
-            data-testid="button-show-templates"
-          >
-            <BookOpen className="w-4 h-4 mr-1" /> Templates
-          </Button>
-          <Button
-            size="sm"
-            className="bg-teal-700 hover:bg-teal-600 text-black"
-            onClick={() => { setShowNewForm(true); setShowTemplates(false); setSelectedScript(null); setNewContent(""); setNewFilename(""); }}
-            data-testid="button-add-script"
-          >
-            <Plus className="w-4 h-4 mr-1" /> New Script
-          </Button>
-        </div>
-      </div>
+      {showGuide && (
+        <Card className="bg-amber-900/10 border-amber-900/30">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
+                <BookOpen className="w-4 h-4" /> ATROPOS SCRIPTING GUIDE
+              </CardTitle>
+              <Button variant="ghost" size="sm" onClick={() => setShowGuide(false)} className="h-6 w-6 p-0 text-amber-600">
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="text-[11px] text-stone-400 space-y-2">
+            <p><span className="text-amber-500 font-bold">LUA:</span> Core scanner logic. Use Lua to write custom OSINT & vulnerability checks. These scripts run on the Rust back-end scanner.</p>
+            <p><span className="text-teal-500 font-bold">FRIDA (JS):</span> Located in 'Toolkit'. Used for dynamic instrumentation of live processes. Use JS to hook functions and bypass protections.</p>
+            <p><span className="text-stone-300 font-bold">HOW TO LOAD:</span> Select a script from the list or choose a 'Template' to start. Modify code in the editor, then 'Save' to apply changes instantly.</p>
+          </CardContent>
+        </Card>
+      )}
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Filter className="w-3.5 h-3.5 text-stone-500" />
-        <Badge
-          variant={categoryFilter === "all" ? "default" : "outline"}
-          className={`cursor-pointer text-xs ${categoryFilter === "all" ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400 hover:border-amber-700"}`}
-          onClick={() => setCategoryFilter("all")}
-          data-testid="filter-all"
-        >All</Badge>
-        {CATEGORY_LIST.map((cat) => (
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+            <Input
+              placeholder="Search scripts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 bg-stone-900/60 border-stone-800 text-stone-200"
+              data-testid="input-search-scripts"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={showTemplates ? "default" : "outline"}
+              className={showTemplates ? "bg-amber-700 hover:bg-amber-600 text-black" : "border-stone-700 text-amber-400 hover:border-amber-700"}
+              onClick={() => { setShowTemplates(!showTemplates); setShowNewForm(false); }}
+              data-testid="button-show-templates"
+            >
+              <BookOpen className="w-4 h-4 mr-1" /> Templates
+            </Button>
+            <Button
+              size="sm"
+              className="bg-teal-700 hover:bg-teal-600 text-black"
+              onClick={() => { setShowNewForm(true); setShowTemplates(false); setSelectedScript(null); setNewContent(""); setNewFilename(""); }}
+              data-testid="button-add-script"
+            >
+              <Plus className="w-4 h-4 mr-1" /> New Script
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <Filter className="w-3.5 h-3.5 text-stone-500 shrink-0" />
           <Badge
-            key={cat}
-            variant={categoryFilter === cat ? "default" : "outline"}
-            className={`cursor-pointer text-xs ${categoryFilter === cat ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400 hover:border-amber-700"}`}
-            onClick={() => setCategoryFilter(cat)}
-            data-testid={`filter-${cat}`}
-          >
-            <span className="flex items-center gap-1">
-              {CATEGORY_ICONS_MAP[cat] || <FileCode className="w-3 h-3" />}
-              {cat.replace(/_/g, " ")}
-            </span>
-          </Badge>
-        ))}
-        {showTemplates && (
-          <>
-            <span className="text-stone-600 mx-1">|</span>
-            {Object.entries(FOCUS_CONFIG).map(([key, cfg]) => (
+            variant={categoryFilter === "all" ? "default" : "outline"}
+            className={`cursor-pointer text-[10px] whitespace-nowrap ${categoryFilter === "all" ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400"}`}
+            onClick={() => setCategoryFilter("all")}
+          >All</Badge>
+          {CATEGORY_LIST.map((cat) => (
+            <Badge
+              key={cat}
+              variant={categoryFilter === cat ? "default" : "outline"}
+              className={`cursor-pointer text-[10px] whitespace-nowrap ${categoryFilter === cat ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400"}`}
+              onClick={() => setCategoryFilter(cat)}
+            >
+              <span className="flex items-center gap-1">
+                {CATEGORY_ICONS_MAP[cat] || <FileCode className="w-3 h-3" />}
+                {cat.replace(/_/g, " ")}
+              </span>
+            </Badge>
+          ))}
+        </div>
               <Badge
                 key={key}
                 variant={focusFilter === key ? "default" : "outline"}
@@ -1570,43 +1581,54 @@ interface ScannerContentProps {
 
 export function ScannerContent({ injectedTargets }: ScannerContentProps = {}) {
   return (
-    <Tabs defaultValue="scan" className="w-full">
-      <TabsList className="flex flex-wrap w-full bg-stone-900/60 border border-stone-800 gap-1 p-1 h-auto" data-testid="scanner-tabs">
-        <TabsTrigger value="scan" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-scan">
-          <Play className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Scan</span>
-        </TabsTrigger>
-        <TabsTrigger value="scripts" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-scripts">
-          <FileCode className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Lua</span>
-        </TabsTrigger>
-        <TabsTrigger value="tools" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-tools">
-          <Zap className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Tools</span>
-        </TabsTrigger>
-        <TabsTrigger value="lookups" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-lookups">
-          <Globe className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">API</span>
-        </TabsTrigger>
-        <TabsTrigger value="history" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 min-h-[40px] flex-1 min-w-[60px]" data-testid="tab-history">
-          <Terminal className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">History</span>
-        </TabsTrigger>
-      </TabsList>
+    <div className="flex flex-col h-full min-h-0 bg-stone-950 border border-stone-800 rounded-xl overflow-hidden shadow-2xl shadow-amber-900/10">
+      <div className="p-4 md:p-6 border-b border-stone-800 bg-stone-900/30 shrink-0">
+        <h1 className="text-xl md:text-2xl font-bold font-orbitron tracking-tighter text-amber-500 flex items-center gap-3">
+          <Shield className="w-6 h-6 md:w-8 h-8 text-amber-600" /> ATROPOS ADMIN TERMINAL
+        </h1>
+        <p className="text-[10px] md:text-xs text-stone-500 mt-1 uppercase tracking-widest font-medium">Scanner Management & Script Development Environment</p>
+      </div>
 
-      <TabsContent value="scan"><ScanTab injectedTargets={injectedTargets} /></TabsContent>
-      <TabsContent value="scripts"><LuaScriptsTab /></TabsContent>
-      <TabsContent value="tools"><ToolsTab /></TabsContent>
-      <TabsContent value="lookups"><ApiLookupsTab /></TabsContent>
-      <TabsContent value="history"><ScanHistoryTab /></TabsContent>
-    </Tabs>
+      <Tabs defaultValue="scripts" className="w-full flex-1 flex flex-col min-h-0">
+        <div className="px-4 md:px-6 py-2 bg-stone-900/50 border-b border-stone-800 shrink-0 overflow-x-auto no-scrollbar">
+          <TabsList className="bg-transparent border-0 gap-4 md:gap-6 h-12 p-0 w-max" data-testid="scanner-tabs">
+            <TabsTrigger value="scripts" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-scripts">
+              <FileCode className="w-4 h-4 mr-2" /> Scripts
+            </TabsTrigger>
+            <TabsTrigger value="scan" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-scan">
+              <Play className="w-4 h-4 mr-2" /> Live Scan
+            </TabsTrigger>
+            <TabsTrigger value="tools" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-tools">
+              <Zap className="w-4 h-4 mr-2" /> Toolkit
+            </TabsTrigger>
+            <TabsTrigger value="lookups" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-lookups">
+              <Globe className="w-4 h-4 mr-2" /> API Data
+            </TabsTrigger>
+            <TabsTrigger value="history" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-history">
+              <Terminal className="w-4 h-4 mr-2" /> Logs
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <ScrollArea className="flex-1 bg-stone-950/50">
+          <div className="p-4 md:p-6 pb-24 md:pb-6">
+            <TabsContent value="scripts" className="mt-0 focus-visible:outline-none"><LuaScriptsTab /></TabsContent>
+            <TabsContent value="scan" className="mt-0 focus-visible:outline-none"><ScanTab injectedTargets={injectedTargets} /></TabsContent>
+            <TabsContent value="tools" className="mt-0 focus-visible:outline-none"><ToolsTab /></TabsContent>
+            <TabsContent value="lookups" className="mt-0 focus-visible:outline-none"><ApiLookupsTab /></TabsContent>
+            <TabsContent value="history" className="mt-0 focus-visible:outline-none"><ScanHistoryTab /></TabsContent>
+          </div>
+        </ScrollArea>
+      </Tabs>
+    </div>
   );
 }
 
 export default function ScannerDashboard() {
-  useEffect(() => {
-    window.location.replace('/investigate?tab=scanner');
-  }, []);
   return (
-    <div className="min-h-screen bg-stone-950 flex items-center justify-center text-stone-500">
-      <div className="text-center space-y-2">
-        <Radar className="w-8 h-8 mx-auto text-amber-500 animate-pulse" />
-        <p className="text-sm">Redirecting to Investigation Hub...</p>
+    <div className="fixed inset-0 bg-stone-950 p-2 md:p-8 overflow-hidden">
+      <div className="max-w-7xl mx-auto h-full">
+        <ScannerContent />
       </div>
     </div>
   );
