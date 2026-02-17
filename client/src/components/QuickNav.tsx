@@ -260,21 +260,17 @@ export default function QuickNav() {
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 />
               )}
-              <div className="relative z-20 flex items-center justify-center">
-                {expanded ? (
-                  <ChevronDown className="w-6 h-6 text-amber-500" />
-                ) : (
-                  <motion.div
-                    className="flex flex-col items-center"
-                    animate={{ 
-                      filter: ['brightness(1) contrast(1)', 'brightness(1.8) contrast(1.2)', 'brightness(1) contrast(1)'],
-                      scale: [1, 1.15, 1],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  >
-                    <Server className="w-6 h-6 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,1)]" />
-                  </motion.div>
-                )}
+            <div className="relative z-20 flex items-center justify-center">
+                <motion.div
+                  className="flex flex-col items-center"
+                  animate={expanded ? { rotate: 0 } : { 
+                    filter: ['brightness(1) contrast(1)', 'brightness(1.8) contrast(1.2)', 'brightness(1) contrast(1)'],
+                    scale: [1, 1.15, 1],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <Server className="w-6 h-6 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,1)]" />
+                </motion.div>
               </div>
             </div>
             {!expanded && pendingFindings.length > 0 && (
