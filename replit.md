@@ -6,10 +6,25 @@ Atropos is a professional-grade cybersecurity training and investigation platfor
 - **Experiential Learning Curriculum**: 427-line framework with 6 OSINT specialization tracks
 - **NEXUS AI Agent**: Adaptive teaching assistant with 23 investigation campaigns
 - **Atropos Scanner**: Rust-based OSINT & vulnerability scanner with Lua scripting
+- **QR C2 Framework**: Educational command & control system with guided missions, 6 hands-on labs, and multi-target simulation
+- **SpiderFoot Integration**: OSINT reconnaissance with streaming scan results and export capabilities
 
 The platform features a molten bronze/industrial aesthetic, emphasizes hands-on learning (experience > degrees), and provides portfolio-based skill assessment for career development in cybersecurity.
 
-## Latest Updates (Feb 2026) ✨
+## Latest Updates (Feb 2026)
+
+### QR C2 Framework & Guided Missions
+- **3 Guided C2 Missions**: First Beacon (beaconing), Receiving Orders (tasking), Ghost in the Wire (evasion)
+- **4 Simulated Target Machines**: Linux server, Windows workstation, IoT camera, Docker container
+- **6 QR-in-QR Hijacking Labs**: Finder pattern confusion, quiet zone attacks, physical sticker attacks, barcode inception, split QR email attacks, programmatic PDF QR
+- **C2 Simulation Console**: Multi-target command execution with realistic responses per OS type
+- **Mission XP Rewards**: 50-100 XP per mission with clue collection integration
+- **Attack Flow Presets**: Raw payload, C2 beacon, data exfiltration, credential harvesting templates
+
+### SpiderFoot Integration
+- **Streaming Scan Results**: Real-time OSINT scan output with progress indicators
+- **Result Export**: Export SpiderFoot findings for use in investigations
+- **Scanner Dashboard Integration**: Unified view with Atropos Scanner results
 
 ### Player Progression & Gamification
 - **XP & Leveling**: Earn experience through investigations, progress from level 1 to 50+
@@ -66,10 +81,12 @@ Preferred communication style: Simple, everyday language.
 - **Campaign Designer**: Twine-inspired visual flow editor for creating investigation campaigns with features like wikilinks, backlinks, and multiple view modes.
 - **Report Builder System**: Aids in structuring bug bounty findings, analysis, vulnerability tracking, and export. Integrates AI benchmarking and shared investigation context.
 - **AI Lab (Battleground)**: Prompt engineering playground with live preview, cost tracking, model comparison, and performance evaluations. Features a unified chat battleground for dual-model comparison and AI Pentesting Challenges.
-- **QR C2 Framework**: Educational QR-based command & control system with sections for encoding, attack vectors, and hands-on labs for QR-in-QR hijacking exercises.
+- **QR C2 Framework**: Educational QR-based command & control system with guided missions, multi-target simulation console, 6 hands-on QR hijacking labs, attack flow presets, and XP rewards. Teaches beaconing, tasking, evasion techniques with real-world APT case studies.
+- **SpiderFoot Integration**: OSINT reconnaissance tool with streaming scan results, real-time progress, and export capabilities for investigation integration.
 - **Atropos Scanner Integration**: High-performance Rust-based OSINT and vulnerability scanner. NEXUS initiates scans, Atropos returns JSON results, and NEXUS analyzes findings. Supports custom Lua scripts for extensible scanning logic.
 - **Unified Learning Store**: Centralized state for learning preferences (style, goals, skill level, pace) that modifies AI prompt behavior.
 - **Pedagogy**: Employs Experiential and Project-Based Learning (PBL) for cybersecurity skills, structured into Paths > Tracks > Modules > Projects.
+- **Portfolio System**: Users can showcase investigations, reports, and achievements with shareable content.
 
 ## External Dependencies
 

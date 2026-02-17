@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGame } from '@/hooks/useGameSession';
-import { Download, Copy, Upload, QrCode, RefreshCw, Zap, Bot, Play, Key, CheckCircle, AlertCircle, Terminal, Radio, Send } from 'lucide-react';
+import { Download, Copy, Upload, QrCode, RefreshCw, Zap, Bot, Play, Key, CheckCircle, AlertCircle, Terminal, Radio, Send, Check, Trophy, ChevronLeft, Loader2 } from 'lucide-react';
 
 // C2 Attack Flow Templates - Inspired by MITRE ATT&CK phases
 // Organized by attack lifecycle with detailed explanations
@@ -969,6 +969,12 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
   const [c2Section, setC2Section] = useState<'encode' | 'missions' | 'vectors' | 'labs'>('missions');
   const [selectedVector, setSelectedVector] = useState<string | null>(null);
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
+  const [activeLabId, setActiveLabId] = useState<string | null>(null);
+  const [labStep, setLabStep] = useState(0);
+  const [labCompleted, setLabCompleted] = useState<Set<string>>(new Set());
+  const [labQrResults, setLabQrResults] = useState<Record<string, string>>({});
+  const [labScanResults, setLabScanResults] = useState<Array<{scanner: string; result: string; isMalicious: boolean}>>([]);
+  const [labSimulating, setLabSimulating] = useState(false);
   const [selectedTarget, setSelectedTarget] = useState('linux_server');
   const [activeMission, setActiveMission] = useState<string | null>(null);
   const [missionStep, setMissionStep] = useState(0);
@@ -1161,7 +1167,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
     const mission = C2_GUIDED_MISSIONS.find(m => m.id === missionId);
     if (!mission || missionCompleted.has(missionId)) return;
     
-    setMissionCompleted(prev => new Set([...prev, missionId]));
+    setMissionCompleted(prev => new Set([...Array.from(prev), missionId]));
     
     try {
       await awardXP(mission.xpReward, `Completed C2 Mission: ${mission.name}`);
@@ -1246,6 +1252,130 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
     setC2ServerStatus('online');
     
     setTimeout(() => setC2ServerStatus('offline'), 3000);
+  };
+
+  const LAB_SIMULATIONS: Record<string, { safeUrl: string; maliciousUrl: string; scanners: Array<{name: string; readsOuter: boolean}> }> = {
+    lab_finder_confusion: {
+      safeUrl: 'https://safe-restaurant.com/menu',
+      maliciousUrl: 'https://evil-site.xyz/harvest',
+      scanners: [
+        { name: 'iOS Camera', readsOuter: true },
+        { name: 'Google Lens', readsOuter: true },
+        { name: 'WeChat Scanner', readsOuter: false },
+        { name: 'Alipay Scanner', readsOuter: false },
+        { name: 'ZXing Library', readsOuter: true },
+      ]
+    },
+    lab_quiet_zone: {
+      safeUrl: 'https://legit-menu.restaurant/order',
+      maliciousUrl: 'https://credential-harvester.evil/login',
+      scanners: [
+        { name: 'iPhone Camera', readsOuter: true },
+        { name: 'Android Camera', readsOuter: true },
+        { name: 'QR Droid Pro', readsOuter: false },
+        { name: 'Kaspersky QR', readsOuter: true },
+      ]
+    },
+    lab_physical_overlay: {
+      safeUrl: 'https://city-parking.gov/pay',
+      maliciousUrl: 'https://park-payment.scam/checkout',
+      scanners: [
+        { name: 'Any Scanner', readsOuter: false },
+      ]
+    },
+    lab_barcode_inception: {
+      safeUrl: 'https://product-info.com/details',
+      maliciousUrl: 'data:text/html,<script>document.cookie</script>',
+      scanners: [
+        { name: 'QR-Only Scanner', readsOuter: true },
+        { name: 'Universal Barcode App', readsOuter: false },
+        { name: 'Retail POS Scanner', readsOuter: false },
+        { name: 'NeoReader', readsOuter: false },
+      ]
+    },
+    lab_split_qr: {
+      safeUrl: '[Fragment 1: no valid QR]',
+      maliciousUrl: 'https://phish-corp.evil/o365-login',
+      scanners: [
+        { name: 'Email Security (per-image)', readsOuter: true },
+        { name: 'Phone Camera (visual)', readsOuter: false },
+        { name: 'Proofpoint Scanner', readsOuter: true },
+      ]
+    },
+    lab_pdf_draw: {
+      safeUrl: '[No embedded images found]',
+      maliciousUrl: 'https://fake-invoice.evil/pay?ref=INV-2024',
+      scanners: [
+        { name: 'Image Extraction Tool', readsOuter: true },
+        { name: 'Visual PDF Renderer', readsOuter: false },
+        { name: 'Adobe Scan (phone)', readsOuter: false },
+      ]
+    },
+  };
+
+  const startLab = (labId: string) => {
+    setActiveLabId(labId);
+    setLabStep(0);
+    setLabScanResults([]);
+    setLabQrResults({});
+    setLabSimulating(false);
+  };
+
+  const simulateLabScan = async (labId: string) => {
+    setLabSimulating(true);
+    setLabScanResults([]);
+    const sim = LAB_SIMULATIONS[labId];
+    if (!sim) { setLabSimulating(false); return; }
+
+    for (let i = 0; i < sim.scanners.length; i++) {
+      await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
+      const scanner = sim.scanners[i];
+      setLabScanResults(prev => [...prev, {
+        scanner: scanner.name,
+        result: scanner.readsOuter ? sim.safeUrl : sim.maliciousUrl,
+        isMalicious: !scanner.readsOuter,
+      }]);
+    }
+    setLabSimulating(false);
+  };
+
+  const generateLabQR = async (labId: string, url: string, label: string) => {
+    try {
+      const response = await fetch('/api/qr/secret', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secretId: `lab-${labId}-${label}`, hint: url })
+      });
+      const data = await response.json();
+      setLabQrResults(prev => ({ ...prev, [label]: data.qrCode }));
+    } catch (error) {
+      console.error('Lab QR generation failed:', error);
+    }
+  };
+
+  const completeLab = async (labId: string) => {
+    if (labCompleted.has(labId)) return;
+    const lab = QR_INCEPTION_LABS.find(l => l.id === labId);
+    if (!lab) return;
+
+    setLabCompleted(prev => new Set([...Array.from(prev), labId]));
+
+    const xpReward = lab.difficulty === 'beginner' ? 40 : lab.difficulty === 'intermediate' ? 65 : 100;
+    try {
+      await awardXP(xpReward, `Completed QR Lab: ${lab.title}`);
+      collectClue({
+        id: `qr-lab-${labId}`,
+        text: `${lab.title}: ${lab.concept}`,
+        foundAt: 'QR Inception Labs',
+        timestamp: Date.now(),
+      });
+      incrementStat('cluesFound');
+    } catch (e) {
+      console.error('Lab reward error:', e);
+    }
+
+    setActiveLabId(null);
+    setLabStep(0);
   };
 
   return (
@@ -2083,97 +2213,310 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
             {c2Section === 'labs' && (
               <div className="space-y-3">
                 <div className="p-3 bg-amber-950/20 rounded border border-amber-900/30">
-                  <h4 className="text-amber-400 font-bold text-sm mb-1">QR-in-QR Hijacking Labs</h4>
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="text-amber-400 font-bold text-sm">QR-in-QR Hijacking Labs</h4>
+                    <span className="text-xs text-stone-500">
+                      {Array.from(labCompleted).length}/{QR_INCEPTION_LABS.length} Complete
+                    </span>
+                  </div>
                   <p className="text-xs text-stone-400">
-                    Hands-on exercises teaching QR code security concepts. Based on real academic research and documented attacks.
+                    Interactive exercises teaching QR code attack and defense techniques. Generate real QR codes, simulate multi-scanner attacks, and earn XP.
                   </p>
+                  <div className="mt-2 w-full bg-stone-800 rounded-full h-1.5">
+                    <div 
+                      className="bg-amber-600 h-1.5 rounded-full transition-all"
+                      style={{ width: `${(Array.from(labCompleted).length / QR_INCEPTION_LABS.length) * 100}%` }}
+                    />
+                  </div>
                 </div>
 
-                {/* Labs List */}
-                <div className="space-y-2">
-                  {QR_INCEPTION_LABS.map((lab) => (
-                    <div 
-                      key={lab.id}
-                      className={`rounded border transition-all ${
-                        selectedLab === lab.id 
-                          ? 'bg-amber-950/30 border-amber-700' 
-                          : 'bg-black/30 border-amber-900/20 hover:border-amber-700/50'
-                      }`}
-                    >
-                      <div 
-                        className="p-3 cursor-pointer"
-                        onClick={() => setSelectedLab(selectedLab === lab.id ? null : lab.id)}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-amber-400 font-bold">{lab.title}</span>
-                          <span className={`text-xs px-1.5 py-0.5 rounded ${
-                            lab.difficulty === 'beginner' ? 'bg-green-950 text-green-400' :
-                            lab.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
-                            'bg-red-950 text-red-400'
-                          }`}>
-                            {lab.difficulty}
-                          </span>
-                        </div>
-                        <p className="text-xs text-stone-400">{lab.concept}</p>
+                {activeLabId ? (() => {
+                  const lab = QR_INCEPTION_LABS.find(l => l.id === activeLabId);
+                  if (!lab) return null;
+                  const sim = LAB_SIMULATIONS[activeLabId];
+                  const xpReward = lab.difficulty === 'beginner' ? 40 : lab.difficulty === 'intermediate' ? 65 : 100;
+                  const totalSteps = 4;
+
+                  return (
+                    <div className="space-y-3" data-testid="active-lab-view">
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => { setActiveLabId(null); setLabStep(0); setLabScanResults([]); setLabQrResults({}); }}
+                          className="text-xs text-stone-500 hover:text-amber-400 flex items-center gap-1"
+                          data-testid="lab-back-btn"
+                        >
+                          <ChevronLeft className="w-3 h-3" /> Back to Labs
+                        </button>
+                        <span className="text-xs text-amber-600">{xpReward} XP</span>
                       </div>
-                      
-                      {selectedLab === lab.id && (
-                        <div className="px-3 pb-3 space-y-3 border-t border-amber-900/30 pt-3">
-                          {/* Real World Case */}
-                          <div className="p-2 bg-red-950/20 rounded border border-red-900/20">
-                            <p className="text-xs text-red-400 font-bold mb-1">Real-World Case:</p>
-                            <p className="text-xs text-stone-300">{lab.realWorldCase}</p>
-                          </div>
 
-                          {/* Objective */}
-                          <div>
-                            <p className="text-xs text-amber-500 font-bold mb-1">Objective:</p>
-                            <p className="text-xs text-stone-300">{lab.objective}</p>
-                          </div>
+                      <div className="p-3 bg-amber-950/30 rounded border border-amber-700">
+                        <h4 className="text-amber-400 font-bold text-sm mb-1">{lab.title}</h4>
+                        <p className="text-xs text-stone-300 mb-2">{lab.objective}</p>
+                        <div className="flex gap-1">
+                          {Array.from({ length: totalSteps }).map((_, i) => (
+                            <div key={i} className={`flex-1 h-1.5 rounded-full ${i <= labStep ? 'bg-amber-500' : 'bg-stone-700'}`} />
+                          ))}
+                        </div>
+                        <p className="text-xs text-stone-500 mt-1">Step {labStep + 1} of {totalSteps}</p>
+                      </div>
 
-                          {/* Steps */}
-                          <div>
-                            <p className="text-xs text-amber-500 font-bold mb-1">Steps:</p>
-                            <ol className="text-xs text-stone-400 space-y-1 list-decimal list-inside">
-                              {lab.steps.map((step, i) => (
-                                <li key={i}>{step}</li>
-                              ))}
-                            </ol>
-                          </div>
-
-                          {/* Detection & Mitigation */}
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="p-2 bg-blue-950/20 rounded border border-blue-900/20">
-                              <p className="text-xs text-blue-400 font-bold mb-1">Detection:</p>
-                              <p className="text-xs text-stone-400">{lab.detection}</p>
+                      {labStep === 0 && (
+                        <div className="space-y-3" data-testid="lab-step-0">
+                          <div className="p-3 bg-black/40 rounded border border-stone-700">
+                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 1: Understand the Attack</p>
+                            <div className="p-2 bg-red-950/20 rounded border border-red-900/20 mb-2">
+                              <p className="text-xs text-red-400 font-bold mb-1">Real-World Case:</p>
+                              <p className="text-xs text-stone-300">{lab.realWorldCase}</p>
                             </div>
-                            <div className="p-2 bg-green-950/20 rounded border border-green-900/20">
-                              <p className="text-xs text-green-400 font-bold mb-1">Mitigation:</p>
-                              <p className="text-xs text-stone-400">{lab.mitigation}</p>
+                            <p className="text-xs text-stone-400 mb-2">{lab.concept}</p>
+                            <Button
+                              onClick={() => setLabStep(1)}
+                              className="w-full bg-amber-800 hover:bg-amber-700 text-black text-xs min-h-[44px]"
+                              data-testid="lab-next-step-1"
+                            >
+                              Understood - Proceed to QR Generation
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {labStep === 1 && (
+                        <div className="space-y-3" data-testid="lab-step-1">
+                          <div className="p-3 bg-black/40 rounded border border-stone-700">
+                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 2: Generate QR Codes</p>
+                            <p className="text-xs text-stone-400 mb-3">Generate both the legitimate and malicious QR codes to understand how the attack works.</p>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <p className="text-xs text-teal-400 font-bold">Legitimate QR</p>
+                                <p className="text-xs text-stone-500 font-mono break-all">{sim?.safeUrl}</p>
+                                <Button
+                                  onClick={() => sim && generateLabQR(activeLabId, sim.safeUrl, 'safe')}
+                                  disabled={!!labQrResults['safe']}
+                                  className="w-full bg-teal-800 hover:bg-teal-700 text-black text-xs min-h-[36px]"
+                                  data-testid="lab-gen-safe-qr"
+                                >
+                                  {labQrResults['safe'] ? 'Generated' : 'Generate Safe QR'}
+                                </Button>
+                                {labQrResults['safe'] && (
+                                  <img src={labQrResults['safe']} alt="Safe QR" className="w-full rounded border border-teal-900/50" />
+                                )}
+                              </div>
+                              <div className="space-y-2">
+                                <p className="text-xs text-red-400 font-bold">Malicious QR</p>
+                                <p className="text-xs text-stone-500 font-mono break-all">{sim?.maliciousUrl}</p>
+                                <Button
+                                  onClick={() => sim && generateLabQR(activeLabId, sim.maliciousUrl, 'evil')}
+                                  disabled={!!labQrResults['evil']}
+                                  className="w-full bg-red-800 hover:bg-red-700 text-white text-xs min-h-[36px]"
+                                  data-testid="lab-gen-evil-qr"
+                                >
+                                  {labQrResults['evil'] ? 'Generated' : 'Generate Attack QR'}
+                                </Button>
+                                {labQrResults['evil'] && (
+                                  <img src={labQrResults['evil']} alt="Attack QR" className="w-full rounded border border-red-900/50" />
+                                )}
+                              </div>
                             </div>
+
+                            <Button
+                              onClick={() => setLabStep(2)}
+                              disabled={!labQrResults['safe'] || !labQrResults['evil']}
+                              className="w-full mt-3 bg-amber-800 hover:bg-amber-700 text-black text-xs min-h-[44px]"
+                              data-testid="lab-next-step-2"
+                            >
+                              Both QRs Generated - Run Scanner Simulation
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {labStep === 2 && (
+                        <div className="space-y-3" data-testid="lab-step-2">
+                          <div className="p-3 bg-black/40 rounded border border-stone-700">
+                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 3: Multi-Scanner Simulation</p>
+                            <p className="text-xs text-stone-400 mb-3">
+                              Watch how different QR scanners interpret the same hijacked QR code differently. This is why the attack works.
+                            </p>
+
+                            {labScanResults.length === 0 && !labSimulating && (
+                              <Button
+                                onClick={() => simulateLabScan(activeLabId)}
+                                className="w-full bg-purple-800 hover:bg-purple-700 text-white text-xs min-h-[44px]"
+                                data-testid="lab-run-scan"
+                              >
+                                <Zap className="w-3 h-3 mr-2" />
+                                Run Multi-Scanner Attack Simulation
+                              </Button>
+                            )}
+
+                            {labSimulating && (
+                              <div className="flex items-center gap-2 p-3 bg-purple-950/30 rounded border border-purple-800/50">
+                                <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+                                <span className="text-xs text-purple-400">Simulating scanner responses...</span>
+                              </div>
+                            )}
+
+                            {labScanResults.length > 0 && (
+                              <div className="space-y-2 mt-2">
+                                {labScanResults.map((scan, i) => (
+                                  <div 
+                                    key={i}
+                                    className={`p-2 rounded border text-xs font-mono ${
+                                      scan.isMalicious 
+                                        ? 'bg-red-950/30 border-red-800/50' 
+                                        : 'bg-teal-950/30 border-teal-800/50'
+                                    }`}
+                                    data-testid={`lab-scan-result-${i}`}
+                                  >
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className={scan.isMalicious ? 'text-red-400' : 'text-teal-400'}>
+                                        {scan.scanner}
+                                      </span>
+                                      <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                        scan.isMalicious ? 'bg-red-900 text-red-300' : 'bg-teal-900 text-teal-300'
+                                      }`}>
+                                        {scan.isMalicious ? 'HIJACKED' : 'SAFE'}
+                                      </span>
+                                    </div>
+                                    <p className={`break-all ${scan.isMalicious ? 'text-red-300' : 'text-teal-300'}`}>
+                                      {scan.result}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {labScanResults.length > 0 && !labSimulating && (
+                              <Button
+                                onClick={() => setLabStep(3)}
+                                className="w-full mt-3 bg-amber-800 hover:bg-amber-700 text-black text-xs min-h-[44px]"
+                                data-testid="lab-next-step-3"
+                              >
+                                Analyze Results - View Detection & Defense
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {labStep === 3 && (
+                        <div className="space-y-3" data-testid="lab-step-3">
+                          <div className="p-3 bg-black/40 rounded border border-stone-700">
+                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 4: Detection & Mitigation</p>
+                            
+                            <div className="grid grid-cols-1 gap-3 mb-3">
+                              <div className="p-2 bg-blue-950/20 rounded border border-blue-900/30">
+                                <p className="text-xs text-blue-400 font-bold mb-1">How to Detect This Attack:</p>
+                                <p className="text-xs text-stone-300">{lab.detection}</p>
+                              </div>
+                              <div className="p-2 bg-teal-950/20 rounded border border-teal-900/30">
+                                <p className="text-xs text-teal-400 font-bold mb-1">Mitigation Strategy:</p>
+                                <p className="text-xs text-stone-300">{lab.mitigation}</p>
+                              </div>
+                            </div>
+
+                            <div className="p-2 bg-amber-950/20 rounded border border-amber-900/30 mb-3">
+                              <p className="text-xs text-amber-400 font-bold mb-1">Key Takeaways:</p>
+                              <ul className="text-xs text-stone-300 space-y-1 list-disc list-inside">
+                                {lab.steps.map((step, i) => (
+                                  <li key={i} className="flex items-start gap-1">
+                                    <Check className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                                    <span>{step}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {labCompleted.has(activeLabId) ? (
+                              <div className="p-3 bg-amber-950/30 rounded border border-amber-700 text-center">
+                                <p className="text-xs text-amber-400 font-bold">Lab Already Completed</p>
+                              </div>
+                            ) : (
+                              <Button
+                                onClick={() => completeLab(activeLabId)}
+                                className="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold text-sm min-h-[44px]"
+                                data-testid="lab-complete-btn"
+                              >
+                                <Trophy className="w-4 h-4 mr-2" />
+                                Complete Lab (+{xpReward} XP)
+                              </Button>
+                            )}
                           </div>
                         </div>
                       )}
                     </div>
-                  ))}
-                </div>
-
-                {/* Challenge Modes */}
-                <div className="p-3 bg-stone-900/30 rounded border border-stone-800">
-                  <h4 className="text-amber-500 font-bold text-sm mb-2">In-Game Challenge Modes</h4>
-                  <div className="grid gap-2">
-                    {QR_CHALLENGE_MODES.map((mode) => (
-                      <div key={mode.id} className="p-2 bg-black/30 rounded border border-stone-700/50">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span>{mode.icon}</span>
-                          <span className="text-xs text-teal-400 font-bold">{mode.name}</span>
-                          <span className="text-xs text-stone-600">({mode.technique})</span>
+                  );
+                })() : (
+                  <div className="space-y-2">
+                    {QR_INCEPTION_LABS.map((lab) => {
+                      const isComplete = labCompleted.has(lab.id);
+                      const xp = lab.difficulty === 'beginner' ? 40 : lab.difficulty === 'intermediate' ? 65 : 100;
+                      return (
+                        <div 
+                          key={lab.id}
+                          className={`rounded border transition-all ${
+                            isComplete 
+                              ? 'bg-amber-950/20 border-amber-800/50' 
+                              : 'bg-black/30 border-amber-900/20 hover:border-amber-700/50'
+                          }`}
+                          data-testid={`lab-card-${lab.id}`}
+                        >
+                          <div className="p-3">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                {isComplete && <Check className="w-3.5 h-3.5 text-amber-500" />}
+                                <span className="text-sm text-amber-400 font-bold">{lab.title}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-stone-500">{xp} XP</span>
+                                <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                  lab.difficulty === 'beginner' ? 'bg-teal-950 text-teal-400' :
+                                  lab.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
+                                  'bg-red-950 text-red-400'
+                                }`}>
+                                  {lab.difficulty}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-xs text-stone-400 mb-2">{lab.concept}</p>
+                            <Button
+                              onClick={() => startLab(lab.id)}
+                              variant={isComplete ? 'outline' : 'default'}
+                              className={`w-full text-xs min-h-[36px] ${
+                                isComplete 
+                                  ? 'border-amber-800/50 text-amber-500 hover:bg-amber-950/30' 
+                                  : 'bg-amber-800 hover:bg-amber-700 text-black'
+                              }`}
+                              data-testid={`lab-start-${lab.id}`}
+                            >
+                              {isComplete ? 'Review Lab' : 'Start Lab Exercise'}
+                            </Button>
+                          </div>
                         </div>
-                        <p className="text-xs text-stone-400">{mode.description}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
-                </div>
+                )}
+
+                {!activeLabId && (
+                  <div className="p-3 bg-stone-900/30 rounded border border-stone-800">
+                    <h4 className="text-amber-500 font-bold text-sm mb-2">Challenge Modes</h4>
+                    <div className="grid gap-2">
+                      {QR_CHALLENGE_MODES.map((mode) => (
+                        <div key={mode.id} className="p-2 bg-black/30 rounded border border-stone-700/50">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span>{mode.icon}</span>
+                            <span className="text-xs text-teal-400 font-bold">{mode.name}</span>
+                            <span className="text-xs text-stone-600">({mode.technique})</span>
+                          </div>
+                          <p className="text-xs text-stone-400">{mode.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
