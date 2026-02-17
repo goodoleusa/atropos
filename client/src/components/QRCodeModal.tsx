@@ -1365,7 +1365,8 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
       await awardXP(xpReward, `Completed QR Lab: ${lab.title}`);
       collectClue({
         id: `qr-lab-${labId}`,
-        text: `${lab.title}: ${lab.concept}`,
+        name: `${lab.title}: ${lab.concept}`,
+        description: lab.briefing,
         foundAt: 'QR Inception Labs',
         timestamp: Date.now(),
       });
