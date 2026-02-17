@@ -194,13 +194,28 @@ export function GameplaySection() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h3 className="text-lg font-orbitron text-amber-600 flex items-center gap-2">
           <Layers className="w-5 h-5" /> Gameplay Elements
         </h3>
-        <Badge variant="outline" className="border-amber-700 text-amber-400" data-testid="gameplay-badge">
-          {sharedClues.length} Clues · {quests.length} Quests
-        </Badge>
+        <div className="flex items-center gap-2 justify-between sm:justify-end">
+          <Badge variant="outline" className="border-amber-700 text-amber-400" data-testid="gameplay-badge">
+            {sharedClues.length} Clues · {quests.length} Quests
+          </Badge>
+          <Button 
+            size="sm" 
+            className="sm:hidden bg-amber-700 text-black h-9"
+            onClick={() => {
+              if (tab === "clues") openCreate({ clueId: "", name: "", description: "", content: "", tags: [], usedInCampaigns: [], linkedClues: [], difficulty: 1, category: "general" });
+              if (tab === "terminal") openCreate({ id: "", name: "", description: "", content: "", location: "terminal", difficulty: 1 });
+              if (tab === "quests") openCreate({ id: "", name: "", description: "", requiredClues: [], reward: "", unlocks: "" });
+              if (tab === "mystical") openCreate({ cardId: "", type: "tarot", name: "", symbol: "", hint: "", enabled: true });
+              if (tab === "achievements") openCreate({ achievementId: "", name: "", description: "", icon: "Award", category: "milestone", rarity: "common", xpReward: 50, condition: { type: "stat", value: 1 }, isActive: true, isHidden: false, sortOrder: 0 });
+            }}
+          >
+            <Plus className="w-4 h-4 mr-1" /> Add
+          </Button>
+        </div>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 md:mx-0 md:px-0" data-testid="gameplay-tabs">
@@ -230,8 +245,8 @@ export function GameplaySection() {
       </div>
 
       {tab === "clues" && (
-        <>
-          <div className="flex justify-end">
+        <div className="space-y-4">
+          <div className="hidden sm:flex justify-end">
             <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => openCreate({ clueId: "", name: "", description: "", content: "", tags: [], usedInCampaigns: [], linkedClues: [], difficulty: 1, category: "general" })} data-testid="create-clue-btn">
               <Plus className="w-4 h-4 mr-2" /> Create New Clue
             </Button>
