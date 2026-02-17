@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server, Briefcase } from 'lucide-react';
+import { Terminal, Brain, FileText, ChevronDown, Zap, Home, Search, Bot, QrCode, MessageSquare, Settings, Activity, User, TrendingUp, Trophy, Bug, Sparkles, Eye, EyeOff, Shield, Server, Briefcase, BookOpen } from 'lucide-react';
 import { ModmailDialog } from './ModmailDialog';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
@@ -46,31 +46,60 @@ export default function QuickNav() {
     staleTime: 30000
   });
 
-  const baseNavItems = [
-    // Home & Profile
+  const userItems = [
     { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
-    { path: '/profile', icon: User, label: 'Profile & Portfolio', color: 'teal' as const },
+    { path: '/profile', icon: User, label: 'Profile', color: 'teal' as const },
     { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
-
-    // Foundation & Training
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
     { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
-    { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
     { path: '/business', icon: Briefcase, label: 'Business HQ', color: 'teal' as const },
-    
-    // Active Investigation
     { path: '/investigate', icon: Search, label: 'Investigation Hub', color: 'teal' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     { path: '/videos', icon: Activity, label: 'AI Gallery', color: 'teal' as const },
-    
-    { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const },
-    { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const },
-    { path: '/void', icon: Sparkles, label: 'Void', color: 'amber' as const },
-    { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
-    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
+    { path: '/wiki', icon: BookOpen, label: 'Wiki', color: 'teal' as const },
   ];
 
-  const navItems = baseNavItems;
+  const adminItems = [
+    { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
+    { path: '/admin', icon: Settings, label: 'Admin Panel', color: 'amber' as const },
+    { path: '/debug', icon: Bug, label: 'Debug Tools', color: 'amber' as const },
+    { path: '/void', icon: Sparkles, label: 'The Void', color: 'amber' as const },
+    { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
+    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
+    { path: '/scanner', icon: Search, label: 'Atropos Scanner', color: 'amber' as const },
+  ];
+
+  const renderNavItems = (items: typeof userItems) => items.map(item => {
+    const Icon = item.icon;
+    const isActive = location === item.path;
+    const styles = NAV_STYLES[item.color];
+    return (
+      <Link key={item.path} href={item.path}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`w-full justify-start min-h-[44px] relative group overflow-hidden ${
+            isActive ? styles.active : 'text-stone-400 hover:text-stone-200'
+          }`}
+          data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+        >
+          {isActive && (
+            <motion.div 
+              layoutId="active-nav-glow"
+              className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent opacity-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            />
+          )}
+          <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/5 transition-colors duration-300" />
+          <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? styles.icon + ' scale-110' : 'group-hover:text-amber-400'}`} />
+          <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest">
+            {item.label}
+          </span>
+        </Button>
+      </Link>
+    );
+  });
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -130,43 +159,16 @@ export default function QuickNav() {
               </div>
             </div>
           )}
-          
-          {navItems.map(item => {
-            const Icon = item.icon;
-            const isActive = location === item.path;
-            const styles = NAV_STYLES[item.color];
-            return (
-              <Link key={item.path} href={item.path}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`w-full justify-start min-h-[44px] relative group overflow-hidden ${
-                    isActive ? styles.active : 'text-stone-400 hover:text-stone-200'
-                  }`}
-                  data-testid={`nav-${item.label.toLowerCase()}`}
-                >
-                  {isActive && (
-                    <motion.div 
-                      layoutId="active-nav-glow"
-                      className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent opacity-50"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/5 transition-colors duration-300" />
-                  <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? styles.icon + ' scale-110' : 'group-hover:text-amber-400'}`} />
-                  <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest">
-                    {item.label}
-                  </span>
-                  {(item as any).badge && (
-                    <Badge className="ml-auto bg-amber-700 text-white text-[10px] px-1.5 relative z-10">
-                      {(item as any).badge}
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
-            );
-          })}
+
+          <div className="pb-2">
+            <p className="text-[9px] text-stone-600 uppercase px-3 mb-1 font-orbitron tracking-widest">User Tools</p>
+            {renderNavItems(userItems)}
+          </div>
+
+          <div className="border-t border-stone-800 pt-2 pb-2">
+            <p className="text-[9px] text-stone-600 uppercase px-3 mb-1 font-orbitron tracking-widest">Admin Nexus</p>
+            {renderNavItems(adminItems)}
+          </div>
 
           <div className="px-1 pt-1">
             <Button
