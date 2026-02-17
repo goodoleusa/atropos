@@ -65,7 +65,7 @@ export default function QuickNav() {
   const adminItems = [
     // Content & Intelligence
     { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
-    { path: '/scanner', icon: Search, label: 'Atropos Admin', color: 'amber' as const },
+    { path: '/scanner', icon: Shield, label: 'Atropos Admin', color: 'amber' as const },
     { path: '/admin', icon: Settings, label: 'Admin Panel', color: 'amber' as const },
     { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
     
