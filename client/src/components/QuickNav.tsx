@@ -17,7 +17,6 @@ import { InteractiveHover } from './InteractiveHover';
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
   teal: { active: 'bg-teal-900/30 text-teal-400', icon: 'text-teal-500' },
-  purple: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
 } as const;
 
 export default function QuickNav() {
@@ -95,7 +94,7 @@ export default function QuickNav() {
 
   return (
     <div 
-      className="flex fixed bottom-6 right-6 sm:bottom-6 sm:left-6 z-[10000] flex-col items-end sm:items-start gap-2 max-w-[calc(100vw-3rem)]" 
+      className="flex fixed bottom-6 left-6 z-[10000] flex-col items-start gap-2 max-w-[calc(100vw-3rem)]" 
       data-testid="quick-nav"
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
