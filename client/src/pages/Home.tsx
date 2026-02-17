@@ -378,32 +378,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Floating Action Buttons - Mobile Optimized */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1, duration: 0.3 }}
-        className={`flex fixed bottom-6 left-6 md:left-6 right-6 md:right-auto z-50 flex-col md:flex-col items-end md:items-start gap-3 transition-opacity duration-500 ${
-          scrolledPastVideo ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <Button
-          onClick={() => setAgentChatOpen(true)}
-          className="w-14 h-14 rounded-full bg-stone-900/90 hover:bg-stone-800 text-amber-500 shadow-lg border border-amber-900/20"
-          data-testid="floating-agent-button"
-        >
-          <Bot className="w-6 h-6" />
-        </Button>
-        
-        <Button
-          onClick={() => setQrModalOpen(true)}
-          className="w-14 h-14 rounded-full bg-stone-900/90 hover:bg-stone-800 text-amber-500 shadow-lg border border-amber-900/20"
-          data-testid="floating-qr-button"
-        >
-          <QrCode className="w-6 h-6" />
-        </Button>
-      </motion.div>
-
       {/* Modals */}
       <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
       <AgentChat open={agentChatOpen} onOpenChange={setAgentChatOpen} />

@@ -216,12 +216,26 @@ export default function QuickNav() {
 
       <InteractiveHover>
         <div className="relative w-16 h-16 flex items-center justify-center">
+          {!expanded && (
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'radial-gradient(circle at center, rgba(245, 158, 11, 0.15) 0%, transparent 70%)',
+                filter: 'blur(8px)',
+              }}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            />
+          )}
           <Button
             onClick={handleToggle}
-            className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/20 relative z-10 ${
+            className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/30 relative z-10 ${
               expanded 
                 ? 'bg-stone-900 hover:bg-stone-800 rotate-180 shadow-xl' 
-                : 'bg-stone-950 hover:bg-stone-900'
+                : 'bg-stone-950 hover:bg-stone-900 shadow-[0_0_15px_rgba(180,83,9,0.2)]'
             }`}
             data-testid="quick-nav-toggle"
           >
