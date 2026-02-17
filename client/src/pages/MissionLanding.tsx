@@ -14,7 +14,8 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertTriangle,
-  Play
+  Play,
+  DollarSign
 } from 'lucide-react';
 
 export default function MissionLanding() {
