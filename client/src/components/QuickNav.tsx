@@ -95,13 +95,13 @@ export default function QuickNav() {
 
   return (
     <div 
-      className="flex fixed bottom-6 left-6 z-[10000] flex-col items-start gap-2" 
+      className="flex fixed bottom-6 right-6 sm:bottom-6 sm:left-6 z-[10000] flex-col items-end sm:items-start gap-2 max-w-[calc(100vw-3rem)]" 
       data-testid="quick-nav"
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
     >
       {expanded && (
-        <div className="bg-black/95 backdrop-blur border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] overflow-y-auto no-scrollbar molten-edge">
+        <div className="bg-black/95 backdrop-blur border border-amber-900/50 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar molten-edge shadow-[0_0_50px_rgba(0,0,0,0.8)]">
           {progression && (
             <div className="px-3 py-2 border-b border-stone-800 mb-2">
               <div className="flex items-center justify-between mb-1">
