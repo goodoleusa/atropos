@@ -14,13 +14,11 @@ import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
 import AdminLogin from "@/pages/Admin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import Suggestions from "@/pages/Suggestions";
 import TheVoid from "@/pages/TheVoid";
 import Archive from "@/pages/Archive";
 import Debug from "@/pages/Debug";
 import PromptBuilder from "@/pages/PromptBuilder";
-import ReportBuilder from "@/pages/ReportBuilder";
-import Wiki from "@/pages/Wiki";
-import AILab from "@/pages/AILab";
 import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 import VideoGallery from "@/pages/VideoGallery";
 import Agents from "@/pages/Agents";
@@ -50,13 +48,11 @@ function Router() {
       <Route path="/login" component={AdminLogin} />
       <Route path="/void" component={TheVoid} />
       <Route path="/archive" component={Archive} />
+      <Route path="/suggestions" component={Suggestions} />
       <Route path="/debug" component={Debug} />
       <Route path="/prompt-builder" component={PromptBuilder} />
       <Route path="/ai-lab" component={AILab} />
       <Route path="/investigate" component={InvestigationWorkspace} />
-      <Route path="/report" component={ReportBuilder} />
-      <Route path="/wiki" component={Wiki} />
-      <Route path="/videos" component={VideoGallery} />
       <Route path="/agents" component={Agents} />
       <Route path="/builder" component={CampaignBuilder} />
       <Route path="/campaigns" component={CampaignsHub} />
