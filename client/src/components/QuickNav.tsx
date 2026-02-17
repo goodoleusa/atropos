@@ -172,6 +172,19 @@ export default function QuickNav() {
             );
           })}
 
+          <div className="px-1 pt-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start bg-amber-900/20 text-amber-400 hover:bg-amber-900/40 min-h-[44px]"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-qr-modal'))}
+              data-testid="quicknav-qr-tool"
+            >
+              <QrCode className="w-4 h-4 mr-2" />
+              <span className="uppercase font-orbitron text-[10px] tracking-widest">QR Tool</span>
+            </Button>
+          </div>
+
           <div className="border-t border-stone-800 pt-2 mt-2">
             <div className="px-3 py-1">
               <p className="text-[10px] text-stone-500 uppercase">Progress</p>
@@ -192,18 +205,6 @@ export default function QuickNav() {
             <div className="px-1 mt-1">
               <PlayerStatsPanel />
             </div>
-          </div>
-
-          <div className="flex gap-1 pt-2 mt-2 border-t border-stone-800">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex-1 bg-amber-900/20 text-amber-400 hover:bg-amber-900/40 min-h-[44px]"
-              onClick={() => window.dispatchEvent(new CustomEvent('open-qr-modal'))}
-            >
-              <QrCode className="w-4 h-4 mr-2" />
-              QR Tool
-            </Button>
           </div>
 
           <div className="flex items-center justify-between px-3 py-2 border-t border-stone-800 mt-2">

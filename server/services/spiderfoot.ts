@@ -32,7 +32,7 @@ export interface SpiderFootScanResponse {
   resultCount: number;
 }
 
-const activeScanProcesses = new Map<string, { process: any; abortController: AbortController }>();
+const activeScanProcesses = new Map<string, { process: any; abortController: AbortController; partialResults: SpiderFootResult[]; stderr: string; lastActivity: number }>();
 
 async function checkAvailability(): Promise<{ available: boolean; version?: string; error?: string }> {
   try {
@@ -92,6 +92,54 @@ async function listEventTypes(): Promise<string[]> {
   });
 }
 
+function parseResultLine(line: string): SpiderFootResult | null {
+  const trimmed = line.trim();
+  if (!trimmed) return null;
+  try {
+    const item = JSON.parse(trimmed);
+    if (item.type && item.data) {
+      return {
+        type: item.type,
+        data: item.data,
+        module: item.module || 'unknown',
+        source: item.source || undefined,
+      };
+    }
+  } catch {
+    const parts = trimmed.split('\t');
+    if (parts.length >= 3) {
+      return {
+        type: parts[0],
+        data: parts[1],
+        module: parts[2],
+        source: parts[3],
+      };
+    }
+  }
+  return null;
+}
+
+function extractStderrProgress(stderr: string): string[] {
+  const lines = stderr.split('\n').filter(l => l.trim());
+  const progress: string[] = [];
+  for (const line of lines.slice(-10)) {
+    if (line.includes('sfp_') || line.includes('Running') || line.includes('Scanning') || line.includes('module')) {
+      progress.push(line.trim());
+    }
+  }
+  return progress;
+}
+
+function getPartialResults(scanId: string): { results: SpiderFootResult[]; progress: string[]; status: string } | null {
+  const entry = activeScanProcesses.get(scanId);
+  if (!entry) return null;
+  return {
+    results: [...entry.partialResults],
+    progress: extractStderrProgress(entry.stderr),
+    status: 'running',
+  };
+}
+
 function runScan(params: SpiderFootScanParams, apiKeys?: Record<string, string>): { scanId: string; promise: Promise<SpiderFootScanResponse> } {
   const scanId = `sf-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const startedAt = new Date().toISOString();
@@ -130,15 +178,40 @@ function runScan(params: SpiderFootScanParams, apiKeys?: Record<string, string>)
       signal: abortController.signal,
     });
 
-    activeScanProcesses.set(scanId, { process: proc, abortController });
+    const scanEntry = { process: proc, abortController, partialResults: [] as SpiderFootResult[], stderr: '', lastActivity: Date.now() };
+    activeScanProcesses.set(scanId, scanEntry);
 
     let stdout = '';
-    let stderr = '';
+    let stdoutBuffer = '';
 
-    proc.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
-    proc.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+    proc.stdout.on('data', (d: Buffer) => {
+      const chunk = d.toString();
+      stdout += chunk;
+      stdoutBuffer += chunk;
+      scanEntry.lastActivity = Date.now();
+
+      const lines = stdoutBuffer.split('\n');
+      stdoutBuffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const result = parseResultLine(line);
+        if (result) {
+          scanEntry.partialResults.push(result);
+        }
+      }
+    });
+
+    proc.stderr.on('data', (d: Buffer) => {
+      scanEntry.stderr += d.toString();
+      scanEntry.lastActivity = Date.now();
+    });
 
     proc.on('close', (code: number | null) => {
+      if (stdoutBuffer.trim()) {
+        const result = parseResultLine(stdoutBuffer);
+        if (result) scanEntry.partialResults.push(result);
+      }
+
       activeScanProcesses.delete(scanId);
 
       if (code !== 0 && !stdout.trim()) {
@@ -146,12 +219,12 @@ function runScan(params: SpiderFootScanParams, apiKeys?: Record<string, string>)
           scanId,
           target: params.target,
           status: 'error',
-          results: [],
+          results: scanEntry.partialResults.length > 0 ? scanEntry.partialResults : [],
           startedAt,
           completedAt: new Date().toISOString(),
-          error: stderr || `Process exited with code ${code}`,
+          error: scanEntry.stderr || `Process exited with code ${code}`,
           moduleCount: params.modules?.length || 0,
-          resultCount: 0,
+          resultCount: scanEntry.partialResults.length,
         });
         return;
       }
@@ -170,28 +243,12 @@ function runScan(params: SpiderFootScanParams, apiKeys?: Record<string, string>)
           }));
         }
       } catch {
-        const lines = trimmed.split('\n').filter((l: string) => l.trim());
-        for (const line of lines) {
-          try {
-            const item = JSON.parse(line);
-            if (item.type && item.data) {
-              results.push({
-                type: item.type,
-                data: item.data,
-                module: item.module || 'unknown',
-                source: item.source || undefined,
-              });
-            }
-          } catch {
-            const parts = line.split('\t');
-            if (parts.length >= 3) {
-              results.push({
-                type: parts[0],
-                data: parts[1],
-                module: parts[2],
-                source: parts[3],
-              });
-            }
+        results = scanEntry.partialResults.length > 0 ? scanEntry.partialResults : [];
+        if (results.length === 0) {
+          const lines = trimmed.split('\n').filter((l: string) => l.trim());
+          for (const line of lines) {
+            const r = parseResultLine(line);
+            if (r) results.push(r);
           }
         }
       }
@@ -214,12 +271,12 @@ function runScan(params: SpiderFootScanParams, apiKeys?: Record<string, string>)
         scanId,
         target: params.target,
         status: 'error',
-        results: [],
+        results: scanEntry.partialResults,
         startedAt,
         completedAt: new Date().toISOString(),
         error: err.message,
         moduleCount: 0,
-        resultCount: 0,
+        resultCount: scanEntry.partialResults.length,
       });
     });
   });
@@ -274,6 +331,7 @@ export const spiderfootService = {
   runScan,
   cancelScan,
   getActiveScans,
+  getPartialResults,
   MODULE_PRESETS,
   API_KEY_SERVICES,
 };

@@ -118,6 +118,17 @@ router.get("/scan/:scanId", async (req: Request, res: Response) => {
     return res.json(result);
   }
 
+  const partial = spiderfootService.getPartialResults(scanId);
+  if (partial) {
+    return res.json({
+      scanId,
+      status: 'running',
+      results: partial.results,
+      resultCount: partial.results.length,
+      progress: partial.progress,
+    });
+  }
+
   const activeScans = spiderfootService.getActiveScans();
   if (activeScans.includes(scanId)) {
     return res.json({ scanId, status: 'running', results: [], resultCount: 0 });
