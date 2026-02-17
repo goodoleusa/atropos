@@ -95,6 +95,65 @@ python securityCrew.py deploy --client CLIENT_ID --network 10.0.0.0/24
 
 ---
 
+## 🧩 Modular Starter Kit / Templates System (NEW)
+
+Build custom deployments by selecting only the features you need. The `templates/` folder contains a modular assembler with 13 feature modules.
+
+### Quick Start
+
+```bash
+# Interactive mode — choose a preset or pick individual modules
+bash templates/setup.sh
+
+# CLI mode with preset
+bash templates/setup.sh learner ./my-project
+bash templates/setup.sh full ./my-project
+```
+
+### Presets
+
+| Preset | Modules Included |
+|--------|-----------------|
+| `minimal` | Core platform + terminal |
+| `learner` | NEXUS AI, terminal, campaigns, gamification, wiki |
+| `security` | NEXUS AI, terminal, scanner/OSINT, SpiderFoot, reports, portfolio |
+| `marketing` | Behavior analysis, gamification, report builder |
+| `full` | All 13 modules |
+
+### 13 Feature Modules
+
+| Module | Category | Description |
+|--------|----------|-------------|
+| `nexus-ai` | AI | AI investigation assistant, multi-agent orchestration |
+| `terminal` | Core | Custom CLI with command parsing and history |
+| `campaigns` | Content | Investigation campaigns with visual flow editor |
+| `scanner-osint` | Security | Atropos scanner + real OSINT integration (IOC, DNS, WHOIS) |
+| `qr-c2` | Security | QR C2 framework with guided missions and labs |
+| `gamification` | Engagement | XP, levels, 500+ achievements, leaderboards, daily challenges |
+| `behavior-analysis` | Analytics | User behavior tracking, customer journeys, marketing insights |
+| `report-builder` | Tools | Bug bounty reports, vulnerability tracking, AI benchmarking |
+| `portfolio` | Engagement | Shareable investigation portfolio with viz picker |
+| `ai-lab` | AI | Prompt engineering playground, model comparison |
+| `wiki` | Content | Built-in documentation with search and linking |
+| `spiderfoot` | Security | OSINT recon with streaming scan results |
+| `crew-builder` | AI | Multi-agent teams with CrewAI export |
+
+### How It Works
+
+1. **Base template** (`templates/base/`) provides core infrastructure: Express, React, PostgreSQL/Drizzle, Tailwind CSS, molten-bronze theme
+2. **Feature modules** (`templates/modules/<name>/`) each contain a `module.json` (injection config) and optional `schema.ts` (database tables)
+3. **Setup script** (`templates/setup.sh`) copies base files, appends selected module schemas, and injects nav items, imports, and routes via placeholder comments
+
+### Adding Your Own Module
+
+1. Create `templates/modules/your-module/module.json` with inject config (nav items, route imports, app imports)
+2. Add `schema.ts` if your module needs database tables
+3. Run `bash templates/setup.sh` and select your module in custom mode
+
+**See**: `templates/manifest.json` for the complete module registry with dependencies and file listings
+
+---
+
 ## 📚 Original Platform Features
 
 > **Mission-Critical Philosophy**: In cybersecurity, hands-on experience far outweighs traditional degrees. Atropos emphasizes learning by doing, student-driven investigation, and real-world scenario mastery.

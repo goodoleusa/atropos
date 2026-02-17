@@ -1709,6 +1709,147 @@ export default function Wiki() {
           </div>
         </div>
       )
+    },
+    {
+      id: 'starter-kit',
+      title: 'Starter Kit / Templates',
+      icon: <Puzzle className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Starter Kit / Templates System</h2>
+          <p className="text-stone-300 leading-relaxed">
+            Atropos includes a modular starter kit that lets you assemble a custom deployment by picking 
+            only the features you need. The system lives in the <code className="text-amber-400 bg-stone-900 px-1 rounded">templates/</code> folder.
+          </p>
+
+          <div className="bg-amber-950/20 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">How It Works</h3>
+            <ol className="space-y-2 text-stone-300 text-sm list-decimal list-inside">
+              <li><strong className="text-amber-400">Base template</strong> provides the core platform: Express server, React, PostgreSQL, Drizzle ORM, Tailwind CSS, molten-bronze theme</li>
+              <li><strong className="text-amber-400">Feature modules</strong> add capabilities: each module includes its database schema, API routes, pages, components, and nav config entries</li>
+              <li><strong className="text-amber-400">Setup script</strong> assembles everything: copies the base, appends selected module schemas, injects nav items, imports, and routes</li>
+            </ol>
+          </div>
+
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">Quick Start</h3>
+            <div className="space-y-2 text-xs font-mono">
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">bash templates/setup.sh <span className="text-stone-500"># Interactive mode — choose preset or pick modules</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">bash templates/setup.sh learner ./my-project <span className="text-stone-500"># CLI preset mode</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">bash templates/setup.sh full ./my-project <span className="text-stone-500"># Everything included</span></div>
+            </div>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Presets</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-start gap-2">
+                <span className="text-teal-400 font-mono font-bold w-28 shrink-0">minimal</span>
+                <span className="text-stone-300">Core platform + terminal only</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-teal-400 font-mono font-bold w-28 shrink-0">learner</span>
+                <span className="text-stone-300">Campaigns, AI agents, gamification, wiki</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-teal-400 font-mono font-bold w-28 shrink-0">security</span>
+                <span className="text-stone-300">OSINT tools, scanning, reports, investigations</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-teal-400 font-mono font-bold w-28 shrink-0">marketing</span>
+                <span className="text-stone-300">Behavior analysis, engagement, reporting</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-teal-400 font-mono font-bold w-28 shrink-0">full</span>
+                <span className="text-stone-300">All 13 feature modules included</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">Available Modules (13)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
+                <span className="text-teal-400 font-bold">nexus-ai</span>
+                <p className="text-stone-400 text-xs">AI investigation assistant, multi-agent orchestration</p>
+              </div>
+              <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
+                <span className="text-amber-400 font-bold">terminal</span>
+                <p className="text-stone-400 text-xs">Custom CLI with command parsing and history</p>
+              </div>
+              <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
+                <span className="text-teal-400 font-bold">campaigns</span>
+                <p className="text-stone-400 text-xs">Investigation campaigns with visual flow editor</p>
+              </div>
+              <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
+                <span className="text-amber-400 font-bold">scanner-osint</span>
+                <p className="text-stone-400 text-xs">Atropos scanner + real OSINT integration</p>
+              </div>
+              <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
+                <span className="text-teal-400 font-bold">qr-c2</span>
+                <p className="text-stone-400 text-xs">QR C2 framework with guided missions</p>
+              </div>
+              <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
+                <span className="text-amber-400 font-bold">gamification</span>
+                <p className="text-stone-400 text-xs">XP, levels, achievements, leaderboards</p>
+              </div>
+              <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
+                <span className="text-teal-400 font-bold">behavior-analysis</span>
+                <p className="text-stone-400 text-xs">User behavior tracking, customer journeys</p>
+              </div>
+              <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
+                <span className="text-amber-400 font-bold">report-builder</span>
+                <p className="text-stone-400 text-xs">Bug bounty reports, vulnerability tracking</p>
+              </div>
+              <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
+                <span className="text-teal-400 font-bold">portfolio</span>
+                <p className="text-stone-400 text-xs">Shareable investigation portfolio</p>
+              </div>
+              <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
+                <span className="text-amber-400 font-bold">ai-lab</span>
+                <p className="text-stone-400 text-xs">Prompt engineering playground</p>
+              </div>
+              <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
+                <span className="text-teal-400 font-bold">wiki</span>
+                <p className="text-stone-400 text-xs">Built-in docs with search and linking</p>
+              </div>
+              <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
+                <span className="text-amber-400 font-bold">spiderfoot</span>
+                <p className="text-stone-400 text-xs">OSINT recon with streaming results</p>
+              </div>
+              <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
+                <span className="text-teal-400 font-bold">crew-builder</span>
+                <p className="text-stone-400 text-xs">Multi-agent teams with CrewAI export</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">File Structure</h3>
+            <pre className="text-xs font-mono text-stone-400 whitespace-pre leading-relaxed">{`templates/
+  manifest.json          # Module registry with descriptions & dependencies
+  setup.sh               # Interactive assembler script
+  base/                  # Core platform files (always included)
+    client/src/          # React app, navConfig, styling
+    server/              # Express server, DB, routes, storage
+    shared/              # Base schema (sessions, clues, quests)
+  modules/               # Feature modules (pick & choose)
+    <module>/
+      module.json        # Injection config (nav, routes, imports)
+      schema.ts          # Database tables for this module`}</pre>
+          </div>
+
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">Adding a Custom Module</h3>
+            <ol className="space-y-2 text-stone-300 text-sm list-decimal list-inside">
+              <li>Create <code className="text-amber-400 bg-stone-900 px-1 rounded">templates/modules/your-module/module.json</code> with inject config</li>
+              <li>Add <code className="text-amber-400 bg-stone-900 px-1 rounded">schema.ts</code> if your module needs database tables</li>
+              <li>Reference your pages, components, and routes in the module.json</li>
+              <li>Run <code className="text-amber-400 bg-stone-900 px-1 rounded">bash templates/setup.sh custom ./output</code> and select your module</li>
+            </ol>
+          </div>
+        </div>
+      )
     }
   ];
 
