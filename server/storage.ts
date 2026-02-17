@@ -110,7 +110,10 @@ import {
   type InsertBusinessProject,
   feedbackItems,
   type FeedbackItem,
-  type InsertFeedbackItem
+  type InsertFeedbackItem,
+  portfolioEntries,
+  type PortfolioEntry,
+  type InsertPortfolioEntry
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -395,6 +398,15 @@ export interface IStorage {
   updateFeedbackItem(id: number, updates: Partial<FeedbackItem>): Promise<FeedbackItem | undefined>;
   deleteFeedbackItem(id: number): Promise<boolean>;
   voteFeedbackItem(id: number): Promise<FeedbackItem | undefined>;
+
+  // Portfolio Entries
+  getPortfolioEntriesBySession(sessionToken: string): Promise<PortfolioEntry[]>;
+  getPortfolioEntryById(id: number): Promise<PortfolioEntry | undefined>;
+  getPortfolioEntryByShareId(shareId: string): Promise<PortfolioEntry | undefined>;
+  createPortfolioEntry(entry: InsertPortfolioEntry): Promise<PortfolioEntry>;
+  updatePortfolioEntry(id: number, updates: Partial<PortfolioEntry>): Promise<PortfolioEntry | undefined>;
+  deletePortfolioEntry(id: number): Promise<boolean>;
+  getPublicPortfolioEntries(sessionToken: string): Promise<PortfolioEntry[]>;
 }
 
 // Admin configuration type (stored in memory/file, not DB)
@@ -2296,6 +2308,49 @@ export class DatabaseStorage implements IStorage {
       .where(eq(feedbackItems.id, id))
       .returning();
     return updated;
+  }
+
+  async getPortfolioEntriesBySession(sessionToken: string): Promise<PortfolioEntry[]> {
+    return db.select().from(portfolioEntries)
+      .where(eq(portfolioEntries.sessionToken, sessionToken))
+      .orderBy(desc(portfolioEntries.updatedAt));
+  }
+
+  async getPortfolioEntryById(id: number): Promise<PortfolioEntry | undefined> {
+    const [entry] = await db.select().from(portfolioEntries).where(eq(portfolioEntries.id, id));
+    return entry;
+  }
+
+  async getPortfolioEntryByShareId(shareId: string): Promise<PortfolioEntry | undefined> {
+    const [entry] = await db.select().from(portfolioEntries).where(eq(portfolioEntries.shareId, shareId));
+    return entry;
+  }
+
+  async createPortfolioEntry(entry: InsertPortfolioEntry): Promise<PortfolioEntry> {
+    const [created] = await db.insert(portfolioEntries).values(entry).returning();
+    return created;
+  }
+
+  async updatePortfolioEntry(id: number, updates: Partial<PortfolioEntry>): Promise<PortfolioEntry | undefined> {
+    const [updated] = await db.update(portfolioEntries)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(portfolioEntries.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deletePortfolioEntry(id: number): Promise<boolean> {
+    const result = await db.delete(portfolioEntries).where(eq(portfolioEntries.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getPublicPortfolioEntries(sessionToken: string): Promise<PortfolioEntry[]> {
+    return db.select().from(portfolioEntries)
+      .where(and(
+        eq(portfolioEntries.sessionToken, sessionToken),
+        eq(portfolioEntries.visibility, "public")
+      ))
+      .orderBy(desc(portfolioEntries.featured), desc(portfolioEntries.updatedAt));
   }
 }
 

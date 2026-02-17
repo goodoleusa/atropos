@@ -23,8 +23,10 @@ import {
   ChevronRight,
   Lock,
   Unlock,
-  ArrowLeft
+  ArrowLeft,
+  Briefcase
 } from "lucide-react";
+import PortfolioTab from "@/components/PortfolioTab";
 import { useGame } from "@/hooks/useGameSession";
 
 interface PlayerProgression {
@@ -299,6 +301,10 @@ export default function Profile() {
         {/* Tabs: Achievements, Stats, Activity */}
         <Tabs defaultValue="achievements" className="space-y-6">
           <TabsList className="bg-stone-900/50 border border-amber-900/30">
+            <TabsTrigger value="portfolio" className="data-[state=active]:bg-amber-900/40 data-[state=active]:text-amber-300" data-testid="portfolio-tab">
+              <Briefcase className="w-4 h-4 mr-2" />
+              Portfolio
+            </TabsTrigger>
             <TabsTrigger value="achievements" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400">
               <Trophy className="w-4 h-4 mr-2" />
               Achievements
@@ -312,6 +318,11 @@ export default function Profile() {
               Daily Challenge
             </TabsTrigger>
           </TabsList>
+
+          {/* Portfolio Tab */}
+          <TabsContent value="portfolio" className="space-y-4">
+            <PortfolioTab />
+          </TabsContent>
 
           {/* Achievements Tab */}
           <TabsContent value="achievements" className="space-y-4">
