@@ -14,7 +14,7 @@ import {
   Terminal, Radar, Shield, Globe, Search, Play, Loader2, Plus, Trash2, Edit,
   FileCode, Key, RefreshCw, ExternalLink, AlertTriangle, CheckCircle2,
   Bug, Crosshair, BookOpen, Copy, Download, Tag, Zap, Filter, X, ChevronDown, ChevronRight,
-  Target, Code2, Maximize2, Minimize2
+  Target, Code2, Maximize2, Minimize2, Newspaper
 } from 'lucide-react';
 import { useReportContext } from '@/hooks/useReportContext';
 
@@ -1250,6 +1250,460 @@ function ScanHistoryTab() {
               </div>
             )}
           </ScrollArea>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function OsintToolkitTab() {
+  const { addToolOutput, addPendingFinding, addTarget } = useReportContext();
+  const [iocInput, setIocInput] = useState("");
+  const [iocResult, setIocResult] = useState<any>(null);
+  const [iocLoading, setIocLoading] = useState(false);
+  const [reconTarget, setReconTarget] = useState("");
+  const [reconResult, setReconResult] = useState<any>(null);
+  const [reconLoading, setReconLoading] = useState(false);
+  const [newsArticles, setNewsArticles] = useState<any[]>([]);
+  const [newsLoading, setNewsLoading] = useState(false);
+  const [extractingIoc, setExtractingIoc] = useState<string | null>(null);
+  const [extractedIocs, setExtractedIocs] = useState<Record<string, any>>({}); 
+  const [defangInput, setDefangInput] = useState("");
+  const [defangMode, setDefangMode] = useState<"defang" | "refang">("defang");
+  const [defangResult, setDefangResult] = useState("");
+  const [defangLoading, setDefangLoading] = useState(false);
+
+  const detectIocType = (value: string): string => {
+    if (!value) return "unknown";
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(value)) return "ip";
+    if (/^[a-f0-9]{32,64}$/i.test(value)) return "hash";
+    if (/^CVE-\d{4}-\d+$/i.test(value)) return "cve";
+    if (/^https?:\/\//i.test(value)) return "url";
+    if (/@/.test(value)) return "email";
+    if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) return "domain";
+    return "unknown";
+  };
+
+  const iocType = detectIocType(iocInput.trim());
+
+  const IOC_TYPE_COLORS: Record<string, string> = {
+    ip: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    domain: "bg-teal-500/20 text-teal-400 border-teal-500/30",
+    hash: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+    url: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    email: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+    cve: "bg-red-500/20 text-red-400 border-red-500/30",
+    unknown: "bg-stone-500/20 text-stone-400 border-stone-500/30",
+  };
+
+  const analyzeIoc = async () => {
+    if (!iocInput.trim()) return;
+    setIocLoading(true);
+    setIocResult(null);
+    try {
+      const res = await fetch(`/api/atropos/osint/ioc/lookup?ioc=${encodeURIComponent(iocInput.trim())}`);
+      if (!res.ok) throw new Error("IOC lookup failed");
+      const data = await res.json();
+      setIocResult(data);
+      toast({ title: "IOC Analysis Complete", description: `Analyzed ${iocType}: ${iocInput.trim()}` });
+    } catch {
+      toast({ title: "Analysis Error", description: "Failed to analyze IOC", variant: "destructive" });
+    } finally {
+      setIocLoading(false);
+    }
+  };
+
+  const sendIocToReport = () => {
+    if (!iocResult) return;
+    addToolOutput({
+      type: 'scan',
+      source: 'osint-toolkit',
+      content: `IOC Analysis on ${iocInput}: ${JSON.stringify(iocResult).substring(0, 500)}`,
+      metadata: { iocType, target: iocInput }
+    });
+    toast({ title: "Sent to Report", description: "IOC analysis added to report builder" });
+  };
+
+  const analyzeInNexus = (data: any) => {
+    const encoded = encodeURIComponent(JSON.stringify(data));
+    window.location.href = `/agents?scanData=${encoded}`;
+  };
+
+  const addIocToPortfolio = async () => {
+    if (!iocResult) return;
+    try {
+      await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'investigation', title: `OSINT: ${iocInput}`, content: JSON.stringify(iocResult), tags: ['osint', 'recon'] })
+      });
+      toast({ title: "Added to Portfolio", description: `IOC investigation saved` });
+    } catch {
+      toast({ title: "Error", description: "Failed to add to portfolio", variant: "destructive" });
+    }
+  };
+
+  const runDomainRecon = async () => {
+    if (!reconTarget.trim()) return;
+    setReconLoading(true);
+    setReconResult(null);
+    try {
+      const res = await fetch("/api/atropos/osint/scan/live", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target: reconTarget.trim(), scanType: "domain_recon" })
+      });
+      if (!res.ok) throw new Error("Domain recon failed");
+      const data = await res.json();
+      setReconResult(data);
+      addToolOutput({
+        type: 'scan',
+        source: 'osint-toolkit',
+        content: `OSINT scan on ${reconTarget}: ${data.findings?.length || 0} findings`,
+        metadata: { scanId: data.id, target: reconTarget }
+      });
+      toast({ title: "Recon Complete", description: `${data.findings?.length || 0} findings on ${reconTarget}` });
+    } catch {
+      toast({ title: "Recon Error", description: "Failed to run domain recon", variant: "destructive" });
+    } finally {
+      setReconLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setNewsLoading(true);
+    fetch("/api/atropos/osint/newsfeed")
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setNewsArticles(Array.isArray(data) ? data : []))
+      .catch(() => setNewsArticles([]))
+      .finally(() => setNewsLoading(false));
+  }, []);
+
+  const extractArticleIocs = async (articleId: string, text: string) => {
+    setExtractingIoc(articleId);
+    try {
+      const res = await fetch("/api/atropos/osint/ioc/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+      if (!res.ok) throw new Error("Extract failed");
+      const data = await res.json();
+      setExtractedIocs(prev => ({ ...prev, [articleId]: data }));
+      toast({ title: "IOCs Extracted", description: `Found indicators in article` });
+    } catch {
+      toast({ title: "Extraction Error", description: "Failed to extract IOCs", variant: "destructive" });
+    } finally {
+      setExtractingIoc(null);
+    }
+  };
+
+  const runDefang = async () => {
+    if (!defangInput.trim()) return;
+    setDefangLoading(true);
+    setDefangResult("");
+    try {
+      const res = await fetch(`/api/atropos/osint/${defangMode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: defangInput.trim() })
+      });
+      if (!res.ok) throw new Error("Operation failed");
+      const data = await res.json();
+      setDefangResult(data.result || data.text || "");
+      toast({ title: defangMode === "defang" ? "Defanged" : "Refanged", description: "Text processed successfully" });
+    } catch {
+      toast({ title: "Error", description: `Failed to ${defangMode}`, variant: "destructive" });
+    } finally {
+      setDefangLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copied", description: "Copied to clipboard" });
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="bg-stone-950/80 border-stone-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-amber-400 flex items-center gap-2">
+            <Search className="w-5 h-5" /> IOC Analyzer
+          </CardTitle>
+          <CardDescription className="text-stone-400">Analyze any Indicator of Compromise — IP, domain, hash, URL, email, or CVE</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <Input
+                placeholder="Enter IOC: 8.8.8.8 / example.com / CVE-2024-1234 / hash..."
+                value={iocInput}
+                onChange={(e) => setIocInput(e.target.value)}
+                className="bg-stone-900/60 border-stone-800 text-stone-200 placeholder:text-stone-600 pr-20"
+                data-testid="input-ioc"
+                onKeyDown={(e) => e.key === 'Enter' && analyzeIoc()}
+              />
+              {iocInput.trim() && (
+                <Badge variant="outline" className={`absolute right-2 top-1/2 -translate-y-1/2 text-[9px] ${IOC_TYPE_COLORS[iocType]}`} data-testid="badge-ioc-type">
+                  {iocType.toUpperCase()}
+                </Badge>
+              )}
+            </div>
+            <Button
+              onClick={analyzeIoc}
+              disabled={iocLoading || !iocInput.trim()}
+              className="bg-amber-700 hover:bg-amber-600 text-black font-bold"
+              data-testid="button-analyze-ioc"
+            >
+              {iocLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Search className="w-4 h-4 mr-1" /> Analyze</>}
+            </Button>
+          </div>
+
+          {iocResult && (
+            <div className="space-y-3" data-testid="ioc-results">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {iocResult.dns && (
+                  <div className="bg-stone-900/60 rounded-lg p-3 border border-stone-800">
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> DNS</div>
+                    <pre className="text-[11px] text-stone-300 whitespace-pre-wrap break-all">{typeof iocResult.dns === 'string' ? iocResult.dns : JSON.stringify(iocResult.dns, null, 2)}</pre>
+                  </div>
+                )}
+                {iocResult.whois && (
+                  <div className="bg-stone-900/60 rounded-lg p-3 border border-stone-800">
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> WHOIS</div>
+                    <pre className="text-[11px] text-stone-300 whitespace-pre-wrap break-all">{typeof iocResult.whois === 'string' ? iocResult.whois : JSON.stringify(iocResult.whois, null, 2)}</pre>
+                  </div>
+                )}
+                {iocResult.headers && (
+                  <div className="bg-stone-900/60 rounded-lg p-3 border border-stone-800">
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><FileCode className="w-3.5 h-3.5" /> Headers</div>
+                    <pre className="text-[11px] text-stone-300 whitespace-pre-wrap break-all">{typeof iocResult.headers === 'string' ? iocResult.headers : JSON.stringify(iocResult.headers, null, 2)}</pre>
+                  </div>
+                )}
+                {iocResult.ssl && (
+                  <div className="bg-stone-900/60 rounded-lg p-3 border border-stone-800">
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Key className="w-3.5 h-3.5" /> SSL</div>
+                    <pre className="text-[11px] text-stone-300 whitespace-pre-wrap break-all">{typeof iocResult.ssl === 'string' ? iocResult.ssl : JSON.stringify(iocResult.ssl, null, 2)}</pre>
+                  </div>
+                )}
+                {iocResult.certTransparency && (
+                  <div className="bg-stone-900/60 rounded-lg p-3 border border-stone-800">
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Radar className="w-3.5 h-3.5" /> Cert Transparency</div>
+                    <pre className="text-[11px] text-stone-300 whitespace-pre-wrap break-all">{typeof iocResult.certTransparency === 'string' ? iocResult.certTransparency : JSON.stringify(iocResult.certTransparency, null, 2)}</pre>
+                  </div>
+                )}
+                {iocResult.ports && (
+                  <div className="bg-stone-900/60 rounded-lg p-3 border border-stone-800">
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Ports</div>
+                    <pre className="text-[11px] text-stone-300 whitespace-pre-wrap break-all">{typeof iocResult.ports === 'string' ? iocResult.ports : JSON.stringify(iocResult.ports, null, 2)}</pre>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 hover:bg-amber-900/30" onClick={sendIocToReport} data-testid="button-ioc-to-report">
+                  <Download className="w-3.5 h-3.5 mr-1.5" /> Send to Report
+                </Button>
+                <Button size="sm" variant="outline" className="border-teal-700 text-teal-400 hover:bg-teal-900/30" onClick={() => analyzeInNexus(iocResult)} data-testid="button-ioc-to-nexus">
+                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Analyze in NEXUS
+                </Button>
+                <Button size="sm" variant="outline" className="border-purple-700 text-purple-400 hover:bg-purple-900/30" onClick={addIocToPortfolio} data-testid="button-ioc-to-portfolio">
+                  <Tag className="w-3.5 h-3.5 mr-1.5" /> Add to Portfolio
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="bg-stone-950/80 border-stone-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-amber-400 flex items-center gap-2">
+            <Radar className="w-5 h-5" /> Live Domain Recon
+          </CardTitle>
+          <CardDescription className="text-stone-400">Full reconnaissance scan on a target domain</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter target domain: example.com"
+              value={reconTarget}
+              onChange={(e) => setReconTarget(e.target.value)}
+              className="bg-stone-900/60 border-stone-800 text-stone-200 placeholder:text-stone-600"
+              data-testid="input-recon-target"
+              onKeyDown={(e) => e.key === 'Enter' && runDomainRecon()}
+            />
+            <Button
+              onClick={runDomainRecon}
+              disabled={reconLoading || !reconTarget.trim()}
+              className="bg-amber-700 hover:bg-amber-600 text-black font-bold"
+              data-testid="button-full-recon"
+            >
+              {reconLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Radar className="w-4 h-4 mr-1" /> Full Recon</>}
+            </Button>
+          </div>
+
+          {reconResult && (
+            <div className="space-y-3" data-testid="recon-results">
+              {reconResult.summary && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
+                  {[
+                    { label: "Subdomains", value: reconResult.summary.subdomains || 0, color: "text-amber-300" },
+                    { label: "Open Ports", value: reconResult.summary.openPorts || 0, color: "text-teal-300" },
+                    { label: "Technologies", value: reconResult.summary.technologies || 0, color: "text-blue-300" },
+                    { label: "Vulnerabilities", value: reconResult.summary.vulnerabilities || 0, color: "text-red-300" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="bg-stone-900/60 rounded-lg p-2">
+                      <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
+                      <div className="text-xs text-stone-500">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {reconResult.findings && reconResult.findings.length > 0 && (
+                <ScrollArea className="h-48 rounded-lg border border-stone-800 bg-stone-900/40 p-3">
+                  <div className="space-y-2">
+                    {reconResult.findings.slice(0, 50).map((f: any, idx: number) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm" data-testid={`recon-finding-${idx}`}>
+                        <Badge variant="outline" className={`text-xs ${SEVERITY_COLORS[f.severity || "info"]}`}>
+                          {f.type}
+                        </Badge>
+                        <span className="text-stone-300 truncate flex-1">{f.value}</span>
+                        {f.source && <span className="text-stone-600 text-xs">{f.source}</span>}
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 hover:bg-amber-900/30" onClick={() => {
+                  addToolOutput({
+                    type: 'scan',
+                    source: 'osint-toolkit',
+                    content: `Domain recon on ${reconTarget}: ${reconResult.findings?.length || 0} findings`,
+                    metadata: { scanId: reconResult.id, target: reconTarget }
+                  });
+                  toast({ title: "Exported to Report", description: "Recon results added to report builder" });
+                }} data-testid="button-recon-to-report">
+                  <Download className="w-3.5 h-3.5 mr-1.5" /> Export to Report
+                </Button>
+                <Button size="sm" variant="outline" className="border-teal-700 text-teal-400 hover:bg-teal-900/30" onClick={() => analyzeInNexus(reconResult)} data-testid="button-recon-to-nexus">
+                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Load into NEXUS
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="bg-stone-950/80 border-stone-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-amber-400 flex items-center gap-2">
+            <Newspaper className="w-5 h-5" /> Cybersecurity Newsfeed
+          </CardTitle>
+          <CardDescription className="text-stone-400">Latest cybersecurity news with IOC extraction</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {newsLoading ? (
+            <div className="flex items-center justify-center py-8 text-stone-500">
+              <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading newsfeed...
+            </div>
+          ) : newsArticles.length === 0 ? (
+            <div className="text-center py-8 text-stone-500 text-sm">No articles available</div>
+          ) : (
+            <ScrollArea className="h-80">
+              <div className="space-y-3 pr-3">
+                {newsArticles.map((article: any, idx: number) => (
+                  <div key={article.id || idx} className="bg-stone-900/60 rounded-lg p-3 border border-stone-800" data-testid={`news-article-${idx}`}>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h4 className="text-sm font-semibold text-stone-200 leading-tight flex-1">{article.title}</h4>
+                      {article.source && (
+                        <Badge variant="outline" className="text-[9px] shrink-0 bg-blue-500/10 text-blue-400 border-blue-500/30">{article.source}</Badge>
+                      )}
+                    </div>
+                    {article.published && (
+                      <div className="text-[10px] text-stone-600 mb-1.5">{new Date(article.published).toLocaleDateString()}</div>
+                    )}
+                    {article.summary && (
+                      <p className="text-xs text-stone-400 leading-relaxed mb-2 line-clamp-3">{article.summary}</p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 text-[10px] text-amber-400 hover:bg-amber-900/20 px-2"
+                        onClick={() => extractArticleIocs(article.id || String(idx), article.summary || article.title)}
+                        disabled={extractingIoc === (article.id || String(idx))}
+                        data-testid={`button-extract-iocs-${idx}`}
+                      >
+                        {extractingIoc === (article.id || String(idx)) ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Search className="w-3 h-3 mr-1" />}
+                        Extract IOCs
+                      </Button>
+                      {article.url && (
+                        <a href={article.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-stone-500 hover:text-stone-300 transition-colors" data-testid={`link-article-${idx}`}>
+                          <ExternalLink className="w-3 h-3" /> Source
+                        </a>
+                      )}
+                    </div>
+                    {extractedIocs[article.id || String(idx)] && (
+                      <div className="mt-2 p-2 rounded bg-stone-800/50 border border-stone-700">
+                        <div className="text-[10px] font-bold text-amber-400 mb-1">Extracted IOCs:</div>
+                        <pre className="text-[10px] text-stone-300 whitespace-pre-wrap break-all">{JSON.stringify(extractedIocs[article.id || String(idx)], null, 2)}</pre>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="bg-stone-950/80 border-stone-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-amber-400 flex items-center gap-2">
+            <Shield className="w-5 h-5" /> IOC Defanger / Refanger
+          </CardTitle>
+          <CardDescription className="text-stone-400">Safely defang or refang indicators for sharing</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder={defangMode === "defang" ? "Enter IOC to defang: http://evil.com" : "Enter defanged IOC: hxxp://evil[.]com"}
+              value={defangInput}
+              onChange={(e) => setDefangInput(e.target.value)}
+              className="bg-stone-900/60 border-stone-800 text-stone-200 placeholder:text-stone-600 flex-1"
+              data-testid="input-defang"
+              onKeyDown={(e) => e.key === 'Enter' && runDefang()}
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              className={`border-stone-700 text-stone-300 min-w-[90px] ${defangMode === "defang" ? "bg-amber-900/20 border-amber-700 text-amber-400" : "bg-teal-900/20 border-teal-700 text-teal-400"}`}
+              onClick={() => setDefangMode(defangMode === "defang" ? "refang" : "defang")}
+              data-testid="button-toggle-defang-mode"
+            >
+              {defangMode === "defang" ? "Defang" : "Refang"}
+            </Button>
+            <Button
+              onClick={runDefang}
+              disabled={defangLoading || !defangInput.trim()}
+              className="bg-amber-700 hover:bg-amber-600 text-black font-bold"
+              data-testid="button-run-defang"
+            >
+              {defangLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Zap className="w-4 h-4 mr-1" /> Go</>}
+            </Button>
+          </div>
+          {defangResult && (
+            <div className="flex items-center gap-2 bg-stone-900/60 rounded-lg p-3 border border-stone-800" data-testid="defang-result">
+              <code className="text-sm text-stone-200 flex-1 break-all font-mono">{defangResult}</code>
+              <Button size="sm" variant="ghost" className="text-stone-400 hover:text-amber-400 shrink-0" onClick={() => copyToClipboard(defangResult)} data-testid="button-copy-defang">
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
