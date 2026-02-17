@@ -90,18 +90,52 @@ router.post("/scan", async (req: Request, res: Response) => {
       });
     }
     
-    // Fallback to simulation if binary execution returns empty
     let result = await atroposService.executeScript(params);
     
     if (!result.success || !result.data || (Array.isArray(result.data) && result.data.length === 0)) {
-      console.log('[Atropos] Empty or failed real scan, providing simulated fallback for demo/lab environment');
-      const simulated = generateSimulatedScan(target, scriptPath);
-      result = {
-        success: true,
-        data: simulated.findings,
-        output: "Simulated results (Atropos binary unavailable or returned empty)",
-        latencyMs: 1500
-      };
+      const isOsintScan = ['bbot', 'amass', 'subfinder', 'harvester', 'argus', 'spiderfoot', 'finalrecon', 'threat_intel'].some(t => scriptPath.includes(t));
+      
+      if (isOsintScan) {
+        console.log('[Atropos] Using OSINT Toolkit for live data on:', scriptPath);
+        try {
+          const osintData = await runOsintService("domain_recon", [target]);
+          const findings: AtroposFinding[] = [];
+          
+          if (osintData.dns?.A) osintData.dns.A.forEach((ip: string) => findings.push({ type: "ip", value: ip, severity: "info", source: "osint-dns-live" }));
+          if (osintData.dns?.MX) osintData.dns.MX.forEach((mx: any) => findings.push({ type: "dns", value: `MX: ${mx.exchange || mx}`, severity: "info", source: "osint-dns-live" }));
+          if (osintData.dns?.NS) osintData.dns.NS.forEach((ns: string) => findings.push({ type: "dns", value: `NS: ${ns}`, severity: "info", source: "osint-dns-live" }));
+          if (osintData.cert_transparency?.subdomains) {
+            osintData.cert_transparency.subdomains.slice(0, 50).forEach((sub: string) => findings.push({ type: "subdomain", value: sub, severity: "info", source: "crt.sh-live" }));
+          }
+          if (osintData.ports?.open_ports) {
+            osintData.ports.open_ports.forEach((p: any) => findings.push({ type: "port", value: `${p.port}/tcp (${p.service})`, severity: [3306, 5432, 3389].includes(p.port) ? "high" : "info", source: "osint-portscan-live" }));
+          }
+          if (osintData.http_headers?.security_headers) {
+            for (const [h, v] of Object.entries(osintData.http_headers.security_headers)) {
+              if (v === "MISSING") findings.push({ type: "vulnerability", value: `Missing: ${h}`, severity: "medium", source: "osint-headers-live" });
+            }
+          }
+          if (osintData.whois?.registrar) findings.push({ type: "dns", value: `Registrar: ${osintData.whois.registrar}`, severity: "info", source: "osint-whois-live" });
+          if (osintData.http_headers?.server) findings.push({ type: "technology", value: osintData.http_headers.server, severity: "info", source: "osint-headers-live" });
+
+          if (findings.length > 0) {
+            result = { success: true, data: findings, output: "Live OSINT Toolkit scan results", latencyMs: Date.now() - Date.now() };
+          }
+        } catch (osintError) {
+          console.log('[Atropos] OSINT Toolkit fallback failed:', osintError);
+        }
+      }
+
+      if (!result.success || !result.data || (Array.isArray(result.data) && result.data.length === 0)) {
+        console.log('[Atropos] Providing simulated fallback for demo/lab environment');
+        const simulated = generateSimulatedScan(target, scriptPath);
+        result = {
+          success: true,
+          data: simulated.findings,
+          output: "Simulated results (Atropos binary unavailable or returned empty)",
+          latencyMs: 1500
+        };
+      }
     }
     
     // Update investigation with findings if successful
@@ -2108,6 +2142,295 @@ router.get("/remote/status", async (req: Request, res: Response) => {
       status: "offline",
       error: error.message
     });
+  }
+});
+
+// ============ OSINT Toolkit Integration (dev-lu/osint_toolkit) ============
+
+const OSINT_SERVICE_PATH = path.join(process.cwd(), "tools", "osint_toolkit", "osint_service.py");
+
+async function runOsintService(command: string, args: string[] = [], stdin?: string): Promise<any> {
+  const { execSync } = require("child_process");
+  try {
+    const cmdArgs = [command, ...args].map(a => `"${a.replace(/"/g, '\\"')}"`).join(" ");
+    const fullCmd = stdin
+      ? `echo '${stdin.replace(/'/g, "'\\''")}' | python3 "${OSINT_SERVICE_PATH}" ${cmdArgs}`
+      : `python3 "${OSINT_SERVICE_PATH}" ${cmdArgs}`;
+    const output = execSync(fullCmd, { timeout: 30000, maxBuffer: 5 * 1024 * 1024 }).toString();
+    return JSON.parse(output);
+  } catch (error: any) {
+    const stderr = error.stderr?.toString() || "";
+    const stdout = error.stdout?.toString() || "";
+    try { return JSON.parse(stdout); } catch {}
+    return { error: stderr || error.message || "OSINT service failed" };
+  }
+}
+
+router.get("/osint/status", async (_req: Request, res: Response) => {
+  try {
+    const result = await runOsintService("status");
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/ioc/lookup", async (req: Request, res: Response) => {
+  try {
+    const ioc = req.query.ioc as string;
+    if (!ioc) return res.status(400).json({ error: "ioc query parameter required" });
+    const result = await runOsintService("ioc_lookup", [ioc]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/ioc/type", async (req: Request, res: Response) => {
+  try {
+    const ioc = req.query.ioc as string;
+    if (!ioc) return res.status(400).json({ error: "ioc query parameter required" });
+    const result = await runOsintService("ioc_type", [ioc]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/osint/ioc/extract", async (req: Request, res: Response) => {
+  try {
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: "text field required" });
+    const result = await runOsintService("ioc_extract", [text]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/dns", async (req: Request, res: Response) => {
+  try {
+    const target = req.query.target as string;
+    if (!target) return res.status(400).json({ error: "target query parameter required" });
+    const result = await runOsintService("dns", [target]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/whois", async (req: Request, res: Response) => {
+  try {
+    const target = req.query.target as string;
+    if (!target) return res.status(400).json({ error: "target query parameter required" });
+    const result = await runOsintService("whois", [target]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/headers", async (req: Request, res: Response) => {
+  try {
+    const target = req.query.target as string;
+    if (!target) return res.status(400).json({ error: "target query parameter required" });
+    const result = await runOsintService("headers", [target]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/ssl", async (req: Request, res: Response) => {
+  try {
+    const target = req.query.target as string;
+    if (!target) return res.status(400).json({ error: "target query parameter required" });
+    const result = await runOsintService("ssl", [target]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/crt", async (req: Request, res: Response) => {
+  try {
+    const target = req.query.target as string;
+    if (!target) return res.status(400).json({ error: "target query parameter required" });
+    const result = await runOsintService("crt", [target]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/ports", async (req: Request, res: Response) => {
+  try {
+    const target = req.query.target as string;
+    if (!target) return res.status(400).json({ error: "target query parameter required" });
+    const result = await runOsintService("ports", [target]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/newsfeed", async (_req: Request, res: Response) => {
+  try {
+    const result = await runOsintService("newsfeed", ["30"]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/osint/domain/recon", async (req: Request, res: Response) => {
+  try {
+    const target = req.query.target as string;
+    if (!target) return res.status(400).json({ error: "target query parameter required" });
+    const result = await runOsintService("domain_recon", [target]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/osint/defang", async (req: Request, res: Response) => {
+  try {
+    const { ioc } = req.body;
+    if (!ioc) return res.status(400).json({ error: "ioc field required" });
+    const result = await runOsintService("defang", [ioc]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/osint/refang", async (req: Request, res: Response) => {
+  try {
+    const { ioc } = req.body;
+    if (!ioc) return res.status(400).json({ error: "ioc field required" });
+    const result = await runOsintService("refang", [ioc]);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/osint/scan/live", async (req: Request, res: Response) => {
+  try {
+    const { target, scanType = "domain_recon" } = req.body;
+    if (!target) return res.status(400).json({ error: "target required" });
+
+    const scanId = nanoid();
+    const startTime = Date.now();
+
+    let result: any;
+    if (scanType === "domain_recon") {
+      result = await runOsintService("domain_recon", [target]);
+    } else if (scanType === "ioc_lookup") {
+      result = await runOsintService("ioc_lookup", [target]);
+    } else if (scanType === "port_scan") {
+      result = await runOsintService("ports", [target]);
+    } else if (scanType === "dns") {
+      result = await runOsintService("dns", [target]);
+    } else {
+      result = await runOsintService("ioc_lookup", [target]);
+    }
+
+    const findings: AtroposFinding[] = [];
+
+    if (result.dns) {
+      if (result.dns.A) result.dns.A.forEach((ip: string) => findings.push({ type: "ip", value: ip, severity: "info", source: "osint-dns" }));
+      if (result.dns.MX) result.dns.MX.forEach((mx: any) => findings.push({ type: "dns", value: `MX: ${mx.exchange || mx}`, severity: "info", source: "osint-dns" }));
+      if (result.dns.NS) result.dns.NS.forEach((ns: string) => findings.push({ type: "dns", value: `NS: ${ns}`, severity: "info", source: "osint-dns" }));
+    }
+
+    if (result.cert_transparency?.subdomains) {
+      result.cert_transparency.subdomains.forEach((sub: string) => findings.push({ type: "subdomain", value: sub, severity: "info", source: "crt.sh" }));
+    }
+
+    if (result.ports?.open_ports) {
+      result.ports.open_ports.forEach((p: any) => findings.push({
+        type: "port", value: `${p.port}/tcp (${p.service})`,
+        severity: [3306, 5432, 3389, 445].includes(p.port) ? "high" : "info",
+        source: "osint-portscan"
+      }));
+    }
+
+    if (result.http_headers?.security_headers) {
+      const sh = result.http_headers.security_headers;
+      for (const [header, val] of Object.entries(sh)) {
+        if (val === "MISSING") {
+          findings.push({ type: "vulnerability", value: `Missing security header: ${header}`, severity: "medium", source: "osint-headers" });
+        }
+      }
+      if (result.http_headers.server) {
+        findings.push({ type: "technology", value: result.http_headers.server, severity: "info", source: "osint-headers" });
+      }
+    }
+
+    if (result.ssl_cert?.notAfter) {
+      const expiry = new Date(result.ssl_cert.notAfter);
+      const now = new Date();
+      const daysLeft = Math.floor((expiry.getTime() - now.getTime()) / (86400000));
+      if (daysLeft < 30) {
+        findings.push({ type: "vulnerability", value: `SSL certificate expires in ${daysLeft} days`, severity: daysLeft < 7 ? "critical" : "high", source: "osint-ssl" });
+      }
+    }
+
+    if (result.whois?.registrar) {
+      findings.push({ type: "dns", value: `Registrar: ${result.whois.registrar}`, severity: "info", source: "osint-whois" });
+    }
+
+    if (result.lookups) {
+      if (result.lookups.reverse_dns?.hostname) {
+        findings.push({ type: "dns", value: `PTR: ${result.lookups.reverse_dns.hostname}`, severity: "info", source: "osint-rdns" });
+      }
+      if (result.lookups.port_scan?.open_ports) {
+        result.lookups.port_scan.open_ports.forEach((p: any) => findings.push({
+          type: "port", value: `${p.port}/tcp (${p.service})`,
+          severity: [3306, 5432, 3389, 445].includes(p.port) ? "high" : "info",
+          source: "osint-portscan"
+        }));
+      }
+      if (result.lookups.nvd) {
+        const nvd = result.lookups.nvd;
+        if (nvd.description) {
+          findings.push({ type: "vulnerability", value: `${nvd.id}: ${nvd.description.substring(0, 200)}`, severity: "high", source: "nvd" });
+        }
+      }
+    }
+
+    const criticalCount = findings.filter(f => f.severity === "critical").length;
+    const highCount = findings.filter(f => f.severity === "high").length;
+    const riskScore = Math.min(100, criticalCount * 40 + highCount * 20 + findings.length * 2);
+
+    const scanResult: SimulatedScanResult = {
+      id: scanId,
+      scanType: `osint_${scanType}`,
+      target,
+      timestamp: new Date().toISOString(),
+      status: "completed",
+      findings,
+      summary: {
+        subdomains: findings.filter(f => f.type === "subdomain").length,
+        ipAddresses: findings.filter(f => f.type === "ip").length,
+        urls: findings.filter(f => f.type === "url").length,
+        emails: findings.filter(f => f.type === "email").length,
+        openPorts: findings.filter(f => f.type === "port").length,
+        technologies: findings.filter(f => f.type === "technology").length,
+        vulnerabilities: findings.filter(f => f.type === "vulnerability").length,
+        secrets: findings.filter(f => f.type === "secret").length,
+        riskScore,
+        riskLevel: riskScore >= 50 ? "critical" : riskScore >= 30 ? "high" : riskScore >= 15 ? "medium" : "low"
+      },
+      scriptUsed: `osint_toolkit_${scanType}`
+    };
+
+    scanResults.set(scanId, scanResult);
+    res.json({ ...scanResult, rawData: result, latencyMs: Date.now() - startTime });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
 

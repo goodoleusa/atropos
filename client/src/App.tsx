@@ -37,6 +37,7 @@ import ScannerDashboard from "@/pages/ScannerDashboard";
 import PortfolioShare from "@/pages/PortfolioShare";
 import Wiki from "@/pages/Wiki";
 import Walkthrough from "@/pages/Walkthrough";
+import BehaviorAnalysis from "@/pages/BehaviorAnalysis";
 
 function Router() {
   return (
@@ -66,6 +67,8 @@ function Router() {
       <Route path="/scanner" component={ScannerDashboard} />
       <Route path="/wiki" component={Wiki} />
       <Route path="/walkthrough" component={Walkthrough} />
+      <Route path="/behavior" component={BehaviorAnalysis} />
+      <Route path="/videos" component={VideoGallery} />
       <Route component={NotFound} />
     </Switch>
   );
