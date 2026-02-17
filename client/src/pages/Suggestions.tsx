@@ -164,7 +164,7 @@ function recToCurl(rec: Recommendation, baseUrl: string): string {
 }
 
 function recToGitPatch(rec: Recommendation): string {
-  if (!rec.codeSnippet || rec.targetFiles.length === 0) return "# No file targets or code snippet for this recommendation";
+  if (!rec.codeSnippet || rec.targetFiles.length === 0) return "# No file targets or code snippet for this rec";
   const file = rec.targetFiles[0];
   const lines = [
     `# Agent Recommendation: ${rec.title}`,
@@ -236,6 +236,7 @@ export default function SuggestionsPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPriority, setFilterPriority] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [filterPainPoint, setFilterPainPoint] = useState("all");
   const [selectedFeedback, setSelectedFeedback] = useState<FeedbackItem | null>(null);
   const [selectedRec, setSelectedRec] = useState<Recommendation | null>(null);
   const [checkedIds, setCheckedIds] = useState<Set<number>>(new Set());
@@ -321,6 +322,7 @@ export default function SuggestionsPage() {
       if (filterCategory !== "all" && item.category !== filterCategory) return false;
       if (filterStatus !== "all" && item.status !== filterStatus) return false;
       if (filterPriority !== "all" && item.priority !== filterPriority) return false;
+      if (filterPainPoint !== "all" && !item.painPointsAddressed.includes(filterPainPoint)) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         return item.title.toLowerCase().includes(q) || item.description.toLowerCase().includes(q) ||
@@ -328,7 +330,7 @@ export default function SuggestionsPage() {
       }
       return true;
     }).sort((a, b) => b.votes - a.votes);
-  }, [recs, filterCategory, filterStatus, filterPriority, searchQuery]);
+  }, [recs, filterCategory, filterStatus, filterPriority, filterPainPoint, searchQuery]);
 
   const checkedRecs = useMemo(() => recs.filter(r => checkedIds.has(r.id)), [recs, checkedIds]);
 
@@ -433,7 +435,7 @@ export default function SuggestionsPage() {
                   <div className="p-2 bg-amber-900/30 rounded-lg"><Code className="w-5 h-5 text-amber-400" /></div>
                   <div>
                     <div className="text-2xl font-bold text-amber-400 font-orbitron">{recStats?.total || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">Recommendations</div>
+                    <div className="text-[10px] text-stone-500 uppercase">RECS</div>
                   </div>
                 </CardContent>
               </Card>
@@ -505,7 +507,11 @@ export default function SuggestionsPage() {
                     <CardContent className="px-4 pb-3" data-testid="rec-pain-points">
                       <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-auto">
                         {recStats.painPointsCovered.map((p, i) => (
-                          <Badge key={i} variant="outline" className="text-[10px] text-orange-400 border-orange-800/50 bg-orange-900/10">{p}</Badge>
+                          <Badge key={i} variant="outline"
+                            className={`text-[10px] cursor-pointer transition-all ${filterPainPoint === p ? 'text-amber-400 border-amber-600/60 bg-amber-900/30' : 'text-orange-400 border-orange-800/50 bg-orange-900/10 hover:border-orange-600/60'}`}
+                            onClick={() => setFilterPainPoint(filterPainPoint === p ? "all" : p)}
+                            data-testid={`pain-point-badge-${i}`}
+                          >{p}</Badge>
                         ))}
                       </div>
                     </CardContent>
@@ -519,7 +525,7 @@ export default function SuggestionsPage() {
               <div className="relative flex-1 min-w-[180px]">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-500" />
                 <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search recommendations..." className="pl-8 h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-search-recs" />
+                  placeholder="Search recs..." className="pl-8 h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-search-recs" />
               </div>
               <Select value={filterCategory} onValueChange={setFilterCategory}>
                 <SelectTrigger className="w-32 h-8 text-xs bg-stone-950 border-stone-800" data-testid="select-category">
@@ -546,6 +552,19 @@ export default function SuggestionsPage() {
                   <SelectItem value="low">Low</SelectItem>
                 </SelectContent>
               </Select>
+              {recStats?.painPointsCovered && recStats.painPointsCovered.length > 0 && (
+                <Select value={filterPainPoint} onValueChange={setFilterPainPoint}>
+                  <SelectTrigger className="w-40 h-8 text-xs bg-stone-950 border-stone-800" data-testid="select-pain-point">
+                    <SelectValue placeholder="Pain Point" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-stone-900 border-stone-800 max-h-60">
+                    <SelectItem value="all">All Pain Points ({recStats.painPointsCovered.length})</SelectItem>
+                    {recStats.painPointsCovered.map((p, i) => (
+                      <SelectItem key={i} value={p} className="text-xs">{p.length > 35 ? p.slice(0, 35) + '...' : p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               <Badge variant="outline" className="text-[10px] text-stone-500 border-stone-700">
                 {filteredRecs.length} / {recs.length}
               </Badge>
@@ -608,12 +627,12 @@ export default function SuggestionsPage() {
                 <ScrollArea className="h-[calc(100vh-700px)] min-h-[350px]">
                   {recsLoading ? (
                     <div className="flex items-center justify-center h-48 text-stone-500">
-                      <div className="animate-pulse">Scanning agent recommendations...</div>
+                      <div className="animate-pulse">Scanning agent recs...</div>
                     </div>
                   ) : filteredRecs.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-48 text-stone-500">
                       <Code className="w-10 h-10 mb-3 opacity-20" />
-                      <p className="text-sm">No recommendations yet.</p>
+                      <p className="text-sm">No recs yet.</p>
                       <p className="text-xs text-stone-600 mt-1">Agents auto-generate actionable suggestions during conversations.</p>
                     </div>
                   ) : (
@@ -766,7 +785,7 @@ export default function SuggestionsPage() {
                   <Card className="bg-stone-900/30 border-stone-800/50">
                     <CardContent className="p-6 text-center">
                       <Eye className="w-8 h-8 mx-auto mb-3 text-stone-700" />
-                      <p className="text-xs text-stone-500">Select a recommendation to view details and export options</p>
+                      <p className="text-xs text-stone-500">Select a rec to view details and export options</p>
                     </CardContent>
                   </Card>
                 )}
@@ -804,10 +823,10 @@ export default function SuggestionsPage() {
                       <span className="text-xs text-stone-400 font-bold uppercase">How it works</span>
                     </div>
                     <div className="space-y-2 text-[11px] text-stone-500">
-                      <p>NEXUS agents generate actionable code recommendations during conversations using <code className="text-amber-500/80 bg-stone-800 px-1 rounded">```recommendation</code> blocks.</p>
-                      <p>Each recommendation includes starter code, target files, pain points addressed, and impact estimates.</p>
-                      <p>Use the export buttons to pipe recommendations into Replit Agent, Cursor, Copilot, or any coding tool.</p>
-                      <p>Hit <strong className="text-amber-400">Sync to .github</strong> to write all recommendations as a markdown file any agent can discover in your repo.</p>
+                      <p>NEXUS agents generate actionable code recs during conversations using <code className="text-amber-500/80 bg-stone-800 px-1 rounded">```recommendation</code> blocks.</p>
+                      <p>Each rec includes starter code, target files, pain points addressed, and impact estimates.</p>
+                      <p>Use the export buttons to pipe recs into Replit Agent, Cursor, Copilot, or any coding tool.</p>
+                      <p>Hit <strong className="text-amber-400">Sync to .github</strong> to write all recs as a markdown file any agent can discover in your repo.</p>
                     </div>
                   </CardContent>
                 </Card>
