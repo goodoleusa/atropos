@@ -375,7 +375,6 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         // Detect Atropos scan suggestions
         const scanSuggestions = detectScanSuggestions(assistantMessage);
         if (scanSuggestions.length > 0) {
-          // Store suggestions for UI display
           setMessages(prev => {
             const newMessages = [...prev];
             const lastMsg = newMessages[newMessages.length - 1];
@@ -385,6 +384,10 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
             return newMessages;
           });
         }
+
+        try {
+          detectAndSubmitFeedback(assistantMessage, selectedModel);
+        } catch (_) {}
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -573,6 +576,53 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     
     return suggestions;
   };
+
+  const feedbackSubmittedRef = useRef<Set<string>>(new Set());
+  const feedbackCooldownRef = useRef<number>(0);
+  const feedbackSessionCountRef = useRef<number>(0);
+  const MAX_FEEDBACK_PER_SESSION = 20;
+  const MAX_FEEDBACK_PER_MESSAGE = 3;
+  const FEEDBACK_COOLDOWN_MS = 5000;
+
+  const detectAndSubmitFeedback = useCallback((message: string, source: string) => {
+    if (feedbackSessionCountRef.current >= MAX_FEEDBACK_PER_SESSION) return;
+    const now = Date.now();
+    if (now - feedbackCooldownRef.current < FEEDBACK_COOLDOWN_MS) return;
+
+    const pattern = /\[FEEDBACK:(bug|feature|idea|pain_point):(low|medium|high|critical):([^:]+):([^\]]+)\]/g;
+    const items: Array<{ type: string; priority: string; title: string; description: string }> = [];
+    let match;
+    let count = 0;
+    while ((match = pattern.exec(message)) !== null && count < MAX_FEEDBACK_PER_MESSAGE) {
+      const dedupKey = `${match[1]}:${match[3].trim().toLowerCase().slice(0, 60)}`;
+      if (feedbackSubmittedRef.current.has(dedupKey)) continue;
+      items.push({
+        type: match[1],
+        priority: match[2],
+        title: match[3].trim().slice(0, 200),
+        description: match[4].trim().slice(0, 2000),
+      });
+      feedbackSubmittedRef.current.add(dedupKey);
+      count++;
+    }
+
+    if (items.length === 0) return;
+    feedbackCooldownRef.current = now;
+
+    for (const item of items) {
+      if (feedbackSessionCountRef.current >= MAX_FEEDBACK_PER_SESSION) break;
+      feedbackSessionCountRef.current++;
+      fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...item,
+          source: `agent:${source}`,
+          tags: ['auto-reported', source],
+        }),
+      }).catch(() => {});
+    }
+  }, []);
 
   const quickActions = [
     { label: 'Recon', payload: '{"type":"recon","scan":"full","targets":["routes","clues"]}' },

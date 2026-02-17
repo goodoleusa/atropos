@@ -41,7 +41,9 @@ import {
   Folder,
   File,
   Download,
-  Globe
+  Globe,
+  Beaker,
+  Brain
 } from "lucide-react";
 import { CHAOS_MESSAGES, MYSTICAL_CARDS, TOAST_MESSAGES, UI_TEXT, TERMINAL_MESSAGES } from "@/config/messages";
 import { AGENT_CAMPAIGNS, CAMPAIGN_CATEGORIES, getDifficultyColor, type Campaign } from "@/config/agentCampaigns";
@@ -60,6 +62,7 @@ import { EffectsPlaygroundSection } from "@/pages/admin/EffectsPlaygroundSection
 import AgentConfigSection from "@/pages/admin/AgentConfigSection";
 import { AgentModulesSection } from "@/pages/admin/AgentModulesSection";
 import { GameplaySection } from "@/pages/admin/GameplaySection";
+import { FeedbackSection } from "@/pages/admin/FeedbackSection";
 import { ShieldAlert, Activity, Clock, Users, AlertTriangle } from "lucide-react";
 
 function AtroposScannerSection() {
@@ -381,6 +384,159 @@ function QuickAccessSection() {
   );
 }
 
+const SITEMAP_DATA = [
+  {
+    category: "Investigation Hub",
+    color: "teal",
+    description: "Unified workspace for security research",
+    items: [
+      { name: "Investigation Hub", path: "/investigate", icon: "Bot", description: "All-in-one workspace with agent, scanner, SpiderFoot, AI Lab" },
+      { name: "Agent Chat", path: "/investigate", icon: "MessageSquare", description: "NEXUS AI assistant for guided investigations", tab: "chat" },
+      { name: "Scanner Dashboard", path: "/scanner", icon: "ShieldAlert", description: "Atropos OSINT & vulnerability scanner with Lua scripts" },
+      { name: "SpiderFoot OSINT", path: "/investigate", icon: "Bug", description: "230+ module passive reconnaissance scanner", tab: "spiderfoot" },
+      { name: "AI Lab", path: "/ai-lab", icon: "Beaker", description: "Model battleground, prompt testing, cost tracking" },
+      { name: "Prompt Builder", path: "/prompt-builder", icon: "Brain", description: "Agent prompt engineering & module configuration" },
+    ],
+  },
+  {
+    category: "Campaigns & Learning",
+    color: "purple",
+    description: "Structured learning paths and investigation campaigns",
+    items: [
+      { name: "Campaigns Hub", path: "/campaigns", icon: "Rocket", description: "Browse and launch investigation campaigns" },
+      { name: "Campaign Builder", path: "/builder", icon: "Layers", description: "Twine-inspired visual campaign editor" },
+      { name: "Report Builder", path: "/report", icon: "FileText", description: "Structure findings, export reports, track vulnerabilities" },
+      { name: "Wiki", path: "/wiki", icon: "BookOpen", description: "Knowledge base with linked articles and research" },
+    ],
+  },
+  {
+    category: "Core Platform",
+    color: "amber",
+    description: "Main platform pages and navigation",
+    items: [
+      { name: "Home", path: "/", icon: "Globe", description: "Landing page with platform overview" },
+      { name: "Mission Briefing", path: "/mission", icon: "Target", description: "Onboarding and mission-critical philosophy" },
+      { name: "Terminal", path: "/terminal", icon: "Terminal", description: "Interactive command terminal with secret discovery" },
+      { name: "Player Profile", path: "/profile", icon: "Users", description: "Stats, achievements, XP progression, skill trees" },
+      { name: "Leaderboards", path: "/leaderboards", icon: "Trophy", description: "Global rankings and competition" },
+    ],
+  },
+  {
+    category: "Media & Content",
+    color: "orange",
+    description: "Content and media resources",
+    items: [
+      { name: "Video Gallery", path: "/videos", icon: "Play", description: "Training videos and tutorials" },
+      { name: "The Void", path: "/void", icon: "Eye", description: "Hidden experimental area" },
+      { name: "Archive", path: "/archive", icon: "Database", description: "Historical data and archived content" },
+    ],
+  },
+  {
+    category: "Administration",
+    color: "red",
+    description: "System management and configuration",
+    items: [
+      { name: "Admin Dashboard", path: "/admin", icon: "Settings", description: "Full admin panel with all controls" },
+      { name: "Debug Console", path: "/debug", icon: "Bug", description: "System diagnostics and debugging tools" },
+      { name: "Business Dashboard", path: "/business", icon: "Activity", description: "Business metrics and analytics" },
+      { name: "Investor Dashboard", path: "/investors", icon: "ExternalLink", description: "Investor-facing metrics and reports" },
+    ],
+  },
+];
+
+const SITEMAP_ICONS: Record<string, any> = {
+  Bot, MessageSquare, ShieldAlert, Bug, Beaker, Brain, Rocket, Layers, FileText, BookOpen,
+  Globe, Target, Terminal, Users, Trophy, Play, Eye, Database, Settings, Activity, ExternalLink,
+};
+
+function SitemapPanel() {
+  const categoryColors: Record<string, { border: string; bg: string; text: string; dot: string; hover: string }> = {
+    teal: { border: 'border-teal-900/40', bg: 'bg-teal-950/20', text: 'text-teal-400', dot: 'bg-teal-500', hover: 'hover:border-teal-700/60 hover:bg-teal-950/30' },
+    purple: { border: 'border-purple-900/40', bg: 'bg-purple-950/20', text: 'text-purple-400', dot: 'bg-purple-500', hover: 'hover:border-purple-700/60 hover:bg-purple-950/30' },
+    amber: { border: 'border-amber-900/40', bg: 'bg-amber-950/20', text: 'text-amber-400', dot: 'bg-amber-500', hover: 'hover:border-amber-700/60 hover:bg-amber-950/30' },
+    orange: { border: 'border-orange-900/40', bg: 'bg-orange-950/20', text: 'text-orange-400', dot: 'bg-orange-500', hover: 'hover:border-orange-700/60 hover:bg-orange-950/30' },
+    red: { border: 'border-red-900/40', bg: 'bg-red-950/20', text: 'text-red-400', dot: 'bg-red-500', hover: 'hover:border-red-700/60 hover:bg-red-950/30' },
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2 mb-1">
+          <Map className="w-5 h-5" /> Platform Sitemap
+        </h3>
+        <p className="text-xs text-stone-500">Visual map of all pages, tools, and features. Click any item to navigate.</p>
+      </div>
+
+      <div className="space-y-6">
+        {SITEMAP_DATA.map((group) => {
+          const colors = categoryColors[group.color] || categoryColors.amber;
+          return (
+            <div key={group.category}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
+                <h4 className={`text-sm font-bold uppercase tracking-wider ${colors.text}`}>{group.category}</h4>
+                <div className="flex-1 h-px bg-stone-800/50" />
+                <span className="text-[10px] text-stone-600">{group.items.length} pages</span>
+              </div>
+              <p className="text-[10px] text-stone-500 mb-3 -mt-1 ml-4">{group.description}</p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 ml-4">
+                {group.items.map((item) => {
+                  const IconComp = SITEMAP_ICONS[item.icon] || Globe;
+                  return (
+                    <Link key={item.name} href={item.path}>
+                      <div
+                        className={`p-3 rounded-lg border ${colors.border} bg-[#0a0500] ${colors.hover} transition-all cursor-pointer group`}
+                        data-testid={`sitemap-item-${item.path.replace(/\//g, '-').replace(/^-/, '')}`}
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <div className={`mt-0.5 p-1.5 rounded ${colors.bg}`}>
+                            <IconComp className={`w-3.5 h-3.5 ${colors.text}`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-stone-200 group-hover:text-white transition-colors truncate">{item.name}</span>
+                              <ArrowRight className="w-2.5 h-2.5 text-stone-600 group-hover:text-stone-400 transition-colors opacity-0 group-hover:opacity-100 shrink-0" />
+                            </div>
+                            <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-2">{item.description}</p>
+                            <span className="text-[9px] text-stone-700 font-mono mt-1 block">{item.path}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="p-3 rounded-lg bg-stone-900/30 border border-stone-800/50">
+        <div className="flex items-center gap-2 mb-2">
+          <Globe className="w-3.5 h-3.5 text-stone-500" />
+          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Coverage</span>
+        </div>
+        <div className="flex flex-wrap gap-3 text-[10px]">
+          {SITEMAP_DATA.map(g => {
+            const colors = categoryColors[g.color] || categoryColors.amber;
+            return (
+              <div key={g.category} className="flex items-center gap-1.5">
+                <div className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} />
+                <span className="text-stone-400">{g.category}</span>
+                <span className="text-stone-600">({g.items.length})</span>
+              </div>
+            );
+          })}
+          <div className="flex items-center gap-1.5 ml-auto">
+            <span className="text-stone-500 font-bold">{SITEMAP_DATA.reduce((a, g) => a + g.items.length, 0)} total pages</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface Clue {
   id: string;
   name: string;
@@ -405,6 +561,7 @@ const NAV_GROUPS = [
     color: "amber",
     items: [
       { id: "activity", label: "Activity Log", icon: "Activity" },
+      { id: "sitemap", label: "Platform Sitemap", icon: "Map" },
       { id: "sessions", label: "Sessions", icon: "Server" },
       { id: "behavior", label: "Behavior Analytics", icon: "Eye" },
     ],
@@ -453,13 +610,14 @@ const NAV_GROUPS = [
     color: "orange",
     items: [
       { id: "modmail", label: "Modmail", icon: "MessageSquare" },
+      { id: "feedback", label: "Agent Feedback", icon: "Bug" },
     ],
   },
 ];
 
 const NAV_ICONS: Record<string, any> = {
   Activity, Server, Eye, Database, Trophy, MessageSquare, Map, Bot, Settings,
-  Target, Rocket, ShieldAlert, Terminal, Sparkles, Zap,
+  Target, Rocket, ShieldAlert, Terminal, Sparkles, Zap, Globe,
 };
 
 export default function AdminDashboard() {
@@ -573,6 +731,7 @@ export default function AdminDashboard() {
   const renderContent = () => {
     switch (activeSection) {
       case 'activity': return <ActivityLogPanel />;
+      case 'sitemap': return <SitemapPanel />;
       case 'sessions': return <SessionsPanel />;
       case 'behavior': return <BehaviorAnalyticsPanel />;
       case 'designer': return <CampaignDesignerPanel setCampaignDesignerOpen={setCampaignDesignerOpen} />;
@@ -587,6 +746,7 @@ export default function AdminDashboard() {
       case 'effects': return <EffectsPlaygroundSection />;
       case 'quickpush': return <QuickPushSection />;
       case 'modmail': return <ModmailPanel />;
+      case 'feedback': return <FeedbackSection />;
       case 'messages': return <MessagesPanel chaosEnabled={chaosEnabled} setChaosEnabled={setChaosEnabled} subliminalMessages={subliminalMessages} newSubliminal={newSubliminal} setNewSubliminal={setNewSubliminal} addSubliminalMessage={addSubliminalMessage} removeSubliminalMessage={removeSubliminalMessage} renderTree={renderTree} />;
       case 'terminal': return <TerminalPanel />;
       case 'config': return <ConfigPanel gameState={gameState} clues={clues} quests={quests} />;

@@ -8,6 +8,7 @@ import osintRoutes from "./routes/osint";
 import behaviorRoutes from "./routes/behavior";
 import atroposRoutes from "./routes/atropos";
 import spiderfootRoutes from "./routes/spiderfoot";
+import feedbackRoutes from "./routes/feedback";
 import progressionRoutes from "./routes/progressionRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import { 
@@ -208,6 +209,9 @@ export async function registerRoutes(
   
   // Register SpiderFoot OSINT routes
   app.use("/api/spiderfoot", spiderfootRoutes);
+
+  // Register Feedback collection routes
+  app.use("/api/feedback", feedbackRoutes);
   
   // Register Progression routes (XP, achievements, leaderboards, challenges)
   app.use(progressionRoutes);
