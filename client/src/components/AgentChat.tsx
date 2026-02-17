@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext, detectFindingFromMessage } from '@/hooks/useReportContext';
-import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target, Copy, Download, Save, ExternalLink as ExternalLinkIcon, Settings2, FileText } from 'lucide-react';
+import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target, Copy, Download, Save, ExternalLink as ExternalLinkIcon, Settings2, FileText, GraduationCap, CheckCircle2, ChevronRight, X } from 'lucide-react';
 import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign, type CampaignTargetField, type TargetFieldType } from '@/config/agentCampaigns';
 import { toast } from "@/hooks/use-toast";
 import { PromptStudio, type PromptConfig } from './PromptStudio';
+import { MissionBriefing } from './MissionBriefing';
+import { AI_CURRICULUM_TRACKS, type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
 import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
 import { exportAgentSessionToReport } from '@/lib/reportExporter';
 import { useLearningStore } from '@/stores/useLearningStore';
@@ -113,6 +115,12 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const [pendingCampaign, setPendingCampaign] = useState<Campaign | null>(null);
   const [targetValues, setTargetValues] = useState<Record<string, string>>({});
   const [useDummyTargets, setUseDummyTargets] = useState(false);
+  const [showMissionBriefing, setShowMissionBriefing] = useState(false);
+  const [activeMissionId, setActiveMissionId] = useState<string | null>(null);
+  const [currentExerciseIdx, setCurrentExerciseIdx] = useState(0);
+  const [completedExerciseIds, setCompletedExerciseIds] = useState<string[]>(
+    () => JSON.parse(localStorage.getItem('atropos_completed_exercises') || '[]')
+  );
 
   // Auto-start session only when capture is enabled
   useEffect(() => {
@@ -679,6 +687,85 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     if (count > 0) recCooldownRef.current = now;
   }, []);
 
+  const getActiveMission = (): AIMission | null => {
+    if (!activeMissionId) return null;
+    for (const track of AI_CURRICULUM_TRACKS) {
+      const mission = track.missions.find(m => m.id === activeMissionId);
+      if (mission) return mission;
+    }
+    return null;
+  };
+
+  const markExerciseDone = (exerciseId: string) => {
+    setCompletedExerciseIds(prev => {
+      if (prev.includes(exerciseId)) return prev;
+      const next = [...prev, exerciseId];
+      localStorage.setItem('atropos_completed_exercises', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const goToNextExercise = () => {
+    const mission = getActiveMission();
+    if (!mission) return;
+    const nextIdx = currentExerciseIdx + 1;
+    if (nextIdx < mission.exercises.length) {
+      setCurrentExerciseIdx(nextIdx);
+      const exercise = mission.exercises[nextIdx];
+      const adaptation = mission.teachingAdaptations[useLearningStore.getState().style];
+      setInput(`Let's move to the next exercise: "${exercise.title}". ${exercise.instructions.slice(0, 200)}`);
+      toast({ title: `Exercise ${nextIdx + 1}/${mission.exercises.length}`, description: exercise.title });
+    } else {
+      toast({ title: 'Mission Complete!', description: `You've finished all exercises in ${mission.name}` });
+    }
+  };
+
+  const startAIMission = (mission: AIMission, track: AICurriculumTrack) => {
+    const learningProfile = getLearningProfile();
+    const adaptation = mission.teachingAdaptations[useLearningStore.getState().style];
+    setActiveMissionId(mission.id);
+    setCurrentExerciseIdx(0);
+    setShowCampaigns(false);
+    setShowMissionBriefing(false);
+    setCaptureEnabled(true);
+
+    if (!currentSession) {
+      startSession(`AI Mission: ${mission.name}`);
+    }
+
+    const missionContext = `AI MASTERY MISSION: ${mission.name}
+Track: ${track.name}
+Difficulty: ${mission.difficulty}
+XP Reward: ${mission.xpReward}
+
+OBJECTIVES:
+${mission.objectives.map((o, i) => `${i + 1}. ${o}`).join('\n')}
+
+EXERCISES:
+${mission.exercises.map(e => `- [${e.type}] ${e.title}: ${e.instructions}`).join('\n')}
+
+LEARNING STYLE ADAPTATION (${useLearningStore.getState().style}):
+${adaptation}
+
+KEY TAKEAWAYS TO TEACH:
+${mission.keyTakeaways.map(t => `- ${t}`).join('\n')}
+
+${learningProfile}`;
+
+    setPromptConfig(prev => ({ ...prev, taskFocus: missionContext }));
+
+    const starterPrompt = mission.exercises[0]
+      ? `I'm starting the "${mission.name}" mission. Guide me through the first exercise: "${mission.exercises[0].title}". ${adaptation}`
+      : `I'm starting the "${mission.name}" mission. Walk me through the objectives and help me get started.`;
+
+    setInput(starterPrompt);
+
+    setMessages([{
+      role: 'system',
+      content: `Mission loaded: ${mission.icon} ${mission.name}\nTrack: ${track.name}\n${mission.objectives.length} objectives · ${mission.exercises.length} exercises · ${mission.xpReward} XP`,
+    }]);
+  };
+
   const quickActions = [
     { label: 'Recon', payload: '{"type":"recon","scan":"full","targets":["routes","clues"]}' },
     { label: 'Exfil', payload: '{"type":"exfil","target":"session","fields":["token","clues"]}' },
@@ -704,6 +791,8 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     setPromptConfig(DEFAULT_PROMPT_CONFIG);
     setCaptureEnabled(false);
     setContextCampaign('');
+    setActiveMissionId(null);
+    setShowMissionBriefing(false);
   };
 
   // Compress conversation context using AI
@@ -847,7 +936,17 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowPromptStudio(!showPromptStudio)}
+              onClick={() => { setShowMissionBriefing(!showMissionBriefing); if (!showMissionBriefing) setShowPromptStudio(false); }}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showMissionBriefing ? 'bg-teal-900/30 text-teal-400 border-teal-900/30' : 'text-stone-500'}`}
+              data-testid="toggle-mission-briefing"
+            >
+              <GraduationCap className="w-3 h-3 mr-1" />
+              Missions
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { setShowPromptStudio(!showPromptStudio); if (!showPromptStudio) setShowMissionBriefing(false); }}
               className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-400' : 'text-stone-500'}`}
               data-testid="toggle-prompt-studio"
             >
@@ -855,6 +954,18 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
               Studio
             </Button>
           </div>
+          
+          {/* Mission Briefing Panel */}
+          {showMissionBriefing && (
+            <div className="mt-1.5 md:mt-2 max-h-[50vh] md:max-h-[40vh] overflow-y-auto bg-stone-950/50 rounded-lg border border-teal-900/30 p-2 md:p-3">
+              <MissionBriefing
+                onStartMission={startAIMission}
+                onSuggestionChip={(text) => { setInput(text); setShowMissionBriefing(false); }}
+                onClose={() => setShowMissionBriefing(false)}
+                activeMissionId={activeMissionId}
+              />
+            </div>
+          )}
           
           {/* Prompt Studio Panel */}
           {showPromptStudio && (
@@ -869,6 +980,76 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
             </div>
           )}
         </DialogHeader>
+
+        {/* Mission Status Bar — compact single-line "you are here" */}
+        {(() => {
+          const mission = getActiveMission();
+          if (!mission) return null;
+          const exercise = mission.exercises[currentExerciseIdx];
+          const totalEx = mission.exercises.length;
+          const doneCount = mission.exercises.filter(e => completedExerciseIds.includes(e.id)).length;
+          const progress = totalEx > 0 ? Math.round((doneCount / totalEx) * 100) : 0;
+
+          return (
+            <div className="flex-shrink-0 bg-teal-950/40 border-b border-teal-900/20 px-2 py-1 md:px-3 md:py-1" data-testid="mission-status-bar">
+              <div className="flex items-center gap-1.5 min-h-[24px] md:min-h-[26px]">
+                <span className="text-xs">{mission.icon}</span>
+                <span className="text-[9px] md:text-[10px] font-medium text-teal-400 truncate max-w-[80px] md:max-w-[160px]">{mission.name}</span>
+                <span className="text-[8px] md:text-[9px] text-stone-600">·</span>
+                {exercise ? (
+                  <span className="text-[8px] md:text-[9px] text-stone-400 truncate max-w-[100px] md:max-w-[200px]">
+                    Step {currentExerciseIdx + 1}/{totalEx}: {exercise.title}
+                  </span>
+                ) : (
+                  <span className="text-[8px] md:text-[9px] text-stone-500">{doneCount}/{totalEx}</span>
+                )}
+                {progress > 0 && (
+                  <div className="hidden sm:block w-12 md:w-16 h-1 bg-stone-800 rounded-full overflow-hidden flex-shrink-0">
+                    <div className="h-full bg-teal-600 rounded-full transition-all" style={{ width: `${progress}%` }} />
+                  </div>
+                )}
+                <div className="ml-auto flex items-center gap-0.5 flex-shrink-0">
+                  {exercise && !completedExerciseIds.includes(exercise.id) && (
+                    <button
+                      onClick={() => markExerciseDone(exercise.id)}
+                      className="p-1 rounded text-emerald-600 hover:text-emerald-400 hover:bg-emerald-900/20 transition-colors"
+                      title="Mark step done"
+                      data-testid="mark-exercise-done"
+                    >
+                      <CheckCircle2 className="w-3 h-3" />
+                    </button>
+                  )}
+                  {currentExerciseIdx < totalEx - 1 && (
+                    <button
+                      onClick={goToNextExercise}
+                      className="p-1 rounded text-teal-600 hover:text-teal-400 hover:bg-teal-900/20 transition-colors"
+                      title="Next step"
+                      data-testid="next-exercise-btn"
+                    >
+                      <ChevronRight className="w-3 h-3" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowMissionBriefing(!showMissionBriefing)}
+                    className="p-1 rounded text-stone-600 hover:text-amber-400 hover:bg-amber-900/20 transition-colors"
+                    title="Mission briefing"
+                    data-testid="open-briefing-btn"
+                  >
+                    <Target className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => { setActiveMissionId(null); setCurrentExerciseIdx(0); }}
+                    className="p-1 rounded text-stone-700 hover:text-stone-400 hover:bg-stone-800/40 transition-colors"
+                    title="Dismiss"
+                    data-testid="dismiss-mission-bar"
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Messages Area */}
         <ScrollArea className="flex-1 pr-2 md:pr-4" ref={scrollRef}>
