@@ -105,10 +105,20 @@ function mergeScanResults(existing: ScanResult | null, incoming: ScanResult): Sc
   };
 }
 
-function ScanTab() {
+interface ScanTabProps {
+  injectedTargets?: string[];
+}
+
+function ScanTab({ injectedTargets }: ScanTabProps) {
   const { addToolOutput } = useReportContext();
   const [target, setTarget] = useState("");
   const [selectedScript, setSelectedScript] = useState("bbot_scanner");
+
+  useEffect(() => {
+    if (injectedTargets && injectedTargets.length > 0) {
+      setTarget(injectedTargets[0]);
+    }
+  }, [injectedTargets]);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [scanCount, setScanCount] = useState(0);
@@ -183,6 +193,25 @@ function ScanTab() {
                 className="bg-stone-900/60 border-stone-800 text-stone-200 placeholder:text-stone-600"
                 data-testid="input-scan-target"
               />
+              {injectedTargets && injectedTargets.length > 0 && (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  <span className="text-[10px] text-stone-500 mr-1">From SpiderFoot:</span>
+                  {injectedTargets.map((t, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setTarget(t)}
+                      className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                        target === t
+                          ? 'bg-orange-900/40 border-orange-700 text-orange-400'
+                          : 'bg-stone-900/40 border-stone-700 text-stone-400 hover:border-orange-700 hover:text-orange-400'
+                      }`}
+                      data-testid={`pivot-target-${i}`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="scan-script" className="text-stone-300">Script</Label>
@@ -1493,7 +1522,11 @@ function ToolsTab() {
   );
 }
 
-export function ScannerContent() {
+interface ScannerContentProps {
+  injectedTargets?: string[];
+}
+
+export function ScannerContent({ injectedTargets }: ScannerContentProps = {}) {
   return (
     <Tabs defaultValue="scan" className="w-full">
       <TabsList className="grid w-full grid-cols-5 bg-stone-900/60 border border-stone-800" data-testid="scanner-tabs">
@@ -1514,7 +1547,7 @@ export function ScannerContent() {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="scan"><ScanTab /></TabsContent>
+      <TabsContent value="scan"><ScanTab injectedTargets={injectedTargets} /></TabsContent>
       <TabsContent value="scripts"><LuaScriptsTab /></TabsContent>
       <TabsContent value="tools"><ToolsTab /></TabsContent>
       <TabsContent value="lookups"><ApiLookupsTab /></TabsContent>

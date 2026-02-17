@@ -25,6 +25,7 @@ export default function InvestigationWorkspace() {
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [atroposPayload, setAtroposPayload] = useState<string | undefined>(undefined);
   const [showOutputs, setShowOutputs] = useState(false);
+  const [scannerPivotTargets, setScannerPivotTargets] = useState<string[] | undefined>(undefined);
   
   const { 
     style, 
@@ -296,11 +297,21 @@ export default function InvestigationWorkspace() {
           </TabsContent>
 
           <TabsContent value="scanner" data-testid="content-scanner">
-            <ScannerContent />
+            <ScannerContent injectedTargets={scannerPivotTargets} />
           </TabsContent>
 
           <TabsContent value="spiderfoot" data-testid="content-spiderfoot">
-            <SpiderFootTab />
+            <SpiderFootTab
+              onSendToAgent={(context) => {
+                setAtroposPayload(`Analyze these SpiderFoot OSINT results and identify:\n1. Key infrastructure relationships\n2. Potential attack vectors\n3. Interesting pivot points for further investigation\n\n${context}`);
+                setAgentChatOpen(true);
+                setActiveTab('chat');
+              }}
+              onSendToAtropos={(targets) => {
+                setScannerPivotTargets(targets);
+                setActiveTab('scanner');
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="ai-lab" data-testid="content-ai-lab">
