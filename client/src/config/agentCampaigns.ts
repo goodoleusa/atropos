@@ -254,6 +254,151 @@ export const AGENT_CAMPAIGNS: Campaign[] = [
   // GENERAL CYBERSECURITY CAMPAIGNS
   // ============================================================================
   {
+    id: 'volt_typhoon',
+    name: 'Operation Volt Typhoon',
+    icon: '🌀',
+    description: 'Investigate a stealthy campaign targeting critical infrastructure via router hijacking and LOTL tactics.',
+    difficulty: 'advanced',
+    estimatedTime: '45-60 min',
+    tags: ['APT', 'Infrastructure', 'LOTL', 'China'],
+    color: 'red',
+    targetFields: [
+      { key: 'target_ip', label: 'Facility Edge IP', type: 'ip', required: true, placeholder: '203.0.113.42' },
+      { key: 'router_model', label: 'Router Model', type: 'text', required: false, placeholder: 'Cisco RV320' }
+    ],
+    dummyTargets: {
+      target_ip: '192.168.100.15',
+      router_model: 'FortiGate 60F'
+    },
+    starterPrompt: `We've detected unusual outbound traffic from a municipal water treatment facility's edge router. 
+    
+The traffic pattern suggests a living-off-the-land (LOTL) persistence mechanism characteristic of Volt Typhoon. 
+
+Your objective is to:
+1. Analyze router traffic logs for unusual SOCKS5 proxy activity
+2. Identify compromised SOHO router nodes used as midpoints (KV Botnet)
+3. Trace lateral movement into the ICS/SCADA network
+4. Document LOTL commands used for credential harvesting (e.g., ntdsutil, netsh)`,
+    objectives: [
+      'Analyze router traffic logs',
+      'Identify KV Botnet midpoints',
+      'Trace ICS lateral movement',
+      'Document LOTL techniques'
+    ],
+    tools: ['Atropos Scanner', 'Wireshark', 'Shodan', 'nmap'],
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Traffic Analysis',
+        guidance: 'Examine outbound traffic on port 1080. Look for encrypted tunnels to residential ISP ranges which often act as KV Botnet nodes.',
+        toolsForStep: ['Wireshark', 'Atropos'],
+        questions: ['What is the destination IP for the SOCKS5 traffic?', 'Is the traffic consistent with legitimate admin access?'],
+        redFlags: ['Encrypted traffic to residential IPs', 'Long-duration sessions with low data volume'],
+        successIndicators: ['Identified C2 midpoint IP', 'Confirmed unauthorized proxy activity'],
+        nextStepConditions: [
+          { condition: 'midpoint_identified', nextStep: 'step-2', rationale: 'Once the midpoint is found, we can trace the source.' }
+        ]
+      }
+    ],
+    adaptivePrompts: [
+      "The actor is using a compromised home router in Ohio. Check for similar patterns in other regions.",
+      "Look for 'netsh' commands in the process logs; they are likely tunneling traffic."
+    ],
+    industryContext: 'Volt Typhoon represents a shift from pure espionage to pre-positioning for disruptive attacks against critical infrastructure. Understanding their LOTL tactics is vital for infrastructure defense.',
+    realWorldExamples: ['CISA AA23-144A', 'Microsoft Volt Typhoon Report 2023'],
+    careerPaths: ['Threat Hunter', 'Incident Responder', 'Critical Infrastructure Security']
+  },
+  {
+    id: 'lumma_stealer',
+    name: 'Lumma Stealer Analysis',
+    icon: '💎',
+    description: 'Analyze an infostealer campaign targeting corporate credentials via modular JavaScript chains.',
+    difficulty: 'intermediate',
+    estimatedTime: '30-45 min',
+    tags: ['Malware', 'Infostealer', 'Phishing', '2025'],
+    color: 'blue',
+    targetFields: [
+      { key: 'sample_hash', label: 'Malware Hash (SHA256)', type: 'hash', required: true, placeholder: 'a1b2c3d4...' },
+      { key: 'phishing_url', label: 'Phishing Source URL', type: 'url', required: false }
+    ],
+    dummyTargets: {
+      sample_hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      phishing_url: 'http://secure-invoice-check[.]top/view/12345'
+    },
+    starterPrompt: `A high-value target in the finance department reported a suspicious PDF invoice. 
+
+Preliminary triage shows an embedded URL leading to a multi-stage JavaScript downloader characteristic of Lumma Stealer. 
+
+Investigate the following:
+1. Deobfuscate the initial JS downloader
+2. Identify the secondary stage payload URL (often Discord CDN)
+3. Extract C2 domains from binary strings
+4. Map exfiltrated data types (cookies, crypto wallets, browser credentials)`,
+    objectives: [
+      'Deobfuscate JS downloader',
+      'Identify stage-2 payload',
+      'Extract C2 infrastructure',
+      'Map exfiltration scope'
+    ],
+    tools: ['CyberChef', 'Atropos Scanner', 'AnyRun'],
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Loader Triage',
+        guidance: 'The PDF uses an Action object to trigger a browser download. Check for bit.ly or discordapp.com links.',
+        toolsForStep: ['CyberChef', 'Atropos'],
+        questions: ['What is the final destination of the redirect?', 'Does the loader check for VM environments?'],
+        redFlags: ['WMI queries for disk serial numbers', 'Heavy string reversal in JS'],
+        successIndicators: ['Extracted stage-2 URL', 'Identified anti-analysis checks'],
+        nextStepConditions: []
+      }
+    ],
+    adaptivePrompts: [
+      "Lumma often uses Discord CDN for payload hosting. Check for 'cdn.discordapp.com' links.",
+      "The stealer targets Telegram session files. Verify if the 'tdata' directory was accessed."
+    ],
+    industryContext: 'Infostealers saw an 84% increase in 2024. They fuel the initial access market by harvesting credentials for follow-on ransomware attacks.',
+    realWorldExamples: ['Lumma Stealer v4.0 Campaign', 'Discord CDN Abuse Trends'],
+    careerPaths: ['Malware Analyst', 'SOC Analyst', 'Digital Forensics']
+  },
+  {
+    id: 'salt_typhoon',
+    name: 'Salt Typhoon Espionage',
+    icon: '📡',
+    description: 'Investigate a 2-year telecom espionage campaign targeting core switching infrastructure.',
+    difficulty: 'expert',
+    estimatedTime: '60-90 min',
+    tags: ['APT', 'Telecom', 'Espionage', '2025'],
+    color: 'orange',
+    targetFields: [
+      { key: 'asn', label: 'Telecom ASN', type: 'asn', required: true, placeholder: 'AS701' },
+      { key: 'backdoor_id', label: 'Backdoor Identifier', type: 'text', required: false, placeholder: 'GhostSpider' }
+    ],
+    dummyTargets: {
+      asn: 'AS701',
+      backdoor_id: 'GhostSpider-v2.1'
+    },
+    starterPrompt: `We are investigating a persistent breach in a major telecom provider's core network. 
+
+The adversary (Salt Typhoon) has maintained access for over 2 years using the GhostSpider backdoor.
+
+Your mission:
+1. Identify unauthorized access points in the core switching fabric
+2. Trace exfiltration of lawful intercept data (CALEA)
+3. Analyze the GhostSpider persistence mechanism
+4. Determine the scope of government official surveillance`,
+    objectives: [
+      'Identify core network breaches',
+      'Trace data exfiltration',
+      'Analyze GhostSpider backdoor',
+      'Assess surveillance scope'
+    ],
+    tools: ['Atropos Scanner', 'BGP Looking Glass', 'Wireshark', 'Splunk'],
+    industryContext: 'Salt Typhoon (Earth Estries) represents one of the most significant telecom breaches in history, compromising major US carriers to intercept sensitive communications.',
+    realWorldExamples: ['Verizon/AT&T/Lumen Breach 2024', 'GhostSpider Malware Analysis'],
+    careerPaths: ['Nation-State Threat Analyst', 'Telecom Security Expert', 'Strategic Intelligence']
+  },
+  {
     id: 'shell_corp_osint',
     name: 'Shell Corp Investigation',
     icon: '🏢',

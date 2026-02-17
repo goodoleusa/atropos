@@ -197,29 +197,27 @@ router.post("/api/agent-modules/seed", async (req, res) => {
     const { AGENT_CAMPAIGNS } = await import("../../client/src/config/agentCampaigns");
     let seeded = 0;
     for (const campaign of AGENT_CAMPAIGNS) {
-      const existing = await storage.getAgentModuleById(campaign.id);
-      if (!existing) {
-        await storage.upsertAgentModule(campaign.id, {
-          moduleId: campaign.id,
-          name: campaign.name,
-          icon: campaign.icon,
-          description: campaign.description,
-          difficulty: campaign.difficulty,
-          estimatedTime: campaign.estimatedTime,
-          tags: campaign.tags,
-          color: campaign.color,
-          starterPrompt: campaign.starterPrompt,
-          objectives: campaign.objectives,
-          tools: campaign.tools,
-          targetFields: campaign.targetFields || [],
-          dummyTargets: campaign.dummyTargets || {},
-          steps: campaign.steps || [],
-          adaptivePrompts: campaign.adaptivePrompts || [],
-          isActive: true,
-          sortOrder: seeded
-        });
-        seeded++;
-      }
+      // Always upsert to update with latest 2024-2025 threat intel
+      await storage.upsertAgentModule(campaign.id, {
+        moduleId: campaign.id,
+        name: campaign.name,
+        icon: campaign.icon,
+        description: campaign.description,
+        difficulty: campaign.difficulty,
+        estimatedTime: campaign.estimatedTime,
+        tags: campaign.tags,
+        color: campaign.color,
+        starterPrompt: campaign.starterPrompt,
+        objectives: campaign.objectives,
+        tools: campaign.tools,
+        targetFields: campaign.targetFields || [],
+        dummyTargets: campaign.dummyTargets || {},
+        steps: campaign.steps || [],
+        adaptivePrompts: campaign.adaptivePrompts || [],
+        isActive: true,
+        sortOrder: seeded
+      });
+      seeded++;
     }
     res.json({ success: true, seeded, total: AGENT_CAMPAIGNS.length });
   } catch (error) {
