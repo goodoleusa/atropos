@@ -951,12 +951,574 @@ export const AI_CURRICULUM_TRACKS: AICurriculumTrack[] = [
   },
 ];
 
+export const OSINT_CURRICULUM_TRACKS: AICurriculumTrack[] = [
+  {
+    id: 'osint_foundations',
+    name: 'OSINT Foundations',
+    icon: '🔎',
+    description: 'Master the core principles and methodology of Open Source Intelligence. Learn the OSINT cycle, legal boundaries, evidence preservation, and operational security.',
+    order: 0,
+    color: 'sky',
+    prerequisiteTrackIds: [],
+    missions: [
+      {
+        id: 'osint_cycle',
+        trackId: 'osint_foundations',
+        name: 'The OSINT Intelligence Cycle',
+        icon: '🔄',
+        description: 'Learn the 5-phase intelligence cycle: Planning, Collection, Processing, Analysis, Dissemination. Every investigation follows this pattern.',
+        difficulty: 'beginner',
+        estimatedTime: '20-25 min',
+        xpReward: 100,
+        objectives: [
+          'Understand and apply the 5-phase intelligence cycle',
+          'Write a proper intelligence requirement before starting collection',
+          'Distinguish between raw data, processed information, and finished intelligence',
+          'Create a collection plan for a given investigation scenario',
+        ],
+        exercises: [
+          {
+            id: 'osint_cycle_plan',
+            title: 'Writing Intelligence Requirements',
+            type: 'prompt_craft',
+            instructions: 'Given this scenario: "A company suspects a competitor is scraping their pricing data." Write a proper intelligence requirement (PIR) that guides the investigation. Then break it into 3-5 specific collection tasks. Use NEXUS to refine your plan.',
+            hints: [
+              'A PIR answers: WHO is doing WHAT, WHEN, HOW, and WHY do we care?',
+              'Bad PIR: "Find out about competitor." Good PIR: "Determine whether CompetitorX is programmatically accessing our pricing API between Jan-Mar 2026."',
+              'Collection tasks should be specific and achievable — each maps to a technique',
+            ],
+            successCriteria: [
+              'Wrote a focused PIR with clear scope and boundaries',
+              'Broke the PIR into 3-5 actionable collection tasks',
+              'Each task specifies what tool or technique to use',
+            ],
+          },
+          {
+            id: 'osint_cycle_evidence',
+            title: 'Evidence Preservation',
+            type: 'observation',
+            instructions: 'Run the Passive Reconnaissance campaign on the practice target. For every finding, document: the source URL, timestamp, a screenshot description, and how you found it. This is your evidence chain — without it, your intelligence is hearsay.',
+            hints: [
+              'Web pages change — always record the date and time you accessed them',
+              'Use Wayback Machine snapshots as preserved evidence',
+              'Chain of custody: could you explain to a lawyer how you found this?',
+            ],
+            successCriteria: [
+              'Documented at least 5 findings with full source attribution',
+              'Each finding has timestamp, URL, and discovery method',
+              'Could reconstruct the investigation from your notes alone',
+            ],
+          },
+        ],
+        keyTakeaways: [
+          'Good OSINT starts with a question, not a tool',
+          'Raw data is not intelligence — analysis transforms data into actionable insight',
+          'Evidence without documentation is worthless',
+          'The intelligence cycle prevents rabbit holes and scope creep',
+        ],
+        teachingAdaptations: {
+          experiential: 'Start the Passive Recon campaign immediately. Document as you go, then retroactively identify which phase of the cycle each step belonged to.',
+          visual: 'Draw the 5-phase cycle as a circular diagram. Plot your investigation steps on it. Notice where you spent the most time.',
+          analytical: 'Read the NATO OSINT Handbook and RAND Corporation OSINT reports. Understand the military origins of the intelligence cycle.',
+          social: 'Compare collection plans with another investigator. Did you prioritize the same sources? Why or why not?',
+          pragmatic: 'Template: 1 PIR → 3 collection tasks → 1 analysis step → 1 report. Apply to every investigation from now on.',
+        },
+        platformTools: ['Agent Chat', 'Investigation Hub'],
+        furtherReading: [
+          'NATO Open Source Intelligence Handbook',
+          'RAND Corporation - Intelligence Analysis: Behavioral and Social Scientific Foundations',
+          'Michael Bazzell - OSINT Techniques',
+        ],
+      },
+      {
+        id: 'osint_opsec',
+        trackId: 'osint_foundations',
+        name: 'Operational Security for Investigators',
+        icon: '🛡️',
+        description: 'Your investigation leaves traces too. Learn to protect yourself: sock puppets, VPNs, browser isolation, and digital footprint minimization.',
+        difficulty: 'beginner',
+        estimatedTime: '20-30 min',
+        xpReward: 100,
+        objectives: [
+          'Assess your own digital footprint using OSINT techniques on yourself',
+          'Understand when to use VPN, Tor, or isolated browsers',
+          'Learn the principles of sock puppet account management',
+          'Create an operational security checklist for investigations',
+        ],
+        exercises: [
+          {
+            id: 'osint_opsec_self',
+            title: 'OSINT Yourself',
+            type: 'observation',
+            instructions: 'Use NEXUS to guide you through an OSINT investigation of YOUR OWN online presence. What can someone find about you from public sources? Ask NEXUS to suggest search techniques and evaluate what you find. This is the best way to understand what investigators can see.',
+            hints: [
+              'Start with Google dorking your real name and common usernames',
+              'Check breach databases (Have I Been Pwned) for your email addresses',
+              'Search social media username reuse with tools like Sherlock/Maigret',
+            ],
+            successCriteria: [
+              'Discovered at least 3 things publicly available about yourself',
+              'Identified which sources exposed the most information',
+              'Created a list of what to reduce or remove',
+            ],
+          },
+          {
+            id: 'osint_opsec_checklist',
+            title: 'OpSec Checklist Builder',
+            type: 'reflection',
+            instructions: 'Using what you learned, build a pre-investigation operational security checklist. Ask NEXUS to review it for gaps. Consider: browser, network, accounts, metadata, and physical factors.',
+            hints: [
+              'Different investigations need different OpSec levels — corporate intel vs nation-state targets',
+              'Metadata in screenshots and documents can reveal your identity',
+              'Time zone and working hours can reveal your location',
+            ],
+            successCriteria: [
+              'Created an OpSec checklist with at least 8 items',
+              'Checklist covers browser, network, identity, and metadata categories',
+              'Had NEXUS review and suggest improvements',
+            ],
+          },
+        ],
+        keyTakeaways: [
+          'If you can find targets with OSINT, targets can find you the same way',
+          'OpSec is proportional to risk — not every investigation needs maximum protection',
+          'Browser isolation and VPNs are basics, not advanced techniques',
+          'Sock puppet maintenance is a discipline, not a one-time setup',
+        ],
+        teachingAdaptations: {
+          experiential: 'OSINT yourself right now. Nothing teaches OpSec faster than seeing your own exposure.',
+          visual: 'Map your digital footprint: draw connections between your accounts, emails, usernames, and real identity.',
+          analytical: 'Study real cases where investigators were burned: OPSEC failures in law enforcement, journalism, and bug bounty hunting.',
+          social: 'Review each other\'s OpSec checklists. Others spot gaps you don\'t see in your own setup.',
+          pragmatic: 'Minimum OpSec: VPN + private browsing + no personal accounts during investigation. Build from there.',
+        },
+        platformTools: ['Agent Chat', 'Investigation Hub'],
+      },
+    ],
+  },
+
+  {
+    id: 'passive_recon_mastery',
+    name: 'Passive Reconnaissance Mastery',
+    icon: '📡',
+    description: 'Deep-dive into passive reconnaissance techniques. DNS enumeration, certificate transparency, WHOIS history, technology fingerprinting — all without touching the target.',
+    order: 1,
+    color: 'purple',
+    prerequisiteTrackIds: ['osint_foundations'],
+    missions: [
+      {
+        id: 'pr_dns_deep',
+        trackId: 'passive_recon_mastery',
+        name: 'DNS Deep Dive',
+        icon: '🌐',
+        description: 'DNS records reveal infrastructure secrets. Learn to extract subdomains, mail servers, SPF/DKIM/DMARC configs, and hidden services from DNS alone.',
+        difficulty: 'intermediate',
+        estimatedTime: '25-35 min',
+        xpReward: 150,
+        objectives: [
+          'Enumerate all DNS record types and understand what each reveals',
+          'Use certificate transparency logs for subdomain discovery',
+          'Analyze SPF, DKIM, and DMARC records for email security posture',
+          'Map DNS history to discover old infrastructure',
+        ],
+        exercises: [
+          {
+            id: 'pr_dns_enum',
+            title: 'Full DNS Enumeration',
+            type: 'observation',
+            instructions: 'Start the Passive Reconnaissance campaign. Focus exclusively on DNS. Ask NEXUS to guide you through extracting: A, AAAA, MX, NS, TXT (SPF/DKIM/DMARC), CNAME, and SOA records. For each, explain what it tells us about the target\'s infrastructure.',
+            hints: [
+              'MX records reveal email providers — on-prem Exchange vs Google Workspace vs Microsoft 365',
+              'SPF records list every IP authorized to send email for the domain',
+              'CNAME records often point to third-party services (CDNs, SaaS)',
+              'NS records reveal the DNS hosting provider — sometimes different from web hosting',
+            ],
+            successCriteria: [
+              'Extracted at least 5 different DNS record types',
+              'Explained what each record reveals about infrastructure',
+              'Identified at least one third-party service from DNS records',
+            ],
+            suggestedPrompts: [
+              'What do TXT records with v=spf1 tell us about this organization\'s email infrastructure?',
+              'How can CNAME records reveal third-party SaaS services?',
+            ],
+          },
+          {
+            id: 'pr_cert_trans',
+            title: 'Certificate Transparency Mining',
+            type: 'observation',
+            instructions: 'Use crt.sh (via NEXUS guidance) to discover subdomains through certificate transparency logs. Explain why CT logs exist and why they\'re an OSINT goldmine. Compare CT results with DNS brute-forcing results — which finds more?',
+            hints: [
+              'CT logs are public and legally accessible — no ethical concerns',
+              'Wildcard certificates hide subdomains, but specific certs reveal them',
+              'Internal-sounding names (dev.*, staging.*, internal.*) are high-value targets',
+            ],
+            successCriteria: [
+              'Discovered subdomains via certificate transparency',
+              'Explained why CT logs exist (preventing mis-issued certificates)',
+              'Categorized discovered subdomains by likely purpose',
+            ],
+          },
+        ],
+        keyTakeaways: [
+          'DNS is the most information-rich passive recon source',
+          'Certificate transparency provides subdomain data that DNS brute-forcing misses',
+          'Email security records (SPF/DKIM/DMARC) reveal infrastructure and maturity level',
+          'Historical DNS shows old infrastructure that may still be accessible',
+        ],
+        teachingAdaptations: {
+          experiential: 'Start the Passive Recon campaign and focus on DNS. Extract every record type and discuss findings with NEXUS.',
+          visual: 'Draw an infrastructure map from DNS data alone. Connect subdomains → IPs → services → providers.',
+          analytical: 'Study RFC 1035 (DNS), RFC 6962 (CT), and RFC 7208 (SPF). Understand the protocol-level reasons these records exist.',
+          social: 'Compare subdomain lists from different sources. Which technique found unique results?',
+          pragmatic: 'Quick workflow: crt.sh for subdomains → dig for record types → SecurityTrails for history. Takes 5 minutes.',
+        },
+        platformTools: ['Agent Chat', 'Scanner', 'Investigation Hub'],
+      },
+    ],
+  },
+
+  {
+    id: 'people_osint',
+    name: 'People & SOCMINT',
+    icon: '👤',
+    description: 'Social media intelligence and people research. Username correlation, profile analysis, digital footprint mapping, and social graph analysis.',
+    order: 2,
+    color: 'amber',
+    prerequisiteTrackIds: ['osint_foundations'],
+    missions: [
+      {
+        id: 'socmint_username',
+        trackId: 'people_osint',
+        name: 'Username Intelligence',
+        icon: '🔗',
+        description: 'Most people reuse usernames across platforms. Learn to pivot from one username to build a complete digital profile across dozens of services.',
+        difficulty: 'beginner',
+        estimatedTime: '20-25 min',
+        xpReward: 100,
+        objectives: [
+          'Understand username correlation and cross-platform pivoting',
+          'Use NEXUS to guide username enumeration techniques',
+          'Assess the reliability of username matches (common names vs unique handles)',
+          'Build a digital profile from connected accounts',
+        ],
+        exercises: [
+          {
+            id: 'socmint_user_pivot',
+            title: 'Cross-Platform Pivot',
+            type: 'prompt_craft',
+            instructions: 'Ask NEXUS to guide you through investigating a fictional username "cyb3rn0va_42" across platforms. What tools check username availability? How do you confirm that matches are the same person and not just coincidental name reuse? Build a methodology.',
+            hints: [
+              'Tools like Sherlock, Maigret, and WhatsMyName check hundreds of platforms at once',
+              'Same username on GitHub + Twitter + Reddit = likely same person',
+              'Check profile photos, bio details, and posting patterns to confirm identity',
+              'Common usernames (john123) have false positives; unique ones (cyb3rn0va_42) are more reliable',
+            ],
+            successCriteria: [
+              'Described a methodology for username correlation',
+              'Identified at least 3 confidence indicators beyond just matching names',
+              'Understood false positive risks with common usernames',
+            ],
+          },
+          {
+            id: 'socmint_social_graph',
+            title: 'Social Graph Mapping',
+            type: 'reflection',
+            instructions: 'Starting from the Social Engineering Recon campaign, work with NEXUS to map the organizational social graph. Who follows whom? Who interacts with whom? What do shared connections reveal about team structure, projects, and communication patterns?',
+            hints: [
+              'LinkedIn connections reveal professional networks and former colleagues',
+              'Twitter/X interactions reveal personal interests and political views',
+              'GitHub contributions reveal technical skills and project involvement',
+              'Shared group memberships (Slack, Discord, Meetup) reveal interests',
+            ],
+            successCriteria: [
+              'Mapped connections between at least 3 people in the target organization',
+              'Identified relationship types (colleague, friend, vendor, former employer)',
+              'Found at least 1 non-obvious connection that reveals organizational information',
+            ],
+          },
+        ],
+        keyTakeaways: [
+          'Username reuse is the single most common OSINT pivot point',
+          'Correlation requires confirmation — matching names alone is not enough',
+          'Social graphs reveal organizational structure better than org charts',
+          'People reveal more through interactions than through profiles',
+        ],
+        teachingAdaptations: {
+          experiential: 'Start with the Social Engineering Recon campaign. Pivot from one account to build a profile.',
+          visual: 'Draw a graph: person nodes, platform nodes, connection edges. See the network emerge.',
+          analytical: 'Study social network analysis theory (Granovetter, weak ties). Apply graph theory to OSINT.',
+          social: 'Compare what different investigators find from the same starting username. Different perspectives find different connections.',
+          pragmatic: 'Quick workflow: username → Sherlock check → confirm with profile comparison → map connections. 10 minutes per target.',
+        },
+        platformTools: ['Agent Chat', 'Investigation Hub'],
+      },
+    ],
+  },
+
+  {
+    id: 'geolocation_osint',
+    name: 'Geolocation & Imagery Analysis',
+    icon: '📍',
+    description: 'Determine location from photos, videos, and metadata. Landmark identification, sun position analysis, street-level features, and satellite imagery interpretation.',
+    order: 3,
+    color: 'emerald',
+    prerequisiteTrackIds: ['osint_foundations'],
+    missions: [
+      {
+        id: 'geo_photo_analysis',
+        trackId: 'geolocation_osint',
+        name: 'Photo Geolocation Fundamentals',
+        icon: '📸',
+        description: 'A single photo can reveal a precise location. Learn to read environmental clues: language on signs, vegetation, road markings, architecture, vehicle types, and sun position.',
+        difficulty: 'intermediate',
+        estimatedTime: '25-35 min',
+        xpReward: 150,
+        objectives: [
+          'Identify at least 5 categories of location clues in photos',
+          'Use NEXUS AI to analyze image descriptions for geolocation hints',
+          'Understand EXIF metadata extraction and its limitations',
+          'Practice narrowing location from continent → country → city → street',
+        ],
+        exercises: [
+          {
+            id: 'geo_photo_clues',
+            title: 'Reading the Environment',
+            type: 'prompt_craft',
+            instructions: 'Describe a photo scenario to NEXUS: "A street scene showing a red double-decker bus, a pub with a sign reading \'The Crown\', left-hand traffic, and visible rain." Ask NEXUS to analyze location clues systematically. Then try a harder one with fewer clues.',
+            hints: [
+              'Language on signs is the fastest way to narrow location',
+              'Driving side (left/right) eliminates half the world immediately',
+              'Vegetation and climate narrow latitude — palm trees vs evergreens',
+              'Road markings, electrical infrastructure, and architecture vary by region',
+            ],
+            successCriteria: [
+              'Identified 5+ clue categories in a photo description',
+              'Narrowed location from general region to specific area',
+              'Understood which clues are definitive vs suggestive',
+            ],
+            suggestedPrompts: [
+              'Analyze these environmental clues for geolocation: [describe a scene]',
+              'What OSINT tools help verify a suspected location from photo clues?',
+            ],
+          },
+          {
+            id: 'geo_metadata',
+            title: 'EXIF & Metadata Extraction',
+            type: 'observation',
+            instructions: 'Ask NEXUS to explain what EXIF metadata contains and why it matters. Discuss: when is EXIF stripped (social media uploads), when is it preserved (email attachments, direct shares), and what tools extract it. Build a checklist for metadata analysis.',
+            hints: [
+              'Most social media platforms strip EXIF data on upload — but not all do',
+              'Direct image URLs from messaging apps often preserve metadata',
+              'EXIF contains: GPS coordinates, camera model, timestamp, and sometimes lens focal length',
+              'Even without GPS, camera model + timestamp can narrow possibilities',
+            ],
+            successCriteria: [
+              'Can explain what EXIF metadata contains',
+              'Knows which platforms strip vs preserve metadata',
+              'Has a metadata analysis workflow',
+            ],
+          },
+        ],
+        keyTakeaways: [
+          'Systematic clue analysis beats random guessing every time',
+          'Work from broad to narrow: hemisphere → continent → country → city → block',
+          'EXIF metadata is gold when available, but never count on it being there',
+          'Cross-reference photo clues with Google Maps, Street View, and satellite imagery',
+        ],
+        teachingAdaptations: {
+          experiential: 'Describe real-world photo scenarios to NEXUS and practice geolocation analysis. Start easy (famous landmarks) and progress to subtle clues.',
+          visual: 'Create a decision tree: sign language → driving side → vegetation → architecture → specific features.',
+          analytical: 'Study the Bellingcat geolocation methodology. Analyze their published case studies for technique patterns.',
+          social: 'GeoGuessr-style challenges — describe a scene and race to determine location. Compare reasoning processes.',
+          pragmatic: 'Quick method: 1) Language on signs, 2) Driving side, 3) Sun position for hemisphere, 4) Google Lens for landmarks.',
+        },
+        platformTools: ['Agent Chat', 'Investigation Hub'],
+        furtherReading: [
+          'Bellingcat - Digital Investigation Toolkit',
+          'Nixintel - OSINT and Geolocation Guides',
+          'Sector035 - Week in OSINT',
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'financial_osint',
+    name: 'Financial & Corporate Intelligence',
+    icon: '💰',
+    description: 'Follow the money. Corporate ownership tracing, beneficial ownership discovery, financial document analysis, sanctions screening, and cryptocurrency tracking.',
+    order: 4,
+    color: 'orange',
+    prerequisiteTrackIds: ['osint_foundations'],
+    missions: [
+      {
+        id: 'fin_corporate_trace',
+        trackId: 'financial_osint',
+        name: 'Corporate Ownership Tracing',
+        icon: '🏢',
+        description: 'Companies hide behind layers of shell entities. Learn to trace beneficial ownership through corporate registries, SEC filings, and leaked databases.',
+        difficulty: 'intermediate',
+        estimatedTime: '30-40 min',
+        xpReward: 200,
+        objectives: [
+          'Navigate corporate registries and SEC EDGAR filings',
+          'Trace beneficial ownership through multiple entity layers',
+          'Identify red flags for shell companies and money laundering structures',
+          'Cross-reference corporate data with sanctions and PEP lists',
+        ],
+        exercises: [
+          {
+            id: 'fin_corp_registry',
+            title: 'Registry Investigation',
+            type: 'prompt_craft',
+            instructions: 'Start the Corporate Intelligence Campaign or ask NEXUS to guide you through investigating a fictional company "Meridian Holdings LLC." What corporate registries should you check? What red flags in registration data suggest a shell company?',
+            hints: [
+              'Registered agent services (CT Corp, CSC) are normal but bulk registrations at same address are suspicious',
+              'Directors shared across many companies suggest nominee arrangements',
+              'Recently formed entities with immediate large transactions are red flags',
+              'Cross-reference with OpenCorporates, Companies House, SEC EDGAR',
+            ],
+            successCriteria: [
+              'Identified relevant corporate registries for the jurisdiction',
+              'Listed at least 5 shell company red flags',
+              'Demonstrated understanding of beneficial ownership concepts',
+            ],
+            suggestedPrompts: [
+              'What public registries can I check for US LLC ownership information?',
+              'What are the indicators that a company is a shell entity used for money laundering?',
+            ],
+          },
+          {
+            id: 'fin_sanctions',
+            title: 'Sanctions & PEP Screening',
+            type: 'observation',
+            instructions: 'Ask NEXUS to explain sanctions screening methodology. How do you check if a person or company appears on OFAC SDN, EU sanctions, UN sanctions, or PEP databases? What are the consequences of failing to screen?',
+            hints: [
+              'OFAC SDN list is freely searchable at sanctionssearch.ofac.treas.gov',
+              'PEP (Politically Exposed Persons) have higher corruption risk',
+              'Name matching must account for transliteration variants, aliases, and common name variants',
+              'Sanctions compliance is a legal obligation for financial institutions',
+            ],
+            successCriteria: [
+              'Understands the major sanctions lists and how to access them',
+              'Can explain PEP risk and why it matters',
+              'Knows the compliance implications of sanctions violations',
+            ],
+          },
+        ],
+        keyTakeaways: [
+          'Corporate opacity is often intentional — designed to hide beneficial ownership',
+          'Multiple registries and cross-referencing are essential — no single source is complete',
+          'Sanctions screening is not optional for financial investigations',
+          'Follow the money is the most powerful principle in financial OSINT',
+        ],
+        teachingAdaptations: {
+          experiential: 'Start the Corporate Intelligence campaign and trace ownership. The hands-on investigation teaches more than reading about it.',
+          visual: 'Draw an ownership chart: parent → subsidiary → subsidiary. Map the corporate structure visually.',
+          analytical: 'Study the Panama Papers and Pandora Papers methodologies. Understand how ICIJ investigators traced shell companies.',
+          social: 'Discuss case studies: Wirecard, Enron, BCCI. What OSINT was available before the scandals broke?',
+          pragmatic: 'Quick check: OpenCorporates for entity search, OFAC for sanctions, LinkedIn for people, Companies House for UK entities.',
+        },
+        platformTools: ['Agent Chat', 'Investigation Hub'],
+      },
+    ],
+  },
+
+  {
+    id: 'dark_web_osint',
+    name: 'Dark Web & Threat Intelligence',
+    icon: '🕸️',
+    description: 'Monitor the dark web safely. Breach monitoring, ransomware leak tracking, threat actor profiling, and underground marketplace analysis — all from safe OSINT sources.',
+    order: 5,
+    color: 'gray',
+    prerequisiteTrackIds: ['osint_foundations', 'passive_recon_mastery'],
+    missions: [
+      {
+        id: 'dw_breach_monitoring',
+        trackId: 'dark_web_osint',
+        name: 'Breach & Exposure Monitoring',
+        icon: '🔓',
+        description: 'Your organization\'s data is probably already on the dark web. Learn to check breach databases, paste sites, and leaked credential repositories safely and legally.',
+        difficulty: 'intermediate',
+        estimatedTime: '25-35 min',
+        xpReward: 150,
+        objectives: [
+          'Search breach databases for organizational exposure',
+          'Assess credential leak impact and timeline',
+          'Understand the dark web data lifecycle: breach → marketplace → paste site → public',
+          'Build a continuous monitoring plan for your organization',
+        ],
+        exercises: [
+          {
+            id: 'dw_breach_check',
+            title: 'Breach Database Investigation',
+            type: 'observation',
+            instructions: 'Start the Dark Web Intelligence campaign. Ask NEXUS to guide you through checking organizational exposure using safe, legal OSINT sources. How do you check if your domain\'s credentials have been leaked without accessing illegal databases?',
+            hints: [
+              'Have I Been Pwned (HIBP) is the primary free, legal breach checking service',
+              'DeHashed and IntelX offer more detail but require accounts',
+              'Google dorking for paste sites: site:pastebin.com "targetdomain.com"',
+              'Check if leaked passwords match your current password policy — if so, force resets',
+            ],
+            successCriteria: [
+              'Used at least 2 breach checking services',
+              'Assessed the severity and recency of any findings',
+              'Created an incident response plan for credential leaks',
+            ],
+          },
+          {
+            id: 'dw_threat_profile',
+            title: 'Threat Actor Profiling',
+            type: 'prompt_craft',
+            instructions: 'Ask NEXUS to help you build a threat actor profile for a fictional ransomware group "NightShade." What information do you need? What OSINT sources reveal TTPs, victimology, and infrastructure? How do you track their evolution over time?',
+            hints: [
+              'MITRE ATT&CK framework maps threat actor TTPs systematically',
+              'Ransomware leak sites are publicly indexed by researchers — you don\'t need to access them directly',
+              'Twitter/X, security blogs, and vendor reports track active groups',
+              'Infrastructure analysis: domain registration patterns, hosting providers, payment methods',
+            ],
+            successCriteria: [
+              'Built a structured threat actor profile with TTPs, victimology, and infrastructure',
+              'Used MITRE ATT&CK framework for technique mapping',
+              'Identified at least 3 OSINT sources for ongoing tracking',
+            ],
+            suggestedPrompts: [
+              'Help me build a threat actor profile template. What sections should it include?',
+              'How do researchers safely track ransomware groups using only OSINT?',
+            ],
+          },
+        ],
+        keyTakeaways: [
+          'Most dark web intelligence is available through safe, legal OSINT sources',
+          'You do NOT need to access dark web markets to do dark web intelligence',
+          'Breach monitoring should be continuous, not one-time',
+          'Threat actor profiling follows the same intelligence cycle as any OSINT investigation',
+        ],
+        teachingAdaptations: {
+          experiential: 'Start the Dark Web Intelligence campaign immediately. Check practice targets for breach exposure.',
+          visual: 'Create a data lifecycle diagram: breach event → dark web marketplace → paste site → public knowledge. Map timelines.',
+          analytical: 'Study MITRE ATT&CK and Diamond Model frameworks. Understand formal threat intelligence analysis.',
+          social: 'Share anonymized findings from breach checks. Discuss: how would you respond as a CISO?',
+          pragmatic: 'Set up HIBP notifications for your domain right now. It\'s free and gives you ongoing monitoring.',
+        },
+        platformTools: ['Agent Chat', 'Investigation Hub', 'Scanner'],
+      },
+    ],
+  },
+];
+
+export const ALL_CURRICULUM_TRACKS: AICurriculumTrack[] = [
+  ...AI_CURRICULUM_TRACKS,
+  ...OSINT_CURRICULUM_TRACKS,
+];
+
 export function getTrackById(trackId: string): AICurriculumTrack | undefined {
-  return AI_CURRICULUM_TRACKS.find(t => t.id === trackId);
+  return ALL_CURRICULUM_TRACKS.find(t => t.id === trackId);
 }
 
 export function getMissionById(missionId: string): AIMission | undefined {
-  for (const track of AI_CURRICULUM_TRACKS) {
+  for (const track of ALL_CURRICULUM_TRACKS) {
     const mission = track.missions.find(m => m.id === missionId);
     if (mission) return mission;
   }
@@ -964,17 +1526,17 @@ export function getMissionById(missionId: string): AIMission | undefined {
 }
 
 export function getTrackForMission(missionId: string): AICurriculumTrack | undefined {
-  return AI_CURRICULUM_TRACKS.find(t => t.missions.some(m => m.id === missionId));
+  return ALL_CURRICULUM_TRACKS.find(t => t.missions.some(m => m.id === missionId));
 }
 
 export function getAvailableTracks(completedTrackIds: string[]): AICurriculumTrack[] {
-  return AI_CURRICULUM_TRACKS.filter(track =>
+  return ALL_CURRICULUM_TRACKS.filter(track =>
     track.prerequisiteTrackIds.every(prereq => completedTrackIds.includes(prereq))
   );
 }
 
 export function getNextMission(completedMissionIds: string[]): AIMission | undefined {
-  for (const track of AI_CURRICULUM_TRACKS) {
+  for (const track of ALL_CURRICULUM_TRACKS) {
     for (const mission of track.missions) {
       if (!completedMissionIds.includes(mission.id)) return mission;
     }

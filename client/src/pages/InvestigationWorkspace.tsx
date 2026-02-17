@@ -161,7 +161,7 @@ export default function InvestigationWorkspace() {
 
       <main className="container mx-auto px-4 py-6 max-w-7xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-stone-900/50 border border-stone-800 p-1 flex-wrap min-h-[52px]" data-testid="hub-tabs">
+          <TabsList className="bg-stone-900/50 border border-stone-800 p-1 overflow-x-auto overflow-y-hidden flex-nowrap whitespace-nowrap min-h-[52px] w-full justify-start scrollbar-thin scrollbar-thumb-stone-700" data-testid="hub-tabs">
             <TabsTrigger 
               value="chat" 
               className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-400 min-h-[44px] gap-2"

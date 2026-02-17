@@ -14,7 +14,8 @@ import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign, type CampaignTarget
 import { toast } from "@/hooks/use-toast";
 import { PromptStudio, type PromptConfig } from './PromptStudio';
 import { MissionBriefing } from './MissionBriefing';
-import { AI_CURRICULUM_TRACKS, type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
+import { LearningStyleBadge } from './LearningStyleBadge';
+import { ALL_CURRICULUM_TRACKS, type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
 import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
 import { exportAgentSessionToReport } from '@/lib/reportExporter';
 import { useLearningStore } from '@/stores/useLearningStore';
@@ -689,7 +690,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
 
   const getActiveMission = (): AIMission | null => {
     if (!activeMissionId) return null;
-    for (const track of AI_CURRICULUM_TRACKS) {
+    for (const track of ALL_CURRICULUM_TRACKS) {
       const mission = track.missions.find(m => m.id === activeMissionId);
       if (mission) return mission;
     }
@@ -933,6 +934,7 @@ ${learningProfile}`;
             <span className="text-[9px] md:text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
               /kimi /nemo /gpt4o
             </span>
+            <LearningStyleBadge />
             <Button
               variant="outline"
               size="sm"

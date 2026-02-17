@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { CAPABILITY_MODULES, buildSystemPrompt } from '@/config/agentPrompts';
 import { CrewAIExporter } from '@/components/CrewAIExporter';
+import { DecoherenceLab } from '@/components/DecoherenceLab';
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
 
@@ -1309,6 +1310,12 @@ ${modelRankings.slice(0, 3).map(m => {
             </Button>
           </CardContent>
         </Card>
+
+      <Card className="border-red-900/30 bg-stone-900/50">
+        <CardContent className="p-4 sm:p-6">
+          <DecoherenceLab />
+        </CardContent>
+      </Card>
 
       <CrewAIExporter 
         open={showCrewAIExporter} 
