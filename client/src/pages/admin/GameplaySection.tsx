@@ -117,6 +117,7 @@ const DifficultyStars = ({ value, onChange }: { value: number; onChange?: (v: nu
         data-testid={`star-${i}`}
       />
     ))}
+  </div>
 );
 
 function useFetch<T>(key: string, url: string, fallback: T) {
@@ -205,15 +206,17 @@ export function GameplaySection() {
             size="sm" 
             className="sm:hidden bg-amber-700 text-black h-9"
             onClick={() => {
-              if ((tab as string) === "clues") openCreate({ clueId: "", name: "", description: "", content: "", tags: [], usedInCampaigns: [], linkedClues: [], difficulty: 1, category: "general" });
-              if ((tab as string) === "terminal") openCreate({ id: "", name: "", description: "", content: "", location: "terminal", difficulty: 1 });
-              if ((tab as string) === "quests") openCreate({ id: "", name: "", description: "", requiredClues: [], reward: "", unlocks: "" });
-              if ((tab as string) === "mystical") openCreate({ cardId: "", type: "tarot", name: "", symbol: "", hint: "", enabled: true });
-              if ((tab as string) === "achievements") openCreate({ achievementId: "", name: "", description: "", icon: "Award", category: "milestone", rarity: "common", xpReward: 50, condition: { type: "stat", value: 1 }, isActive: true, isHidden: false, sortOrder: 0 });
+              if (tab === "clues") openCreate({ clueId: "", name: "", description: "", content: "", tags: [], usedInCampaigns: [], linkedClues: [], difficulty: 1, category: "general" });
+              if (tab === "terminal") openCreate({ id: "", name: "", description: "", content: "", location: "terminal", difficulty: 1 });
+              if (tab === "quests") openCreate({ id: "", name: "", description: "", requiredClues: [], reward: "", unlocks: "" });
+              if (tab === "mystical") openCreate({ cardId: "", type: "tarot", name: "", symbol: "", hint: "", enabled: true });
+              if (tab === "achievements") openCreate({ achievementId: "", name: "", description: "", icon: "Award", category: "milestone", rarity: "common", xpReward: 50, condition: { type: "stat", value: 1 }, isActive: true, isHidden: false, sortOrder: 0 });
             }}
           >
             <Plus className="w-4 h-4 mr-1" /> Add
           </Button>
+        </div>
+      </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 md:mx-0 md:px-0" data-testid="gameplay-tabs">
         {TABS.map((t) => (
@@ -228,6 +231,7 @@ export function GameplaySection() {
             <t.icon className="w-4 h-4 mr-2" /> {t.label}
           </Button>
         ))}
+      </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-600" />
@@ -238,13 +242,15 @@ export function GameplaySection() {
           className={`pl-10 ${inp}`}
           data-testid="gameplay-search"
         />
+      </div>
 
-      {(tab as string) === "clues" && (
+      {tab === "clues" && (
         <div className="space-y-4">
           <div className="hidden sm:flex justify-end">
             <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => openCreate({ clueId: "", name: "", description: "", content: "", tags: [], usedInCampaigns: [], linkedClues: [], difficulty: 1, category: "general" })} data-testid="create-clue-btn">
               <Plus className="w-4 h-4 mr-2" /> Create New Clue
             </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered(sharedClues, ["name", "category", "description"]).map((clue) => (
               <Card key={clue.clueId} className="bg-[#0a0500] border-amber-900/30" data-testid={`clue-card-${clue.clueId}`}>
@@ -259,20 +265,25 @@ export function GameplaySection() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="outline" className="border-amber-700 text-amber-400 text-[10px]">{clue.category || "general"}</Badge>
                     <DifficultyStars value={clue.difficulty || 1} />
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {clue.tags?.map((t) => <Badge key={t} variant="outline" className="border-stone-700 text-stone-500 text-[8px]">{t}</Badge>)}
+                  </div>
                   {clue.usedInCampaigns?.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {clue.usedInCampaigns.map((c) => <Badge key={c} className="bg-teal-900/30 text-teal-400 text-[8px]">{c}</Badge>)}
+                    </div>
                   )}
                   <div className="flex gap-2 pt-1">
                     <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 min-h-[44px]" onClick={() => { setEditItem(clue); setDialogOpen(true); }} data-testid={`edit-clue-${clue.clueId}`}><Edit className="w-3 h-3 mr-1" /> Edit</Button>
                     <Button size="sm" variant="outline" className="border-teal-700 text-teal-400 min-h-[44px]" onClick={() => setLinkDialogClue(clue)} data-testid={`link-clue-${clue.clueId}`}><Link2 className="w-3 h-3 mr-1" /> Campaigns</Button>
                     <Button size="sm" variant="ghost" className="text-red-400 min-h-[44px]" onClick={() => deleteClue.mutate(clue.clueId)} data-testid={`delete-clue-${clue.clueId}`}><Trash2 className="w-3 h-3" /></Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
-          {dialogOpen && editItem && (tab as string) === "clues" && (
+          </div>
+          {dialogOpen && editItem && tab === "clues" && (
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-full max-w-lg">
                 <DialogHeader><DialogTitle className="text-amber-600 font-orbitron">{editItem.clueId ? "Edit Clue" : "Create Clue"}</DialogTitle></DialogHeader>
@@ -281,11 +292,13 @@ export function GameplaySection() {
                     <Label className="text-amber-600 text-[10px] uppercase font-bold">Identity</Label>
                     <Input placeholder="Clue ID" value={editItem.clueId} onChange={(e) => setEditItem({ ...editItem, clueId: e.target.value })} className={inp} data-testid="input-clue-id" />
                     <Input placeholder="Name" value={editItem.name} onChange={(e) => setEditItem({ ...editItem, name: e.target.value })} className={inp} data-testid="input-clue-name" />
+                  </div>
                   
                   <div className="space-y-1.5">
                     <Label className="text-amber-600 text-[10px] uppercase font-bold">Content</Label>
                     <Textarea placeholder="Description" value={editItem.description} onChange={(e) => setEditItem({ ...editItem, description: e.target.value })} className={`${inp} min-h-[80px]`} data-testid="input-clue-desc" />
                     <Textarea placeholder="Content" value={editItem.content} onChange={(e) => setEditItem({ ...editItem, content: e.target.value })} className={`${inp} min-h-[100px]`} data-testid="input-clue-content" />
+                  </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
@@ -294,16 +307,22 @@ export function GameplaySection() {
                         <SelectTrigger className={`${inp} h-11`} data-testid="select-clue-category"><SelectValue /></SelectTrigger>
                         <SelectContent className="bg-stone-950 border-amber-900/30">{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                       </Select>
+                    </div>
                     <div className="space-y-1.5">
                       <Label className="text-amber-600 text-[10px] uppercase font-bold">Difficulty</Label>
                       <div className="pt-2">
                         <DifficultyStars value={editItem.difficulty || 1} onChange={(v) => setEditItem({ ...editItem, difficulty: v })} />
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="space-y-1.5">
                     <Label className="text-amber-600 text-[10px] uppercase font-bold">Metadata</Label>
                     <Input placeholder="Tags (comma-separated)" value={editItem.tags?.join(", ") || ""} onChange={(e) => setEditItem({ ...editItem, tags: e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean) })} className={inp} data-testid="input-clue-tags" />
+                  </div>
 
                   <Button className="w-full bg-amber-700 hover:bg-amber-600 text-black min-h-[48px] font-bold text-sm mt-4" onClick={() => upsertClue.mutate(editItem)} data-testid="save-clue-btn">{upsertClue.isPending ? "Saving..." : "Save Clue"}</Button>
+                </div>
               </DialogContent>
             </Dialog>
           )}
@@ -311,30 +330,37 @@ export function GameplaySection() {
             <Dialog open={!!linkDialogClue} onOpenChange={() => setLinkDialogClue(null)}>
               <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-full max-w-md">
                 <DialogHeader><DialogTitle className="text-teal-400 font-orbitron">Campaign Links: {linkDialogClue.name}</DialogTitle></DialogHeader>
-                <div className="space-y-4 max-h-[80vh] overflow-y-auto pr-2 scrollbar-thin">
-                  <div className="space-y-3">
-                    <Label className="text-amber-600 text-xs">Linked Campaigns</Label>
-                    <div className="flex flex-wrap gap-1 min-h-[32px]">
-                      {(linkDialogClue.usedInCampaigns || []).map((c) => (
-                        <Badge key={c} className="bg-teal-900/30 text-teal-400 cursor-pointer" onClick={() => { handleCampaignLink(linkDialogClue, c, false); setLinkDialogClue({ ...linkDialogClue, usedInCampaigns: linkDialogClue.usedInCampaigns.filter((x) => x !== c) }); }} data-testid={`unlink-campaign-${c}`}>
-                          {c} <X className="w-3 h-3 ml-1" />
-                        </Badge>
-                      ))}
-                      {(!linkDialogClue.usedInCampaigns || linkDialogClue.usedInCampaigns.length === 0) && <span className="text-stone-600 text-xs">No campaigns linked</span>}
-                    <Label className="text-amber-600 text-xs">Add to Campaign</Label>
-                    <Select onValueChange={(v) => { handleCampaignLink(linkDialogClue, v, true); setLinkDialogClue({ ...linkDialogClue, usedInCampaigns: Array.from(new Set([...(linkDialogClue.usedInCampaigns || []), v])) }); }}>
-                      <SelectTrigger className={inp} data-testid="select-add-campaign"><SelectValue placeholder="Select campaign..." /></SelectTrigger>
-                      <SelectContent className="bg-stone-950 border-amber-900/30">
-                        {campaigns.filter((c) => !(linkDialogClue.usedInCampaigns || []).includes(c.id)).map((c) => <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                <div className="space-y-3">
+                  <Label className="text-amber-600 text-xs">Linked Campaigns</Label>
+                  <div className="flex flex-wrap gap-1 min-h-[32px]">
+                    {(linkDialogClue.usedInCampaigns || []).map((c) => (
+                      <Badge key={c} className="bg-teal-900/30 text-teal-400 cursor-pointer" onClick={() => { handleCampaignLink(linkDialogClue, c, false); setLinkDialogClue({ ...linkDialogClue, usedInCampaigns: linkDialogClue.usedInCampaigns.filter((x) => x !== c) }); }} data-testid={`unlink-campaign-${c}`}>
+                        {c} <X className="w-3 h-3 ml-1" />
+                      </Badge>
+                    ))}
+                    {(!linkDialogClue.usedInCampaigns || linkDialogClue.usedInCampaigns.length === 0) && <span className="text-stone-600 text-xs">No campaigns linked</span>}
+                  </div>
+                  <Label className="text-amber-600 text-xs">Add to Campaign</Label>
+                  <Select onValueChange={(v) => { handleCampaignLink(linkDialogClue, v, true); setLinkDialogClue({ ...linkDialogClue, usedInCampaigns: Array.from(new Set([...(linkDialogClue.usedInCampaigns || []), v])) }); }}>
+                    <SelectTrigger className={inp} data-testid="select-add-campaign"><SelectValue placeholder="Select campaign..." /></SelectTrigger>
+                    <SelectContent className="bg-stone-950 border-amber-900/30">
+                      {campaigns.filter((c) => !(linkDialogClue.usedInCampaigns || []).includes(c.id)).map((c) => <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
               </DialogContent>
             </Dialog>
           )}
-        </>
+        </div>
+      )}
+
+      {tab === "terminal" && (
+        <>
+          <div className="flex justify-end">
             <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => openCreate({ id: "", name: "", description: "", content: "", location: "terminal", difficulty: 1 })} data-testid="create-terminal-btn">
               <Plus className="w-4 h-4 mr-2" /> Add Terminal Command
             </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered(terminalClues, ["name", "description"]).map((clue) => (
               <Card key={clue.id} className="bg-[#0a0500] border-amber-900/30" data-testid={`terminal-card-${clue.id}`}>
@@ -349,11 +375,13 @@ export function GameplaySection() {
                   <div className="flex gap-2 pt-1">
                     <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 min-h-[44px]" onClick={() => { setEditItem(clue); setDialogOpen(true); }} data-testid={`edit-terminal-${clue.id}`}><Edit className="w-3 h-3 mr-1" /> Edit</Button>
                     <Button size="sm" variant="ghost" className="text-red-400 min-h-[44px]" onClick={() => deleteGameClue.mutate(clue.id)} data-testid={`delete-terminal-${clue.id}`}><Trash2 className="w-3 h-3" /></Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
             {terminalClues.length === 0 && <p className="text-stone-600 col-span-3 text-center py-8">No terminal commands defined.</p>}
-          {dialogOpen && editItem && (tab as string) === "terminal" && (
+          </div>
+          {dialogOpen && editItem && tab === "terminal" && (
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-full max-w-lg">
                 <DialogHeader><DialogTitle className="text-amber-600 font-orbitron">{editItem.id ? "Edit Terminal Command" : "Create Terminal Command"}</DialogTitle></DialogHeader>
@@ -365,19 +393,22 @@ export function GameplaySection() {
                   <div>
                     <Label className="text-amber-600 text-xs">Difficulty</Label>
                     <DifficultyStars value={editItem.difficulty || 1} onChange={(v) => setEditItem({ ...editItem, difficulty: v })} />
+                  </div>
                   <Button className="w-full bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => (editItem.id && gameClues.find((c) => c.id === editItem.id) ? updateGameClue : createGameClue).mutate({ ...editItem, location: editItem.location || "terminal" })} data-testid="save-terminal-btn">Save</Button>
+                </div>
               </DialogContent>
             </Dialog>
           )}
         </>
       )}
 
-      {(tab as string) === "quests" && (
+      {tab === "quests" && (
         <>
           <div className="flex justify-end">
             <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => openCreate({ id: "", name: "", description: "", requiredClues: [], reward: "", unlocks: "" })} data-testid="create-quest-btn">
               <Plus className="w-4 h-4 mr-2" /> Create Quest
             </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered(quests, ["name", "description"]).map((quest) => (
               <Card key={quest.id} className="bg-[#0a0500] border-amber-900/30" data-testid={`quest-card-${quest.id}`}>
@@ -393,11 +424,13 @@ export function GameplaySection() {
                   <div className="flex gap-2 pt-1">
                     <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 min-h-[44px]" onClick={() => { setEditItem(quest); setDialogOpen(true); }} data-testid={`edit-quest-${quest.id}`}><Edit className="w-3 h-3 mr-1" /> Edit</Button>
                     <Button size="sm" variant="ghost" className="text-red-400 min-h-[44px]" onClick={() => deleteQuest.mutate(quest.id)} data-testid={`delete-quest-${quest.id}`}><Trash2 className="w-3 h-3" /></Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
             {quests.length === 0 && <p className="text-stone-600 col-span-3 text-center py-8">No quests defined yet.</p>}
-          {dialogOpen && editItem && (tab as string) === "quests" && (
+          </div>
+          {dialogOpen && editItem && tab === "quests" && (
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-full max-w-lg">
                 <DialogHeader><DialogTitle className="text-amber-600 font-orbitron">{editItem.id ? "Edit Quest" : "Create Quest"}</DialogTitle></DialogHeader>
@@ -421,6 +454,7 @@ export function GameplaySection() {
                       {(!editItem.requiredClues || editItem.requiredClues.length === 0) && (
                         <span className="text-stone-600 text-xs">No clues required</span>
                       )}
+                    </div>
                     <Select onValueChange={(v) => setEditItem({ ...editItem, requiredClues: Array.from(new Set([...(editItem.requiredClues || []), v])) })}>
                       <SelectTrigger className="mt-1 bg-black/50 border-amber-900/30 text-amber-500" data-testid="select-add-req-clue">
                         <SelectValue placeholder="Add required clue..." />
@@ -431,6 +465,7 @@ export function GameplaySection() {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
                   <Input placeholder="Reward" value={editItem.reward || ""} onChange={(e) => setEditItem({ ...editItem, reward: e.target.value })} className={inp} data-testid="input-quest-reward" />
                   <div>
                     <Label className="text-amber-600 text-xs">Unlocks (Quest ID)</Label>
@@ -445,19 +480,22 @@ export function GameplaySection() {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
                   <Button className="w-full bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => (quests.find((q) => q.id === editItem.id) ? updateQuest : createQuest).mutate(editItem)} data-testid="save-quest-btn">Save Quest</Button>
+                </div>
               </DialogContent>
             </Dialog>
           )}
         </>
       )}
 
-      {(tab as string) === "mystical" && (
+      {tab === "mystical" && (
         <>
           <div className="flex justify-end">
             <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => openCreate({ cardId: "", type: "tarot", name: "", symbol: "", hint: "", element: "", enabled: true })} data-testid="create-card-btn">
               <Plus className="w-4 h-4 mr-2" /> Create Card
             </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered(mysticalCards, ["name", "type", "hint"]).map((card) => (
               <Card key={card.cardId} className="bg-[#0a0500] border-amber-900/30" data-testid={`card-${card.cardId}`}>
@@ -477,13 +515,17 @@ export function GameplaySection() {
                     <div className="flex items-center gap-2">
                       <Label className="text-stone-500 text-xs">Enabled</Label>
                       <Switch checked={card.enabled} onCheckedChange={(v) => upsertCard.mutate({ ...card, enabled: v })} data-testid={`toggle-card-${card.cardId}`} />
+                    </div>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 min-h-[44px]" onClick={() => { setEditItem(card); setDialogOpen(true); }} data-testid={`edit-card-${card.cardId}`}><Edit className="w-3 h-3" /></Button>
                       <Button size="sm" variant="ghost" className="text-red-400 min-h-[44px]" onClick={() => deleteCard.mutate(card.cardId)} data-testid={`delete-card-${card.cardId}`}><Trash2 className="w-3 h-3" /></Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
-          {dialogOpen && editItem && (tab as string) === "mystical" && (
+          </div>
+          {dialogOpen && editItem && tab === "mystical" && (
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-full max-w-lg">
                 <DialogHeader><DialogTitle className="text-amber-600 font-orbitron">{editItem.cardId ? "Edit Card" : "Create Card"}</DialogTitle></DialogHeader>
@@ -498,13 +540,14 @@ export function GameplaySection() {
                   <Textarea placeholder="Hint" value={editItem.hint} onChange={(e) => setEditItem({ ...editItem, hint: e.target.value })} className={inp} data-testid="input-card-hint" />
                   <Input placeholder="Element" value={editItem.element || ""} onChange={(e) => setEditItem({ ...editItem, element: e.target.value })} className={inp} data-testid="input-card-element" />
                   <Button className="w-full bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => upsertCard.mutate(editItem)} data-testid="save-card-btn">Save Card</Button>
+                </div>
               </DialogContent>
             </Dialog>
           )}
         </>
       )}
 
-      {(tab as string) === "quantum" && (
+      {tab === "quantum" && (
         <div className="space-y-6">
           <Card className="bg-[#0a0500] border-amber-900/30">
             <CardHeader>
@@ -517,10 +560,13 @@ export function GameplaySection() {
                   <div className="flex items-center justify-between">
                     <span className="text-amber-500 text-sm font-mono">{event.name}</span>
                     <Switch checked={event.enabled} onCheckedChange={(v) => upsertEvent.mutate({ ...event, enabled: v })} data-testid={`toggle-event-${event.id}`} />
+                  </div>
                   <p className="text-stone-400 text-xs">{event.description}</p>
                   <div className="flex items-center gap-3">
                     <Label className="text-stone-500 text-xs shrink-0">Probability: {event.baseProb}%</Label>
                     <Slider value={[event.baseProb]} min={0} max={100} step={1} onValueCommit={(v) => upsertEvent.mutate({ ...event, baseProb: v[0] })} className="flex-1" data-testid={`slider-event-${event.id}`} />
+                  </div>
+                </div>
               ))}
               {quantumEvents.length === 0 && <p className="text-stone-600 text-center py-4">No quantum events configured.</p>}
             </CardContent>
@@ -534,17 +580,20 @@ export function GameplaySection() {
               <div className="flex gap-2">
                 <Input placeholder="New quantum message..." value={newMsg} onChange={(e) => setNewMsg(e.target.value)} className={`flex-1 ${inp}`} data-testid="input-new-qmsg" />
                 <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => newMsg && createQMsg.mutate({ message: newMsg, enabled: true })} data-testid="add-qmsg-btn"><Plus className="w-4 h-4" /></Button>
+              </div>
               {filtered(quantumMessages, ["message"]).map((msg) => (
                 <div key={msg.id} className="flex items-center gap-3 bg-black/30 border border-amber-900/20 rounded p-2" data-testid={`qmsg-${msg.id}`}>
                   <Switch checked={msg.enabled} onCheckedChange={(v) => updateQMsg.mutate({ ...msg, enabled: v })} data-testid={`toggle-qmsg-${msg.id}`} />
                   <span className="text-stone-300 text-xs flex-1">{msg.message}</span>
                   <Button size="sm" variant="ghost" className="text-red-400" onClick={() => deleteQMsg.mutate(msg.id)} data-testid={`delete-qmsg-${msg.id}`}><Trash2 className="w-3 h-3" /></Button>
+                </div>
               ))}
             </CardContent>
           </Card>
+        </div>
       )}
 
-      {(tab as string) === "campaigns" && (
+      {tab === "campaigns" && (
         <div className="space-y-4">
           <p className="text-stone-400 text-xs">Overview of campaigns and their linked gameplay elements. Select a campaign to see linked clues and quests.</p>
           {campaigns.length === 0 && <p className="text-stone-600 text-center py-8">No campaigns found. Create campaigns in the Campaign Designer first.</p>}
@@ -567,6 +616,8 @@ export function GameplaySection() {
                           </Badge>
                         ))}
                         {linkedClues.length === 0 && <span className="text-stone-600 text-[10px]">No clues linked</span>}
+                      </div>
+                    </div>
                     <div>
                       <Label className="text-amber-600 text-[10px] uppercase">Quick Add Clue</Label>
                       <Select onValueChange={(v) => { const clue = sharedClues.find((c) => c.clueId === v); if (clue) handleCampaignLink(clue, campaign.id, true); }}>
@@ -575,13 +626,16 @@ export function GameplaySection() {
                           {sharedClues.filter((c) => !c.usedInCampaigns?.includes(campaign.id)).map((c) => <SelectItem key={c.clueId} value={c.clueId}>{c.name}</SelectItem>)}
                         </SelectContent>
                       </Select>
+                    </div>
                   </CardContent>
                 </Card>
               );
             })}
+          </div>
+        </div>
       )}
 
-      {(tab as string) === "achievements" && (
+      {tab === "achievements" && (
         <>
           <div className="flex justify-end">
             <Button className="bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => openCreate({
@@ -591,6 +645,7 @@ export function GameplaySection() {
             })} data-testid="create-achievement-btn">
               <Plus className="w-4 h-4 mr-2" /> Create Achievement
             </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered(achievements, ["name", "description", "category"]).map((ach) => (
               <Card key={ach.achievementId} className="bg-[#0a0500] border-amber-900/30" data-testid={`achievement-card-${ach.achievementId}`}>
@@ -617,18 +672,23 @@ export function GameplaySection() {
                     <span className="text-stone-600 text-[10px]">
                       {ach.condition.type}: {ach.condition.comparison || "gte"} {ach.condition.value}
                     </span>
+                  </div>
                   <div className="flex items-center justify-between pt-1">
                     <div className="flex items-center gap-2">
                       <Label className="text-stone-500 text-xs">Active</Label>
                       <Switch checked={ach.isActive} onCheckedChange={(v) => upsertAchievement.mutate({ ...ach, isActive: v })} data-testid={`toggle-ach-${ach.achievementId}`} />
+                    </div>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 min-h-[44px]" onClick={() => { setEditItem(ach); setDialogOpen(true); }} data-testid={`edit-ach-${ach.achievementId}`}><Edit className="w-3 h-3 mr-1" /> Edit</Button>
                       <Button size="sm" variant="ghost" className="text-red-400 min-h-[44px]" onClick={() => deleteAchievement.mutate(ach.achievementId)} data-testid={`delete-ach-${ach.achievementId}`}><Trash2 className="w-3 h-3" /></Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
             {achievements.length === 0 && <p className="text-stone-600 col-span-3 text-center py-8">No achievements defined. Create one to get started.</p>}
-          {dialogOpen && editItem && (tab as string) === "achievements" && (
+          </div>
+          {dialogOpen && editItem && tab === "achievements" && (
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 w-full max-w-lg">
                 <DialogHeader><DialogTitle className="text-amber-600 font-orbitron">{editItem.achievementId ? "Edit Achievement" : "Create Achievement"}</DialogTitle></DialogHeader>
@@ -640,9 +700,12 @@ export function GameplaySection() {
                     <div>
                       <Label className="text-amber-600 text-xs">Icon (emoji)</Label>
                       <Input value={editItem.icon} onChange={(e) => setEditItem({ ...editItem, icon: e.target.value })} className={inp} data-testid="input-ach-icon" />
+                    </div>
                     <div>
                       <Label className="text-amber-600 text-xs">XP Reward</Label>
                       <Input type="number" value={editItem.xpReward} onChange={(e) => setEditItem({ ...editItem, xpReward: Number(e.target.value) })} className={inp} data-testid="input-ach-xp" />
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <Label className="text-amber-600 text-xs">Category</Label>
@@ -652,6 +715,7 @@ export function GameplaySection() {
                           {["general", "discovery", "speed", "mastery", "social", "special"].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                         </SelectContent>
                       </Select>
+                    </div>
                     <div>
                       <Label className="text-amber-600 text-xs">Rarity</Label>
                       <Select value={editItem.rarity} onValueChange={(v) => setEditItem({ ...editItem, rarity: v })}>
@@ -660,6 +724,8 @@ export function GameplaySection() {
                           {["common", "uncommon", "rare", "epic", "legendary"].map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                         </SelectContent>
                       </Select>
+                    </div>
+                  </div>
                   <div>
                     <Label className="text-amber-600 text-xs">Unlock Condition</Label>
                     <div className="grid grid-cols-3 gap-2 mt-1">
@@ -678,19 +744,27 @@ export function GameplaySection() {
                         </SelectContent>
                       </Select>
                       <Input placeholder="Value" value={editItem.condition?.value ?? ""} onChange={(e) => setEditItem({ ...editItem, condition: { ...editItem.condition, value: isNaN(Number(e.target.value)) ? e.target.value : Number(e.target.value) } })} className={inp} data-testid="input-ach-cond-value" />
+                    </div>
+                  </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Label className="text-stone-500 text-xs">Hidden</Label>
                       <Switch checked={editItem.isHidden} onCheckedChange={(v) => setEditItem({ ...editItem, isHidden: v })} data-testid="toggle-ach-hidden" />
+                    </div>
                     <div>
                       <Label className="text-stone-500 text-xs">Sort Order</Label>
                       <Input type="number" value={editItem.sortOrder ?? 0} onChange={(e) => setEditItem({ ...editItem, sortOrder: Number(e.target.value) })} className={`w-20 ml-1 ${inp}`} data-testid="input-ach-sort" />
+                    </div>
+                  </div>
                   <Button className="w-full bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]" onClick={() => upsertAchievement.mutate(editItem)} data-testid="save-ach-btn">
                     {upsertAchievement.isPending ? "Saving..." : "Save Achievement"}
                   </Button>
+                </div>
               </DialogContent>
             </Dialog>
           )}
         </>
       )}
+    </div>
   );
+}

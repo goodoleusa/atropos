@@ -5,6 +5,7 @@ import {
   sanitizeInput, 
   validateSessionToken
 } from "../security";
+import { isAdmin } from "../adminAuth";
 
 const router = Router();
 
@@ -170,7 +171,7 @@ router.get("/api/agent-modules/:moduleId", async (req, res) => {
   }
 });
 
-router.put("/api/agent-modules/:moduleId", async (req, res) => {
+router.put("/api/agent-modules/:moduleId", isAdmin, async (req, res) => {
   try {
     const { moduleId } = req.params;
     const module = await storage.upsertAgentModule(moduleId, req.body);
@@ -181,7 +182,7 @@ router.put("/api/agent-modules/:moduleId", async (req, res) => {
   }
 });
 
-router.delete("/api/agent-modules/:moduleId", async (req, res) => {
+router.delete("/api/agent-modules/:moduleId", isAdmin, async (req, res) => {
   try {
     const { moduleId } = req.params;
     await storage.deleteAgentModule(moduleId);
@@ -192,7 +193,7 @@ router.delete("/api/agent-modules/:moduleId", async (req, res) => {
   }
 });
 
-router.post("/api/agent-modules/seed", async (req, res) => {
+router.post("/api/agent-modules/seed", isAdmin, async (req, res) => {
   try {
     const { AGENT_CAMPAIGNS } = await import("../../client/src/config/agentCampaigns");
     let seeded = 0;
@@ -252,7 +253,7 @@ router.get("/api/designer/campaigns/:campaignId", async (req, res) => {
   }
 });
 
-router.put("/api/designer/campaigns/:campaignId", async (req, res) => {
+router.put("/api/designer/campaigns/:campaignId", isAdmin, async (req, res) => {
   try {
     const { campaignId } = req.params;
     const campaign = await storage.upsertDesignerCampaign(campaignId, req.body);
@@ -281,7 +282,7 @@ router.put("/api/designer/campaigns/:campaignId", async (req, res) => {
   }
 });
 
-router.delete("/api/designer/campaigns/:campaignId", async (req, res) => {
+router.delete("/api/designer/campaigns/:campaignId", isAdmin, async (req, res) => {
   try {
     const { campaignId } = req.params;
     await storage.deleteDesignerCampaign(campaignId);
@@ -292,7 +293,7 @@ router.delete("/api/designer/campaigns/:campaignId", async (req, res) => {
   }
 });
 
-router.post("/api/designer/campaigns/:campaignId/publish", async (req, res) => {
+router.post("/api/designer/campaigns/:campaignId/publish", isAdmin, async (req, res) => {
   try {
     const { campaignId } = req.params;
     const campaign = await storage.upsertDesignerCampaign(campaignId, { isPublished: true });
@@ -319,7 +320,7 @@ router.post("/api/designer/campaigns/:campaignId/publish", async (req, res) => {
   }
 });
 
-router.post("/api/designer/campaigns/:campaignId/unpublish", async (req, res) => {
+router.post("/api/designer/campaigns/:campaignId/unpublish", isAdmin, async (req, res) => {
   try {
     const { campaignId } = req.params;
     const campaign = await storage.upsertDesignerCampaign(campaignId, { isPublished: false });
@@ -1407,7 +1408,7 @@ router.get("/api/designer/clues/:clueId", async (req, res) => {
   }
 });
 
-router.put("/api/designer/clues/:clueId", async (req, res) => {
+router.put("/api/designer/clues/:clueId", isAdmin, async (req, res) => {
   try {
     const { clueId } = req.params;
     const clue = await storage.upsertSharedClue(clueId, req.body);
@@ -1418,7 +1419,7 @@ router.put("/api/designer/clues/:clueId", async (req, res) => {
   }
 });
 
-router.delete("/api/designer/clues/:clueId", async (req, res) => {
+router.delete("/api/designer/clues/:clueId", isAdmin, async (req, res) => {
   try {
     const { clueId } = req.params;
     await storage.deleteSharedClue(clueId);
@@ -1503,7 +1504,7 @@ router.get("/api/mystical-cards", async (_req, res) => {
   }
 });
 
-router.put("/api/mystical-cards/:cardId", rateLimit(30, 60000), async (req, res) => {
+router.put("/api/mystical-cards/:cardId", isAdmin, rateLimit(30, 60000), async (req, res) => {
   try {
     const { cardId } = req.params;
     const updates: Record<string, any> = {};
@@ -1518,7 +1519,7 @@ router.put("/api/mystical-cards/:cardId", rateLimit(30, 60000), async (req, res)
   }
 });
 
-router.delete("/api/mystical-cards/:cardId", async (req, res) => {
+router.delete("/api/mystical-cards/:cardId", isAdmin, async (req, res) => {
   try {
     const { cardId } = req.params;
     const deleted = await storage.deleteMysticalCard(cardId);
@@ -1623,7 +1624,7 @@ router.get("/api/designer/links/:campaignId", async (req, res) => {
   }
 });
 
-router.post("/api/designer/links", async (req, res) => {
+router.post("/api/designer/links", isAdmin, async (req, res) => {
   try {
     const link = await storage.createCampaignLink(req.body);
     res.json(link);
@@ -1633,7 +1634,7 @@ router.post("/api/designer/links", async (req, res) => {
   }
 });
 
-router.delete("/api/designer/links/:id", async (req, res) => {
+router.delete("/api/designer/links/:id", isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     await storage.deleteCampaignLink(parseInt(id));

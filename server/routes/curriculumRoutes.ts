@@ -1,6 +1,7 @@
 import { Router } from "express";
 import OpenAI from "openai";
 import { storage } from "../storage";
+import { isAdmin } from "../adminAuth";
 
 const router = Router();
 
@@ -42,7 +43,7 @@ router.get("/api/curriculum/:trackId", async (req, res) => {
   }
 });
 
-router.put("/api/curriculum/:trackId", async (req, res) => {
+router.put("/api/curriculum/:trackId", isAdmin, async (req, res) => {
   try {
     const updated = await storage.updateCurriculumTrack(req.params.trackId, req.body);
     if (!updated) return res.status(404).json({ error: "Track not found" });
@@ -52,7 +53,7 @@ router.put("/api/curriculum/:trackId", async (req, res) => {
   }
 });
 
-router.post("/api/curriculum", async (req, res) => {
+router.post("/api/curriculum", isAdmin, async (req, res) => {
   try {
     const { trackId, ...data } = req.body;
     if (!trackId) return res.status(400).json({ error: "trackId required" });
@@ -63,7 +64,7 @@ router.post("/api/curriculum", async (req, res) => {
   }
 });
 
-router.delete("/api/curriculum/:trackId", async (req, res) => {
+router.delete("/api/curriculum/:trackId", isAdmin, async (req, res) => {
   try {
     const deleted = await storage.deleteCurriculumTrack(req.params.trackId);
     res.json({ success: deleted });
@@ -72,7 +73,7 @@ router.delete("/api/curriculum/:trackId", async (req, res) => {
   }
 });
 
-router.post("/api/curriculum/seed", async (_req, res) => {
+router.post("/api/curriculum/seed", isAdmin, async (_req, res) => {
   try {
     const { AI_CURRICULUM_TRACKS, OSINT_CURRICULUM_TRACKS } = await import("../../client/src/config/aiCurriculum");
     
@@ -145,7 +146,7 @@ router.get("/api/curriculum/stats/overview", async (_req, res) => {
   }
 });
 
-router.post("/api/curriculum/generate-draft", async (req, res) => {
+router.post("/api/curriculum/generate-draft", isAdmin, async (req, res) => {
   try {
     const now = Date.now();
     if (now - lastGenTime < 5000) {
@@ -409,7 +410,7 @@ Return EXACTLY this JSON structure (no markdown, pure JSON) — a multi-step inv
   }
 });
 
-router.post("/api/curriculum/approve-draft", async (req, res) => {
+router.post("/api/curriculum/approve-draft", isAdmin, async (req, res) => {
   try {
     const { trackId, mission } = req.body;
     if (!trackId) return res.status(400).json({ error: "trackId required" });

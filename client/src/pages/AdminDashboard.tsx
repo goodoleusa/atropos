@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -858,6 +859,7 @@ const NAV_ICONS: Record<string, any> = {
 };
 
 export default function AdminDashboard() {
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   const { gameState, toggleDevMode } = useGame();
   const [apiPlaygroundOpen, setApiPlaygroundOpen] = useState(false);
   const [, navigate] = useLocation();
@@ -869,6 +871,38 @@ export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("activity");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#0a0500] flex items-center justify-center">
+        <div className="text-amber-600 font-mono text-sm animate-pulse">Authenticating...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#0a0500] flex items-center justify-center" data-testid="admin-login-gate">
+        <Card className="bg-[#0d0800] border-amber-900/30 max-w-md w-full mx-4">
+          <CardHeader className="text-center">
+            <CardTitle className="text-amber-500 font-orbitron text-xl">Admin Access Required</CardTitle>
+            <CardDescription className="text-stone-500">
+              Sign in with your Replit account to access the admin dashboard.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <Button
+              className="bg-amber-700 hover:bg-amber-600 text-black font-bold px-8 py-3"
+              onClick={() => { window.location.href = "/api/login"; }}
+              data-testid="admin-login-btn"
+            >
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const toggleNode = (id: string) => {
     setExpandedNodes(prev => ({ ...prev, [id]: !prev[id] }));
@@ -1057,7 +1091,26 @@ export default function AdminDashboard() {
             </div>
           </ScrollArea>
 
-          <div className="p-3 border-t border-amber-900/20">
+          <div className="p-3 border-t border-amber-900/20 space-y-2">
+            {user && (
+              <div className="flex items-center gap-2 px-2 py-1.5" data-testid="admin-user-info">
+                {user.profileImageUrl ? (
+                  <img src={user.profileImageUrl} alt="" className="w-5 h-5 rounded-full border border-amber-900/40" />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-amber-900/30 border border-amber-900/40 flex items-center justify-center text-[8px] text-amber-500">
+                    {(user.firstName || user.email || "A")[0].toUpperCase()}
+                  </div>
+                )}
+                <span className="text-[10px] text-stone-400 truncate flex-1">{user.firstName || user.email || "Admin"}</span>
+                <button
+                  onClick={() => logout()}
+                  className="text-[9px] text-stone-600 hover:text-red-400 transition-colors"
+                  data-testid="admin-logout-btn"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
             <Link href="/">
               <Button variant="ghost" size="sm" className="w-full justify-start text-stone-500 hover:text-amber-500 text-[10px] h-8">
                 <ArrowRight className="w-3 h-3 mr-2 rotate-180" /> Exit to Platform

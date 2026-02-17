@@ -2,6 +2,7 @@ import { Router } from "express";
 import { storage } from "../storage";
 import { getLevelForXP, XP_LEVELS } from "../../shared/schema";
 import { rateLimit, validateSessionToken } from "../security";
+import { isAdmin } from "../adminAuth";
 
 const router = Router();
 
@@ -121,7 +122,7 @@ router.get("/api/gameplay/achievements/all", async (_req, res) => {
   }
 });
 
-router.post("/api/gameplay/achievements", rateLimit(30, 60000), async (req, res) => {
+router.post("/api/gameplay/achievements", isAdmin, rateLimit(30, 60000), async (req, res) => {
   try {
     const { achievementId, ...data } = req.body;
     if (!achievementId || typeof achievementId !== "string") {
@@ -135,7 +136,7 @@ router.post("/api/gameplay/achievements", rateLimit(30, 60000), async (req, res)
   }
 });
 
-router.delete("/api/gameplay/achievements/:achievementId", async (req, res) => {
+router.delete("/api/gameplay/achievements/:achievementId", isAdmin, async (req, res) => {
   try {
     const deleted = await storage.deleteAchievementDefinition(req.params.achievementId);
     res.json({ success: deleted });
