@@ -112,7 +112,7 @@ const TOOLS: ToolEntry[] = [
     category: 'tools'
   },
   {
-    id: 'suggestions', name: 'RECS', route: '/suggestions', icon: Lightbulb, color: 'cyan',
+    id: 'recs', name: 'RECS', route: '/recs', icon: Lightbulb, color: 'cyan',
     purpose: 'View and manage agent-generated recs with charts, voting, and 6+ export formats',
     features: ['RECS + Reports tabs', 'Category charts', 'Voting', 'AI prompt / code / git patch / curl / JSON / markdown export', 'Repository sync'],
     category: 'meta'
@@ -278,7 +278,7 @@ export default function Walkthrough() {
   const submitFinding = useCallback(async (finding: OverlapFinding) => {
     setSubmitting(finding.id);
     try {
-      const res = await fetch('/api/recommendations', {
+      const res = await fetch('/api/recs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -353,8 +353,8 @@ export default function Walkthrough() {
                 <Lightbulb className="w-3 h-3 mr-1" />
                 {submittedCount}/{findings.length} submitted
               </Badge>
-              <Link href="/suggestions">
-                <Button variant="outline" size="sm" className="border-amber-800/50 text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="view-suggestions-btn">
+              <Link href="/recs">
+                <Button variant="outline" size="sm" className="border-amber-800/50 text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="view-recs-btn">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View RECS
                 </Button>

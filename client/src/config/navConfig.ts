@@ -34,7 +34,7 @@ export const USER_NAV: NavSection = {
     { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' },
     { path: '/videos', icon: Activity, label: 'AI Gallery', color: 'teal' },
     { path: '/wiki', icon: BookOpen, label: 'Wiki', color: 'teal' },
-    { path: '/suggestions', icon: Sparkles, label: 'RECS', color: 'amber' },
+    { path: '/recs', icon: Sparkles, label: 'RECS', color: 'amber' },
   ],
 };
 

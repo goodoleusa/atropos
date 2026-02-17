@@ -160,7 +160,7 @@ function recToPrompt(rec: Recommendation): string {
 }
 
 function recToCurl(rec: Recommendation, baseUrl: string): string {
-  return `curl -s "${baseUrl}/api/recommendations/export/${rec.id}?format=prompt"`;
+  return `curl -s "${baseUrl}/api/recs/export/${rec.id}?format=prompt"`;
 }
 
 function recToGitPatch(rec: Recommendation): string {
@@ -261,11 +261,11 @@ export default function SuggestionsPage() {
     refetchInterval: 30000,
   });
   const { data: recs = [], isLoading: recsLoading } = useQuery<Recommendation[]>({
-    queryKey: ["/api/recommendations"],
+    queryKey: ["/api/recs"],
     refetchInterval: 30000,
   });
   const { data: recStats } = useQuery<RecStats>({
-    queryKey: ["/api/recommendations/stats"],
+    queryKey: ["/api/recs/stats"],
     refetchInterval: 30000,
   });
 
@@ -283,19 +283,19 @@ export default function SuggestionsPage() {
 
   const voteRec = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/recommendations/${id}/vote`, { method: "POST" });
+      const res = await fetch(`/api/recs/${id}/vote`, { method: "POST" });
       if (!res.ok) throw new Error("Vote failed");
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/recommendations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/recommendations/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/recs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/recs/stats"] });
     },
   });
 
   const syncFiles = useMutation({
     mutationFn: async () => {
-      const res = await fetch('/api/recommendations/sync', { method: 'POST' });
+      const res = await fetch('/api/recs/sync', { method: 'POST' });
       if (!res.ok) throw new Error("Sync failed");
       return res.json();
     },
@@ -408,7 +408,7 @@ export default function SuggestionsPage() {
                 variant="outline"
                 size="sm"
                 className="text-xs border-stone-700 text-stone-400 hover:text-cyan-400 hover:border-cyan-700"
-                onClick={() => window.open(`${baseUrl}/api/recommendations/export?format=json`, '_blank')}
+                onClick={() => window.open(`${baseUrl}/api/recs/export?format=json`, '_blank')}
                 data-testid="btn-export-json"
               >
                 <FileJson className="w-3 h-3 mr-1" />
@@ -418,7 +418,7 @@ export default function SuggestionsPage() {
                 variant="outline"
                 size="sm"
                 className="text-xs border-stone-700 text-stone-400 hover:text-purple-400 hover:border-purple-700"
-                onClick={() => window.open(`${baseUrl}/api/recommendations/export?format=markdown`, '_blank')}
+                onClick={() => window.open(`${baseUrl}/api/recs/export?format=markdown`, '_blank')}
                 data-testid="btn-export-md"
               >
                 <FileText className="w-3 h-3 mr-1" />
@@ -803,12 +803,12 @@ export default function SuggestionsPage() {
                         Sync to .github/RECOMMENDATIONS.md
                       </Button>
                       <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-stone-700 text-stone-300 justify-start hover:border-cyan-700"
-                        onClick={() => window.open(`${baseUrl}/api/recommendations/export?format=prompt`, '_blank')} data-testid="btn-export-all-prompts">
+                        onClick={() => window.open(`${baseUrl}/api/recs/export?format=prompt`, '_blank')} data-testid="btn-export-all-prompts">
                         <Clipboard className="w-3 h-3 mr-2 text-cyan-500" />
                         Export All as Agent Prompts
                       </Button>
                       <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-stone-700 text-stone-300 justify-start hover:border-purple-700"
-                        onClick={() => copyToClipboard(`curl -s "${baseUrl}/api/recommendations/export?format=json" | jq .`, toast, "bulk curl")} data-testid="btn-bulk-curl">
+                        onClick={() => copyToClipboard(`curl -s "${baseUrl}/api/recs/export?format=json" | jq .`, toast, "bulk curl")} data-testid="btn-bulk-curl">
                         <Terminal className="w-3 h-3 mr-2 text-purple-500" />
                         Copy Bulk curl Command
                       </Button>
