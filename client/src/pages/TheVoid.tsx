@@ -156,7 +156,7 @@ export default function TheVoid() {
       ))}
 
       <div className="absolute top-1/4 left-1/4 w-96 h-96 border border-amber-900/10 rounded-full animate-pulse [animation-duration:4s]" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 border border-purple-900/10 rounded-full animate-pulse [animation-duration:6s]" />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 border border-amber-900/10 rounded-full animate-pulse [animation-duration:6s]" />
       <motion.div
         className="absolute top-1/3 right-1/3 w-32 h-32 border border-stone-800/20 rotate-45"
         animate={{ rotate: 360 }}
@@ -181,7 +181,7 @@ export default function TheVoid() {
           whileTap={{ scale: 0.98 }}
           data-testid="scrying-pool"
         >
-          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-stone-950 via-amber-950/20 to-purple-950/30 border border-amber-900/20" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-stone-950 via-amber-950/20 to-amber-950/30 border border-amber-900/20" />
           
           <motion.div
             className="absolute inset-4 rounded-full bg-gradient-radial from-amber-900/10 via-transparent to-transparent"
@@ -191,7 +191,7 @@ export default function TheVoid() {
           
           <div className="absolute inset-0 rounded-full overflow-hidden">
             <motion.div
-              className="absolute inset-0 bg-gradient-conic from-amber-900/5 via-purple-900/5 to-amber-900/5"
+              className="absolute inset-0 bg-gradient-conic from-amber-900/5 via-amber-900/5 to-amber-900/5"
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             />
@@ -348,12 +348,12 @@ export default function TheVoid() {
             className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
           >
             <div 
-              className="bg-[#0a0500]/90 border border-purple-600/40 rounded-lg px-6 py-3 backdrop-blur-md cursor-pointer"
+              className="bg-[#0a0500]/90 border border-amber-600/40 rounded-lg px-6 py-3 backdrop-blur-md cursor-pointer"
               onClick={dismissEvent}
             >
               <div className="flex items-center gap-3">
-                <Moon className="w-4 h-4 text-purple-500" />
-                <p className="text-purple-400 font-mono text-sm italic">{tipMessage}</p>
+                <Moon className="w-4 h-4 text-amber-500" />
+                <p className="text-amber-400 font-mono text-sm italic">{tipMessage}</p>
               </div>
             </div>
           </motion.div>
