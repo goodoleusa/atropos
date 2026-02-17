@@ -883,23 +883,34 @@ export default function AdminDashboard() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#0a0500] flex items-center justify-center" data-testid="admin-login-gate">
-        <Card className="bg-[#0d0800] border-amber-900/30 max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <CardTitle className="text-amber-500 font-orbitron text-xl">Admin Access Required</CardTitle>
-            <CardDescription className="text-stone-500">
-              Sign in with your Replit account to access the admin dashboard.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <Button
-              className="bg-amber-700 hover:bg-amber-600 text-black font-bold px-8 py-3"
-              onClick={() => { window.location.href = "/api/login"; }}
-              data-testid="admin-login-btn"
-            >
-              Sign In
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="max-w-lg w-full mx-4 text-center space-y-8">
+          <div className="space-y-3">
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-amber-900/20 border-2 border-amber-700/50 flex items-center justify-center mb-6">
+              <ShieldAlert className="w-10 h-10 text-amber-500" />
+            </div>
+            <h1 className="text-3xl font-orbitron text-amber-500 tracking-tight">Admin Access</h1>
+            <p className="text-stone-500 text-sm max-w-xs mx-auto">
+              This area is restricted. Sign in with your Replit account to continue.
+            </p>
+          </div>
+
+          <Button
+            size="lg"
+            className="bg-amber-600 hover:bg-amber-500 text-black font-bold px-12 py-6 text-lg rounded-xl shadow-lg shadow-amber-900/30 transition-all hover:shadow-amber-800/40 hover:scale-[1.02]"
+            onClick={() => { window.location.href = "/api/login"; }}
+            data-testid="admin-login-btn"
+          >
+            Sign In to Admin Panel
+          </Button>
+
+          <div className="pt-4">
+            <Link href="/">
+              <span className="text-xs text-stone-600 hover:text-stone-400 cursor-pointer transition-colors">
+                &larr; Back to platform
+              </span>
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
