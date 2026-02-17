@@ -47,30 +47,29 @@ export default function QuickNav() {
   });
 
   const userItems = [
-    // Core Experience
+    // Core Operations
     { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
     { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
     { path: '/investigate', icon: Search, label: 'Investigation Hub', color: 'teal' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     
-    // Growth & Identity
+    // Knowledge & Progression
     { path: '/profile', icon: User, label: 'Profile', color: 'teal' as const },
     { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
     { path: '/videos', icon: Activity, label: 'AI Gallery', color: 'teal' as const },
     { path: '/wiki', icon: BookOpen, label: 'Wiki', color: 'teal' as const },
-    { path: '/business', icon: Briefcase, label: 'Business HQ', color: 'teal' as const },
+    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
   ];
 
   const adminItems = [
-    // Content & Systems
+    // Content & Intelligence
     { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
-    { path: '/scanner', icon: Search, label: 'Atropos Scanner', color: 'amber' as const },
+    { path: '/scanner', icon: Search, label: 'Atropos Admin', color: 'amber' as const },
     { path: '/admin', icon: Settings, label: 'Admin Panel', color: 'amber' as const },
-    
-    // Experimental & Maintenance
-    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
     { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
+    
+    // Experimental & Debug
     { path: '/void', icon: Sparkles, label: 'The Void', color: 'amber' as const },
     { path: '/debug', icon: Bug, label: 'Debug Tools', color: 'amber' as const },
   ];
@@ -180,7 +179,7 @@ export default function QuickNav() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start bg-amber-900/20 text-amber-400 hover:bg-amber-900/40 min-h-[44px]"
+              className="w-full justify-start bg-amber-900/10 text-amber-500/80 hover:bg-amber-900/20 min-h-[44px] border border-amber-900/20"
               onClick={() => window.dispatchEvent(new CustomEvent('open-qr-modal'))}
               data-testid="quicknav-qr-tool"
             >
