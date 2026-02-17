@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -390,7 +391,7 @@ export default function CrewBuilder() {
           output: data.analysis || data.error || 'No output',
           latencyMs,
           tokenUsage: data.tokenUsage,
-          costEstimate: (modelInfo?.costPer1k || 0) * (tokensUsed / 1000),
+          costEstimate: ((modelInfo?.inputPer1M || 0) + (modelInfo?.outputPer1M || 0)) / 2 * (tokensUsed / 1_000_000),
         });
 
         setCurrentResults([...results]);
@@ -429,7 +430,7 @@ export default function CrewBuilder() {
           output: data.analysis || data.error || 'No output',
           latencyMs,
           tokenUsage: data.tokenUsage,
-          costEstimate: (synthModelInfo?.costPer1k || 0) * (tokensUsed / 1000),
+          costEstimate: ((synthModelInfo?.inputPer1M || 0) + (synthModelInfo?.outputPer1M || 0)) / 2 * (tokensUsed / 1_000_000),
         };
         setSynthesisResult(synthResult);
       }
