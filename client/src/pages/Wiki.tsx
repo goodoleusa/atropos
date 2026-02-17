@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Book, Terminal, Bot, FileText, Settings, Zap, Target, Shield, ChevronRight, Home, Search, Trophy, TrendingUp, Award, GraduationCap, Users, MessageSquare } from 'lucide-react';
+import { Book, Terminal, Bot, FileText, Settings, Zap, Target, Shield, ChevronRight, Home, Search, Trophy, TrendingUp, Award, GraduationCap, Users, MessageSquare, Map, Layers, QrCode, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -921,6 +921,380 @@ export default function Wiki() {
               <li>Hidden easter eggs in the terminal</li>
               <li>Thematic clue connections</li>
               <li>Visual effects and animations</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'campaign-builder',
+      title: 'Campaign Builder & Sitemap',
+      icon: <Layers className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Campaign Builder & Sitemap Integration</h2>
+          <p className="text-stone-300 leading-relaxed">
+            The Campaign Builder is a visual editor for creating investigation campaigns. It now syncs
+            directly with the platform sitemap: saving or publishing a campaign automatically registers
+            its route in the sitemap database.
+          </p>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Builder Features</h3>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
+                <span><strong>Visual Canvas:</strong> Drag-and-drop node editor with connection lines, zoom, and pan</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
+                <span><strong>Node Types:</strong> Step, Decision, Tool, Output, Folder - each with unique colors and behaviors</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
+                <span><strong>Hidden Clues:</strong> Embed clues in source code, HTTP headers, console logs, CSS comments, and more</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
+                <span><strong>Page Layouts:</strong> Card, full-page, terminal, dossier, or split view per node</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
+                <span><strong>Auto-Save:</strong> Changes save automatically every 5 seconds when modified</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3">10 Arc Templates</h3>
+            <p className="text-stone-400 text-sm mb-3">Pre-built campaign structures you can apply from the sitemap or builder:</p>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              {[
+                { name: 'Phantom Thread', desc: 'Phishing / Initial Access' },
+                { name: 'Ghost Protocol', desc: 'Persistence / Backdoor' },
+                { name: 'Shadow Network', desc: 'OSINT Recon' },
+                { name: 'Wire Transfer', desc: 'Financial / Crypto Tracing' },
+                { name: 'Social Spider', desc: 'Social Engineering' },
+                { name: 'Dark Mirror', desc: 'Dark Web Intel' },
+                { name: 'Packet Storm', desc: 'Network Forensics' },
+                { name: 'Zero Day', desc: 'Vulnerability Research' },
+                { name: 'Red Herring', desc: 'Counter-Intelligence' },
+                { name: 'First Contact', desc: 'Beginner Tutorial' },
+              ].map(t => (
+                <div key={t.name} className="bg-stone-900/30 rounded p-2">
+                  <span className="text-stone-200 font-bold text-xs">{t.name}</span>
+                  <span className="text-stone-500 text-[10px] block">{t.desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Sitemap Sync</h3>
+            <p className="text-stone-300 text-sm mb-3">
+              The sitemap and builder are now fully connected:
+            </p>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li>Save a campaign in the builder &rarr; sitemap entry created at <code className="bg-stone-800 px-1 rounded">/play/[id]</code></li>
+              <li>Publish a campaign &rarr; sitemap entry marked as published (visible to players)</li>
+              <li>Unpublish &rarr; sitemap entry marked draft</li>
+              <li>Sitemap "Open in Builder" button &rarr; loads the campaign or arc template in the visual editor</li>
+              <li>Sitemap "Sync Routes" &rarr; re-seeds all built-in platform routes</li>
+            </ul>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-2">Interactive Sitemap (Admin)</h3>
+            <p className="text-stone-300 text-sm mb-2">
+              The sitemap panel in the Admin Dashboard lets you:
+            </p>
+            <ul className="space-y-1 text-stone-300 text-sm">
+              <li>Add custom pages with name, path, icon, category, color, and page layout</li>
+              <li>Apply arc templates from the campaign builder</li>
+              <li>Edit or delete custom entries inline</li>
+              <li>Toggle between tree view and grid view</li>
+              <li>Filter by category (Core Platform, Investigation Hub, Campaigns, Media, Admin)</li>
+            </ul>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-2">Quick Access</h3>
+            <div className="space-y-2">
+              <Link href="/builder">
+                <Button className="w-full bg-purple-900/30 hover:bg-purple-900/50 text-purple-300 border border-purple-700/50 min-h-[48px] justify-start" data-testid="link-builder">
+                  <Layers className="w-4 h-4 mr-2" />
+                  Open Campaign Builder
+                  <ChevronRight className="w-4 h-4 ml-auto" />
+                </Button>
+              </Link>
+              <Link href="/admin">
+                <Button className="w-full bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 min-h-[48px] justify-start" data-testid="link-admin-sitemap">
+                  <Map className="w-4 h-4 mr-2" />
+                  Admin Sitemap Panel
+                  <ChevronRight className="w-4 h-4 ml-auto" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'obsidian-export',
+      title: 'Obsidian Vault Export',
+      icon: <FileText className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Obsidian Vault Export</h2>
+          <p className="text-stone-300 leading-relaxed">
+            Export campaigns from the builder directly into Obsidian-compatible markdown files.
+            The export is fully compatible with Templater, Dataview, Excalibrain, and Breadcrumbs plugins.
+          </p>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Plugin Compatibility</h3>
+            <div className="space-y-3">
+              <div className="bg-stone-900/30 rounded p-3">
+                <h4 className="font-bold text-teal-400 text-sm mb-1">Templater</h4>
+                <p className="text-stone-400 text-xs">
+                  Every exported file starts with a <code className="bg-stone-800 px-1 rounded">{'<%* %>'}</code> script block
+                  that exposes campaign metadata (nodeType, campaignId, difficulty, category, etc.) as variables.
+                  Templater auto-fills date fields on note creation.
+                </p>
+              </div>
+              <div className="bg-stone-900/30 rounded p-3">
+                <h4 className="font-bold text-purple-400 text-sm mb-1">Breadcrumbs</h4>
+                <p className="text-stone-400 text-xs">
+                  Frontmatter uses <code className="bg-stone-800 px-1 rounded">parent</code>,
+                  <code className="bg-stone-800 px-1 rounded">child</code>, and
+                  <code className="bg-stone-800 px-1 rounded">sibling</code> fields
+                  as wikilink arrays. The index note uses <code className="bg-stone-800 px-1 rounded">BC-folder-note: true</code> for
+                  folder-level hierarchy. Inline relations use <code className="bg-stone-800 px-1 rounded">{'parent:: [[...]]'}</code> syntax.
+                </p>
+              </div>
+              <div className="bg-stone-900/30 rounded p-3">
+                <h4 className="font-bold text-amber-400 text-sm mb-1">Dataview</h4>
+                <p className="text-stone-400 text-xs">
+                  All frontmatter fields are Dataview-queryable: type, skill-level, tools, hidden-clue-count,
+                  page-layout, campaign, difficulty, published, sitemap-path, and more.
+                  Each node file includes inline Dataview TABLE and LIST queries. The index file has advanced
+                  queries for clue summaries and skills/tools maps.
+                </p>
+              </div>
+              <div className="bg-stone-900/30 rounded p-3">
+                <h4 className="font-bold text-red-400 text-sm mb-1">Excalibrain</h4>
+                <p className="text-stone-400 text-xs">
+                  Nodes export with <code className="bg-stone-800 px-1 rounded">excalibrain-color</code> and
+                  <code className="bg-stone-800 px-1 rounded">excalibrain-shape</code> fields matching node types:
+                  steps = amber boxes, decisions = purple diamonds, tools = teal ovals, outputs = red hexagons.
+                  The index includes an Excalibrain code block with style definitions.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-stone-900/50 border border-teal-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Frontmatter Fields</h3>
+            <p className="text-stone-400 text-sm mb-3">Each exported node includes these queryable fields:</p>
+            <div className="grid grid-cols-2 gap-1 text-[11px]">
+              {[
+                ['id', 'Unique node identifier'],
+                ['type', 'step / decision / tool / output / folder'],
+                ['parent', 'Breadcrumbs parent wikilinks'],
+                ['child', 'Breadcrumbs child wikilinks'],
+                ['sibling', 'Breadcrumbs sibling wikilinks'],
+                ['page-layout', 'card / full-page / terminal / dossier / split'],
+                ['campaign', 'Parent campaign name'],
+                ['campaign-id', 'Parent campaign ID'],
+                ['category', 'recon / exploit / defense / osint / forensics / social'],
+                ['difficulty', 'beginner / intermediate / advanced'],
+                ['published', 'Whether campaign is published'],
+                ['sitemap-path', 'Platform route (/play/...)'],
+                ['skill-level', 'beginner through expert'],
+                ['tools', 'Array of tool names used in this step'],
+                ['skills', 'Array of skills taught'],
+                ['hidden-clue-count', 'Number of embedded clues'],
+                ['excalibrain-color', 'Hex color for graph visualization'],
+                ['excalibrain-shape', 'box / diamond / oval / hexagon'],
+              ].map(([field, desc]) => (
+                <div key={field} className="flex gap-2 py-0.5">
+                  <code className="bg-stone-800 px-1 rounded text-amber-400 shrink-0">{field}</code>
+                  <span className="text-stone-500 truncate">{desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-2">How to Export</h3>
+            <ol className="list-decimal list-inside space-y-2 text-stone-300 text-sm">
+              <li>Open the Campaign Builder at <code className="bg-stone-800 px-1 rounded">/builder</code></li>
+              <li>Create or load a campaign</li>
+              <li>Click <strong>Obsidian Export</strong> in the toolbar</li>
+              <li>A single <code className="bg-stone-800 px-1 rounded">.md</code> file downloads containing all node files separated by markers</li>
+              <li>Split the file into individual notes in your Obsidian vault folder</li>
+              <li>Breadcrumbs, Dataview, and Excalibrain will auto-detect the relationships</li>
+            </ol>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'portfolio',
+      title: 'Portfolio System',
+      icon: <Briefcase className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Portfolio System</h2>
+          <p className="text-stone-300 leading-relaxed">
+            Build a shareable professional portfolio from your investigations, campaigns, reports,
+            and scanner results. Each portfolio entry supports data visualizations, custom styling,
+            and public share links.
+          </p>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Auto-Population Sources</h3>
+            <p className="text-stone-400 text-sm mb-3">Portfolio entries can be created from:</p>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
+                <span><strong>Investigations:</strong> NEXUS agent conversations and findings</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-purple-500 mt-1 flex-shrink-0" />
+                <span><strong>Campaigns:</strong> Completed campaign runs with node progress</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-amber-500 mt-1 flex-shrink-0" />
+                <span><strong>Reports (Dossiers):</strong> Report Builder exports with findings and recommendations</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
+                <span><strong>Scanner Results:</strong> Atropos and SpiderFoot scan outputs</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Data Visualizations</h3>
+            <p className="text-stone-400 text-sm mb-3">
+              Each portfolio entry can display one of these visualization types, selectable during creation or editing:
+            </p>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li><strong>Radar Chart:</strong> Multi-axis skill profile (network, web, crypto, osint, system, programming)</li>
+              <li><strong>Severity Donut:</strong> Critical / High / Medium / Low finding distribution</li>
+              <li><strong>Timeline:</strong> Investigation milestones with dates and events</li>
+              <li><strong>Donut Chart:</strong> Category distribution of findings</li>
+              <li><strong>None:</strong> No visualization, text-only entry</li>
+            </ul>
+          </div>
+
+          <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3">Sharing & Embedding</h3>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li>Each entry gets a unique share link at <code className="bg-stone-800 px-1 rounded">/portfolio/:shareId</code></li>
+              <li>Share links work without login for public viewing</li>
+              <li>Entries display the selected visualization, evidence, and tags</li>
+              <li>Use for job applications, research portfolios, or team sharing</li>
+            </ul>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-2">Post-Creation Editing</h3>
+            <p className="text-stone-300 text-sm">
+              After creating a portfolio entry, you can edit it anytime from your Profile page.
+              Change the title, description, tags, evidence, visibility, and visualization type.
+              Entries are editable inline without leaving the profile view.
+            </p>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-2">Quick Access</h3>
+            <Link href="/profile">
+              <Button className="w-full bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 min-h-[48px] justify-start" data-testid="link-portfolio">
+                <Briefcase className="w-4 h-4 mr-2" />
+                View Your Portfolio
+                <ChevronRight className="w-4 h-4 ml-auto" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'qr-c2',
+      title: 'QR C2 Framework',
+      icon: <QrCode className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">QR C2 Framework</h2>
+          <p className="text-stone-300 leading-relaxed">
+            An educational command-and-control framework using QR codes. Learn how real-world attackers
+            use QR-based C2 channels, then practice defending against them through guided missions and
+            hands-on hijacking labs.
+          </p>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">3 Guided Missions</h3>
+            <ul className="space-y-3 text-stone-300 text-sm">
+              <li>
+                <strong className="text-teal-400">First Beacon (50 XP):</strong> Learn how C2 beacons establish initial communication.
+                Reference: APT29 / SolarWinds.
+              </li>
+              <li>
+                <strong className="text-purple-400">Receiving Orders (75 XP):</strong> Understand the implant tasking lifecycle:
+                queue, fetch, execute, report. Reference: Lazarus Group.
+              </li>
+              <li>
+                <strong className="text-red-400">Ghost in the Wire (100 XP):</strong> Master evasion techniques: jitter, domain fronting,
+                sleep obfuscation. Reference: APT41.
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-stone-900/50 border border-purple-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3">6 QR Hijacking Labs</h3>
+            <div className="space-y-2 text-sm">
+              {[
+                { num: 1, name: 'Finder Pattern Confusion', level: 'Beginner', desc: 'Multiple scanner results from one QR' },
+                { num: 2, name: 'Hidden Quiet Zone Attack', level: 'Intermediate', desc: 'Nested codes via quiet zone elimination' },
+                { num: 3, name: 'Physical Sticker Attack', level: 'Beginner', desc: 'Real-world parking meter QR fraud ($150K+ stolen)' },
+                { num: 4, name: 'Barcode-in-QR Inception', level: 'Advanced', desc: 'Cross-format attacks exploiting scanner libraries' },
+                { num: 5, name: 'Split QR Email Attack', level: 'Intermediate', desc: 'Bypass email security with fragmented QR images' },
+                { num: 6, name: 'Programmatic PDF QR', level: 'Advanced', desc: 'Evade image scanners with vector-drawn QR codes' },
+              ].map(lab => (
+                <div key={lab.num} className="flex items-start gap-2 bg-stone-900/30 rounded p-2">
+                  <span className="text-amber-500 font-bold text-xs shrink-0">Lab {lab.num}</span>
+                  <div>
+                    <span className="text-stone-200 font-bold text-xs">{lab.name}</span>
+                    <span className="text-stone-600 text-[10px] ml-1">({lab.level})</span>
+                    <p className="text-stone-500 text-[10px]">{lab.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Multi-Target Simulation Console</h3>
+            <p className="text-stone-300 text-sm mb-3">
+              4 simulated target machines with OS-specific command responses:
+            </p>
+            <ul className="space-y-1 text-stone-300 text-sm">
+              <li><strong>Linux Server:</strong> Ubuntu-based web server with realistic shell output</li>
+              <li><strong>Windows Workstation:</strong> Domain-joined endpoint with PowerShell responses</li>
+              <li><strong>IoT Camera:</strong> Embedded Linux device with limited commands</li>
+              <li><strong>Docker Container:</strong> Containerized service with namespace isolation</li>
+            </ul>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Attack Flow Presets</h3>
+            <ul className="space-y-1 text-stone-300 text-sm">
+              <li><strong>Raw Payload:</strong> Base64/hex data injection templates</li>
+              <li><strong>C2 Beacon:</strong> Agent registration and check-in simulation</li>
+              <li><strong>Data Exfiltration:</strong> Session/token theft simulation</li>
+              <li><strong>Credential Harvesting:</strong> Phishing URL generation for awareness training</li>
             </ul>
           </div>
         </div>

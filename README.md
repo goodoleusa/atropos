@@ -103,7 +103,43 @@ A comprehensive security investigation and training platform that combines profe
 
 ---
 
-## 🎉 Latest Release: v2.1 - QR C2 Framework & Attack Simulation (Feb 2026)
+## 🎉 Latest Release: v2.2 - Builder-Sitemap Integration & Obsidian Export (Feb 2026)
+
+### 🗺️ Interactive Sitemap & Campaign Builder Sync
+- ✨ **Live Sitemap Panel**: Interactive tree/grid view of all platform pages in Admin Dashboard
+- ✨ **Builder-to-Sitemap Sync**: Saving a campaign auto-creates/updates its sitemap entry at `/play/[id]`
+- ✨ **Publish Sync**: Publishing a campaign marks its sitemap route as live; unpublishing reverts to draft
+- ✨ **Custom Pages**: Add pages with name, path, icon, category, color, and page layout from the sitemap
+- ✨ **Arc Template Picker**: Apply any of 10 arc templates (Phantom Thread, Ghost Protocol, Shadow Network, etc.) from the sitemap, then "Open in Builder"
+- ✨ **Category Filtering**: Filter sitemap by Core Platform, Investigation Hub, Campaigns & Learning, Media & Content, Administration
+- ✨ **Inline Edit/Delete**: Edit any entry in place; delete custom entries; toggle tree/grid view
+- ✨ **Sync Routes Button**: Re-seed all built-in platform routes from the server
+
+### 📝 Obsidian Export Overhaul
+- ✨ **Templater Script Block**: Every exported file starts with `<%* %>` exposing campaign variables (nodeType, campaignId, difficulty, category, etc.)
+- ✨ **Breadcrumbs Fields**: Frontmatter uses `parent`, `child`, `sibling` wikilink arrays; inline `parent::`, `child::`, `sibling::` notation in body
+- ✨ **Excalibrain Metadata**: `excalibrain-color` and `excalibrain-shape` per node type (step=amber box, decision=purple diamond, tool=teal oval, output=red hexagon)
+- ✨ **Dataview Queries**: Node files include `TABLE` and `LIST` queries; index file has advanced clue summary, skills/tools map, and filtered queries
+- ✨ **BC-folder-note**: Index file uses `BC-folder-note: true` for Breadcrumbs folder-level hierarchy
+- ✨ **Sitemap Integration Fields**: `sitemap-path`, `sitemap-category`, `sitemap-synced`, `published` in frontmatter
+- ✨ **Breadcrumb Trail Block**: Index includes `breadcrumbs` code block for visual tree rendering
+- ✨ **Excalibrain Code Block**: Index includes `excalibrain` block with color/shape style definitions
+
+### 📂 Portfolio Enhancements
+- ✨ **Visualization Picker**: Choose radar, severity donut, timeline, donut, or none per entry
+- ✨ **Post-Creation Edit**: Change visualization type, tags, evidence, and visibility after creation
+- ✨ **Dossier Source**: Auto-populate portfolio entries from Report Builder dossier exports
+- ✨ **Viz Persistence**: Visualization config stored in evidence array, survives save/reload
+
+### 📖 Wiki Documentation
+- ✨ **Campaign Builder & Sitemap**: Full docs on builder features, arc templates, sitemap sync flow
+- ✨ **Obsidian Vault Export**: Plugin compatibility guide (Templater, Breadcrumbs, Dataview, Excalibrain)
+- ✨ **Portfolio System**: Auto-population sources, visualization types, sharing, post-edit
+- ✨ **QR C2 Framework**: Guided missions, 6 hijacking labs, multi-target console, attack presets
+
+---
+
+## 🎉 v2.1 - QR C2 Framework & Attack Simulation (Feb 2026)
 
 ### 🎯 QR C2 Guided Missions (NEW)
 - ✨ **First Beacon**: Learn how C2 beacons establish communication (50 XP)
