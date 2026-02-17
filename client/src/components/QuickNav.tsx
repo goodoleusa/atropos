@@ -47,26 +47,32 @@ export default function QuickNav() {
   });
 
   const userItems = [
+    // Core Experience
     { path: '/', icon: Home, label: 'Homebase', color: 'amber' as const },
-    { path: '/profile', icon: User, label: 'Profile', color: 'teal' as const },
-    { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
     { path: '/campaigns', icon: Shield, label: 'AI Academy', color: 'teal' as const },
     { path: '/agents', icon: Bot, label: 'NEXUS Agents', color: 'teal' as const },
-    { path: '/business', icon: Briefcase, label: 'Business HQ', color: 'teal' as const },
     { path: '/investigate', icon: Search, label: 'Investigation Hub', color: 'teal' as const },
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
+    
+    // Growth & Identity
+    { path: '/profile', icon: User, label: 'Profile', color: 'teal' as const },
+    { path: '/leaderboards', icon: TrendingUp, label: 'Rankings', color: 'teal' as const },
     { path: '/videos', icon: Activity, label: 'AI Gallery', color: 'teal' as const },
     { path: '/wiki', icon: BookOpen, label: 'Wiki', color: 'teal' as const },
+    { path: '/business', icon: Briefcase, label: 'Business HQ', color: 'teal' as const },
   ];
 
   const adminItems = [
+    // Content & Systems
     { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' as const },
-    { path: '/admin', icon: Settings, label: 'Admin Panel', color: 'amber' as const },
-    { path: '/debug', icon: Bug, label: 'Debug Tools', color: 'amber' as const },
-    { path: '/void', icon: Sparkles, label: 'The Void', color: 'amber' as const },
-    { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
-    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
     { path: '/scanner', icon: Search, label: 'Atropos Scanner', color: 'amber' as const },
+    { path: '/admin', icon: Settings, label: 'Admin Panel', color: 'amber' as const },
+    
+    // Experimental & Maintenance
+    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
+    { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
+    { path: '/void', icon: Sparkles, label: 'The Void', color: 'amber' as const },
+    { path: '/debug', icon: Bug, label: 'Debug Tools', color: 'amber' as const },
   ];
 
   const renderNavItems = (items: typeof userItems) => items.map(item => {
