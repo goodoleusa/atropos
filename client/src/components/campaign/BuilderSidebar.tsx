@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import {
-  Campaign, CampaignNode, HiddenClue, ClueType, ArcTemplate, CATEGORIES, DIFFICULTIES
+  Campaign, CampaignNode, HiddenClue, ClueType, ArcTemplate, TerminalMission, CATEGORIES, DIFFICULTIES, uid
 } from './CampaignTypes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
   Plus, Trash2, X, Zap, FileText, Play, GitBranch, Folder, Upload,
-  FileCode, Network, Code2, Terminal, Eye, Globe, Lock, Bug, EyeOff
+  FileCode, Network, Code2, Terminal, Eye, Globe, Lock, Bug, EyeOff, Edit3
 } from 'lucide-react';
 
 const CLUE_ICONS: Record<ClueType, React.ReactNode> = {
@@ -52,16 +52,23 @@ interface BuilderSidebarProps {
   onImportFiles: (files: FileList) => Promise<void>;
   onClose: () => void;
   arcTemplates: ArcTemplate[];
+  onAddTerminalMission?: (mission: TerminalMission) => void;
+  onUpdateTerminalMission?: (id: string, updates: Partial<TerminalMission>) => void;
+  onDeleteTerminalMission?: (id: string) => void;
 }
 
 export default function BuilderSidebar({
   campaign, selectedNodeId, isMobile, onSelectNode, onAddNode, onApplyArc,
   onAddClue, onDeleteClue, onUpdateCampaign, onImportFiles, onClose, arcTemplates,
+  onAddTerminalMission, onUpdateTerminalMission, onDeleteTerminalMission,
 }: BuilderSidebarProps) {
   const [showClueForm, setShowClueForm] = useState(false);
   const [newClue, setNewClue] = useState<{ type: ClueType; nodeId: string; hint: string; value: string }>({
     type: 'source-code', nodeId: '', hint: '', value: '',
   });
+  const [showMissionForm, setShowMissionForm] = useState(false);
+  const [newMission, setNewMission] = useState({ name: '', command: '', description: '', expectedOutput: '', hint: '', xpReward: 50, triggerNodeId: '', toolsRequired: '' });
+  const [editingMissionId, setEditingMissionId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddClue = () => {
@@ -95,9 +102,9 @@ export default function BuilderSidebar({
       </div>
 
       <Tabs defaultValue="files" className="flex-1 flex flex-col overflow-hidden">
-        <TabsList className="bg-stone-900/50 border-b border-stone-800 rounded-none h-8 px-1 shrink-0 w-full justify-start">
-          {['files', 'arcs', 'clues', 'meta', 'import'].map(tab => (
-            <TabsTrigger key={tab} value={tab} className="text-[9px] uppercase font-bold px-2 h-6 data-[state=active]:bg-amber-600/20 data-[state=active]:text-amber-500 text-stone-500">
+        <TabsList className="bg-stone-900/50 border-b border-stone-800 rounded-none h-8 px-1 shrink-0 w-full justify-start flex-wrap">
+          {['files', 'arcs', 'clues', 'missions', 'meta', 'import'].map(tab => (
+            <TabsTrigger key={tab} value={tab} className={`text-[9px] uppercase font-bold px-2 h-6 data-[state=active]:text-amber-500 text-stone-500 ${tab === 'missions' ? 'data-[state=active]:bg-teal-600/20 data-[state=active]:text-teal-400' : 'data-[state=active]:bg-amber-600/20'}`}>
               {tab}
             </TabsTrigger>
           ))}
@@ -262,6 +269,255 @@ export default function BuilderSidebar({
               })}
               {campaign.hiddenClues.length === 0 && (
                 <p className="text-[10px] text-stone-600 text-center py-4">No clues added yet</p>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="missions" className="mt-0 p-2 space-y-2">
+            <Button
+              data-testid="add-terminal-mission"
+              variant="ghost"
+              size="sm"
+              className={`w-full text-stone-500 hover:text-teal-500 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
+              onClick={() => {
+                setShowMissionForm(!showMissionForm);
+                setEditingMissionId(null);
+                setNewMission({ name: '', command: '', description: '', expectedOutput: '', hint: '', xpReward: 50, triggerNodeId: '', toolsRequired: '' });
+              }}
+            >
+              <Plus className="w-3 h-3 mr-1" />Add Terminal Mission
+            </Button>
+
+            {!showMissionForm && (
+              <div className="space-y-1">
+                <p className="text-[8px] uppercase text-stone-600 font-bold px-1">Quick Templates</p>
+                {[
+                  { name: 'Port Scan', command: 'nmap -sV target.local', description: 'Scan target for open ports and services', xpReward: 50, toolsRequired: 'nmap' },
+                  { name: 'DNS Lookup', command: 'dig target.local ANY', description: 'Enumerate DNS records for the target domain', xpReward: 30, toolsRequired: 'dig' },
+                  { name: 'WHOIS Recon', command: 'whois target.local', description: 'Retrieve domain registration information', xpReward: 25, toolsRequired: 'whois' },
+                  { name: 'Directory Brute', command: 'gobuster dir -u http://target.local -w wordlist.txt', description: 'Discover hidden directories and files', xpReward: 75, toolsRequired: 'gobuster' },
+                  { name: 'Packet Capture', command: 'tcpdump -i eth0 -w capture.pcap', description: 'Capture network traffic for analysis', xpReward: 60, toolsRequired: 'tcpdump' },
+                  { name: 'Hash Crack', command: 'hashcat -m 0 hash.txt rockyou.txt', description: 'Crack password hashes using wordlist', xpReward: 100, toolsRequired: 'hashcat' },
+                ].map((preset) => (
+                  <Button
+                    key={preset.name}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-[9px] h-6 text-stone-600 hover:text-teal-400 hover:bg-teal-900/10 px-2"
+                    onClick={() => {
+                      setNewMission({
+                        name: preset.name,
+                        command: preset.command,
+                        description: preset.description,
+                        expectedOutput: '',
+                        hint: '',
+                        xpReward: preset.xpReward,
+                        triggerNodeId: '',
+                        toolsRequired: preset.toolsRequired,
+                      });
+                      setEditingMissionId(null);
+                      setShowMissionForm(true);
+                    }}
+                    data-testid={`preset-mission-${preset.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <Terminal className="w-3 h-3 mr-1.5 text-teal-700" />
+                    {preset.name}
+                    <Badge variant="outline" className="ml-auto text-[7px] border-amber-800/30 text-amber-600 px-1 py-0">{preset.xpReward} XP</Badge>
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            {showMissionForm && (
+              <Card className="bg-stone-900/50 border-teal-800/30">
+                <CardContent className="p-2.5 space-y-2">
+                  <div>
+                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Mission Name</label>
+                    <Input
+                      data-testid="mission-name"
+                      value={newMission.name}
+                      onChange={(e) => setNewMission(p => ({ ...p, name: e.target.value }))}
+                      placeholder="e.g. Ghost Recon"
+                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Command</label>
+                    <Input
+                      data-testid="mission-command"
+                      value={newMission.command}
+                      onChange={(e) => setNewMission(p => ({ ...p, command: e.target.value }))}
+                      placeholder="e.g. scan --deep target.corp"
+                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-teal-400 font-mono placeholder:text-stone-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Description</label>
+                    <Textarea
+                      data-testid="mission-desc"
+                      value={newMission.description}
+                      onChange={(e) => setNewMission(p => ({ ...p, description: e.target.value }))}
+                      placeholder="What the player should do..."
+                      className="text-[10px] bg-stone-900 border-stone-800 text-stone-300 min-h-[40px] resize-none placeholder:text-stone-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Expected Output (optional)</label>
+                    <Textarea
+                      data-testid="mission-output"
+                      value={newMission.expectedOutput}
+                      onChange={(e) => setNewMission(p => ({ ...p, expectedOutput: e.target.value }))}
+                      placeholder="What the terminal should show..."
+                      className="text-[10px] bg-stone-900 border-stone-800 text-stone-300 min-h-[40px] resize-none font-mono placeholder:text-stone-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Hint (optional)</label>
+                    <Input
+                      data-testid="mission-hint"
+                      value={newMission.hint}
+                      onChange={(e) => setNewMission(p => ({ ...p, hint: e.target.value }))}
+                      placeholder="Hint for stuck players..."
+                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">XP Reward</label>
+                      <Input
+                        data-testid="mission-xp"
+                        type="number"
+                        value={newMission.xpReward}
+                        onChange={(e) => setNewMission(p => ({ ...p, xpReward: parseInt(e.target.value) || 0 }))}
+                        className="h-7 text-[10px] bg-stone-900 border-stone-800 text-amber-400 font-mono"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Trigger Node</label>
+                      <Select value={newMission.triggerNodeId} onValueChange={(v) => setNewMission(p => ({ ...p, triggerNodeId: v }))}>
+                        <SelectTrigger className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300">
+                          <SelectValue placeholder="Optional..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-stone-950 border-stone-800">
+                          <SelectItem value="none" className="text-[10px] text-stone-500">None</SelectItem>
+                          {campaign.nodes.map(n => (
+                            <SelectItem key={n.id} value={n.id} className="text-[10px] text-stone-300">{n.title}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Required Tools (comma-separated)</label>
+                    <Input
+                      data-testid="mission-tools"
+                      value={newMission.toolsRequired}
+                      onChange={(e) => setNewMission(p => ({ ...p, toolsRequired: e.target.value }))}
+                      placeholder="e.g. nmap, whois, dig"
+                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                    />
+                  </div>
+                  <Button
+                    data-testid="confirm-mission"
+                    size="sm"
+                    className="w-full h-7 text-[10px] bg-teal-600 hover:bg-teal-500 text-black font-bold"
+                    onClick={() => {
+                      if (!newMission.name || !newMission.command) return;
+                      const mission: TerminalMission = {
+                        id: editingMissionId || `mission-${uid()}`,
+                        name: newMission.name,
+                        command: newMission.command,
+                        description: newMission.description,
+                        expectedOutput: newMission.expectedOutput || undefined,
+                        hint: newMission.hint || undefined,
+                        xpReward: newMission.xpReward,
+                        triggerNodeId: newMission.triggerNodeId === 'none' ? undefined : newMission.triggerNodeId || undefined,
+                        toolsRequired: newMission.toolsRequired ? newMission.toolsRequired.split(',').map(t => t.trim()).filter(Boolean) : undefined,
+                      };
+                      if (editingMissionId) {
+                        onUpdateTerminalMission?.(editingMissionId, mission);
+                      } else {
+                        onAddTerminalMission?.(mission);
+                      }
+                      setNewMission({ name: '', command: '', description: '', expectedOutput: '', hint: '', xpReward: 50, triggerNodeId: '', toolsRequired: '' });
+                      setShowMissionForm(false);
+                      setEditingMissionId(null);
+                    }}
+                  >
+                    {editingMissionId ? 'Update Mission' : 'Add Mission'}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="space-y-1">
+              {(campaign.terminalMissions || []).map(mission => {
+                const triggerNode = mission.triggerNodeId ? campaign.nodes.find(n => n.id === mission.triggerNodeId) : null;
+                return (
+                  <div key={mission.id} className="px-2 py-2 rounded bg-stone-900/30 border border-teal-800/20 group">
+                    <div className="flex items-start gap-2">
+                      <Terminal className="w-3.5 h-3.5 text-teal-500 mt-0.5 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] text-stone-300 font-bold truncate">{mission.name}</p>
+                        <code className="text-[9px] text-teal-600 font-mono block truncate">$ {mission.command}</code>
+                        {mission.description && <p className="text-[9px] text-stone-600 truncate mt-0.5">{mission.description}</p>}
+                        <div className="flex gap-1.5 mt-1">
+                          <Badge variant="outline" className="text-[7px] border-amber-800/30 text-amber-500 px-1 py-0">
+                            {mission.xpReward} XP
+                          </Badge>
+                          {triggerNode && (
+                            <Badge variant="outline" className="text-[7px] border-stone-700 text-stone-500 px-1 py-0">
+                              @ {triggerNode.title}
+                            </Badge>
+                          )}
+                          {mission.toolsRequired?.map(t => (
+                            <Badge key={t} variant="outline" className="text-[7px] border-teal-800/30 text-teal-600 px-1 py-0">
+                              {t}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 text-stone-600 hover:text-amber-400"
+                          onClick={() => {
+                            setEditingMissionId(mission.id);
+                            setNewMission({
+                              name: mission.name,
+                              command: mission.command,
+                              description: mission.description,
+                              expectedOutput: mission.expectedOutput || '',
+                              hint: mission.hint || '',
+                              xpReward: mission.xpReward,
+                              triggerNodeId: mission.triggerNodeId || '',
+                              toolsRequired: mission.toolsRequired?.join(', ') || '',
+                            });
+                            setShowMissionForm(true);
+                          }}
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 text-stone-600 hover:text-red-400"
+                          onClick={() => onDeleteTerminalMission?.(mission.id)}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {(!campaign.terminalMissions || campaign.terminalMissions.length === 0) && (
+                <div className="text-center py-4 space-y-2">
+                  <Terminal className="w-6 h-6 text-stone-700 mx-auto" />
+                  <p className="text-[10px] text-stone-600">No terminal missions yet</p>
+                  <p className="text-[9px] text-stone-700">Add commands, tools, and objectives that players execute in the terminal</p>
+                </div>
               )}
             </div>
           </TabsContent>

@@ -222,7 +222,9 @@ const moduleDescriptions: Record<ModuleKey, { name: string; desc: string; icon: 
   clue_system: { name: 'Clue Tracking', desc: 'Clue management', icon: '🔍' },
   crypto_puzzles: { name: 'Crypto Puzzles', desc: 'Cipher decoding', icon: '🔐' },
   osint_recon: { name: 'OSINT Recon', desc: 'Reconnaissance', icon: '🎯' },
-  atropos_scans: { name: 'Atropos Scans', desc: 'OSINT/vuln scanning', icon: '🔬' }
+  atropos_scans: { name: 'Atropos Scans', desc: 'OSINT/vuln scanning', icon: '🔬' },
+  feedback_reporting: { name: 'Feedback Reporting', desc: 'Bug reports & feedback', icon: '📝' },
+  actionable_recommendations: { name: 'Recommendations', desc: 'Actionable insights', icon: '💡' },
 };
 
 interface BattleResult {
@@ -1208,6 +1210,78 @@ ${modelRankings.slice(0, 3).map(m => {
             </CardContent>
           </Card>
         )}
+
+        <Card className="bg-black/50 border-purple-900/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-purple-400 text-base flex items-center gap-2">
+              <Lightbulb className="w-5 h-5" /> Prompt Engineering Guide
+            </CardTitle>
+            <CardDescription className="text-stone-500">Master prompt crafting for security investigations</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {[
+              {
+                title: 'Role Framing',
+                tip: 'Start with a clear role definition to anchor the model\'s behavior.',
+                example: 'You are a senior threat analyst specializing in APT group attribution. Analyze the following IOCs and provide a confidence-rated assessment.',
+                color: 'amber',
+              },
+              {
+                title: 'Chain of Thought',
+                tip: 'Force step-by-step reasoning for complex analysis tasks.',
+                example: 'Walk through your analysis step by step:\n1. Identify the attack vector\n2. Map to MITRE ATT&CK\n3. Assess blast radius\n4. Recommend mitigations',
+                color: 'teal',
+              },
+              {
+                title: 'Output Structuring',
+                tip: 'Specify exact output format to get machine-parseable results.',
+                example: 'Respond in JSON with fields: { "severity": "critical|high|medium|low", "cve_id": "...", "affected_systems": [...], "remediation": "..." }',
+                color: 'purple',
+              },
+              {
+                title: 'Few-Shot Priming',
+                tip: 'Provide 2-3 examples of the desired output before your actual question.',
+                example: 'Example 1: IP 192.168.1.100 → Internal, RFC1918, likely workstation\nExample 2: IP 45.33.32.0 → Scanme.nmap.org, educational\n\nNow classify: 185.220.101.34',
+                color: 'red',
+              },
+              {
+                title: 'Constraint Injection',
+                tip: 'Set boundaries to prevent hallucination and keep responses focused.',
+                example: 'Only use information from the provided packet capture. If you cannot determine something, say "INSUFFICIENT DATA" rather than guessing. Cite specific packet numbers.',
+                color: 'amber',
+              },
+              {
+                title: 'Temperature Strategy',
+                tip: 'Low temp (0.1-0.3) for factual analysis, high (0.7-0.9) for creative attack paths.',
+                example: 'Use temp 0.2 for CVE lookups and IOC matching. Switch to 0.8 when brainstorming novel attack vectors or red team scenarios.',
+                color: 'teal',
+              },
+            ].map((guide, i) => (
+              <div key={i} className={`rounded-lg p-3 bg-stone-950/50 ${
+                guide.color === 'amber' ? 'border border-amber-900/30' :
+                guide.color === 'teal' ? 'border border-teal-900/30' :
+                guide.color === 'purple' ? 'border border-purple-900/30' :
+                'border border-red-900/30'
+              }`}>
+                <h4 className="text-sm font-bold text-stone-200 mb-1">{guide.title}</h4>
+                <p className="text-xs text-stone-400 mb-2">{guide.tip}</p>
+                <pre className="text-[11px] text-stone-500 bg-black/40 rounded p-2 overflow-x-auto whitespace-pre-wrap font-mono border border-stone-800/50">{guide.example}</pre>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="mt-2 h-6 text-[10px] text-stone-600 hover:text-amber-400"
+                  onClick={() => {
+                    navigator.clipboard.writeText(guide.example);
+                    toast({ title: 'Copied', description: `${guide.title} example copied to clipboard` });
+                  }}
+                  data-testid={`copy-guide-${i}`}
+                >
+                  <Copy className="w-3 h-3 mr-1" /> Copy Example
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
         <Card className="bg-black/50 border-red-900/30">
           <CardHeader className="pb-3">

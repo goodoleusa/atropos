@@ -60,11 +60,12 @@ const scanHistory: Array<{
   resultCount: number;
   modules?: string[];
   useCase?: string;
+  sessionToken?: string;
 }> = [];
 
 router.post("/scan", async (req: Request, res: Response) => {
   try {
-    const { target, modules, useCase, eventTypes, maxThreads } = req.body;
+    const { target, modules, useCase, eventTypes, maxThreads, sessionToken } = req.body;
 
     if (!target || typeof target !== 'string' || target.trim().length === 0) {
       return res.status(400).json({ error: "Target is required" });
@@ -90,6 +91,7 @@ router.post("/scan", async (req: Request, res: Response) => {
       resultCount: 0,
       modules: params.modules,
       useCase: params.useCase,
+      sessionToken: sessionToken || undefined,
     });
 
     res.json({ scanId, status: 'running', target: params.target });
@@ -149,8 +151,45 @@ router.post("/scan/:scanId/cancel", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/history", (_req: Request, res: Response) => {
-  res.json(scanHistory.slice(-50).reverse());
+router.get("/history", (req: Request, res: Response) => {
+  const sessionToken = req.query.session as string | undefined;
+  let history = scanHistory;
+  if (sessionToken) {
+    history = history.filter(h => h.sessionToken === sessionToken);
+  }
+  res.json(history.slice(-50).reverse());
+});
+
+router.get("/scan/:scanId/export", (req: Request, res: Response) => {
+  const scanId = req.params.scanId as string;
+  const format = (req.query.format as string) || 'json';
+  const result = scanResults.get(scanId);
+
+  if (!result) {
+    return res.status(404).json({ error: "Scan not found or not completed" });
+  }
+
+  if (format === 'csv') {
+    const rows = (result.results || []).map((r: any) => ({
+      type: r.type || '',
+      data: typeof r.data === 'string' ? r.data : JSON.stringify(r.data),
+      module: r.module || '',
+      confidence: r.confidence ?? '',
+      source: r.source || '',
+    }));
+    const header = 'type,data,module,confidence,source';
+    const csvRows = rows.map((r: any) =>
+      `"${(r.type || '').replace(/"/g, '""')}","${(r.data || '').replace(/"/g, '""')}","${(r.module || '').replace(/"/g, '""')}","${r.confidence}","${(r.source || '').replace(/"/g, '""')}"`
+    );
+    const csv = [header, ...csvRows].join('\n');
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="spiderfoot-${scanId}.csv"`);
+    return res.send(csv);
+  }
+
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Disposition', `attachment; filename="spiderfoot-${scanId}.json"`);
+  res.json(result);
 });
 
 router.get("/active", (_req: Request, res: Response) => {

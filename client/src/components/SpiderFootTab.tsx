@@ -102,6 +102,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
   const [apiKeyInputs, setApiKeyInputs] = useState<Record<string, string>>({});
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [sessionToken] = useState(() => `sf-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
 
   const { data: health } = useQuery<HealthStatus>({
     queryKey: ['/api/spiderfoot/health'],
@@ -123,8 +124,8 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
   });
 
   const { data: history = [], refetch: refetchHistory } = useQuery<SFHistoryEntry[]>({
-    queryKey: ['/api/spiderfoot/history'],
-    queryFn: () => fetch('/api/spiderfoot/history').then(r => r.json()),
+    queryKey: ['/api/spiderfoot/history', sessionToken],
+    queryFn: () => fetch(`/api/spiderfoot/history?session=${sessionToken}`).then(r => r.json()),
   });
 
   const { data: apiKeysData, refetch: refetchApiKeys } = useQuery<{ services: ApiKeyService[] }>({
@@ -170,7 +171,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
       const res = await fetch('/api/spiderfoot/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: JSON.stringify({ ...params, sessionToken }),
       });
       if (!res.ok) throw new Error('Scan request failed');
       return res.json() as Promise<SFScanResponse>;
@@ -479,9 +480,26 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                             {new Date(entry.startedAt).toLocaleString()} · {entry.resultCount} results
                           </div>
                         </div>
-                        <Badge variant="outline" className={`text-[10px] ml-2 ${STATUS_COLORS[entry.status] || STATUS_COLORS.error}`}>
-                          {entry.status}
-                        </Badge>
+                        <div className="flex items-center gap-1 ml-2">
+                          {entry.status === 'completed' && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-stone-600 hover:text-amber-400"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`/api/spiderfoot/scan/${entry.scanId}/export?format=json`, '_blank');
+                              }}
+                              data-testid={`button-download-${entry.scanId}`}
+                              title="Download JSON"
+                            >
+                              <Download className="w-3 h-3" />
+                            </Button>
+                          )}
+                          <Badge variant="outline" className={`text-[10px] ${STATUS_COLORS[entry.status] || STATUS_COLORS.error}`}>
+                            {entry.status}
+                          </Badge>
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
 import {
-  Campaign, CampaignNode, HiddenClue, ClueType, ArcTemplate,
+  Campaign, CampaignNode, HiddenClue, ClueType, ArcTemplate, TerminalMission,
   uid, mkNode, mkLink, mkClue, emptyCampaign
 } from '@/components/campaign/CampaignTypes';
 import { ARC_TEMPLATES } from '@/components/campaign/ArcTemplates';
@@ -67,19 +67,21 @@ export default function CampaignBuilder() {
       if (arcId) {
         const tmpl = ARC_TEMPLATES.find((t: any) => t.id === arcId || t.name?.toLowerCase().replace(/\s+/g, '-') === arcId);
         if (tmpl) {
+          const base = emptyCampaign();
           setCampaign({
-            ...emptyCampaign,
+            ...base,
             id: uid(),
             name: tmpl.name || arcId,
-            description: tmpl.description || '',
+            description: (tmpl as any).description || '',
             category: (tmpl as any).category || 'recon',
-            nodes: tmpl.nodes?.map((n: any) => mkNode(n.title || n.name || 'Node', n.type || 'scene', n.content || '')) || [],
+            nodes: tmpl.nodes?.map((n: any) => mkNode(n.id || uid(), n.type || 'step', n.title || n.name || 'Node', n.content || '', n.x || 100, n.y || 100)) || [],
           });
           toast({ title: `Loaded arc template: ${tmpl.name || arcId}` });
         }
       } else if (pageName) {
+        const base = emptyCampaign();
         setCampaign({
-          ...emptyCampaign,
+          ...base,
           id: uid(),
           name: decodeURIComponent(pageName),
           description: `Page layout: ${pageLayout || 'card'}`,
@@ -112,6 +114,7 @@ export default function CampaignBuilder() {
           exitPoints: c.exitPoints || [], clueRefs: c.clueRefs || [],
           hiddenClues: c.hiddenClues || [], tags: c.tags || [],
           isPublished: c.isPublished || false,
+          terminalMissions: c.terminalMissions || [],
         });
         setSelectedNodeId(null);
         dirtyRef.current = false;
@@ -233,6 +236,24 @@ export default function CampaignBuilder() {
 
   const deleteClue = (id: string) => {
     setCampaign(p => ({ ...p, hiddenClues: p.hiddenClues.filter(c => c.id !== id) }));
+    markDirty();
+  };
+
+  const addTerminalMission = (mission: TerminalMission) => {
+    setCampaign(p => ({ ...p, terminalMissions: [...(p.terminalMissions || []), mission] }));
+    markDirty();
+  };
+
+  const updateTerminalMission = (id: string, updates: Partial<TerminalMission>) => {
+    setCampaign(p => ({
+      ...p,
+      terminalMissions: (p.terminalMissions || []).map(m => m.id === id ? { ...m, ...updates } : m),
+    }));
+    markDirty();
+  };
+
+  const deleteTerminalMission = (id: string) => {
+    setCampaign(p => ({ ...p, terminalMissions: (p.terminalMissions || []).filter(m => m.id !== id) }));
     markDirty();
   };
 
@@ -359,6 +380,9 @@ export default function CampaignBuilder() {
                 onImportFiles={handleImport}
                 onClose={() => setIsSidebarOpen(false)}
                 arcTemplates={ARC_TEMPLATES}
+                onAddTerminalMission={addTerminalMission}
+                onUpdateTerminalMission={updateTerminalMission}
+                onDeleteTerminalMission={deleteTerminalMission}
               />
             </motion.div>
           )}

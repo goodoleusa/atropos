@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlitchText } from "@/components/GlitchText";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,8 @@ const VOID_CLUES = [
 ];
 
 export default function TheVoid() {
-  const { gameState, collectClue, hasClue } = useGame();
+  const { gameState, collectClue, hasClue, acceptMission } = useGame();
+  const [, setLocation] = useLocation();
   const [currentVision, setCurrentVision] = useState(0);
   const [activeEvent, setActiveEvent] = useState<string | null>(null);
   const [floatingClue, setFloatingClue] = useState<typeof VOID_CLUES[0] | null>(null);
@@ -311,11 +312,24 @@ export default function TheVoid() {
                     $ {missionPrompt.command}
                   </code>
                   <div className="flex gap-2">
-                    <Link href="/terminal">
-                      <Button size="sm" className="bg-teal-700 hover:bg-teal-600 text-black text-xs h-7">
-                        ACCEPT
-                      </Button>
-                    </Link>
+                    <Button
+                      size="sm"
+                      className="bg-teal-700 hover:bg-teal-600 text-black text-xs h-7"
+                      data-testid="accept-void-mission"
+                      onClick={() => {
+                        acceptMission({
+                          id: missionPrompt.id,
+                          name: missionPrompt.name,
+                          command: missionPrompt.command,
+                          description: missionPrompt.description,
+                          source: 'void',
+                        });
+                        dismissEvent();
+                        setLocation(`/terminal?cmd=${encodeURIComponent(missionPrompt.command)}`);
+                      }}
+                    >
+                      ACCEPT
+                    </Button>
                     <Button size="sm" variant="ghost" onClick={dismissEvent} className="text-stone-500 text-xs h-7">
                       DISMISS
                     </Button>
