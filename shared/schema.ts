@@ -1610,6 +1610,65 @@ export const insertFeedbackItemSchema = createInsertSchema(feedbackItems).omit({
 export type FeedbackItem = typeof feedbackItems.$inferSelect;
 export type InsertFeedbackItem = z.infer<typeof insertFeedbackItemSchema>;
 
+// Portfolio Entries - curated investigation showcases for professional portfolios
+export const portfolioEntries = pgTable("portfolio_entries", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token").notNull(),
+  shareId: text("share_id").notNull().unique(),
+  title: text("title").notNull(),
+  summary: text("summary"),
+  category: text("category").notNull().default("investigation"),
+  visibility: text("visibility").notNull().default("private"),
+  investigationId: text("investigation_id"),
+  campaignId: text("campaign_id"),
+  campaignRunId: text("campaign_run_id"),
+  skills: jsonb("skills").$type<string[]>().notNull().default([]),
+  tools: jsonb("tools").$type<string[]>().notNull().default([]),
+  reportSnapshot: jsonb("report_snapshot").$type<{
+    findings: any[];
+    reportData: Record<string, string>;
+    completionPercentage?: number;
+  }>(),
+  scanSnapshot: jsonb("scan_snapshot").$type<{
+    scanId: string;
+    target: string;
+    scriptPath: string;
+    results: any;
+    completedAt?: string;
+  }[]>().notNull().default([]),
+  agentSnapshot: jsonb("agent_snapshot").$type<{
+    messageCount: number;
+    model: string;
+    extractedIntel: {
+      targets: string[];
+      technologies: string[];
+      potentialVulns: { type: string; severity: string }[];
+      recommendations: string[];
+    };
+    compressedContext?: string;
+  }>(),
+  evidence: jsonb("evidence").$type<{
+    type: string;
+    label: string;
+    content: string;
+  }[]>().notNull().default([]),
+  outcome: text("outcome"),
+  difficulty: text("difficulty"),
+  timeSpentMinutes: integer("time_spent_minutes"),
+  featured: boolean("featured").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertPortfolioEntrySchema = createInsertSchema(portfolioEntries).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type PortfolioEntry = typeof portfolioEntries.$inferSelect;
+export type InsertPortfolioEntry = z.infer<typeof insertPortfolioEntrySchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
