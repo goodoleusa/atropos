@@ -942,84 +942,261 @@ function ApiLookupsTab() {
 }
 
 function ToolsTab() {
+  const [fridaStatus, setFridaStatus] = useState<any>(null);
+  const [fridaLoading, setFridaLoading] = useState(false);
+  const [fridaScriptType, setFridaScriptType] = useState("ssl_bypass");
+  const [fridaTarget, setFridaTarget] = useState("");
+  const [generatedScript, setGeneratedScript] = useState<any>(null);
+  const [generating, setGenerating] = useState(false);
+
+  const checkFrida = async () => {
+    setFridaLoading(true);
+    try {
+      const res = await fetch("/api/atropos/frida/status");
+      const data = await res.json();
+      setFridaStatus(data);
+    } catch {
+      toast({ title: "Error", description: "Failed to check Frida status", variant: "destructive" });
+    } finally {
+      setFridaLoading(false);
+    }
+  };
+
+  const generateFridaScript = async () => {
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/atropos/frida/script/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scriptType: fridaScriptType, target: fridaTarget })
+      });
+      const data = await res.json();
+      setGeneratedScript(data);
+      toast({ title: "Script Generated", description: data.name || "Frida script ready" });
+    } catch {
+      toast({ title: "Error", description: "Failed to generate script", variant: "destructive" });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  useEffect(() => { checkFrida(); }, []);
+
   const tools = [
     {
       id: "frida",
       name: "Frida Toolkit",
       icon: <Bug className="w-5 h-5" />,
       lang: "JavaScript",
-      description: "Dynamic instrumentation toolkit for developers and security researchers.",
-      usage: "Inject scripts into live processes to hook functions, trace instructions, and modify behavior.",
-      commands: [
-        "frida -p <pid> -l script.js",
-        "frida-ps -U",
-        "frida-trace -i \"recv*\" <process>"
+      status: fridaStatus?.installed ? "active" : "simulated",
+      statusColor: fridaStatus?.installed ? "text-teal-400 bg-teal-500/20" : "text-amber-400 bg-amber-500/20",
+      description: "Dynamic instrumentation for hooking live processes, tracing API calls, and bypassing protections.",
+      howToUse: [
+        "1. Choose a script type below (SSL bypass, crypto trace, etc.)",
+        "2. Optionally enter a target app name",
+        "3. Click 'Generate Script' to get ready-to-use Frida JS",
+        "4. Copy the script and run with: frida -l script.js <target>"
       ],
-      color: "text-teal-400 border-teal-500/30 bg-teal-500/10"
+      color: "text-teal-400 border-teal-500/30 bg-teal-500/10",
+      navTarget: "/wiki"
     },
     {
       id: "lua",
-      name: "Lua Scripting",
+      name: "Lua Scanner Scripts",
       icon: <Code2 className="w-5 h-5" />,
       lang: "Lua",
-      description: "High-performance scripting for scanner logic and data processing.",
-      usage: "Write custom scanner modules using the Lua API for rapid extension of Atropos capabilities.",
-      commands: [
-        "atropos --script-file my_recon.lua",
-        "atropos.emit(finding_data)",
-        "atropos.http.get(url)"
+      status: "active",
+      statusColor: "text-teal-400 bg-teal-500/20",
+      description: "Core scanner logic. Write custom OSINT & vulnerability checks that run on the Rust back-end.",
+      howToUse: [
+        "1. Go to the 'Scripts' tab above",
+        "2. Click 'Templates' to start from a preset, or 'New Script'",
+        "3. Write Lua code using atropos.emit() and atropos.http.get()",
+        "4. Click 'Save' - your script is instantly available in Live Scan"
       ],
-      color: "text-amber-400 border-amber-500/30 bg-amber-500/10"
+      color: "text-amber-400 border-amber-500/30 bg-amber-500/10",
+      navTarget: "scripts"
     },
     {
       id: "api",
-      name: "API Integration",
+      name: "API Lookups",
       icon: <RefreshCw className="w-5 h-5" />,
       lang: "JSON",
-      description: "External data source connectors and API data enrichment.",
-      usage: "Connect Atropos to third-party services like VirusTotal, Shodan, and Hybrid Analysis.",
-      commands: [
-        "POST /api/atropos/lookup/vt",
-        "GET /api/atropos/scripts",
-        "POST /api/atropos/scan"
+      status: "active",
+      statusColor: "text-teal-400 bg-teal-500/20",
+      description: "Query VirusTotal, Hybrid Analysis, DNS, WHOIS, and HTTP headers from one place.",
+      howToUse: [
+        "1. Go to the 'API Data' tab above",
+        "2. Enter a domain, IP, hash, or URL as your target",
+        "3. Choose the lookup service (VT, HA, or free DNS/WHOIS)",
+        "4. Results appear inline - no external tools needed"
       ],
-      color: "text-blue-400 border-blue-500/30 bg-blue-500/10"
+      color: "text-blue-400 border-blue-500/30 bg-blue-500/10",
+      navTarget: "lookups"
     }
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
-      {tools.map((tool) => (
-        <Card key={tool.id} className="bg-stone-950/80 border-stone-800">
-          <CardHeader className="pb-3">
-            <div className={`p-2 w-max rounded-lg mb-2 ${tool.color}`}>
-              {tool.icon}
-            </div>
-            <CardTitle className="text-stone-100 flex items-center justify-between">
-              {tool.name}
-              <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500">{tool.lang}</Badge>
-            </CardTitle>
-            <CardDescription className="text-stone-500 text-xs">{tool.description}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label className="text-[10px] uppercase tracking-widest text-stone-500">Usage Case</Label>
-              <p className="text-[11px] text-stone-300 leading-relaxed">{tool.usage}</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[10px] uppercase tracking-widest text-stone-500">Common Commands</Label>
-              <div className="p-2 rounded bg-stone-900 border border-stone-800 font-mono text-[10px] text-amber-500/80 space-y-1">
-                {tool.commands.map((cmd, i) => (
-                  <div key={i}>$ {cmd}</div>
-                ))}
+    <div className="space-y-6">
+      <div className="grid gap-4 md:grid-cols-3">
+        {tools.map((tool) => (
+          <Card key={tool.id} className="bg-stone-950/80 border-stone-800">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className={`p-2 w-max rounded-lg ${tool.color}`}>
+                  {tool.icon}
+                </div>
+                <Badge className={`text-[10px] ${tool.statusColor}`}>
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  {tool.status === "active" ? "Built-in" : "Simulated"}
+                </Badge>
               </div>
+              <CardTitle className="text-stone-100 flex items-center justify-between">
+                {tool.name}
+                <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500">{tool.lang}</Badge>
+              </CardTitle>
+              <CardDescription className="text-stone-500 text-xs">{tool.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] uppercase tracking-widest text-stone-500">How to Use</Label>
+                <div className="space-y-1">
+                  {tool.howToUse.map((step, i) => (
+                    <p key={i} className="text-[11px] text-stone-400 leading-relaxed">{step}</p>
+                  ))}
+                </div>
+              </div>
+              {tool.navTarget.startsWith("/") ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-stone-800 text-stone-400 hover:text-amber-400 h-8 text-[11px]"
+                  onClick={() => window.location.href = tool.navTarget}
+                  data-testid={`btn-nav-${tool.id}`}
+                >
+                  View Wiki Docs <ExternalLink className="w-3 h-3 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-stone-800 text-stone-400 hover:text-amber-400 h-8 text-[11px]"
+                  onClick={() => {
+                    const tabEl = document.querySelector(`[data-testid="tab-${tool.navTarget}"]`) as HTMLElement;
+                    if (tabEl) tabEl.click();
+                  }}
+                  data-testid={`btn-nav-${tool.id}`}
+                >
+                  Go to {tool.navTarget === "scripts" ? "Scripts" : "API Data"} Tab <ChevronRight className="w-3 h-3 ml-2" />
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="bg-stone-950/80 border-stone-800">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-amber-400 flex items-center gap-2 text-sm">
+              <Bug className="w-4 h-4" /> Frida Script Generator
+            </CardTitle>
+            {fridaStatus && (
+              <Badge variant="outline" className={`text-[10px] ${fridaStatus.installed ? 'border-teal-700 text-teal-400' : 'border-amber-700 text-amber-400'}`}>
+                {fridaStatus.installed ? `v${fridaStatus.version}` : 'Simulated Mode'}
+              </Badge>
+            )}
+          </div>
+          <CardDescription className="text-stone-500 text-xs">Generate ready-to-use Frida instrumentation scripts for common security tasks.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="md:col-span-1 space-y-1">
+              <Label className="text-stone-300 text-xs">Script Type</Label>
+              <Select value={fridaScriptType} onValueChange={setFridaScriptType}>
+                <SelectTrigger className="bg-stone-900/60 border-stone-800 text-stone-200" data-testid="select-frida-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ssl_bypass">SSL Pinning Bypass</SelectItem>
+                  <SelectItem value="crypto_trace">Crypto API Tracer</SelectItem>
+                  <SelectItem value="network_monitor">Network Monitor</SelectItem>
+                  <SelectItem value="root_detect">Root Detection Bypass</SelectItem>
+                  <SelectItem value="keystore_dump">Keystore Dumper</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Button variant="outline" size="sm" className="w-full border-stone-800 text-stone-400 hover:text-amber-400 h-8 text-[11px]">
-              Open Documentation <ExternalLink className="w-3 h-3 ml-2" />
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
+            <div className="md:col-span-1 space-y-1">
+              <Label className="text-stone-300 text-xs">Target App (optional)</Label>
+              <Input
+                placeholder="com.example.app"
+                value={fridaTarget}
+                onChange={(e) => setFridaTarget(e.target.value)}
+                className="bg-stone-900/60 border-stone-800 text-stone-200"
+                data-testid="input-frida-target"
+              />
+            </div>
+            <div className="flex items-end">
+              <Button
+                onClick={generateFridaScript}
+                disabled={generating}
+                className="w-full bg-teal-700 hover:bg-teal-600 text-black font-bold"
+                data-testid="btn-generate-frida"
+              >
+                {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Code2 className="w-4 h-4 mr-2" /> Generate Script</>}
+              </Button>
+            </div>
+          </div>
+
+          {generatedScript && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-amber-400 text-xs font-bold">{generatedScript.name}</Label>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 text-stone-500 hover:text-amber-400"
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedScript.code);
+                      toast({ title: "Copied", description: "Frida script copied to clipboard" });
+                    }}
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 text-stone-500 hover:text-amber-400"
+                    onClick={() => {
+                      const blob = new Blob([generatedScript.code], { type: "text/javascript" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `frida_${fridaScriptType}.js`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
+                    <Download className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+              {generatedScript.description && (
+                <p className="text-[11px] text-stone-500">{generatedScript.description}</p>
+              )}
+              <ScrollArea className="h-64 rounded-lg border border-stone-800 bg-stone-900/40">
+                <pre className="p-3 text-xs font-mono text-teal-400/80 whitespace-pre-wrap">{generatedScript.code}</pre>
+              </ScrollArea>
+              {generatedScript.usage && (
+                <div className="p-2 rounded bg-stone-900 border border-stone-800 font-mono text-[10px] text-amber-500/80">
+                  $ {generatedScript.usage}
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
