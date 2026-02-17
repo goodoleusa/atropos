@@ -34,6 +34,7 @@ import MissionLanding from "@/pages/MissionLanding";
 import ScannerDashboard from "@/pages/ScannerDashboard";
 import PortfolioShare from "@/pages/PortfolioShare";
 import Wiki from "@/pages/Wiki";
+import Walkthrough from "@/pages/Walkthrough";
 
 function Router() {
   return (
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/play/:campaignId" component={CampaignPlayer} />
       <Route path="/scanner" component={ScannerDashboard} />
       <Route path="/wiki" component={Wiki} />
+      <Route path="/walkthrough" component={Walkthrough} />
       <Route component={NotFound} />
     </Switch>
   );
