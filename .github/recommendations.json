@@ -1,5 +1,28 @@
 [
   {
+    "id": 3,
+    "category": "integration",
+    "priority": "medium",
+    "status": "proposed",
+    "title": "Real-time scan progress WebSocket integration",
+    "description": "Replace polling-based scan status updates with WebSocket connections for Atropos Scanner and SpiderFoot. Users currently see delayed results and miss live module completions.",
+    "targetFiles": [
+      "server/routes/scanner.ts",
+      "client/src/pages/Scanner.tsx"
+    ],
+    "codeSnippet": "import { WebSocketServer } from \"ws\";\n\nconst wss = new WebSocketServer({ noServer: true });\n\nwss.on(\"connection\", (ws) => {\n  ws.on(\"message\", (msg) => {\n    const { scanId } = JSON.parse(msg.toString());\n    subscribeToScan(scanId, (update) => {\n      ws.send(JSON.stringify(update));\n    });\n  });\n});",
+    "codeLanguage": "typescript",
+    "painPointsAddressed": [
+      "Delayed scan result visibility",
+      "High polling overhead on server",
+      "Users miss live module events"
+    ],
+    "estimatedImpact": "Reduces scan result latency from 5s polling to <100ms real-time. Cuts server load from scan status endpoints by 80%.",
+    "source": "agent:NetworkRecon",
+    "votes": 1,
+    "createdAt": "2026-02-17T14:27:03.953Z"
+  },
+  {
     "id": 2,
     "category": "systemic",
     "priority": "critical",
@@ -49,26 +72,26 @@
     "createdAt": "2026-02-17T14:26:41.732Z"
   },
   {
-    "id": 3,
-    "category": "integration",
-    "priority": "medium",
+    "id": 4,
+    "category": "systemic",
+    "priority": "high",
     "status": "proposed",
-    "title": "Real-time scan progress WebSocket integration",
-    "description": "Replace polling-based scan status updates with WebSocket connections for Atropos Scanner and SpiderFoot. Users currently see delayed results and miss live module completions.",
+    "title": "AI Lab duplicated: standalone /ai-lab + Investigation Hub tab",
+    "description": "AILabContent is rendered both as a standalone page at /ai-lab and embedded inside the Investigation Hub at /investigate (AI Lab tab). Users may not know which to use, and state is not shared between them. Consider making /ai-lab redirect to /investigate?tab=ai-lab, or making the standalone version the canonical one with a deep-link from the Hub.\n\nSuggestion: Canonicalize AI Lab to one location. Use /investigate?tab=ai-lab as the primary, and redirect /ai-lab there.",
     "targetFiles": [
-      "server/routes/scanner.ts",
-      "client/src/pages/Scanner.tsx"
+      "client/src/pages/AILab.tsx",
+      "client/src/pages/InvestigationWorkspace.tsx"
     ],
-    "codeSnippet": "import { WebSocketServer } from \"ws\";\n\nconst wss = new WebSocketServer({ noServer: true });\n\nwss.on(\"connection\", (ws) => {\n  ws.on(\"message\", (msg) => {\n    const { scanId } = JSON.parse(msg.toString());\n    subscribeToScan(scanId, (update) => {\n      ws.send(JSON.stringify(update));\n    });\n  });\n});",
+    "codeSnippet": null,
     "codeLanguage": "typescript",
     "painPointsAddressed": [
-      "Delayed scan result visibility",
-      "High polling overhead on server",
-      "Users miss live module events"
+      "Duplicate UI code paths",
+      "Confusing navigation — two ways to reach same tool",
+      "State not shared between standalone and embedded versions"
     ],
-    "estimatedImpact": "Reduces scan result latency from 5s polling to <100ms real-time. Cuts server load from scan status endpoints by 80%.",
-    "source": "agent:NetworkRecon",
+    "estimatedImpact": null,
+    "source": "walkthrough-audit",
     "votes": 1,
-    "createdAt": "2026-02-17T14:27:03.953Z"
+    "createdAt": "2026-02-17T15:03:05.887Z"
   }
 ]

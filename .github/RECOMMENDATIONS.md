@@ -6,9 +6,49 @@
 
 | # | Category | Priority | Title | Pain Points | Status |
 |---|----------|----------|-------|-------------|--------|
-| 1 | Systemic Improvement | 🔴 critical | Unified investigation context sharing between agents | 4 | proposed |
-| 2 | Code Snippet | 🟠 high | Add keyboard shortcuts for Terminal navigation | 4 | proposed |
-| 3 | Integration | 🟡 medium | Real-time scan progress WebSocket integration | 3 | proposed |
+| 1 | Integration | 🟡 medium | Real-time scan progress WebSocket integration | 3 | proposed |
+| 2 | Systemic Improvement | 🔴 critical | Unified investigation context sharing between agents | 4 | proposed |
+| 3 | Code Snippet | 🟠 high | Add keyboard shortcuts for Terminal navigation | 4 | proposed |
+| 4 | Systemic Improvement | 🟠 high | AI Lab duplicated: standalone /ai-lab + Investigation Hub tab | 3 | proposed |
+
+---
+
+## Integrations
+
+## Task: Real-time scan progress WebSocket integration
+**Category**: Integration
+**Priority**: medium
+
+### Description
+Replace polling-based scan status updates with WebSocket connections for Atropos Scanner and SpiderFoot. Users currently see delayed results and miss live module completions.
+
+### Target Files
+- `server/routes/scanner.ts`
+- `client/src/pages/Scanner.tsx`
+
+### Pain Points This Solves
+- Delayed scan result visibility
+- High polling overhead on server
+- Users miss live module events
+
+### Starter Code
+```typescript
+import { WebSocketServer } from "ws";
+
+const wss = new WebSocketServer({ noServer: true });
+
+wss.on("connection", (ws) => {
+  ws.on("message", (msg) => {
+    const { scanId } = JSON.parse(msg.toString());
+    subscribeToScan(scanId, (update) => {
+      ws.send(JSON.stringify(update));
+    });
+  });
+});
+```
+
+### Expected Impact
+Reduces scan result latency from 5s polling to <100ms real-time. Cuts server load from scan status endpoints by 80%.
 
 ---
 
@@ -47,6 +87,26 @@ export const investigationContext = pgTable("investigation_context", {
 
 ### Expected Impact
 Eliminates 60% of repeated context-setting in multi-agent workflows. Enables true collaborative investigation across specialist agents.
+
+---
+
+## Task: AI Lab duplicated: standalone /ai-lab + Investigation Hub tab
+**Category**: Systemic Improvement
+**Priority**: high
+
+### Description
+AILabContent is rendered both as a standalone page at /ai-lab and embedded inside the Investigation Hub at /investigate (AI Lab tab). Users may not know which to use, and state is not shared between them. Consider making /ai-lab redirect to /investigate?tab=ai-lab, or making the standalone version the canonical one with a deep-link from the Hub.
+
+Suggestion: Canonicalize AI Lab to one location. Use /investigate?tab=ai-lab as the primary, and redirect /ai-lab there.
+
+### Target Files
+- `client/src/pages/AILab.tsx`
+- `client/src/pages/InvestigationWorkspace.tsx`
+
+### Pain Points This Solves
+- Duplicate UI code paths
+- Confusing navigation — two ways to reach same tool
+- State not shared between standalone and embedded versions
 
 ---
 
@@ -93,45 +153,6 @@ useEffect(() => {
 
 ### Expected Impact
 Reduces terminal interaction time by 40% for experienced users. Matches expected behavior from real terminal emulators.
-
----
-
-## Integrations
-
-## Task: Real-time scan progress WebSocket integration
-**Category**: Integration
-**Priority**: medium
-
-### Description
-Replace polling-based scan status updates with WebSocket connections for Atropos Scanner and SpiderFoot. Users currently see delayed results and miss live module completions.
-
-### Target Files
-- `server/routes/scanner.ts`
-- `client/src/pages/Scanner.tsx`
-
-### Pain Points This Solves
-- Delayed scan result visibility
-- High polling overhead on server
-- Users miss live module events
-
-### Starter Code
-```typescript
-import { WebSocketServer } from "ws";
-
-const wss = new WebSocketServer({ noServer: true });
-
-wss.on("connection", (ws) => {
-  ws.on("message", (msg) => {
-    const { scanId } = JSON.parse(msg.toString());
-    subscribeToScan(scanId, (update) => {
-      ws.send(JSON.stringify(update));
-    });
-  });
-});
-```
-
-### Expected Impact
-Reduces scan result latency from 5s polling to <100ms real-time. Cuts server load from scan status endpoints by 80%.
 
 ---
 
