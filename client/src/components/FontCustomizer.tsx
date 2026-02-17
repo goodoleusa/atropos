@@ -3,11 +3,26 @@ import { Type, ChevronDown, RotateCcw } from "lucide-react";
 import { useGame } from "@/hooks/useGameSession";
 
 const FONT_OPTIONS = [
-  { label: "Inter", value: "'Inter', sans-serif" },
-  { label: "Exo 2", value: "'Exo 2', sans-serif" },
-  { label: "System", value: "system-ui, -apple-system, sans-serif" },
-  { label: "JetBrains Mono", value: "'JetBrains Mono', monospace" },
+  { label: "Inter", value: "'Inter', sans-serif", vibe: "clean" },
+  { label: "IBM Plex", value: "'IBM Plex Sans', sans-serif", vibe: "clean" },
+  { label: "Outfit", value: "'Outfit', sans-serif", vibe: "clean" },
+  { label: "Space Grotesk", value: "'Space Grotesk', sans-serif", vibe: "modern" },
+  { label: "Exo 2", value: "'Exo 2', sans-serif", vibe: "modern" },
+  { label: "Source Code", value: "'Source Code Pro', monospace", vibe: "techy" },
+  { label: "Fira Code", value: "'Fira Code', monospace", vibe: "techy" },
+  { label: "JetBrains", value: "'JetBrains Mono', monospace", vibe: "techy" },
+  { label: "Share Tech", value: "'Share Tech Mono', monospace", vibe: "hacker" },
+  { label: "VT323", value: "'VT323', monospace", vibe: "hacker" },
+  { label: "Major Mono", value: "'Major Mono Display', monospace", vibe: "hacker" },
+  { label: "Silkscreen", value: "'Silkscreen', monospace", vibe: "hacker" },
 ];
+
+const VIBE_COLORS: Record<string, string> = {
+  clean: "text-sky-400",
+  modern: "text-amber-400",
+  techy: "text-teal-400",
+  hacker: "text-red-400",
+};
 
 const SIZE_OPTIONS = [
   { label: "S", value: 0.85 },
@@ -109,7 +124,7 @@ export default function FontCustomizer() {
       </button>
 
       {open && (
-        <div className="absolute bottom-12 left-0 w-64 bg-stone-950/95 border border-stone-800/60 rounded-lg shadow-2xl backdrop-blur-md p-3 space-y-3" data-testid="font-customizer-panel">
+        <div className="absolute bottom-12 left-0 w-72 bg-stone-950/95 border border-stone-800/60 rounded-lg shadow-2xl backdrop-blur-md p-3 space-y-3 max-h-[80vh] overflow-y-auto" data-testid="font-customizer-panel">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-stone-300 uppercase tracking-wider">Typography</span>
             <div className="flex gap-1">
@@ -122,48 +137,46 @@ export default function FontCustomizer() {
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Headings</label>
-            <div className="flex flex-wrap gap-1">
-              {FONT_OPTIONS.map(f => (
-                <button
-                  key={f.value}
-                  onClick={() => update({ headingFont: f.value })}
-                  className={`px-2 py-1 text-[10px] rounded border transition-all ${
-                    settings.headingFont === f.value
-                      ? "bg-amber-900/40 border-amber-700/60 text-amber-400"
-                      : "bg-stone-900/50 border-stone-800/40 text-stone-400 hover:text-stone-300"
-                  }`}
-                  data-testid={`font-heading-${f.label.toLowerCase().replace(/\s/g, '-')}`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center gap-1 text-[9px] text-stone-600">
+            <span className="text-sky-400">clean</span>
+            <span>→</span>
+            <span className="text-amber-400">modern</span>
+            <span>→</span>
+            <span className="text-teal-400">techy</span>
+            <span>→</span>
+            <span className="text-red-400">hacker</span>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Body</label>
-            <div className="flex flex-wrap gap-1">
-              {FONT_OPTIONS.map(f => (
-                <button
-                  key={f.value}
-                  onClick={() => update({ bodyFont: f.value })}
-                  className={`px-2 py-1 text-[10px] rounded border transition-all ${
-                    settings.bodyFont === f.value
-                      ? "bg-amber-900/40 border-amber-700/60 text-amber-400"
-                      : "bg-stone-900/50 border-stone-800/40 text-stone-400 hover:text-stone-300"
-                  }`}
-                  data-testid={`font-body-${f.label.toLowerCase().replace(/\s/g, '-')}`}
-                >
-                  {f.label}
-                </button>
-              ))}
+          {["headingFont", "bodyFont"].map(target => (
+            <div key={target} className="space-y-1">
+              <label className="text-[10px] text-stone-500 uppercase tracking-wider">
+                {target === "headingFont" ? "Headings" : "Body"}
+              </label>
+              <div className="flex flex-wrap gap-1">
+                {FONT_OPTIONS.map(f => {
+                  const isActive = settings[target as keyof FontSettings] === f.value;
+                  return (
+                    <button
+                      key={f.value}
+                      onClick={() => update({ [target]: f.value })}
+                      style={{ fontFamily: f.value }}
+                      className={`px-2 py-1 text-[10px] rounded border transition-all ${
+                        isActive
+                          ? "bg-stone-800/80 border-stone-600/80 " + VIBE_COLORS[f.vibe]
+                          : "bg-stone-900/50 border-stone-800/40 text-stone-500 hover:text-stone-300 hover:border-stone-700/60"
+                      }`}
+                      data-testid={`font-${target === "headingFont" ? "heading" : "body"}-${f.label.toLowerCase().replace(/\s/g, '-')}`}
+                    >
+                      {f.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          ))}
 
           <div className="space-y-1">
-            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Heading Weight</label>
+            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Weight</label>
             <div className="flex gap-1">
               {WEIGHT_OPTIONS.map(w => (
                 <button
@@ -171,8 +184,8 @@ export default function FontCustomizer() {
                   onClick={() => update({ headingWeight: w.value })}
                   className={`px-2 py-1 text-[10px] rounded border transition-all ${
                     settings.headingWeight === w.value
-                      ? "bg-amber-900/40 border-amber-700/60 text-amber-400"
-                      : "bg-stone-900/50 border-stone-800/40 text-stone-400 hover:text-stone-300"
+                      ? "bg-stone-800/80 border-stone-600/80 text-amber-400"
+                      : "bg-stone-900/50 border-stone-800/40 text-stone-500 hover:text-stone-300"
                   }`}
                   data-testid={`font-weight-${w.label.toLowerCase()}`}
                 >
@@ -183,7 +196,7 @@ export default function FontCustomizer() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Size Scale</label>
+            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Scale</label>
             <div className="flex gap-1">
               {SIZE_OPTIONS.map(s => (
                 <button
@@ -191,8 +204,8 @@ export default function FontCustomizer() {
                   onClick={() => update({ sizeScale: s.value })}
                   className={`px-3 py-1 text-[10px] rounded border transition-all ${
                     settings.sizeScale === s.value
-                      ? "bg-amber-900/40 border-amber-700/60 text-amber-400"
-                      : "bg-stone-900/50 border-stone-800/40 text-stone-400 hover:text-stone-300"
+                      ? "bg-stone-800/80 border-stone-600/80 text-amber-400"
+                      : "bg-stone-900/50 border-stone-800/40 text-stone-500 hover:text-stone-300"
                   }`}
                   data-testid={`font-size-${s.label.toLowerCase()}`}
                 >
@@ -202,9 +215,12 @@ export default function FontCustomizer() {
             </div>
           </div>
 
-          <div className="pt-1 border-t border-stone-800/40">
-            <p className="text-[9px] text-stone-600 leading-relaxed" style={{ fontFamily: settings.bodyFont }}>
-              Preview: The quick brown fox jumps over the lazy dog.
+          <div className="pt-2 border-t border-stone-800/40 space-y-1">
+            <p className="text-sm text-stone-400 leading-relaxed" style={{ fontFamily: settings.headingFont, fontWeight: Number(settings.headingWeight) }}>
+              Heading Preview
+            </p>
+            <p className="text-[10px] text-stone-600 leading-relaxed" style={{ fontFamily: settings.bodyFont }}>
+              Body: The quick brown fox jumps over the lazy dog. 0123456789
             </p>
           </div>
         </div>
