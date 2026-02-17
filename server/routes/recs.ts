@@ -154,17 +154,17 @@ function generateMarkdown(recs: any[]): string {
   lines.push(``);
   lines.push(`### Via API`);
   lines.push(`\`\`\`bash`);
-  lines.push(`# Fetch all recommendations as JSON`);
-  lines.push(`curl -s https://YOUR_APP_URL/api/recommendations/export?format=json`);
+  lines.push(`# Fetch all recs as JSON`);
+  lines.push(`curl -s https://YOUR_APP_URL/api/recs/export?format=json`);
   lines.push(``);
-  lines.push(`# Fetch a single recommendation as an agent-ready prompt`);
-  lines.push(`curl -s https://YOUR_APP_URL/api/recommendations/export/1?format=prompt`);
+  lines.push(`# Fetch a single rec as an agent-ready prompt`);
+  lines.push(`curl -s https://YOUR_APP_URL/api/recs/export/1?format=prompt`);
   lines.push(`\`\`\``);
   lines.push(``);
   lines.push(`### Programmatic ingestion`);
   lines.push(`\`\`\`bash`);
-  lines.push(`# Pipe a recommendation directly into another tool`);
-  lines.push(`curl -s https://YOUR_APP_URL/api/recommendations/export/1?format=prompt | pbcopy`);
+  lines.push(`# Pipe a rec directly into another tool`);
+  lines.push(`curl -s https://YOUR_APP_URL/api/recs/export/1?format=prompt | pbcopy`);
   lines.push(`\`\`\``);
 
   return lines.join('\n');

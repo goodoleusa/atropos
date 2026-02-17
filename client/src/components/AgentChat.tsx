@@ -666,7 +666,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
 
         recSessionCountRef.current++;
         count++;
-        fetch('/api/recommendations', {
+        fetch('/api/recs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

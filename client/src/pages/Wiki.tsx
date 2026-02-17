@@ -1353,7 +1353,7 @@ export default function Wiki() {
                 <strong className="text-teal-400">Auto-saved to database</strong> — The chat parser detects the block and saves it via the API. A toast notification confirms submission
               </li>
               <li>
-                <strong className="text-teal-400">View on Suggestions dashboard</strong> — Visit <Link href="/suggestions"><span className="text-cyan-400 underline cursor-pointer">/suggestions</span></Link> to browse, vote, filter, and export all recommendations
+                <strong className="text-teal-400">View on RECS dashboard</strong> — Visit <Link href="/recs"><span className="text-cyan-400 underline cursor-pointer">/recs</span></Link> to browse, vote, filter, and export all recs
               </li>
             </ol>
           </div>
@@ -1362,7 +1362,7 @@ export default function Wiki() {
             <h3 className="text-lg font-semibold text-purple-300 mb-3">Step-by-Step: Exporting to Other Agents</h3>
             <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
               <li>
-                <strong className="text-purple-400">Select a recommendation</strong> — Click any item in the Recommendations tab to see full details in the side panel
+                <strong className="text-purple-400">Select a rec</strong> — Click any item in the RECS tab to see full details in the side panel
               </li>
               <li>
                 <strong className="text-purple-400">Choose your export format</strong>:
@@ -1445,15 +1445,15 @@ export default function Wiki() {
           <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-stone-300 mb-3">API Reference</h3>
             <div className="space-y-2 text-xs font-mono">
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations <span className="text-stone-600">— List all recommendations</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations/stats <span className="text-stone-600">— Category/priority/status breakdown</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations/export?format=json|md|prompt <span className="text-stone-600">— Bulk export</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recommendations/export/:id?format=prompt <span className="text-stone-600">— Single item export</span></div>
-              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recommendations <span className="text-stone-600">— Create recommendation</span></div>
-              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recommendations/sync <span className="text-stone-600">— Write to .github/ files</span></div>
-              <div className="bg-stone-950 p-2 rounded text-amber-400">POST /api/recommendations/:id/vote <span className="text-stone-600">— Upvote</span></div>
-              <div className="bg-stone-950 p-2 rounded text-purple-400">PATCH /api/recommendations/:id <span className="text-stone-600">— Update status/priority</span></div>
-              <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/recommendations/:id <span className="text-stone-600">— Remove</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs <span className="text-stone-600">— List all recs</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs/stats <span className="text-stone-600">— Category/priority/status breakdown</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs/export?format=json|md|prompt <span className="text-stone-600">— Bulk export</span></div>
+              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs/export/:id?format=prompt <span className="text-stone-600">— Single item export</span></div>
+              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recs <span className="text-stone-600">— Create rec</span></div>
+              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recs/sync <span className="text-stone-600">— Write to .github/ files</span></div>
+              <div className="bg-stone-950 p-2 rounded text-amber-400">POST /api/recs/:id/vote <span className="text-stone-600">— Upvote</span></div>
+              <div className="bg-stone-950 p-2 rounded text-purple-400">PATCH /api/recs/:id <span className="text-stone-600">— Update status/priority</span></div>
+              <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/recs/:id <span className="text-stone-600">— Remove</span></div>
             </div>
           </div>
         </div>

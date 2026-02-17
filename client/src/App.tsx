@@ -15,7 +15,7 @@ import Home from "@/pages/Home";
 import TerminalPage from "@/pages/Terminal";
 import AdminLogin from "@/pages/Admin";
 import AdminDashboard from "@/pages/AdminDashboard";
-import Suggestions from "@/pages/Suggestions";
+import Recs from "@/pages/Recs";
 import AILab from "@/pages/AILab";
 import TheVoid from "@/pages/TheVoid";
 import Archive from "@/pages/Archive";
@@ -56,7 +56,7 @@ function Router() {
       <Route path="/login" component={AdminLogin} />
       <Route path="/void" component={TheVoid} />
       <Route path="/archive" component={Archive} />
-      <Route path="/suggestions" component={Suggestions} />
+      <Route path="/recs" component={Recs} />
       <Route path="/debug" component={Debug} />
       <Route path="/prompt-builder" component={PromptBuilder} />
       <Route path="/ai-lab" component={AILab} />

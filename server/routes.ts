@@ -9,7 +9,7 @@ import behaviorRoutes from "./routes/behavior";
 import atroposRoutes from "./routes/atropos";
 import spiderfootRoutes from "./routes/spiderfoot";
 import feedbackRoutes from "./routes/feedback";
-import recommendationRoutes from "./routes/recommendations";
+import recsRoutes from "./routes/recs";
 import portfolioRoutes from "./routes/portfolio";
 import sitemapRoutes from "./routes/sitemap";
 import progressionRoutes from "./routes/progressionRoutes";
@@ -216,7 +216,7 @@ export async function registerRoutes(
 
   // Register Feedback collection routes
   app.use("/api/feedback", feedbackRoutes);
-  app.use("/api/recommendations", recommendationRoutes);
+  app.use("/api/recs", recsRoutes);
 
   // Register Portfolio routes
   app.use(portfolioRoutes);
