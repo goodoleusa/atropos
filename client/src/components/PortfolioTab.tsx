@@ -34,7 +34,13 @@ import {
   Crosshair,
   AlertTriangle,
   CheckCircle2,
-  X
+  X,
+  Pencil,
+  Link,
+  PieChart,
+  Clipboard,
+  TrendingUp,
+  Palette
 } from "lucide-react";
 import { useGame } from "@/hooks/useGameSession";
 import { useToast } from "@/hooks/use-toast";
@@ -79,11 +85,11 @@ const CATEGORIES = [
   { value: "research", label: "Research", icon: Layers },
 ];
 
-function RadarChart({ skills }: { skills: { name: string; value: number }[] }) {
-  const size = 200;
+function RadarChart({ skills, size: sizeProp }: { skills: { name: string; value: number }[]; size?: number }) {
+  const size = sizeProp || 200;
   const cx = size / 2;
   const cy = size / 2;
-  const maxRadius = 80;
+  const maxRadius = size * 0.4;
   const levels = 4;
   const n = skills.length;
 
@@ -142,7 +148,7 @@ function RadarChart({ skills }: { skills: { name: string; value: number }[] }) {
         <circle key={i} cx={p.x} cy={p.y} r="4" fill="#d97706" stroke="#0a0500" strokeWidth="2" />
       ))}
       {skills.map((s, i) => {
-        const labelP = getPoint(i, maxRadius + 20);
+        const labelP = getPoint(i, maxRadius + (size * 0.1));
         return (
           <text
             key={i}
@@ -178,17 +184,337 @@ function StatBar({ label, value, max, color }: { label: string; value: number; m
   );
 }
 
-function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, onCopyLink }: {
+function SeverityChart({ vulns }: { vulns: any[] }) {
+  const counts: Record<string, number> = { critical: 0, high: 0, medium: 0, low: 0 };
+  vulns.forEach(v => {
+    const s = (v.severity || "medium").toLowerCase();
+    if (counts[s] !== undefined) counts[s]++;
+  });
+  const total = vulns.length || 1;
+  const colors: Record<string, string> = { critical: "#ef4444", high: "#f97316", medium: "#f59e0b", low: "#14b8a6" };
+  const labels: Record<string, string> = { critical: "Critical", high: "High", medium: "Medium", low: "Low" };
+
+  return (
+    <div className="space-y-1.5">
+      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1"><BarChart3 className="w-3 h-3" /> Severity Distribution</h5>
+      {Object.entries(counts).filter(([, c]) => c > 0).map(([sev, count]) => (
+        <div key={sev} className="flex items-center gap-2">
+          <span className="text-[9px] w-12 text-right font-mono" style={{ color: colors[sev] }}>{labels[sev]}</span>
+          <div className="flex-1 h-3 bg-stone-900 rounded-full overflow-hidden">
+            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(count / total) * 100}%`, backgroundColor: colors[sev] }} />
+          </div>
+          <span className="text-[9px] text-stone-500 font-mono w-4">{count}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ScanTimeline({ scans }: { scans: any[] }) {
+  const sorted = [...scans].sort((a, b) => {
+    const da = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+    const db = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+    return da - db;
+  });
+  return (
+    <div className="space-y-1.5">
+      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Scan Timeline</h5>
+      <div className="flex items-end gap-1 h-12">
+        {sorted.map((s, i) => {
+          const resultCount = Array.isArray(s.results) ? s.results.length : (s.results ? Object.keys(s.results).length : 0);
+          const maxResults = Math.max(1, ...sorted.map((sc: any) => Array.isArray(sc.results) ? sc.results.length : (sc.results ? Object.keys(sc.results).length : 0)));
+          const h = Math.max(15, (resultCount / maxResults) * 100);
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center gap-0.5" title={`${s.target} (${resultCount} results)`}>
+              <div className="w-full rounded-t bg-gradient-to-t from-teal-700 to-teal-400 transition-all" style={{ height: `${h}%` }} />
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex justify-between text-[8px] text-stone-700">
+        <span>{sorted[0]?.completedAt ? new Date(sorted[0].completedAt).toLocaleDateString() : "Start"}</span>
+        <span>{sorted[sorted.length - 1]?.completedAt ? new Date(sorted[sorted.length - 1].completedAt).toLocaleDateString() : "End"}</span>
+      </div>
+    </div>
+  );
+}
+
+function EvidenceDonut({ evidence }: { evidence: { type: string; label: string; content: string }[] }) {
+  const typeCounts: Record<string, number> = {};
+  evidence.forEach(ev => { typeCounts[ev.type] = (typeCounts[ev.type] || 0) + 1; });
+  const entries = Object.entries(typeCounts);
+  const total = evidence.length || 1;
+  const donutColors = ["#d97706", "#14b8a6", "#a855f7", "#ef4444", "#3b82f6", "#22c55e"];
+  const r = 30;
+  const cx = 40;
+  const cy = 40;
+  const circumference = 2 * Math.PI * r;
+  let offset = 0;
+
+  return (
+    <div className="space-y-1.5">
+      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1"><PieChart className="w-3 h-3" /> Evidence by Type</h5>
+      <div className="flex items-center gap-3">
+        <svg width={80} height={80} viewBox="0 0 80 80">
+          {entries.map(([type, count], i) => {
+            const pct = count / total;
+            const dashLen = pct * circumference;
+            const seg = (
+              <circle
+                key={type}
+                cx={cx}
+                cy={cy}
+                r={r}
+                fill="none"
+                stroke={donutColors[i % donutColors.length]}
+                strokeWidth="10"
+                strokeDasharray={`${dashLen} ${circumference - dashLen}`}
+                strokeDashoffset={-offset}
+                transform={`rotate(-90 ${cx} ${cy})`}
+              />
+            );
+            offset += dashLen;
+            return seg;
+          })}
+          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" className="fill-stone-300 text-[12px] font-mono font-bold">{total}</text>
+        </svg>
+        <div className="space-y-0.5">
+          {entries.map(([type, count], i) => (
+            <div key={type} className="flex items-center gap-1.5 text-[9px]">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: donutColors[i % donutColors.length] }} />
+              <span className="text-stone-400">{type}</span>
+              <span className="text-stone-600 font-mono">({count})</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmbedCard({ type, title, content, id, color }: { type: string; title: string; content: string; id: number; color: string }) {
+  const [copied, setCopied] = useState(false);
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const embedHtml = `<div style="font-family:system-ui,-apple-system,sans-serif;background:#0a0500;border:1px solid ${color === "amber" ? "#92400e" : color === "teal" ? "#134e4a" : "#581c87"}33;border-radius:8px;padding:16px;max-width:480px;color:#d6d3d1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="color:${color === "amber" ? "#f59e0b" : color === "teal" ? "#14b8a6" : "#a855f7"};font-size:11px;text-transform:uppercase;font-weight:600">${esc(type)}</span></div><h3 style="color:#e7e5e4;font-size:14px;font-weight:bold;margin:0 0 8px 0">${esc(title)}</h3><p style="color:#78716c;font-size:12px;margin:0;line-height:1.5">${esc(content.slice(0, 200))}</p><div style="margin-top:12px;padding-top:8px;border-top:1px solid #1c1917;font-size:10px;color:#57534e">Built with SysAdmin Corp</div></div>`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(embedHtml);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className={`p-3 bg-stone-900/20 rounded-lg border border-${color}-900/20`}>
+      <div className="flex items-center justify-between mb-2">
+        <Badge variant="outline" className={`text-[9px] border-${color}-900/30 text-${color}-400`}>{type}</Badge>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-[9px] text-stone-600 hover:text-amber-400"
+          onClick={handleCopy}
+          data-testid={`copy-embed-${type.toLowerCase().replace(/\s+/g, "-")}-${id}`}
+        >
+          {copied ? <Check className="w-3 h-3 mr-1" /> : <Clipboard className="w-3 h-3 mr-1" />}
+          {copied ? "Copied" : "Copy Embed"}
+        </Button>
+      </div>
+      <h5 className="text-xs font-bold text-stone-300 mb-1">{title}</h5>
+      <p className="text-[10px] text-stone-600 line-clamp-2">{content}</p>
+    </div>
+  );
+}
+
+function EditEntryForm({ entry, onSave, onCancel }: {
+  entry: PortfolioEntry;
+  onSave: (id: number, updates: any) => void;
+  onCancel: () => void;
+}) {
+  const [title, setTitle] = useState(entry.title);
+  const [summary, setSummary] = useState(entry.summary || "");
+  const [category, setCategory] = useState(entry.category);
+  const [difficulty, setDifficulty] = useState(entry.difficulty || "");
+  const [outcome, setOutcome] = useState(entry.outcome || "");
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(entry.skills);
+  const [selectedTools, setSelectedTools] = useState<string[]>(entry.tools);
+  const [visibility, setVisibility] = useState(entry.visibility);
+
+  const handleSubmit = () => {
+    if (!title.trim()) return;
+    onSave(entry.id, {
+      title: title.trim(),
+      summary: summary.trim() || null,
+      category,
+      difficulty: difficulty || null,
+      outcome: outcome.trim() || null,
+      skills: selectedSkills,
+      tools: selectedTools,
+      visibility,
+    });
+  };
+
+  return (
+    <div className="p-4 space-y-4 border-t border-amber-900/30 bg-amber-950/5" data-testid={`edit-form-${entry.id}`}>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2">
+          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Title</label>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="bg-stone-900/30 border-stone-800 text-stone-300 h-8 text-sm"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Summary</label>
+          <Textarea
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            className="bg-stone-900/30 border-stone-800 text-stone-300 text-sm min-h-[60px]"
+          />
+        </div>
+        <div>
+          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Difficulty</label>
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+            className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+          >
+            <option value="">Select...</option>
+            <option value="beginner">Beginner</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+            <option value="expert">Expert</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-[10px] text-stone-600 uppercase mb-1 block">Skills</label>
+        <div className="flex flex-wrap gap-1.5">
+          {SKILL_TAGS.map((skill) => (
+            <button
+              key={skill}
+              onClick={() => setSelectedSkills(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill])}
+              className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
+                selectedSkills.includes(skill)
+                  ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
+                  : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+              }`}
+            >
+              {skill}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="text-[10px] text-stone-600 uppercase mb-1 block">Tools</label>
+        <div className="flex flex-wrap gap-1.5">
+          {TOOL_TAGS.map((tool) => (
+            <button
+              key={tool}
+              onClick={() => setSelectedTools(prev => prev.includes(tool) ? prev.filter(t => t !== tool) : [...prev, tool])}
+              className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
+                selectedTools.includes(tool)
+                  ? "bg-teal-900/30 border-teal-700/50 text-teal-400"
+                  : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+              }`}
+            >
+              {tool}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="text-[10px] text-stone-600 uppercase mb-1 block">Outcome</label>
+        <Textarea
+          value={outcome}
+          onChange={(e) => setOutcome(e.target.value)}
+          className="bg-stone-900/30 border-stone-800 text-stone-300 text-sm min-h-[50px]"
+        />
+      </div>
+
+      <div className="flex items-center gap-3 pt-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setVisibility(visibility === "public" ? "private" : "public")}
+          className={`text-xs ${visibility === "public" ? "text-teal-400" : "text-stone-500"}`}
+        >
+          {visibility === "public" ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
+          {visibility === "public" ? "Public" : "Private"}
+        </Button>
+        <div className="flex-1" />
+        <Button variant="ghost" size="sm" onClick={onCancel} className="text-stone-500 text-xs" data-testid={`cancel-edit-${entry.id}`}>Cancel</Button>
+        <Button
+          size="sm"
+          onClick={handleSubmit}
+          disabled={!title.trim()}
+          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+          data-testid={`save-edit-${entry.id}`}
+        >
+          Save Changes
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, onCopyLink, onEdit }: {
   entry: PortfolioEntry;
   onToggleVisibility: (id: number, vis: string) => void;
   onToggleFeatured: (id: number, featured: boolean) => void;
   onDelete: (id: number) => void;
   onCopyLink: (shareId: string) => void;
+  onEdit: (id: number, updates: any) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [urlCopied, setUrlCopied] = useState(false);
   const CategoryIcon = CATEGORIES.find(c => c.value === entry.category)?.icon || Briefcase;
 
   const difficultyColor = entry.difficulty === "expert" ? "red" : entry.difficulty === "hard" ? "orange" : entry.difficulty === "medium" ? "amber" : "teal";
+
+  const shareUrl = `${window.location.origin}/portfolio/${entry.shareId}`;
+  const displayUrl = `${window.location.host}/portfolio/${entry.shareId}`;
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setUrlCopied(true);
+    setTimeout(() => setUrlCopied(false), 2000);
+  };
+
+  const handleSaveEdit = (id: number, updates: any) => {
+    onEdit(id, updates);
+    setEditing(false);
+  };
+
+  const skillRadarData = useMemo(() => {
+    const mapped: Record<string, number> = { OSINT: 0, Net: 0, Malw: 0, SocE: 0, Web: 0, Intel: 0 };
+    entry.skills.forEach(s => {
+      if (s.includes("OSINT")) mapped["OSINT"] = 80;
+      if (s.includes("Network")) mapped["Net"] = 80;
+      if (s.includes("Malware")) mapped["Malw"] = 80;
+      if (s.includes("Social")) mapped["SocE"] = 80;
+      if (s.includes("Web")) mapped["Web"] = 80;
+      if (s.includes("Threat")) mapped["Intel"] = 80;
+    });
+    return Object.entries(mapped).map(([name, value]) => ({ name, value }));
+  }, [entry.skills]);
+
+  const vulns = entry.agentSnapshot?.extractedIntel?.potentialVulns || [];
 
   return (
     <Card className={`bg-[#0a0500] border-amber-900/30 transition-all hover:border-amber-700/50 ${entry.featured ? "ring-1 ring-amber-600/30" : ""}`}>
@@ -221,6 +547,15 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               </div>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-stone-600 hover:text-amber-400"
+                onClick={() => setEditing(!editing)}
+                data-testid={`edit-entry-${entry.id}`}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -260,6 +595,24 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
             </div>
           </div>
 
+          <div className="mt-2 flex items-center gap-2 p-2 bg-stone-900/30 rounded border border-stone-800/50" data-testid={`share-url-${entry.id}`}>
+            <Link className="w-3 h-3 text-stone-600 flex-shrink-0" />
+            <span className="text-[10px] text-stone-500 font-mono truncate flex-1">{displayUrl}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 w-5 p-0 text-stone-600 hover:text-amber-400"
+              onClick={handleCopyUrl}
+            >
+              {urlCopied ? <Check className="w-3 h-3 text-teal-400" /> : <Copy className="w-3 h-3" />}
+            </Button>
+            <a href={shareUrl} target="_blank" rel="noopener noreferrer" data-testid={`open-share-${entry.id}`}>
+              <Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-stone-600 hover:text-teal-400">
+                <ExternalLink className="w-3 h-3" />
+              </Button>
+            </a>
+          </div>
+
           {entry.summary && (
             <p className="text-xs text-stone-500 mt-2 line-clamp-2">{entry.summary}</p>
           )}
@@ -291,6 +644,14 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
           </div>
         </div>
 
+        {editing && (
+          <EditEntryForm
+            entry={entry}
+            onSave={handleSaveEdit}
+            onCancel={() => setEditing(false)}
+          />
+        )}
+
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full py-2 px-4 text-[10px] text-stone-600 hover:text-stone-400 border-t border-stone-900/50 flex items-center justify-center gap-1 transition-colors"
@@ -302,6 +663,33 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
 
         {expanded && (
           <div className="px-4 pb-4 space-y-4 border-t border-stone-900/50">
+
+            {(vulns.length > 0 || entry.scanSnapshot.length > 0 || entry.skills.length > 0 || entry.evidence.length > 0) && (
+              <div className="grid grid-cols-2 gap-3 pt-3">
+                {vulns.length > 0 && (
+                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                    <SeverityChart vulns={vulns} />
+                  </div>
+                )}
+                {entry.scanSnapshot.length > 0 && (
+                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                    <ScanTimeline scans={entry.scanSnapshot} />
+                  </div>
+                )}
+                {entry.skills.length > 0 && (
+                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                    <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1 mb-1"><Palette className="w-3 h-3" /> Skills Radar</h5>
+                    <RadarChart skills={skillRadarData} size={140} />
+                  </div>
+                )}
+                {entry.evidence.length > 0 && (
+                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                    <EvidenceDonut evidence={entry.evidence} />
+                  </div>
+                )}
+              </div>
+            )}
+
             {entry.agentSnapshot?.extractedIntel && (
               <div className="space-y-2 pt-3">
                 <h4 className="text-xs font-mono text-amber-500 flex items-center gap-1"><Bot className="w-3 h-3" /> Agent Intelligence</h4>
@@ -381,6 +769,44 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
                 <p className="text-xs text-stone-400">{entry.outcome}</p>
               </div>
             )}
+
+            <div className="space-y-2 pt-3 border-t border-stone-900/50">
+              <h4 className="text-xs font-mono text-amber-500 flex items-center gap-1"><Layers className="w-3 h-3" /> Embeddable Cards</h4>
+              <div className="grid gap-2">
+                {vulns.length > 0 && vulns.map((v: any, i: number) => (
+                  <EmbedCard
+                    key={`finding-${i}`}
+                    type="Finding"
+                    title={v.type || "Vulnerability"}
+                    content={`Severity: ${v.severity || "unknown"}. ${v.description || v.type || "Security finding identified during analysis."}`}
+                    id={entry.id}
+                    color="amber"
+                  />
+                ))}
+                {entry.scanSnapshot.map((scan: any, i: number) => (
+                  <EmbedCard
+                    key={`scan-${i}`}
+                    type="Scan Result"
+                    title={scan.target || "Scan Target"}
+                    content={`Script: ${scan.scriptPath || "N/A"}. ${scan.completedAt ? `Completed: ${new Date(scan.completedAt).toLocaleString()}` : "In progress"}`}
+                    id={entry.id}
+                    color="teal"
+                  />
+                ))}
+                {entry.agentSnapshot?.extractedIntel && (
+                  <EmbedCard
+                    type="Agent Intel"
+                    title={`${entry.title} — Intelligence Summary`}
+                    content={`${entry.agentSnapshot.messageCount || 0} messages analyzed. ${entry.agentSnapshot.extractedIntel.targets?.length || 0} targets identified. ${vulns.length} potential vulnerabilities found.`}
+                    id={entry.id}
+                    color="amber"
+                  />
+                )}
+                {vulns.length === 0 && entry.scanSnapshot.length === 0 && !entry.agentSnapshot?.extractedIntel && (
+                  <p className="text-[10px] text-stone-700">No embeddable content available for this entry.</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
@@ -672,7 +1098,10 @@ export default function PortfolioTab() {
       if (!res.ok) throw new Error("Failed to update");
       return res.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/portfolio"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/portfolio"] });
+      toast({ title: "Entry updated" });
+    },
   });
 
   const deleteMutation = useMutation({
@@ -696,6 +1125,10 @@ export default function PortfolioTab() {
     setCopiedId(shareId);
     toast({ title: "Link copied!", description: "Share this link with anyone" });
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleEdit = (id: number, updates: any) => {
+    updateMutation.mutate({ id, updates });
   };
 
   const portfolioStats = useMemo(() => {
@@ -887,6 +1320,7 @@ export default function PortfolioTab() {
               onToggleFeatured={(id, featured) => updateMutation.mutate({ id, updates: { featured } })}
               onDelete={(id) => deleteMutation.mutate(id)}
               onCopyLink={handleCopyLink}
+              onEdit={handleEdit}
             />
           ))}
         </div>
