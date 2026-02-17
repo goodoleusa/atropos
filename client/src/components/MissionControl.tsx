@@ -194,7 +194,7 @@ export default function MissionControl() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-orbitron text-amber-500" data-testid="mission-control-title">
-            Campaign Progress
+            Mission Control
           </h3>
           <p className="text-xs text-stone-500 mt-1">
             All your active campaigns and missions in one place

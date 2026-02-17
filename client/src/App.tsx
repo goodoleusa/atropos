@@ -6,8 +6,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { GameProvider } from "@/hooks/useGameSession";
 import { ReportProvider } from "@/hooks/useReportContext";
 import { GlobalEffectsProvider } from "@/hooks/useGlobalEffects";
+import { AgentChatProvider } from "@/hooks/useAgentChat";
 import GlobalEffectsOverlay from "@/components/GlobalEffectsOverlay";
-import QuickNav from "@/components/QuickNav";
+import GlobalNav from "@/components/GlobalNav";
 import { AchievementManager } from "@/components/AchievementManager";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
@@ -85,14 +86,16 @@ function App() {
       <TooltipProvider>
         <GameProvider>
           <ReportProvider>
-            <GlobalEffectsProvider>
-              <Toaster />
-              <Router />
-              <GlobalEffectsOverlay />
-              <AchievementManager />
-              <QuickNav />
-              <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
-            </GlobalEffectsProvider>
+            <AgentChatProvider>
+              <GlobalEffectsProvider>
+                <Toaster />
+                <Router />
+                <GlobalNav />
+                <GlobalEffectsOverlay />
+                <AchievementManager />
+                <QRCodeModal open={qrModalOpen} onOpenChange={setQrModalOpen} />
+              </GlobalEffectsProvider>
+            </AgentChatProvider>
           </ReportProvider>
         </GameProvider>
       </TooltipProvider>
