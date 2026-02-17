@@ -33,6 +33,7 @@ import InvestorDashboard from "@/pages/InvestorDashboard";
 import MissionLanding from "@/pages/MissionLanding";
 import ScannerDashboard from "@/pages/ScannerDashboard";
 import PortfolioShare from "@/pages/PortfolioShare";
+import Wiki from "@/pages/Wiki";
 
 function Router() {
   return (
@@ -59,6 +60,7 @@ function Router() {
       <Route path="/campaigns" component={CampaignsHub} />
       <Route path="/play/:campaignId" component={CampaignPlayer} />
       <Route path="/scanner" component={ScannerDashboard} />
+      <Route path="/wiki" component={Wiki} />
       <Route component={NotFound} />
     </Switch>
   );

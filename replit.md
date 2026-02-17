@@ -22,6 +22,14 @@ The platform features a molten bronze/industrial aesthetic, emphasizes hands-on 
 - **Storage Methods**: `getSitemapEntryByPath`, `upsertSitemapEntryByPath` for database-backed sitemap sync
 - **URL Params**: Builder accepts `?arc=` and `?page=` for pre-loading arc templates and page configurations
 
+### Agent Recommendation System
+- **Auto-Generated Recommendations**: NEXUS agents emit `recommendation` JSON blocks during conversations with starter code, target files, pain points
+- **Suggestions Dashboard**: `/suggestions` with Recommendations + Reports tabs, category charts, filtering, voting
+- **6+ Export Formats**: AI prompt, code only, git patch, curl command, JSON, markdown — for piping into Replit Agent, Cursor, Copilot, Claude
+- **Repository Sync**: POST `/api/recommendations/sync` auto-generates `.github/RECOMMENDATIONS.md` and `.github/recommendations.json`
+- **API**: Full CRUD at `/api/recommendations` with stats, voting, and export endpoints
+- **Wiki Docs**: Step-by-step guide for generating, exporting, and syncing recommendations
+
 ### QR C2 Framework & Guided Missions
 - **3 Guided C2 Missions**: First Beacon (beaconing), Receiving Orders (tasking), Ghost in the Wire (evasion)
 - **4 Simulated Target Machines**: Linux server, Windows workstation, IoT camera, Docker container

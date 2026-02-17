@@ -387,6 +387,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
 
         try {
           detectAndSubmitFeedback(assistantMessage, selectedModel);
+          detectAndSubmitRecommendations(assistantMessage, selectedModel);
         } catch (_) {}
       }
     } catch (error) {
@@ -622,6 +623,60 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         }),
       }).catch(() => {});
     }
+  }, []);
+
+  const recSubmittedRef = useRef<Set<string>>(new Set());
+  const recCooldownRef = useRef<number>(0);
+  const recSessionCountRef = useRef<number>(0);
+  const MAX_RECS_PER_SESSION = 10;
+  const MAX_RECS_PER_MESSAGE = 2;
+  const REC_COOLDOWN_MS = 5000;
+
+  const detectAndSubmitRecommendations = useCallback((message: string, source: string) => {
+    if (recSessionCountRef.current >= MAX_RECS_PER_SESSION) return;
+    const now = Date.now();
+    if (now - recCooldownRef.current < REC_COOLDOWN_MS) return;
+
+    const recPattern = /```recommendation\s*\n([\s\S]*?)```/g;
+    let match;
+    let count = 0;
+    while ((match = recPattern.exec(message)) !== null && count < MAX_RECS_PER_MESSAGE) {
+      try {
+        const raw = match[1].trim();
+        const rec = JSON.parse(raw);
+        if (!rec.title || !rec.description || !rec.category || !rec.codeSnippet) continue;
+
+        const dedupKey = `rec:${rec.category}:${rec.title.trim().toLowerCase().slice(0, 60)}`;
+        if (recSubmittedRef.current.has(dedupKey)) continue;
+        recSubmittedRef.current.add(dedupKey);
+
+        const validCategories = ['code_snippet', 'file_edit', 'systemic', 'integration', 'new_tool'];
+        if (!validCategories.includes(rec.category)) continue;
+
+        recSessionCountRef.current++;
+        count++;
+        fetch('/api/recommendations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: rec.category,
+            priority: rec.priority || 'medium',
+            title: String(rec.title).trim().slice(0, 200),
+            description: String(rec.description).trim().slice(0, 3000),
+            targetFiles: Array.isArray(rec.targetFiles) ? rec.targetFiles.slice(0, 10) : [],
+            codeSnippet: String(rec.codeSnippet).slice(0, 10000),
+            codeLanguage: rec.codeLanguage || 'typescript',
+            painPointsAddressed: Array.isArray(rec.painPointsAddressed) ? rec.painPointsAddressed.slice(0, 10) : [],
+            estimatedImpact: rec.estimatedImpact ? String(rec.estimatedImpact).slice(0, 500) : null,
+            source: `agent:${source}`,
+            tags: ['auto-generated', source, rec.category],
+          }),
+        }).catch(() => {});
+      } catch {
+        continue;
+      }
+    }
+    if (count > 0) recCooldownRef.current = now;
   }, []);
 
   const quickActions = [

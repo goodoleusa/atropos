@@ -1610,6 +1610,35 @@ export const insertFeedbackItemSchema = createInsertSchema(feedbackItems).omit({
 export type FeedbackItem = typeof feedbackItems.$inferSelect;
 export type InsertFeedbackItem = z.infer<typeof insertFeedbackItemSchema>;
 
+// Agent Recommendations - actionable code suggestions, file edits, tool ideas from AI agents
+export const agentRecommendations = pgTable("agent_recommendations", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(), // code_snippet, file_edit, systemic, integration, new_tool
+  source: text("source").notNull().default("agent"), // agent:model_name, manual
+  status: text("status").notNull().default("proposed"), // proposed, accepted, implemented, rejected
+  priority: text("priority").notNull().default("medium"),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  targetFiles: jsonb("target_files").$type<string[]>().notNull().default([]),
+  codeSnippet: text("code_snippet"), // starter code / implementation example
+  codeLanguage: text("code_language").default("typescript"),
+  painPointsAddressed: jsonb("pain_points_addressed").$type<string[]>().notNull().default([]),
+  estimatedImpact: text("estimated_impact"), // brief impact statement
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  votes: integer("votes").notNull().default(1),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertAgentRecommendationSchema = createInsertSchema(agentRecommendations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type AgentRecommendation = typeof agentRecommendations.$inferSelect;
+export type InsertAgentRecommendation = z.infer<typeof insertAgentRecommendationSchema>;
+
 // Portfolio Entries - curated investigation showcases for professional portfolios
 export const portfolioEntries = pgTable("portfolio_entries", {
   id: serial("id").primaryKey(),

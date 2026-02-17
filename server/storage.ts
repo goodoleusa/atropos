@@ -111,6 +111,9 @@ import {
   feedbackItems,
   type FeedbackItem,
   type InsertFeedbackItem,
+  agentRecommendations,
+  type AgentRecommendation,
+  type InsertAgentRecommendation,
   portfolioEntries,
   type PortfolioEntry,
   type InsertPortfolioEntry,
@@ -403,6 +406,14 @@ export interface IStorage {
   updateFeedbackItem(id: number, updates: Partial<FeedbackItem>): Promise<FeedbackItem | undefined>;
   deleteFeedbackItem(id: number): Promise<boolean>;
   voteFeedbackItem(id: number): Promise<FeedbackItem | undefined>;
+
+  // Agent Recommendations
+  getAllRecommendations(): Promise<AgentRecommendation[]>;
+  getRecommendationById(id: number): Promise<AgentRecommendation | undefined>;
+  createRecommendation(rec: InsertAgentRecommendation): Promise<AgentRecommendation>;
+  updateRecommendation(id: number, updates: Partial<AgentRecommendation>): Promise<AgentRecommendation | undefined>;
+  deleteRecommendation(id: number): Promise<boolean>;
+  voteRecommendation(id: number): Promise<AgentRecommendation | undefined>;
 
   // Dossiers (Report Builder)
   getDossiersBySession(sessionToken: string): Promise<Dossier[]>;
@@ -2324,6 +2335,41 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db.update(feedbackItems)
       .set({ votes: sql`${feedbackItems.votes} + 1`, updatedAt: new Date() })
       .where(eq(feedbackItems.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getAllRecommendations(): Promise<AgentRecommendation[]> {
+    return await db.select().from(agentRecommendations).orderBy(desc(agentRecommendations.createdAt)).limit(200);
+  }
+
+  async getRecommendationById(id: number): Promise<AgentRecommendation | undefined> {
+    const [item] = await db.select().from(agentRecommendations).where(eq(agentRecommendations.id, id)).limit(1);
+    return item;
+  }
+
+  async createRecommendation(rec: InsertAgentRecommendation): Promise<AgentRecommendation> {
+    const [created] = await db.insert(agentRecommendations).values(rec).returning();
+    return created;
+  }
+
+  async updateRecommendation(id: number, updates: Partial<AgentRecommendation>): Promise<AgentRecommendation | undefined> {
+    const [updated] = await db.update(agentRecommendations)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(agentRecommendations.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteRecommendation(id: number): Promise<boolean> {
+    const result = await db.delete(agentRecommendations).where(eq(agentRecommendations.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async voteRecommendation(id: number): Promise<AgentRecommendation | undefined> {
+    const [updated] = await db.update(agentRecommendations)
+      .set({ votes: sql`${agentRecommendations.votes} + 1`, updatedAt: new Date() })
+      .where(eq(agentRecommendations.id, id))
       .returning();
     return updated;
   }
