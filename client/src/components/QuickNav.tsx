@@ -21,6 +21,38 @@ const NAV_STYLES = {
 function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean }) {
   const Icon = item.icon;
   const styles = NAV_STYLES[item.color];
+
+  if (item.isPrimary) {
+    return (
+      <Link key={item.path} href={item.path}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`w-full justify-start min-h-[44px] relative group overflow-hidden mb-1 border ${
+            isActive
+              ? 'bg-amber-900/40 text-amber-300 border-amber-600/60 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
+              : 'text-amber-400 border-amber-800/40 hover:border-amber-700/60 hover:bg-amber-950/40'
+          }`}
+          data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+        >
+          {isActive && (
+            <motion.div
+              layoutId="active-nav-glow"
+              className="absolute inset-0 bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            />
+          )}
+          <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/8 transition-colors duration-300" />
+          <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? 'text-amber-400 scale-110' : 'text-amber-500 group-hover:text-amber-400'}`} />
+          <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest font-bold">
+            {item.label}
+          </span>
+        </Button>
+      </Link>
+    );
+  }
+
   return (
     <Link key={item.path} href={item.path}>
       <Button

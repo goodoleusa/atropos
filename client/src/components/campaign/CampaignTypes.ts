@@ -24,6 +24,16 @@ export interface HiddenClue {
   value: string;
 }
 
+export type GlitchEffectType = 'none' | 'text-scramble' | 'scanline' | 'static-burst' | 'data-corrupt' | 'color-shift' | 'flicker' | 'pixel-sort';
+
+export interface NodeUiEffects {
+  hoverEffect?: GlitchEffectType;
+  hoverIntensity?: number;
+  popoverStyle?: 'glitch' | 'fade' | 'slide' | 'none';
+  entryAnimation?: 'glitch-in' | 'fade' | 'slide-up' | 'none';
+  clueRevealEffect?: GlitchEffectType;
+}
+
 export interface CampaignNode {
   id: string;
   type: 'step' | 'decision' | 'tool' | 'output' | 'folder';
@@ -32,6 +42,7 @@ export interface CampaignNode {
   htmlContent?: string;
   pageLayout?: typeof PAGE_LAYOUTS[number];
   customCss?: string;
+  uiEffects?: NodeUiEffects;
   x: number;
   y: number;
   width: number;

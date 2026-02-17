@@ -1,7 +1,7 @@
 import {
   Home, Terminal, Search, Bot, Shield, User, TrendingUp, Activity,
   BookOpen, Sparkles, Settings, FileText, Bug, Eye, QrCode, Briefcase,
-  Brain, Zap, Target, Users, Map, FlaskConical, Megaphone
+  Brain, Zap, Target, Users, Map, FlaskConical, Megaphone, LayoutDashboard
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -10,6 +10,7 @@ export interface NavItem {
   icon: LucideIcon;
   label: string;
   color: 'amber' | 'teal';
+  isPrimary?: boolean;
 }
 
 export interface NavSection {
@@ -42,10 +43,10 @@ export const ADMIN_NAV: NavSection = {
   id: 'admin',
   title: 'Admin Nexus',
   items: [
+    { path: '/admin', icon: LayoutDashboard, label: 'Admin Hub', color: 'amber', isPrimary: true },
     { path: '/builder', icon: Settings, label: 'Campaign Builder', color: 'amber' },
     { path: '/scanner', icon: Shield, label: 'Atropos Admin', color: 'amber' },
     { path: '/behavior', icon: Eye, label: 'Behavior Analysis', color: 'amber' },
-    { path: '/admin', icon: Settings, label: 'Admin Panel', color: 'amber' },
     { path: '/crew-builder', icon: Users, label: 'Crew Builder', color: 'amber' },
     { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' },
     { path: '/marketing', icon: Megaphone, label: 'Marketing HQ', color: 'amber' },

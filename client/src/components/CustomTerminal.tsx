@@ -120,6 +120,9 @@ export const CustomTerminal = () => {
   const [beaconInterval, setBeaconInterval] = useState(300);
   const [learningStyle, setLearningStyle] = useState<LearningStyle>('kinesthetic');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [historySearchMode, setHistorySearchMode] = useState(false);
+  const [historySearchTerm, setHistorySearchTerm] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   
@@ -1187,7 +1190,63 @@ export const CustomTerminal = () => {
     newHistory.push({ type: 'output', content: 'Enter another hash or "exit":' });
   };
 
+  const filteredHistory = historySearchTerm
+    ? commandHistory.filter(c => c.toLowerCase().includes(historySearchTerm.toLowerCase()))
+    : commandHistory;
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 'l' || e.key === 'L') {
+        e.preventDefault();
+        setHistory([{ type: 'system', content: 'Terminal cleared.' }]);
+        return;
+      }
+      if (e.key === 'k' || e.key === 'K') {
+        e.preventDefault();
+        setShowCommandPalette(p => !p);
+        setHistorySearchMode(false);
+        return;
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        setHistorySearchMode(p => !p);
+        setShowCommandPalette(false);
+        setHistorySearchTerm('');
+        return;
+      }
+    }
+
+    if (e.key === 'Escape') {
+      setShowCommandPalette(false);
+      setHistorySearchMode(false);
+      setHistorySearchTerm('');
+      return;
+    }
+
+    if (historySearchMode) {
+      if (e.key === 'Enter' && filteredHistory.length > 0) {
+        e.preventDefault();
+        setInput(filteredHistory[0]);
+        setHistorySearchMode(false);
+        setHistorySearchTerm('');
+        inputRef.current?.focus();
+      }
+      return;
+    }
+
+    if (showCommandPalette) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const match = ALL_COMMANDS.find(c => c.startsWith(input.toLowerCase()));
+        if (match) {
+          setInput(match);
+          setShowCommandPalette(false);
+          inputRef.current?.focus();
+        }
+      }
+      return;
+    }
+
     if (e.key === 'Enter') {
       handleCommand(input);
     } else if (e.key === 'ArrowUp') {
@@ -1248,8 +1307,67 @@ export const CustomTerminal = () => {
             </span>
           )}
           {activeMinigame && <span className="text-[10px] sm:text-xs text-amber-500">[{activeMinigame.toUpperCase()}]</span>}
+          <span className="hidden sm:flex items-center gap-1.5 text-[8px] text-stone-600">
+            <kbd className="px-1 py-0.5 bg-stone-800/60 rounded text-stone-500">^K</kbd>
+            <kbd className="px-1 py-0.5 bg-stone-800/60 rounded text-stone-500">^L</kbd>
+            <kbd className="px-1 py-0.5 bg-stone-800/60 rounded text-stone-500">^R</kbd>
+          </span>
         </div>
       </div>
+
+      {showCommandPalette && (
+        <div className="absolute top-10 left-0 w-full z-20 bg-stone-950/95 border-b border-amber-900/40 p-3 backdrop-blur-md" data-testid="command-palette">
+          <div className="text-[9px] text-amber-500/70 font-bold uppercase mb-2">Command Palette (Ctrl+K)</div>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-1 max-h-[200px] overflow-y-auto">
+            {ALL_COMMANDS.filter(c => !input || c.includes(input.toLowerCase())).map(cmd => (
+              <button
+                key={cmd}
+                onClick={() => { setInput(cmd); setShowCommandPalette(false); inputRef.current?.focus(); }}
+                className="px-2 py-1.5 bg-stone-900/80 hover:bg-amber-900/40 text-amber-400 rounded text-[10px] font-mono text-left transition-colors border border-stone-800/50 hover:border-amber-800/50"
+                data-testid={`palette-${cmd}`}
+              >
+                {cmd}
+              </button>
+            ))}
+          </div>
+          <div className="text-[8px] text-stone-600 mt-2">Press Escape to close</div>
+        </div>
+      )}
+
+      {historySearchMode && (
+        <div className="absolute top-10 left-0 w-full z-20 bg-stone-950/95 border-b border-amber-900/40 p-3 backdrop-blur-md" data-testid="history-search">
+          <div className="text-[9px] text-amber-500/70 font-bold uppercase mb-2">History Search (Ctrl+R)</div>
+          <input
+            autoFocus
+            type="text"
+            value={historySearchTerm}
+            onChange={e => setHistorySearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="w-full bg-stone-900 border border-stone-800 rounded px-2 py-1.5 text-xs text-amber-500 font-mono placeholder-stone-600 outline-none focus:border-amber-800"
+            placeholder="Search command history..."
+            data-testid="history-search-input"
+          />
+          <div className="mt-2 space-y-0.5 max-h-[150px] overflow-y-auto">
+            {filteredHistory.length === 0 && (
+              <div className="text-[10px] text-stone-600">No matching commands</div>
+            )}
+            {filteredHistory.slice(0, 10).map((cmd, i) => (
+              <button
+                key={`${cmd}-${i}`}
+                onClick={() => { setInput(cmd); setHistorySearchMode(false); setHistorySearchTerm(''); inputRef.current?.focus(); }}
+                className={cn(
+                  "w-full text-left px-2 py-1 rounded text-[10px] font-mono transition-colors",
+                  i === 0 ? "bg-amber-900/30 text-amber-400" : "text-stone-400 hover:bg-stone-800/50"
+                )}
+              >
+                <span className="text-stone-600 mr-2">{commandHistory.length - commandHistory.indexOf(cmd)}</span>
+                {cmd}
+              </button>
+            ))}
+          </div>
+          <div className="text-[8px] text-stone-600 mt-2">Enter to select, Escape to close</div>
+        </div>
+      )}
       
       <ScrollArea className="flex-1 pt-10 pb-2">
         <div className="space-y-1">
