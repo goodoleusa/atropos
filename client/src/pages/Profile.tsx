@@ -305,7 +305,7 @@ export default function Profile() {
           <TabsList className="bg-stone-900/50 border border-amber-900/30 flex-wrap">
             <TabsTrigger value="missions" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-400" data-testid="missions-tab">
               <Crosshair className="w-4 h-4 mr-2" />
-              Mission Control
+              Campaign Progress
             </TabsTrigger>
             <TabsTrigger value="portfolio" className="data-[state=active]:bg-amber-900/40 data-[state=active]:text-amber-300" data-testid="portfolio-tab">
               <Briefcase className="w-4 h-4 mr-2" />

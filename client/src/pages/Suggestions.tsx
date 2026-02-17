@@ -8,13 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Bug, Lightbulb, Zap, AlertTriangle, ThumbsUp,
   Clock, CheckCircle, XCircle, ArrowUpCircle, Search,
   Sparkles, Bot, Activity, BarChart3, TrendingUp,
   Filter, Eye, Code, FileCode, Settings, Puzzle, Wrench,
   Copy, Terminal, FileJson, GitBranch, Download,
-  RefreshCw, ExternalLink, Clipboard, FileText
+  RefreshCw, ExternalLink, Clipboard, FileText,
+  CheckSquare, Square, Rocket
 } from "lucide-react";
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -180,6 +182,51 @@ function recToGitPatch(rec: Recommendation): string {
   return lines.join('\n');
 }
 
+function recsToAgentBatch(recs: Recommendation[]): string {
+  const parts = [
+    `Implement the following ${recs.length} recommendations in this codebase.`,
+    `Work through them in order of priority (critical > high > medium > low).`,
+    `For each one, read the target files first, understand existing patterns, then implement.`,
+    ``,
+    `=`.repeat(80),
+  ];
+  const sorted = [...recs].sort((a, b) => {
+    const order: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+    return (order[a.priority] ?? 4) - (order[b.priority] ?? 4);
+  });
+  sorted.forEach((rec, i) => {
+    parts.push(``);
+    parts.push(`## [${i + 1}/${recs.length}] ${rec.title}`);
+    parts.push(`Priority: ${rec.priority} | Category: ${CAT_CONFIG[rec.category]?.label || rec.category}`);
+    parts.push(``);
+    parts.push(rec.description);
+    if (rec.targetFiles.length > 0) {
+      parts.push(``);
+      parts.push(`Files to modify:`);
+      rec.targetFiles.forEach(f => parts.push(`  - ${f}`));
+    }
+    if (rec.painPointsAddressed.length > 0) {
+      parts.push(``);
+      parts.push(`Pain points this fixes:`);
+      rec.painPointsAddressed.forEach(p => parts.push(`  - ${p}`));
+    }
+    if (rec.codeSnippet) {
+      parts.push(``);
+      parts.push(`Starter code:`);
+      parts.push("```" + (rec.codeLanguage || 'typescript'));
+      parts.push(rec.codeSnippet);
+      parts.push("```");
+    }
+    if (rec.estimatedImpact) {
+      parts.push(``);
+      parts.push(`Expected impact: ${rec.estimatedImpact}`);
+    }
+    parts.push(``);
+    parts.push(`=`.repeat(80));
+  });
+  return parts.join('\n');
+}
+
 export default function SuggestionsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -191,6 +238,18 @@ export default function SuggestionsPage() {
   const [filterCategory, setFilterCategory] = useState("all");
   const [selectedFeedback, setSelectedFeedback] = useState<FeedbackItem | null>(null);
   const [selectedRec, setSelectedRec] = useState<Recommendation | null>(null);
+  const [checkedIds, setCheckedIds] = useState<Set<number>>(new Set());
+
+  const toggleChecked = useCallback((id: number) => {
+    setCheckedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const clearChecked = useCallback(() => setCheckedIds(new Set()), []);
 
   const { data: feedbackItems = [], isLoading: feedbackLoading } = useQuery<FeedbackItem[]>({
     queryKey: ["/api/feedback"],
@@ -270,6 +329,24 @@ export default function SuggestionsPage() {
       return true;
     }).sort((a, b) => b.votes - a.votes);
   }, [recs, filterCategory, filterStatus, filterPriority, searchQuery]);
+
+  const checkedRecs = useMemo(() => recs.filter(r => checkedIds.has(r.id)), [recs, checkedIds]);
+
+  const selectAllFiltered = useCallback(() => {
+    setCheckedIds(new Set(filteredRecs.map(r => r.id)));
+  }, [filteredRecs]);
+
+  const copyCheckedForAgent = useCallback(() => {
+    if (checkedRecs.length === 0) return;
+    const prompt = recsToAgentBatch(checkedRecs);
+    copyToClipboard(prompt, toast, `${checkedRecs.length} recommendation${checkedRecs.length > 1 ? 's' : ''} as agent prompt`);
+  }, [checkedRecs, toast]);
+
+  const copyAllForAgent = useCallback(() => {
+    if (recs.length === 0) return;
+    const prompt = recsToAgentBatch(recs);
+    copyToClipboard(prompt, toast, `all ${recs.length} recommendations as agent prompt`);
+  }, [recs, toast]);
 
   const typeChartData = useMemo(() => {
     if (!feedbackStats) return [];
@@ -474,6 +551,58 @@ export default function SuggestionsPage() {
               </Badge>
             </div>
 
+            {/* Agent batch action bar */}
+            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-950/40 to-stone-900/40 p-3 rounded-lg border border-amber-900/30" data-testid="agent-action-bar">
+              <Rocket className="w-4 h-4 text-amber-400 shrink-0" />
+              <span className="text-xs text-amber-400 font-bold uppercase tracking-wide shrink-0">Agent</span>
+              <div className="flex items-center gap-1.5 flex-wrap flex-1">
+                <Button
+                  variant="outline" size="sm"
+                  className="h-7 text-[10px] border-amber-800/50 text-amber-300 hover:bg-amber-900/30 hover:text-amber-200"
+                  onClick={selectAllFiltered}
+                  data-testid="btn-select-all"
+                >
+                  <CheckSquare className="w-3 h-3 mr-1" />
+                  Select All ({filteredRecs.length})
+                </Button>
+                {checkedIds.size > 0 && (
+                  <Button
+                    variant="outline" size="sm"
+                    className="h-7 text-[10px] border-stone-700 text-stone-400 hover:bg-stone-800"
+                    onClick={clearChecked}
+                    data-testid="btn-clear-selection"
+                  >
+                    <XCircle className="w-3 h-3 mr-1" />
+                    Clear ({checkedIds.size})
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {checkedIds.size > 0 ? (
+                  <Button
+                    size="sm"
+                    className="h-8 text-xs bg-amber-600 hover:bg-amber-500 text-black font-bold"
+                    onClick={copyCheckedForAgent}
+                    data-testid="btn-copy-selected-agent"
+                  >
+                    <Clipboard className="w-3.5 h-3.5 mr-1.5" />
+                    Copy {checkedIds.size} for Agent
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="h-8 text-xs bg-amber-700/80 hover:bg-amber-600 text-amber-100 font-bold"
+                    onClick={copyAllForAgent}
+                    disabled={recs.length === 0}
+                    data-testid="btn-copy-all-agent"
+                  >
+                    <Clipboard className="w-3.5 h-3.5 mr-1.5" />
+                    Copy All for Agent ({recs.length})
+                  </Button>
+                )}
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="lg:col-span-2">
                 <ScrollArea className="h-[calc(100vh-700px)] min-h-[350px]">
@@ -492,19 +621,29 @@ export default function SuggestionsPage() {
                       {filteredRecs.map(rec => {
                         const catCfg = CAT_CONFIG[rec.category] || CAT_CONFIG.code_snippet;
                         const CatIcon = catCfg.icon;
+                        const isChecked = checkedIds.has(rec.id);
                         return (
                           <Card key={rec.id}
-                            className={`bg-stone-900/20 border-stone-800/50 hover:border-amber-900/30 transition-all cursor-pointer ${selectedRec?.id === rec.id ? 'border-amber-600/50 bg-stone-900/40' : ''}`}
+                            className={`bg-stone-900/20 border-stone-800/50 hover:border-amber-900/30 transition-all cursor-pointer ${selectedRec?.id === rec.id ? 'border-amber-600/50 bg-stone-900/40' : ''} ${isChecked ? 'border-amber-700/40 bg-amber-950/10' : ''}`}
                             onClick={() => setSelectedRec(rec)} data-testid={`rec-item-${rec.id}`}>
                             <CardContent className="p-3">
                               <div className="flex items-start gap-3">
-                                <Button variant="ghost" size="sm"
-                                  className={`h-10 w-10 flex-col gap-0.5 border border-stone-800 hover:border-amber-500/50 hover:bg-amber-500/10 shrink-0 ${rec.votes > 1 ? 'text-amber-500 border-amber-500/20 bg-amber-500/5' : 'text-stone-500'}`}
-                                  onClick={(e) => { e.stopPropagation(); voteRec.mutate(rec.id); }}
-                                  data-testid={`vote-rec-${rec.id}`}>
-                                  <ThumbsUp className="w-3 h-3" />
-                                  <span className="text-[10px] font-bold font-orbitron">{rec.votes}</span>
-                                </Button>
+                                <div className="flex flex-col items-center gap-1.5 shrink-0">
+                                  <Checkbox
+                                    checked={isChecked}
+                                    onCheckedChange={() => toggleChecked(rec.id)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="border-stone-600 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                                    data-testid={`check-rec-${rec.id}`}
+                                  />
+                                  <Button variant="ghost" size="sm"
+                                    className={`h-8 w-8 flex-col gap-0 border border-stone-800 hover:border-amber-500/50 hover:bg-amber-500/10 ${rec.votes > 1 ? 'text-amber-500 border-amber-500/20 bg-amber-500/5' : 'text-stone-500'}`}
+                                    onClick={(e) => { e.stopPropagation(); voteRec.mutate(rec.id); }}
+                                    data-testid={`vote-rec-${rec.id}`}>
+                                    <ThumbsUp className="w-2.5 h-2.5" />
+                                    <span className="text-[9px] font-bold font-orbitron">{rec.votes}</span>
+                                  </Button>
+                                </div>
                                 <div className="flex-1 min-w-0 space-y-1">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <Badge className={`text-[9px] px-1.5 py-0 uppercase font-orbitron tracking-widest ${catCfg.color}`}>

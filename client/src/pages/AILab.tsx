@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -1321,25 +1321,16 @@ ${modelRankings.slice(0, 3).map(m => {
 }
 
 export default function AILab() {
+  useEffect(() => {
+    window.location.replace('/investigate?tab=ai-lab');
+  }, []);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300">
-      <div className="sticky top-0 z-40 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30 p-4">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <Link href="/investigate">
-            <Button variant="ghost" className="text-amber-600 hover:text-amber-500 min-h-[44px]" data-testid="back-button">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <h1 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
-            <Brain className="w-5 h-5" />
-            AI Lab
-          </h1>
-          <div className="w-[44px]" />
-        </div>
-      </div>
-      <div className="max-w-4xl mx-auto p-4 pb-24">
-        <AILabContent />
+    <div className="min-h-screen bg-[#0a0500] flex items-center justify-center text-stone-500">
+      <div className="text-center space-y-2">
+        <Brain className="w-8 h-8 mx-auto text-amber-500 animate-pulse" />
+        <p className="text-sm">Redirecting to Investigation Hub...</p>
       </div>
     </div>
   );
 }
+
