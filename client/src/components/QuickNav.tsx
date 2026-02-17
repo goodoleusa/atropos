@@ -64,15 +64,11 @@ export default function QuickNav() {
     { path: '/terminal', icon: Terminal, label: 'Terminal', color: 'amber' as const },
     { path: '/videos', icon: Activity, label: 'AI Gallery', color: 'teal' as const },
     
-    // Results & Documentation
-    { path: '/report', icon: FileText, label: 'Report', color: 'purple' as const, badge: pendingFindings.length > 0 ? pendingFindings.length : undefined },
-    { path: '/wiki', icon: Shield, label: 'Wiki', color: 'teal' as const },
-
-    // Dev Tools
     { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const },
     { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const },
     { path: '/void', icon: Sparkles, label: 'Void', color: 'purple' as const },
     { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
+    { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
   ];
 
   const navItems = baseNavItems;
@@ -162,9 +158,9 @@ export default function QuickNav() {
                   <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest">
                     {item.label}
                   </span>
-                  {item.badge && (
+                  {(item as any).badge && (
                     <Badge className="ml-auto bg-purple-700 text-white text-[10px] px-1.5 relative z-10">
-                      {item.badge}
+                      {(item as any).badge}
                     </Badge>
                   )}
                 </Button>
