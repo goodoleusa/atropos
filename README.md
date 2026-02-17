@@ -103,7 +103,43 @@ A comprehensive security investigation and training platform that combines profe
 
 ---
 
-## 🎉 Latest Release: v2.0 - Progression & Learning System (Feb 2026)
+## 🎉 Latest Release: v2.1 - QR C2 Framework & Attack Simulation (Feb 2026)
+
+### 🎯 QR C2 Guided Missions (NEW)
+- ✨ **First Beacon**: Learn how C2 beacons establish communication (50 XP)
+- ✨ **Receiving Orders**: Understand implant tasking lifecycle - queue, fetch, execute, report (75 XP)
+- ✨ **Ghost in the Wire**: Master evasion techniques - jitter, domain fronting, sleep obfuscation (100 XP)
+- ✨ **Multi-Target Console**: 4 simulated targets (Linux server, Windows workstation, IoT camera, Docker container) with OS-specific responses
+- ✨ **Real-World APT Cases**: Each mission references actual threat actors (APT29/SolarWinds, Lazarus Group, APT41)
+- ✨ **Defender Perspective**: Blue team detection tips alongside red team techniques
+
+### 🔬 QR-in-QR Hijacking Labs (6 Labs)
+- ✨ **Lab 1: Finder Pattern Confusion** (Beginner) - Multiple scanner results from one QR
+- ✨ **Lab 2: Hidden Quiet Zone Attack** (Intermediate) - Nested codes via quiet zone elimination
+- ✨ **Lab 3: Physical Sticker Attack** (Beginner) - Real-world parking meter QR fraud ($150K+ stolen)
+- ✨ **Lab 4: Barcode-in-QR Inception** (Advanced) - Cross-format attacks exploiting scanner libraries
+- ✨ **Lab 5: Split QR Email Attack** (Intermediate) - Bypass email security with fragmented QR images
+- ✨ **Lab 6: Programmatic PDF QR** (Advanced) - Evade image scanners with vector-drawn QR codes
+
+### 🔗 Attack Flow Presets
+- ✨ **Raw Payload**: Base64/hex data injection templates
+- ✨ **C2 Beacon**: Command & control check-in with agent registration
+- ✨ **Data Exfiltration**: Session/token theft simulation
+- ✨ **Credential Harvesting**: Phishing URL generation for awareness training
+
+### 🕷️ SpiderFoot OSINT Integration
+- ✨ **Streaming Scan Results**: Real-time OSINT reconnaissance with progress indicators
+- ✨ **Result Export**: Export findings for use in NEXUS investigations
+- ✨ **Scanner Dashboard**: Unified view combining SpiderFoot and Atropos Scanner results
+
+### 📂 Portfolio System
+- ✨ **Investigation Showcase**: Save and share completed investigations
+- ✨ **Achievement Display**: Public profiles with earned badges
+- ✨ **Shareable Content**: Generate links to share work with employers/peers
+
+---
+
+## 🎉 v2.0 - Progression & Learning System (Feb 2026)
 
 ### 🎮 Player Progression System
 - ✨ **XP & Leveling**: Complete progression from level 1 to 50+ with skill specializations
