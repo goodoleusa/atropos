@@ -555,331 +555,214 @@ function LuaScriptsTab() {
         </Card>
       )}
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-            <Input
-              placeholder="Search scripts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-stone-900/60 border-stone-800 text-stone-200"
-              data-testid="input-search-scripts"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={showTemplates ? "default" : "outline"}
-              className={showTemplates ? "bg-amber-700 hover:bg-amber-600 text-black" : "border-stone-700 text-amber-400 hover:border-amber-700"}
-              onClick={() => { setShowTemplates(!showTemplates); setShowNewForm(false); }}
-              data-testid="button-show-templates"
-            >
-              <BookOpen className="w-4 h-4 mr-1" /> Templates
-            </Button>
-            <Button
-              size="sm"
-              className="bg-teal-700 hover:bg-teal-600 text-black"
-              onClick={() => { setShowNewForm(true); setShowTemplates(false); setSelectedScript(null); setNewContent(""); setNewFilename(""); }}
-              data-testid="button-add-script"
-            >
-              <Plus className="w-4 h-4 mr-1" /> New Script
-            </Button>
-          </div>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+          <Input
+            placeholder="Search scripts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 bg-stone-900/60 border-stone-800 text-stone-200"
+            data-testid="input-search-scripts"
+          />
         </div>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={showTemplates ? "default" : "outline"}
+            className={showTemplates ? "bg-amber-700 hover:bg-amber-600 text-black" : "border-stone-700 text-amber-400 hover:border-amber-700"}
+            onClick={() => { setShowTemplates(!showTemplates); setShowNewForm(false); }}
+            data-testid="button-show-templates"
+          >
+            <BookOpen className="w-4 h-4 mr-1" /> Templates
+          </Button>
+          <Button
+            size="sm"
+            className="bg-teal-700 hover:bg-teal-600 text-black"
+            onClick={() => { setShowNewForm(true); setShowTemplates(false); setSelectedScript(null); setNewContent(""); setNewFilename(""); }}
+            data-testid="button-add-script"
+          >
+            <Plus className="w-4 h-4 mr-1" /> New Script
+          </Button>
+        </div>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          <Filter className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+      <div className="flex flex-wrap items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <Filter className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+        <Badge
+          variant={categoryFilter === "all" ? "default" : "outline"}
+          className={`cursor-pointer text-[10px] whitespace-nowrap ${categoryFilter === "all" ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400"}`}
+          onClick={() => setCategoryFilter("all")}
+        >All</Badge>
+        {CATEGORY_LIST.map((cat) => (
           <Badge
-            variant={categoryFilter === "all" ? "default" : "outline"}
-            className={`cursor-pointer text-[10px] whitespace-nowrap ${categoryFilter === "all" ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400"}`}
-            onClick={() => setCategoryFilter("all")}
-          >All</Badge>
-          {CATEGORY_LIST.map((cat) => (
-            <Badge
-              key={cat}
-              variant={categoryFilter === cat ? "default" : "outline"}
-              className={`cursor-pointer text-[10px] whitespace-nowrap ${categoryFilter === cat ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400"}`}
-              onClick={() => setCategoryFilter(cat)}
-            >
-              <span className="flex items-center gap-1">
-                {CATEGORY_ICONS_MAP[cat] || <FileCode className="w-3 h-3" />}
-                {cat.replace(/_/g, " ")}
-              </span>
-            </Badge>
-          ))}
-        </div>
+            key={cat}
+            variant={categoryFilter === cat ? "default" : "outline"}
+            className={`cursor-pointer text-[10px] whitespace-nowrap ${categoryFilter === cat ? "bg-amber-700 text-black" : "border-stone-700 text-stone-400"}`}
+            onClick={() => setCategoryFilter(cat)}
+          >
+            <span className="flex items-center gap-1">
+              {CATEGORY_ICONS_MAP[cat] || <FileCode className="w-3 h-3" />}
+              {cat.replace(/_/g, " ")}
+            </span>
+          </Badge>
+        ))}
+        {showTemplates && (
+          <>
+            <span className="text-stone-600 mx-1">|</span>
+            {Object.entries(FOCUS_CONFIG).map(([key, cfg]) => (
               <Badge
                 key={key}
                 variant={focusFilter === key ? "default" : "outline"}
-                className={`cursor-pointer text-xs ${focusFilter === key ? cfg.color : "border-stone-700 text-stone-400 hover:border-amber-700"}`}
-                onClick={() => setFocusFilter(focusFilter === key ? "all" : key)}
-                data-testid={`focus-${key}`}
+                className={`cursor-pointer text-[10px] whitespace-nowrap ${focusFilter === key ? cfg.color : "border-stone-700 text-stone-400"}`}
+                onClick={() => setFocusFilter(key)}
               >
-                <span className="flex items-center gap-1">{cfg.icon} {cfg.label}</span>
+                <span className="flex items-center gap-1">
+                  {cfg.icon}
+                  {cfg.label}
+                </span>
               </Badge>
             ))}
           </>
         )}
       </div>
 
-      {showTemplates ? (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-400" />
-            <h3 className="text-amber-400 font-bold text-sm">Script Templates ({filteredTemplates.length})</h3>
-            <span className="text-xs text-stone-500">Click to create from template</span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredTemplates.map((t) => {
-              const focusCfg = FOCUS_CONFIG[t.focus] || FOCUS_CONFIG.general;
-              return (
-                <Card
-                  key={t.id}
-                  className="bg-stone-950/80 border-stone-800 hover:border-amber-700/50 cursor-pointer transition-all hover:shadow-lg hover:shadow-amber-900/10 group"
-                  onClick={() => useTemplate(t)}
-                  data-testid={`template-${t.id}`}
-                >
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        {CATEGORY_ICONS_MAP[t.category] || <FileCode className="w-4 h-4 text-stone-400" />}
-                        <span className="text-sm font-semibold text-stone-200 truncate group-hover:text-amber-300 transition-colors">{t.name}</span>
-                      </div>
-                      <Badge className={`text-[10px] shrink-0 ${DIFFICULTY_COLORS[t.difficulty] || ""}`}>
-                        {t.difficulty}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-stone-400 line-clamp-2">{t.description}</p>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline" className={`text-[10px] ${focusCfg.color}`}>
-                        <span className="flex items-center gap-1">{focusCfg.icon} {focusCfg.label}</span>
-                      </Badge>
-                      <span className="text-[10px] text-stone-600">{t.content.split('\n').length} lines</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {t.tags.slice(0, 4).map((tag) => (
-                        <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-stone-800/60 text-stone-500">
-                          {tag}
-                        </span>
-                      ))}
-                      {t.tags.length > 4 && <span className="text-[10px] text-stone-600">+{t.tags.length - 4}</span>}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-          {filteredTemplates.length === 0 && (
-            <div className="text-center py-8 text-stone-500 text-sm">No templates match your filters</div>
-          )}
-        </div>
-      ) : (
-        <div className={`grid gap-4 ${editorExpanded ? "" : "md:grid-cols-2"}`}>
-          {!editorExpanded && (
-            <Card className="bg-stone-950/80 border-stone-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
-                  <FileCode className="w-4 h-4" /> Your Scripts ({filteredScripts.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <ScrollArea className="h-[500px]">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center h-32">
-                      <Loader2 className="w-5 h-5 animate-spin text-amber-400" />
-                    </div>
-                  ) : filteredScripts.length === 0 ? (
-                    <div className="text-center py-12 px-4 space-y-3">
-                      <FileCode className="w-8 h-8 mx-auto text-stone-600" />
-                      <p className="text-stone-500 text-sm">
-                        {searchQuery ? "No scripts match your search" : "No scripts yet"}
-                      </p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-amber-700/50 text-amber-400"
-                        onClick={() => { setShowTemplates(true); setShowNewForm(false); }}
-                      >
-                        <BookOpen className="w-3.5 h-3.5 mr-1" /> Browse Templates
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="divide-y divide-stone-800/50">
-                      {filteredScripts.map((s) => (
-                        <div
-                          key={s.filename}
-                          className={`px-4 py-3 cursor-pointer hover:bg-stone-900/60 transition-colors ${selectedScript?.filename === s.filename ? "bg-stone-900/80 border-l-2 border-amber-500" : ""}`}
-                          onClick={() => selectScript(s)}
-                          data-testid={`script-item-${s.filename}`}
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 min-w-0 flex-1">
-                              {CATEGORY_ICONS_MAP[s.category] || <FileCode className="w-3.5 h-3.5 text-stone-500 shrink-0" />}
-                              <span className="text-sm font-medium text-stone-200 truncate">{s.name}</span>
-                            </div>
-                            <div className="flex items-center gap-1 shrink-0">
-                              <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500">{s.category.replace(/_/g, " ")}</Badge>
-                              {deleteTarget === s.filename ? (
-                                <div className="flex gap-1">
-                                  <Button size="sm" variant="ghost" className="h-6 px-2 text-red-400 hover:text-red-300" onClick={(e) => { e.stopPropagation(); deleteScript(s.filename); }} data-testid={`button-confirm-delete-${s.filename}`}>Yes</Button>
-                                  <Button size="sm" variant="ghost" className="h-6 px-2 text-stone-400" onClick={(e) => { e.stopPropagation(); setDeleteTarget(null); }} data-testid={`button-cancel-delete-${s.filename}`}>No</Button>
-                                </div>
-                              ) : (
-                                <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-stone-600 hover:text-red-400" onClick={(e) => { e.stopPropagation(); setDeleteTarget(s.filename); }} data-testid={`button-delete-${s.filename}`}>
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                          <p className="text-xs text-stone-500 truncate mt-1">{s.description || "No description"}</p>
-                          <div className="flex items-center gap-3 mt-1.5">
-                            <span className="text-[10px] text-stone-600">{(s.size / 1024).toFixed(1)} KB</span>
-                            <span className="text-[10px] text-stone-600">{new Date(s.modified).toLocaleDateString()}</span>
-                            <span className="text-[10px] text-stone-600">{s.content.split('\n').length} lines</span>
-                          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
+        <div className="lg:col-span-4 space-y-4">
+          <ScrollArea className="h-[400px] lg:h-[600px] rounded-lg border border-stone-800 bg-stone-900/20">
+            <div className="p-3 space-y-2">
+              {showTemplates ? (
+                filteredTemplates.length > 0 ? (
+                  filteredTemplates.map((t) => (
+                    <Card
+                      key={t.id}
+                      className="bg-stone-900/40 border-stone-800 hover:border-amber-900/50 cursor-pointer transition-all group"
+                      onClick={() => useTemplate(t)}
+                    >
+                      <CardContent className="p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-bold text-amber-400 text-sm group-hover:text-amber-300">{t.name}</h4>
+                          <Badge variant="outline" className={`text-[9px] ${DIFFICULTY_COLORS[t.difficulty]}`}>{t.difficulty}</Badge>
                         </div>
-                      ))}
+                        <p className="text-[11px] text-stone-500 line-clamp-2 leading-relaxed">{t.description}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {t.tags.map(tag => (
+                            <Badge key={tag} variant="secondary" className="text-[9px] bg-stone-800/50 text-stone-400">#{tag}</Badge>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-stone-600 text-xs font-mono">NO TEMPLATES FOUND</div>
+                )
+              ) : (
+                filteredScripts.length > 0 ? (
+                  filteredScripts.map((s) => (
+                    <div
+                      key={s.filename}
+                      onClick={() => selectScript(s)}
+                      className={`p-3 rounded-lg border transition-all cursor-pointer group ${
+                        selectedScript?.filename === s.filename
+                          ? 'bg-amber-900/20 border-amber-700/50 shadow-lg shadow-amber-900/10'
+                          : 'bg-stone-900/40 border-stone-800 hover:border-stone-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          {CATEGORY_ICONS_MAP[s.category] || <FileCode className="w-3.5 h-3.5 text-stone-500" />}
+                          <span className={`text-sm font-bold truncate ${selectedScript?.filename === s.filename ? 'text-amber-400' : 'text-stone-300 group-hover:text-stone-200'}`}>
+                            {s.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          {deleteTarget === s.filename ? (
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="ghost" className="h-6 px-2 text-red-400 hover:text-red-300" onClick={(e) => { e.stopPropagation(); deleteScript(s.filename); }}>Yes</Button>
+                              <Button size="sm" variant="ghost" className="h-6 px-2 text-stone-400" onClick={(e) => { e.stopPropagation(); setDeleteTarget(null); }}>No</Button>
+                            </div>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-stone-500 hover:text-red-400"
+                              onClick={(e) => { e.stopPropagation(); setDeleteTarget(s.filename); }}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-stone-500 truncate">{s.filename} · {Math.round(s.size / 1024)} KB</p>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-stone-600 text-xs font-mono">NO SCRIPTS FOUND</div>
+                )
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+
+        <div className="lg:col-span-8 space-y-4">
+          {(selectedScript || showNewForm) ? (
+            <Card className={`bg-stone-900/20 border-stone-800 flex flex-col ${editorExpanded ? 'fixed inset-4 z-50' : 'h-full min-h-[500px]'}`}>
+              <CardHeader className="p-4 border-b border-stone-800 flex flex-row items-center justify-between shrink-0">
+                <div>
+                  <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
+                    <Code2 className="w-4 h-4" />
+                    {showNewForm ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="filename.lua"
+                          value={newFilename}
+                          onChange={(e) => setNewFilename(e.target.value)}
+                          className="h-7 text-xs bg-stone-950 border-stone-800 w-48 font-mono"
+                        />
+                      </div>
+                    ) : (
+                      <span className="font-mono">{selectedScript?.filename}</span>
+                    )}
+                  </CardTitle>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-stone-500" onClick={() => setEditorExpanded(!editorExpanded)}>
+                    {editorExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-amber-700 hover:bg-amber-600 text-black font-bold h-8"
+                    disabled={isSaving}
+                    onClick={showNewForm ? createScript : saveEdit}
+                  >
+                    {isSaving ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <RefreshCw className="w-3 h-3 mr-2" />}
+                    {showNewForm ? 'Create' : 'Save'}
+                  </Button>
+                  {showNewForm && (
+                    <Button variant="ghost" size="sm" className="h-8 text-stone-500" onClick={() => setShowNewForm(false)}>Cancel</Button>
                   )}
-                </ScrollArea>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 flex-1 relative min-h-0">
+                <Textarea
+                  value={showNewForm ? newContent : editContent}
+                  onChange={(e) => showNewForm ? setNewContent(e.target.value) : setEditContent(e.target.value)}
+                  className="absolute inset-0 w-full h-full bg-stone-950 border-0 rounded-none font-mono text-xs p-4 resize-none focus-visible:ring-0 text-amber-500/90 leading-relaxed"
+                  placeholder="-- Write your Lua script here..."
+                />
               </CardContent>
             </Card>
-          )}
-
-          <Card className={`bg-stone-950/80 border-stone-800 ${editorExpanded ? "col-span-full" : ""}`}>
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
-                  <Terminal className="w-4 h-4" />
-                  {showNewForm ? "New Script" : selectedScript ? selectedScript.name : "Editor"}
-                </CardTitle>
-                <div className="flex items-center gap-1">
-                  {(selectedScript || showNewForm) && (
-                    <>
-                      {selectedScript && !isEditing && (
-                        <>
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-stone-500 hover:text-amber-400" onClick={() => copyToClipboard(selectedScript.content)} title="Copy">
-                            <Copy className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-stone-500 hover:text-amber-400" onClick={() => downloadScript(selectedScript.filename, selectedScript.content)} title="Download">
-                            <Download className="w-3.5 h-3.5" />
-                          </Button>
-                        </>
-                      )}
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-stone-500 hover:text-amber-400" onClick={() => setEditorExpanded(!editorExpanded)} title={editorExpanded ? "Collapse" : "Expand"}>
-                        {editorExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                      </Button>
-                    </>
-                  )}
-                </div>
+          ) : (
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center border border-dashed border-stone-800 rounded-lg bg-stone-900/10 text-stone-600 space-y-4">
+              <FileCode className="w-12 h-12 text-stone-800" />
+              <div className="text-center px-6">
+                <p className="text-sm font-medium text-stone-500">No Script Selected</p>
+                <p className="text-xs text-stone-600 mt-1 max-w-xs">Select a script from the sidebar or use a template to begin development.</p>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {showNewForm ? (
-                <>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="space-y-1.5">
-                      <Label className="text-stone-300 text-xs">Filename</Label>
-                      <Input
-                        placeholder="my_threat_hunter.lua"
-                        value={newFilename}
-                        onChange={(e) => setNewFilename(e.target.value)}
-                        className="bg-stone-900/60 border-stone-800 text-stone-200"
-                        data-testid="input-new-filename"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-stone-300 text-xs">Category</Label>
-                      <Select value={newCategory} onValueChange={setNewCategory}>
-                        <SelectTrigger className="bg-stone-900/60 border-stone-800 text-stone-200" data-testid="select-new-category">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {CATEGORY_LIST.map((cat) => (
-                            <SelectItem key={cat} value={cat}>
-                              <span className="flex items-center gap-2">
-                                {CATEGORY_ICONS_MAP[cat]}
-                                {cat.replace(/_/g, " ")}
-                              </span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-stone-300 text-xs">Script Code</Label>
-                      <span className="text-[10px] text-stone-600">{newContent.split('\n').length} lines</span>
-                    </div>
-                    <Textarea
-                      placeholder="-- Your Lua script here&#10;-- Use atropos.emit() to output findings&#10;-- Use atropos.http.get() for HTTP requests"
-                      value={newContent}
-                      onChange={(e) => setNewContent(e.target.value)}
-                      className={`bg-stone-900/60 border-stone-800 text-stone-200 font-mono text-sm ${editorExpanded ? "h-[500px]" : "h-80"} leading-relaxed`}
-                      data-testid="textarea-new-content"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={createScript} disabled={isSaving} className="flex-1 bg-teal-700 hover:bg-teal-600 text-black font-semibold" data-testid="button-create-script">
-                      {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-4 h-4 mr-1" /> Create Script</>}
-                    </Button>
-                    <Button variant="outline" onClick={() => setShowNewForm(false)} className="border-stone-700 text-stone-400" data-testid="button-cancel-new">Cancel</Button>
-                  </div>
-                </>
-              ) : selectedScript ? (
-                <>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-400">
-                      {CATEGORY_ICONS_MAP[selectedScript.category]} {selectedScript.category.replace(/_/g, " ")}
-                    </Badge>
-                    <span className="text-[10px] text-stone-600">{selectedScript.filename}</span>
-                    <span className="text-[10px] text-stone-600">{(selectedScript.size / 1024).toFixed(1)} KB</span>
-                    <span className="text-[10px] text-stone-600">{selectedScript.content.split('\n').length} lines</span>
-                  </div>
-                  {selectedScript.description && (
-                    <p className="text-xs text-stone-400 italic">{selectedScript.description}</p>
-                  )}
-                  <Textarea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    readOnly={!isEditing}
-                    className={`bg-stone-900/60 border-stone-800 text-stone-200 font-mono text-sm ${editorExpanded ? "h-[500px]" : "h-80"} leading-relaxed ${!isEditing ? "opacity-80" : "ring-1 ring-amber-700/30"}`}
-                    data-testid="textarea-script-editor"
-                  />
-                  <div className="flex gap-2">
-                    {isEditing ? (
-                      <>
-                        <Button onClick={saveEdit} disabled={isSaving} className="flex-1 bg-amber-700 hover:bg-amber-600 text-black font-semibold" data-testid="button-save-script">
-                          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><CheckCircle2 className="w-4 h-4 mr-1" /> Save Changes</>}
-                        </Button>
-                        <Button variant="outline" onClick={() => { setIsEditing(false); setEditContent(selectedScript.content); }} className="border-stone-700 text-stone-400" data-testid="button-cancel-edit">Cancel</Button>
-                      </>
-                    ) : (
-                      <Button onClick={() => setIsEditing(true)} className="w-full bg-stone-800 hover:bg-stone-700 text-stone-200" data-testid="button-edit-script">
-                        <Edit className="w-4 h-4 mr-1" /> Edit Script
-                      </Button>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-80 text-stone-600 space-y-4">
-                  <Code2 className="w-10 h-10 text-stone-700" />
-                  <p className="text-sm">Select a script to view or edit</p>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="border-amber-700/50 text-amber-400 text-xs" onClick={() => setShowTemplates(true)}>
-                      <BookOpen className="w-3.5 h-3.5 mr-1" /> Browse Templates
-                    </Button>
-                    <Button size="sm" variant="outline" className="border-teal-700/50 text-teal-400 text-xs" onClick={() => setShowNewForm(true)}>
-                      <Plus className="w-3.5 h-3.5 mr-1" /> Blank Script
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -1028,28 +911,28 @@ function ApiLookupsTab() {
           <div className="grid gap-3 md:grid-cols-3">
             <div className="md:col-span-2 space-y-1">
               <Label className="text-stone-300 text-xs">Target</Label>
-              <Input placeholder="example.com" value={freeTarget} onChange={(e) => setFreeTarget(e.target.value)} className="bg-stone-900/60 border-stone-800 text-stone-200" data-testid="input-free-target" />
+              <Input placeholder="example.com or IP" value={freeTarget} onChange={(e) => setFreeTarget(e.target.value)} className="bg-stone-900/60 border-stone-800 text-stone-200" data-testid="input-free-target" />
             </div>
             <div className="space-y-1">
               <Label className="text-stone-300 text-xs">Service</Label>
               <Select value={freeService} onValueChange={setFreeService}>
                 <SelectTrigger className="bg-stone-900/60 border-stone-800 text-stone-200" data-testid="select-free-service"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="dns">DNS</SelectItem>
-                  <SelectItem value="whois">WHOIS</SelectItem>
-                  <SelectItem value="headers">HTTP Headers</SelectItem>
+                  <SelectItem value="all">All Available</SelectItem>
+                  <SelectItem value="dns">DNS Records</SelectItem>
+                  <SelectItem value="whois">WHOIS Data</SelectItem>
+                  <SelectItem value="http">HTTP Headers</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <Button
-            onClick={() => doLookup("/api/atropos/lookup/free", { target: freeTarget, service: freeService }, setFreeResult, setFreeLoading, "Free")}
+            onClick={() => doLookup("/api/atropos/lookup/free", { target: freeTarget, service: freeService }, setFreeResult, setFreeLoading, "Free Lookup")}
             disabled={freeLoading || !freeTarget.trim()}
-            className="w-full bg-teal-700 hover:bg-teal-600 text-black"
+            className="w-full bg-amber-700 hover:bg-amber-600 text-black"
             data-testid="button-free-lookup"
           >
-            {freeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Globe className="w-4 h-4 mr-2" /> Lookup</>}
+            {freeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Globe className="w-4 h-4 mr-2" /> Run Lookup</>}
           </Button>
           {renderResult(freeResult, "free")}
         </CardContent>
@@ -1058,519 +941,140 @@ function ApiLookupsTab() {
   );
 }
 
-function ScanHistoryTab() {
-  const { data: history = [], isLoading, refetch } = useQuery<ScanResult[]>({
-    queryKey: ['/api/atropos/results'],
-    queryFn: () => fetch('/api/atropos/results').then(r => r.json()),
-  });
-
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+function ToolsTab() {
+  const tools = [
+    {
+      id: "frida",
+      name: "Frida Toolkit",
+      icon: <Bug className="w-5 h-5" />,
+      lang: "JavaScript",
+      description: "Dynamic instrumentation toolkit for developers and security researchers.",
+      usage: "Inject scripts into live processes to hook functions, trace instructions, and modify behavior.",
+      commands: [
+        "frida -p <pid> -l script.js",
+        "frida-ps -U",
+        "frida-trace -i \"recv*\" <process>"
+      ],
+      color: "text-teal-400 border-teal-500/30 bg-teal-500/10"
+    },
+    {
+      id: "lua",
+      name: "Lua Scripting",
+      icon: <Code2 className="w-5 h-5" />,
+      lang: "Lua",
+      description: "High-performance scripting for scanner logic and data processing.",
+      usage: "Write custom scanner modules using the Lua API for rapid extension of Atropos capabilities.",
+      commands: [
+        "atropos --script-file my_recon.lua",
+        "atropos.emit(finding_data)",
+        "atropos.http.get(url)"
+      ],
+      color: "text-amber-400 border-amber-500/30 bg-amber-500/10"
+    },
+    {
+      id: "api",
+      name: "API Integration",
+      icon: <RefreshCw className="w-5 h-5" />,
+      lang: "JSON",
+      description: "External data source connectors and API data enrichment.",
+      usage: "Connect Atropos to third-party services like VirusTotal, Shodan, and Hybrid Analysis.",
+      commands: [
+        "POST /api/atropos/lookup/vt",
+        "GET /api/atropos/scripts",
+        "POST /api/atropos/scan"
+      ],
+      color: "text-blue-400 border-blue-500/30 bg-blue-500/10"
+    }
+  ];
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-amber-400 font-bold text-sm">Scan History ({history.length})</h3>
-        <Button size="sm" variant="outline" className="border-stone-700 text-stone-400 hover:text-amber-400" onClick={() => refetch()} data-testid="button-refresh-history">
-          <RefreshCw className="w-4 h-4 mr-1" /> Refresh
-        </Button>
-      </div>
-
-      {isLoading ? (
-        <div className="flex items-center justify-center h-32"><Loader2 className="w-5 h-5 animate-spin text-amber-400" /></div>
-      ) : history.length === 0 ? (
-        <Card className="bg-stone-950/80 border-stone-800">
-          <CardContent className="py-12 text-center text-stone-500">No scan history yet. Run a scan to see results here.</CardContent>
+    <div className="grid gap-4 md:grid-cols-3">
+      {tools.map((tool) => (
+        <Card key={tool.id} className="bg-stone-950/80 border-stone-800">
+          <CardHeader className="pb-3">
+            <div className={`p-2 w-max rounded-lg mb-2 ${tool.color}`}>
+              {tool.icon}
+            </div>
+            <CardTitle className="text-stone-100 flex items-center justify-between">
+              {tool.name}
+              <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500">{tool.lang}</Badge>
+            </CardTitle>
+            <CardDescription className="text-stone-500 text-xs">{tool.description}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] uppercase tracking-widest text-stone-500">Usage Case</Label>
+              <p className="text-[11px] text-stone-300 leading-relaxed">{tool.usage}</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] uppercase tracking-widest text-stone-500">Common Commands</Label>
+              <div className="p-2 rounded bg-stone-900 border border-stone-800 font-mono text-[10px] text-amber-500/80 space-y-1">
+                {tool.commands.map((cmd, i) => (
+                  <div key={i}>$ {cmd}</div>
+                ))}
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="w-full border-stone-800 text-stone-400 hover:text-amber-400 h-8 text-[11px]">
+              Open Documentation <ExternalLink className="w-3 h-3 ml-2" />
+            </Button>
+          </CardContent>
         </Card>
-      ) : (
-        <div className="space-y-3">
-          {history.map((scan) => (
-            <Card
-              key={scan.id}
-              className={`bg-stone-950/80 border-stone-800 cursor-pointer transition-colors hover:border-amber-900/50 ${expandedId === scan.id ? "border-amber-700/50" : ""}`}
-              onClick={() => setExpandedId(expandedId === scan.id ? null : scan.id)}
-              data-testid={`history-card-${scan.id}`}
-            >
-              <CardContent className="py-3 px-4">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-3">
-                    <Radar className="w-4 h-4 text-amber-500" />
-                    <div>
-                      <div className="text-sm font-medium text-stone-200">{scan.target}</div>
-                      <div className="text-xs text-stone-500">{scan.scanType} · {new Date(scan.timestamp).toLocaleString()}</div>
-                    </div>
-                  </div>
-                  <Badge className={SEVERITY_COLORS[scan.summary.riskLevel] || SEVERITY_COLORS.info}>
-                    {scan.summary.riskLevel.toUpperCase()} ({scan.summary.riskScore}/100)
-                  </Badge>
-                </div>
-
-                {expandedId === scan.id && (
-                  <div className="mt-3 pt-3 border-t border-stone-800 space-y-2" data-testid={`history-expanded-${scan.id}`}>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-xs">
-                      <div className="bg-stone-900/60 rounded p-1.5"><span className="text-amber-300 font-bold">{scan.summary.subdomains}</span> <span className="text-stone-500">subs</span></div>
-                      <div className="bg-stone-900/60 rounded p-1.5"><span className="text-teal-300 font-bold">{scan.summary.openPorts}</span> <span className="text-stone-500">ports</span></div>
-                      <div className="bg-stone-900/60 rounded p-1.5"><span className="text-blue-300 font-bold">{scan.summary.technologies}</span> <span className="text-stone-500">tech</span></div>
-                      <div className="bg-stone-900/60 rounded p-1.5"><span className="text-red-300 font-bold">{scan.summary.vulnerabilities}</span> <span className="text-stone-500">vulns</span></div>
-                    </div>
-                    <ScrollArea className="h-32 rounded-lg border border-stone-800 bg-stone-900/40 p-2">
-                      <div className="space-y-1">
-                        {scan.findings.map((f, idx) => (
-                          <div key={idx} className="flex items-center gap-2 text-xs">
-                            <Badge variant="outline" className={`text-[10px] ${SEVERITY_COLORS[f.severity || "info"]}`}>{f.type}</Badge>
-                            <span className="text-stone-300 truncate">{f.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      ))}
     </div>
   );
 }
 
-function ToolsTab() {
-  const [activeTool, setActiveTool] = useState<"frida" | "pano" | "osint">("frida");
-  const [fridaScriptType, setFridaScriptType] = useState("ssl_bypass");
-  const [fridaTarget, setFridaTarget] = useState("");
-  const [fridaCode, setFridaCode] = useState("");
-  const [fridaLoading, setFridaLoading] = useState(false);
-
-  const [panoEntityType, setPanoEntityType] = useState("email");
-  const [panoEntityValue, setPanoEntityValue] = useState("");
-  const [panoResults, setPanoResults] = useState<any>(null);
-  const [panoLoading, setPanoLoading] = useState(false);
-
-  const [iocInput, setIocInput] = useState("");
-  const [iocResults, setIocResults] = useState<any>(null);
-  const [iocLoading, setIocLoading] = useState(false);
-  const [extractText, setExtractText] = useState("");
-  const [extractResults, setExtractResults] = useState<any>(null);
-  const [extractLoading, setExtractLoading] = useState(false);
-  const [osintMode, setOsintMode] = useState<"analyze" | "extract">("analyze");
-
-  const generateFridaScript = async () => {
-    setFridaLoading(true);
-    try {
-      const resp = await fetch("/api/atropos/frida/script/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scriptType: fridaScriptType, target: fridaTarget || undefined }),
-      });
-      const data = await resp.json();
-      if (data.code) {
-        setFridaCode(data.code);
-        toast({ title: `Generated: ${data.name}`, description: data.description });
-      }
-    } catch { toast({ title: "Error generating script", variant: "destructive" }); }
-    setFridaLoading(false);
-  };
-
-  const runPanoTransform = async () => {
-    if (!panoEntityValue.trim()) return;
-    setPanoLoading(true);
-    try {
-      const resp = await fetch("/api/atropos/pano/transform", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entityType: panoEntityType, entityValue: panoEntityValue }),
-      });
-      setPanoResults(await resp.json());
-    } catch { toast({ title: "Transform failed", variant: "destructive" }); }
-    setPanoLoading(false);
-  };
-
-  const analyzeIOC = async () => {
-    if (!iocInput.trim()) return;
-    setIocLoading(true);
-    try {
-      const resp = await fetch("/api/atropos/osint-toolkit/ioc/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ioc: iocInput }),
-      });
-      setIocResults(await resp.json());
-    } catch { toast({ title: "Analysis failed", variant: "destructive" }); }
-    setIocLoading(false);
-  };
-
-  const extractIOCs = async () => {
-    if (!extractText.trim()) return;
-    setExtractLoading(true);
-    try {
-      const resp = await fetch("/api/atropos/osint-toolkit/ioc/extract", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: extractText }),
-      });
-      setExtractResults(await resp.json());
-    } catch { toast({ title: "Extraction failed", variant: "destructive" }); }
-    setExtractLoading(false);
-  };
-
-  const fridaScripts = [
-    { id: "ssl_bypass", name: "SSL Pinning Bypass", desc: "Bypass certificate pinning on Android/iOS", icon: Shield },
-    { id: "crypto_trace", name: "Crypto API Tracer", desc: "Trace AES, RSA, SHA operations", icon: Key },
-    { id: "network_monitor", name: "Network Monitor", desc: "Monitor connections and HTTP requests", icon: Globe },
-    { id: "api_hook", name: "API Function Hooker", desc: "Hook and trace API calls with args", icon: Code2 },
-    { id: "root_jailbreak_detect", name: "Root/JB Detection Bypass", desc: "Bypass root and jailbreak checks", icon: Shield },
-  ];
-
-  const panoEntities = [
-    { type: "email", label: "Email", placeholder: "user@example.com" },
-    { type: "username", label: "Username", placeholder: "johndoe" },
-    { type: "website", label: "Website/URL", placeholder: "https://example.com" },
-    { type: "location", label: "Location", placeholder: "40.7128, -74.0060" },
-  ];
-
-  const tools = [
-    { id: "frida" as const, name: "Frida", desc: "Dynamic Instrumentation", lang: "JavaScript", color: "text-orange-400", bgColor: "bg-orange-900/20 border-orange-800/40" },
-    { id: "pano" as const, name: "PANO", desc: "OSINT Graph Analysis", lang: "Python / Qt", color: "text-cyan-400", bgColor: "bg-cyan-900/20 border-cyan-800/40" },
-    { id: "osint" as const, name: "OSINT Toolkit", desc: "Threat Intel Platform", lang: "Docker Web App", color: "text-emerald-400", bgColor: "bg-emerald-900/20 border-emerald-800/40" },
-  ];
+function ScanHistoryTab() {
+  const { data: results = [] } = useQuery<ScanResult[]>({
+    queryKey: ['/api/atropos/scan-history'],
+    queryFn: () => fetch('/api/atropos/scan-history').then(r => r.json()),
+  });
 
   return (
-    <div className="space-y-4 mt-4" data-testid="tools-tab">
-      <div className="grid grid-cols-3 gap-3">
-        {tools.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTool(t.id)}
-            className={`p-3 rounded-lg border text-left transition-all ${activeTool === t.id ? t.bgColor + " ring-1 ring-amber-600/50" : "bg-stone-900/40 border-stone-800 hover:border-stone-700"}`}
-            data-testid={`tool-select-${t.id}`}
-          >
-            <div className={`text-sm font-bold ${activeTool === t.id ? t.color : "text-stone-300"}`}>{t.name}</div>
-            <div className="text-xs text-stone-500">{t.desc}</div>
-            <Badge variant="outline" className="mt-1 text-[10px]">{t.lang}</Badge>
-          </button>
-        ))}
-      </div>
-
-      {activeTool === "frida" && (
-        <Card className="bg-stone-950/80 border-stone-800">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-orange-400 flex items-center gap-2"><Zap className="w-5 h-5" /> Frida - Dynamic Instrumentation Toolkit</CardTitle>
-            <CardDescription>Inject JavaScript into native apps to hook functions, trace APIs, and bypass protections. No Lua - pure JS runtime.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <Label className="text-stone-400 text-xs">Script Template</Label>
-                <div className="space-y-2">
-                  {fridaScripts.map(s => (
-                    <button
-                      key={s.id}
-                      onClick={() => setFridaScriptType(s.id)}
-                      className={`w-full flex items-center gap-3 p-2.5 rounded-lg border text-left transition-colors ${fridaScriptType === s.id ? "bg-orange-900/20 border-orange-700/50 text-orange-300" : "bg-stone-900/40 border-stone-800 text-stone-400 hover:border-stone-700"}`}
-                      data-testid={`frida-script-${s.id}`}
-                    >
-                      <s.icon className="w-4 h-4 shrink-0" />
-                      <div>
-                        <div className="text-xs font-medium">{s.name}</div>
-                        <div className="text-[10px] text-stone-500">{s.desc}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-stone-400 text-xs">Target App (optional)</Label>
-                  <Input
-                    value={fridaTarget}
-                    onChange={e => setFridaTarget(e.target.value)}
-                    placeholder="com.example.app or process name"
-                    className="bg-stone-900/60 border-stone-700 text-sm"
-                    data-testid="frida-target-input"
-                  />
-                </div>
-                <Button onClick={generateFridaScript} disabled={fridaLoading} className="w-full bg-orange-700 hover:bg-orange-600" data-testid="frida-generate-btn">
-                  {fridaLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Code2 className="w-4 h-4 mr-2" />}
-                  Generate Script
-                </Button>
+    <div className="space-y-4">
+      <Card className="bg-stone-950/80 border-stone-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-amber-400 flex items-center gap-2 text-sm uppercase tracking-widest font-orbitron">
+            <Terminal className="w-4 h-4" /> RECENT SCAN OPERATIONS
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ScrollArea className="h-[500px]">
+            {results.length === 0 ? (
+              <div className="text-center py-20 text-stone-600 space-y-3">
+                <Radar className="w-10 h-10 mx-auto text-stone-800" />
+                <p className="text-xs uppercase tracking-widest">No operation logs detected</p>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-stone-400 text-xs">Generated JavaScript</Label>
-                  {fridaCode && (
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { navigator.clipboard.writeText(fridaCode); toast({ title: "Copied" }); }} data-testid="frida-copy-btn">
-                        <Copy className="w-3 h-3 mr-1" /> Copy
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { const b = new Blob([fridaCode], { type: "text/javascript" }); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `frida_${fridaScriptType}.js`; a.click(); }} data-testid="frida-download-btn">
-                        <Download className="w-3 h-3 mr-1" /> .js
-                      </Button>
-                    </div>
-                  )}
-                </div>
-                <ScrollArea className="h-[340px] rounded-lg border border-stone-800 bg-black/60">
-                  {fridaCode ? (
-                    <pre className="p-3 text-xs text-orange-300/90 font-mono whitespace-pre-wrap">{fridaCode}</pre>
-                  ) : (
-                    <div className="p-6 text-center text-stone-600 text-sm">Select a template and click Generate to create a Frida script</div>
-                  )}
-                </ScrollArea>
-                {fridaCode && (
-                  <div className="bg-stone-900/60 rounded-lg border border-stone-800 p-2.5">
-                    <div className="text-[10px] text-stone-500 mb-1">Usage</div>
-                    <code className="text-xs text-amber-300 font-mono">frida -U -l script.js {fridaTarget || "<target_app>"}</code>
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {activeTool === "pano" && (
-        <Card className="bg-stone-950/80 border-stone-800">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-cyan-400 flex items-center gap-2"><Search className="w-5 h-5" /> PANO - OSINT Investigation Platform</CardTitle>
-            <CardDescription>Python/Qt desktop app with graph visualization, timeline analysis, and AI-powered entity discovery. Transforms entities into intelligence.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <Label className="text-stone-400 text-xs">Entity Type</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {panoEntities.map(e => (
-                    <button
-                      key={e.type}
-                      onClick={() => { setPanoEntityType(e.type); setPanoEntityValue(""); }}
-                      className={`p-2 rounded-lg border text-xs font-medium transition-colors ${panoEntityType === e.type ? "bg-cyan-900/20 border-cyan-700/50 text-cyan-300" : "bg-stone-900/40 border-stone-800 text-stone-400 hover:border-stone-700"}`}
-                      data-testid={`pano-entity-${e.type}`}
-                    >
-                      {e.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-stone-400 text-xs">Entity Value</Label>
-                  <Input
-                    value={panoEntityValue}
-                    onChange={e => setPanoEntityValue(e.target.value)}
-                    placeholder={panoEntities.find(e => e.type === panoEntityType)?.placeholder}
-                    className="bg-stone-900/60 border-stone-700 text-sm"
-                    data-testid="pano-entity-input"
-                  />
-                </div>
-                <Button onClick={runPanoTransform} disabled={panoLoading || !panoEntityValue.trim()} className="w-full bg-cyan-700 hover:bg-cyan-600" data-testid="pano-transform-btn">
-                  {panoLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Search className="w-4 h-4 mr-2" />}
-                  Run Transform
-                </Button>
-                <div className="space-y-2">
-                  <Label className="text-stone-400 text-xs">PANO Helpers</Label>
-                  <div className="space-y-1">
-                    {["Cross-Examination", "Portrait Creator", "Media Analyzer", "Base Searcher", "Translator"].map(h => (
-                      <div key={h} className="flex items-center gap-2 text-xs text-stone-500 bg-stone-900/40 rounded p-1.5 border border-stone-800">
-                        <Zap className="w-3 h-3 text-cyan-600" /> {h}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-stone-400 text-xs">Transform Results / Entity Graph</Label>
-                <ScrollArea className="h-[380px] rounded-lg border border-stone-800 bg-black/60">
-                  {panoResults ? (
-                    <div className="p-3 space-y-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge className="bg-cyan-900/40 text-cyan-300">{panoResults.entity?.type}</Badge>
-                        <span className="text-xs text-stone-300 truncate">{panoResults.entity?.value}</span>
-                      </div>
-                      {panoResults.graph && (
-                        <div className="space-y-2">
-                          <div className="text-[10px] text-stone-500 uppercase tracking-wider">Graph Nodes ({panoResults.graph.nodes?.length || 0})</div>
-                          <div className="space-y-1">
-                            {panoResults.graph.nodes?.map((n: any, i: number) => (
-                              <div key={i} className={`flex items-center gap-2 text-xs p-1.5 rounded ${i === 0 ? "bg-cyan-900/30 border border-cyan-800/40" : "bg-stone-900/40 border border-stone-800"}`}>
-                                <div className={`w-2 h-2 rounded-full ${i === 0 ? "bg-cyan-400" : "bg-stone-500"}`} />
-                                <Badge variant="outline" className="text-[9px]">{n.type}</Badge>
-                                <span className="text-stone-300 truncate">{n.label}</span>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="text-[10px] text-stone-500 uppercase tracking-wider mt-3">Connections ({panoResults.graph.edges?.length || 0})</div>
-                          <div className="space-y-1">
-                            {panoResults.graph.edges?.map((e: any, i: number) => (
-                              <div key={i} className="flex items-center gap-1 text-[10px] text-stone-500">
-                                <span className="text-cyan-400">{e.from}</span> <ChevronRight className="w-3 h-3" /> <span className="text-stone-300">{e.to}</span>
-                                <Badge variant="outline" className="text-[8px] ml-auto">{e.label}</Badge>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {panoResults.results?.length > 0 && (
-                        <div className="space-y-1 mt-3">
-                          <div className="text-[10px] text-stone-500 uppercase tracking-wider">Discovered Entities</div>
-                          {panoResults.results.map((r: any, i: number) => (
-                            <div key={i} className="flex items-center gap-2 text-xs bg-stone-900/40 rounded p-1.5 border border-stone-800">
-                              <Badge variant="outline" className="text-[9px]">{r.type}</Badge>
-                              <span className="text-stone-300 truncate flex-1">{r.value}</span>
-                              <span className="text-stone-600 text-[10px]">{Math.round(r.confidence * 100)}%</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="p-6 text-center text-stone-600 text-sm">Enter an entity and run a transform to see results</div>
-                  )}
-                </ScrollArea>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {activeTool === "osint" && (
-        <Card className="bg-stone-950/80 border-stone-800">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-emerald-400 flex items-center gap-2"><Shield className="w-5 h-5" /> OSINT Toolkit - Threat Intelligence Platform</CardTitle>
-            <CardDescription>Docker-based web app (React + FastAPI) for IOC analysis, email forensics, domain monitoring, and AI-powered threat detection. Results are simulated for training purposes.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Button variant={osintMode === "analyze" ? "default" : "ghost"} size="sm" onClick={() => setOsintMode("analyze")} className={osintMode === "analyze" ? "bg-emerald-700" : ""} data-testid="osint-mode-analyze">
-                <Search className="w-3 h-3 mr-1" /> IOC Analyzer
-              </Button>
-              <Button variant={osintMode === "extract" ? "default" : "ghost"} size="sm" onClick={() => setOsintMode("extract")} className={osintMode === "extract" ? "bg-emerald-700" : ""} data-testid="osint-mode-extract">
-                <Target className="w-3 h-3 mr-1" /> IOC Extractor
-              </Button>
-            </div>
-
-            {osintMode === "analyze" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <Label className="text-stone-400 text-xs">Indicator of Compromise</Label>
-                  <Input
-                    value={iocInput}
-                    onChange={e => setIocInput(e.target.value)}
-                    placeholder="IP, domain, hash, email, URL, or CVE"
-                    className="bg-stone-900/60 border-stone-700 text-sm"
-                    data-testid="osint-ioc-input"
-                  />
-                  <div className="grid grid-cols-3 gap-1 text-[10px] text-stone-500">
-                    {["192.168.1.1", "evil.com", "CVE-2024-1234"].map(ex => (
-                      <button key={ex} onClick={() => setIocInput(ex)} className="bg-stone-900/40 rounded p-1 border border-stone-800 hover:border-stone-700 truncate">{ex}</button>
-                    ))}
-                  </div>
-                  <Button onClick={analyzeIOC} disabled={iocLoading || !iocInput.trim()} className="w-full bg-emerald-700 hover:bg-emerald-600" data-testid="osint-analyze-btn">
-                    {iocLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Shield className="w-4 h-4 mr-2" />}
-                    Analyze IOC
-                  </Button>
-                  <div className="space-y-1">
-                    <Label className="text-stone-400 text-xs">Integrated Services</Label>
-                    <div className="grid grid-cols-2 gap-1">
-                      {["VirusTotal", "AbuseIPDB", "Shodan", "URLScan", "ThreatFox", "NIST NVD"].map(s => (
-                        <div key={s} className="text-[10px] text-stone-500 bg-stone-900/40 rounded p-1 border border-stone-800 flex items-center gap-1">
-                          <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" /> {s}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-stone-400 text-xs">Analysis Results</Label>
-                  <ScrollArea className="h-[340px] rounded-lg border border-stone-800 bg-black/60">
-                    {iocResults ? (
-                      <div className="p-3 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Badge className="bg-emerald-900/40 text-emerald-300">{iocResults.type}</Badge>
-                            <span className="text-xs text-stone-300 font-mono">{iocResults.ioc}</span>
-                          </div>
-                          <Badge className={iocResults.riskScore > 60 ? "bg-red-900/40 text-red-300" : iocResults.riskScore > 30 ? "bg-yellow-900/40 text-yellow-300" : "bg-green-900/40 text-green-300"}>
-                            Risk: {iocResults.riskScore}/100
+            ) : (
+              <div className="divide-y divide-stone-900">
+                {results.map((r) => (
+                  <div key={r.id} className="p-4 hover:bg-stone-900/40 transition-colors group">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs text-amber-500 font-bold">{r.target}</span>
+                          <Badge variant="outline" className="text-[9px] px-1 py-0 border-stone-700 text-stone-500 uppercase tracking-tighter">
+                            {r.scanType}
                           </Badge>
                         </div>
-                        {iocResults.defanged && (
-                          <div className="text-[10px] text-stone-500 bg-stone-900/40 rounded p-1.5 border border-stone-800 font-mono">
-                            Defanged: {iocResults.defanged}
-                          </div>
-                        )}
-                        {iocResults.analyses?.map((a: any, i: number) => (
-                          <div key={i} className="bg-stone-900/40 rounded-lg border border-stone-800 p-2.5">
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <ExternalLink className="w-3 h-3 text-emerald-500" />
-                              <span className="text-xs font-medium text-stone-200">{a.service}</span>
-                              <Badge variant="outline" className="text-[9px]">{a.status}</Badge>
-                            </div>
-                            <div className="space-y-0.5">
-                              {Object.entries(a.data || {}).map(([k, v]) => (
-                                <div key={k} className="flex justify-between text-[10px]">
-                                  <span className="text-stone-500">{k.replace(/([A-Z])/g, " $1").trim()}</span>
-                                  <span className="text-stone-300 font-mono">{typeof v === "object" ? JSON.stringify(v) : String(v)}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
+                        <p className="text-[10px] text-stone-500 font-mono">ID: {r.id} · {new Date(r.timestamp).toLocaleString()}</p>
                       </div>
-                    ) : (
-                      <div className="p-6 text-center text-stone-600 text-sm">Enter an IOC to analyze it against threat intelligence services</div>
-                    )}
-                  </ScrollArea>
-                </div>
+                      <Badge className={`text-[10px] shrink-0 ${SEVERITY_COLORS[r.summary.riskLevel] || ""}`}>
+                        RISK: {r.summary.riskLevel.toUpperCase()} ({r.summary.riskScore})
+                      </Badge>
+                    </div>
+                    <div className="mt-3 flex items-center gap-4 text-[10px] text-stone-600 font-medium">
+                      <span className="flex items-center gap-1.5"><Globe className="w-3 h-3" /> {r.summary.subdomains} Subdomains</span>
+                      <span className="flex items-center gap-1.5"><Target className="w-3 h-3" /> {r.summary.openPorts} Ports</span>
+                      <span className="flex items-center gap-1.5"><AlertTriangle className="w-3 h-3" /> {r.summary.vulnerabilities} Vulns</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-
-            {osintMode === "extract" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <Label className="text-stone-400 text-xs">Paste text, logs, or reports to extract IOCs</Label>
-                  <Textarea
-                    value={extractText}
-                    onChange={e => setExtractText(e.target.value)}
-                    placeholder={"Paste threat reports, logs, emails, or any text containing indicators...\n\nExample:\nThe malware connected to 192.168.1.100 and resolved evil-domain.com.\nFile hash: a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4\nAttacker email: threat@badactor.com\nExploit: CVE-2024-12345"}
-                    className="bg-stone-900/60 border-stone-700 text-sm min-h-[200px] font-mono"
-                    data-testid="osint-extract-input"
-                  />
-                  <Button onClick={extractIOCs} disabled={extractLoading || !extractText.trim()} className="w-full bg-emerald-700 hover:bg-emerald-600" data-testid="osint-extract-btn">
-                    {extractLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Target className="w-4 h-4 mr-2" />}
-                    Extract IOCs
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-stone-400 text-xs">Extracted Indicators</Label>
-                  <ScrollArea className="h-[280px] rounded-lg border border-stone-800 bg-black/60">
-                    {extractResults ? (
-                      <div className="p-3 space-y-2">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs text-stone-400">Found {extractResults.count} indicators</span>
-                          {extractResults.count > 0 && (
-                            <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => {
-                              const text = extractResults.indicators.map((i: any) => `${i.type}: ${i.value}`).join("\n");
-                              navigator.clipboard.writeText(text);
-                              toast({ title: "Copied all IOCs" });
-                            }} data-testid="osint-copy-iocs">
-                              <Copy className="w-3 h-3 mr-1" /> Copy All
-                            </Button>
-                          )}
-                        </div>
-                        {extractResults.indicators?.map((ind: any, i: number) => (
-                          <div key={i} className="flex items-center gap-2 text-xs bg-stone-900/40 rounded p-1.5 border border-stone-800">
-                            <Badge variant="outline" className="text-[9px] shrink-0">{ind.type}</Badge>
-                            <span className="text-stone-300 font-mono truncate flex-1">{ind.value}</span>
-                            <Button variant="ghost" size="sm" className="h-5 px-1.5" onClick={() => { setOsintMode("analyze"); setIocInput(ind.value); }}>
-                              <Search className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="p-6 text-center text-stone-600 text-sm">Paste text and click Extract to find indicators of compromise</div>
-                    )}
-                  </ScrollArea>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+          </ScrollArea>
+        </CardContent>
+      </Card>
     </div>
   );
 }
