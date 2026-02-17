@@ -15,6 +15,7 @@ import TerminalPage from "@/pages/Terminal";
 import AdminLogin from "@/pages/Admin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Suggestions from "@/pages/Suggestions";
+import AILab from "@/pages/AILab";
 import TheVoid from "@/pages/TheVoid";
 import Archive from "@/pages/Archive";
 import Debug from "@/pages/Debug";
