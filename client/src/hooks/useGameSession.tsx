@@ -280,7 +280,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           }
           setGameState(prev => ({
             ...prev,
-            achievements: [...new Set([...prev.achievements, ...data.newUnlocks.map((u: any) => u.achievementId)])],
+            achievements: Array.from(new Set([...prev.achievements, ...data.newUnlocks.map((u: any) => u.achievementId)])),
             xp: prev.xp + data.totalXPAwarded,
           }));
         }

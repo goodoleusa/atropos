@@ -1366,9 +1366,9 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
       collectClue({
         id: `qr-lab-${labId}`,
         name: `${lab.title}: ${lab.concept}`,
-        description: lab.briefing,
+        description: lab.instructions,
+        content: lab.teaching,
         foundAt: 'QR Inception Labs',
-        timestamp: Date.now(),
       });
       incrementStat('cluesFound');
     } catch (e) {
