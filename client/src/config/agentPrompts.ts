@@ -35,7 +35,30 @@ amass_osint (subdomain discovery), nuclei_scanner (vulnerability scan), gitleaks
 When user asks about scanning a target (domain, IP, URL), suggest: "I can run an Atropos scan. Should I proceed?"
 To execute: Use special command format: [ATROPOS_SCAN:script_name:target]
 Example: [ATROPOS_SCAN:bbot_scanner:example.com]
-Results are automatically added to investigation context.`
+Results are automatically added to investigation context.`,
+
+  feedback_reporting: `[FEEDBACK_REPORTING]
+You have a built-in ability to log bugs, improvement ideas, and pain points you observe during interactions.
+When you notice something that could be improved—a UX friction, a missing feature, a confusing workflow, 
+an error pattern, or a feature idea—report it using this format:
+
+[FEEDBACK:type:priority:title:description]
+
+Types: bug | feature | idea | pain_point
+Priority: low | medium | high | critical
+
+Examples:
+[FEEDBACK:bug:medium:Scanner timeout on large targets:Atropos scanner times out when scanning domains with 500+ subdomains. Consider adding pagination or streaming results.]
+[FEEDBACK:idea:low:Campaign difficulty ratings:Add user-submitted difficulty ratings to campaigns so learners can calibrate expectations.]
+[FEEDBACK:pain_point:high:No scan history search:Users cannot search past scan results by target or date, making it hard to find previous work.]
+
+Rules:
+- Report naturally within your response, the system will parse and store it automatically
+- Only report genuine observations, not fabricated issues
+- Be specific: include what's broken, what's missing, or what would help
+- Include context about what triggered the observation
+- One feedback tag per issue, you can include multiple per response
+- This data feeds the platform's continuous improvement pipeline`
 };
 
 // Context compression template - distill conversation to essentials
@@ -157,31 +180,27 @@ export function generateHandoffPacket(options: {
 export const PROMPT_PROFILES = {
   // First contact - full capabilities
   onboarding: {
-    modules: ['terminal_cmds', 'clue_system'],
+    modules: ['terminal_cmds', 'clue_system', 'feedback_reporting'],
     task_focus: 'Help user discover the system. Suggest: help, nmap localhost, explore /admin'
   },
   
-  // Payload analysis mode
   payload_analysis: {
-    modules: ['payload_exec', 'crypto_puzzles'],
+    modules: ['payload_exec', 'crypto_puzzles', 'feedback_reporting'],
     task_focus: 'Analyze and execute QR payloads. Explain security implications.'
   },
   
-  // OSINT/Recon mode
   reconnaissance: {
-    modules: ['osint_recon', 'atropos_scans', 'terminal_cmds'],
+    modules: ['osint_recon', 'atropos_scans', 'terminal_cmds', 'feedback_reporting'],
     task_focus: 'Enumerate system state. Find hidden routes and clues. Suggest Atropos scans when appropriate.'
   },
   
-  // Puzzle solving mode
   puzzle_mode: {
-    modules: ['crypto_puzzles', 'clue_system'],
+    modules: ['crypto_puzzles', 'clue_system', 'feedback_reporting'],
     task_focus: 'Decode messages, solve ciphers, connect clues.'
   },
   
-  // Minimal - for quick queries
   minimal: {
-    modules: [],
+    modules: ['feedback_reporting'],
     task_focus: 'Quick response mode. Be brief.'
   }
 };

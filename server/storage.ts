@@ -107,7 +107,10 @@ import {
   type InsertGameEvent,
   businessProjects,
   type BusinessProject,
-  type InsertBusinessProject
+  type InsertBusinessProject,
+  feedbackItems,
+  type FeedbackItem,
+  type InsertFeedbackItem
 } from "@shared/schema";
 import { eq, desc, sql, count, gte, and, between, or } from "drizzle-orm";
 
@@ -384,6 +387,14 @@ export interface IStorage {
   createBusinessProject(project: InsertBusinessProject): Promise<BusinessProject>;
   updateBusinessProject(id: number, updates: Partial<BusinessProject>): Promise<BusinessProject | undefined>;
   deleteBusinessProject(id: number): Promise<boolean>;
+
+  // Feedback Items
+  getAllFeedbackItems(): Promise<FeedbackItem[]>;
+  getFeedbackItemById(id: number): Promise<FeedbackItem | undefined>;
+  createFeedbackItem(item: InsertFeedbackItem): Promise<FeedbackItem>;
+  updateFeedbackItem(id: number, updates: Partial<FeedbackItem>): Promise<FeedbackItem | undefined>;
+  deleteFeedbackItem(id: number): Promise<boolean>;
+  voteFeedbackItem(id: number): Promise<FeedbackItem | undefined>;
 }
 
 // Admin configuration type (stored in memory/file, not DB)
@@ -2249,6 +2260,42 @@ export class DatabaseStorage implements IStorage {
   async deleteBusinessProject(id: number): Promise<boolean> {
     const result = await db.delete(businessProjects).where(eq(businessProjects.id, id)).returning();
     return result.length > 0;
+  }
+
+  // Feedback Items
+  async getAllFeedbackItems(): Promise<FeedbackItem[]> {
+    return await db.select().from(feedbackItems).orderBy(desc(feedbackItems.createdAt)).limit(200);
+  }
+
+  async getFeedbackItemById(id: number): Promise<FeedbackItem | undefined> {
+    const [item] = await db.select().from(feedbackItems).where(eq(feedbackItems.id, id)).limit(1);
+    return item;
+  }
+
+  async createFeedbackItem(item: InsertFeedbackItem): Promise<FeedbackItem> {
+    const [created] = await db.insert(feedbackItems).values(item).returning();
+    return created;
+  }
+
+  async updateFeedbackItem(id: number, updates: Partial<FeedbackItem>): Promise<FeedbackItem | undefined> {
+    const [updated] = await db.update(feedbackItems)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(feedbackItems.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteFeedbackItem(id: number): Promise<boolean> {
+    const result = await db.delete(feedbackItems).where(eq(feedbackItems.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async voteFeedbackItem(id: number): Promise<FeedbackItem | undefined> {
+    const [updated] = await db.update(feedbackItems)
+      .set({ votes: sql`${feedbackItems.votes} + 1`, updatedAt: new Date() })
+      .where(eq(feedbackItems.id, id))
+      .returning();
+    return updated;
   }
 }
 

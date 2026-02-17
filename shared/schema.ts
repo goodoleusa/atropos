@@ -1584,6 +1584,32 @@ export const insertBusinessProjectSchema = createInsertSchema(businessProjects).
 export type BusinessProject = typeof businessProjects.$inferSelect;
 export type InsertBusinessProject = z.infer<typeof insertBusinessProjectSchema>;
 
+// Feedback Items - bug reports, feature ideas, pain points from agents and users
+export const feedbackItems = pgTable("feedback_items", {
+  id: serial("id").primaryKey(),
+  type: text("type").notNull().default("bug"), // bug, feature, idea, pain_point
+  source: text("source").notNull().default("manual"), // manual, agent, scanner, spiderfoot, ai_lab, terminal
+  status: text("status").notNull().default("open"), // open, in_progress, resolved, shipped, dismissed
+  priority: text("priority").notNull().default("medium"), // low, medium, high, critical
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  context: text("context"), // auto-captured context (tool output, error, etc.)
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  votes: integer("votes").notNull().default(1),
+  resolution: text("resolution"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertFeedbackItemSchema = createInsertSchema(feedbackItems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type FeedbackItem = typeof feedbackItems.$inferSelect;
+export type InsertFeedbackItem = z.infer<typeof insertFeedbackItemSchema>;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
