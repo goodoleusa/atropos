@@ -23,6 +23,16 @@ interface PlayerStats {
   lastPlayDate: string | null;
 }
 
+interface AcceptedMission {
+  id: string;
+  name: string;
+  command: string;
+  description: string;
+  source: 'void' | 'terminal' | 'qr-c2' | 'campaign';
+  acceptedAt: string;
+  status: 'accepted' | 'in_progress' | 'completed';
+}
+
 interface GameState {
   inventory: Clue[];
   sessionToken: string;
@@ -34,6 +44,7 @@ interface GameState {
   level: number;
   achievements: string[];
   stats: PlayerStats;
+  acceptedMissions: AcceptedMission[];
 }
 
 interface GameContextType {
@@ -48,6 +59,8 @@ interface GameContextType {
   checkAchievements: () => Promise<void>;
   checkQuestCompletion: () => Promise<void>;
   incrementStat: (stat: keyof PlayerStats, amount?: number) => void;
+  acceptMission: (mission: Omit<AcceptedMission, 'acceptedAt' | 'status'>) => void;
+  completeMission: (missionId: string) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -96,6 +109,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           level: parsed.level || 1,
           achievements: parsed.achievements || [],
           stats: { ...DEFAULT_STATS, ...(parsed.stats || {}) },
+          acceptedMissions: parsed.acceptedMissions || [],
         };
       } catch (e) {
         console.error("Corrupted save file", e);
@@ -112,6 +126,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       level: 1,
       achievements: [],
       stats: { ...DEFAULT_STATS },
+      acceptedMissions: [],
     };
   });
 
@@ -419,6 +434,40 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setGameState(prev => ({ ...prev, devMode: !prev.devMode }));
   };
 
+  const acceptMission = useCallback((mission: Omit<AcceptedMission, 'acceptedAt' | 'status'>) => {
+    setGameState(prev => {
+      if (prev.acceptedMissions.some(m => m.id === mission.id && m.status !== 'completed')) {
+        return prev;
+      }
+      return {
+        ...prev,
+        acceptedMissions: [...prev.acceptedMissions, {
+          ...mission,
+          acceptedAt: new Date().toISOString(),
+          status: 'accepted' as const,
+        }],
+      };
+    });
+    toast({
+      title: "MISSION ACCEPTED",
+      description: `${mission.name} added to Mission Control`,
+      className: "border-teal-500 text-teal-400 bg-black/90 font-mono",
+    });
+  }, [toast]);
+
+  const completeMission = useCallback((missionId: string) => {
+    setGameState(prev => ({
+      ...prev,
+      acceptedMissions: prev.acceptedMissions.map(m =>
+        m.id === missionId ? { ...m, status: 'completed' as const } : m
+      ),
+      stats: {
+        ...prev.stats,
+        missionsCompleted: prev.stats.missionsCompleted + 1,
+      },
+    }));
+  }, []);
+
   return (
     <GameContext.Provider value={{
       gameState,
@@ -432,6 +481,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       checkAchievements,
       checkQuestCompletion,
       incrementStat,
+      acceptMission,
+      completeMission,
     }}>
       {children}
     </GameContext.Provider>

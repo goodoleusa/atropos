@@ -134,6 +134,19 @@ export const CustomTerminal = () => {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cmd = params.get('cmd');
+    if (cmd) {
+      setInput(cmd);
+      window.history.replaceState({}, '', window.location.pathname);
+      setTimeout(() => {
+        handleCommand(cmd);
+      }, 500);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }

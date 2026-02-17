@@ -7,6 +7,7 @@ const yamlVal = (v: unknown): string => {
   if (typeof v === 'boolean') return v ? 'true' : 'false';
   if (typeof v === 'number') return String(v);
   const s = String(v);
+  if (s.includes('<%')) return s;
   return /[:#\[\]{}&*!|>'"%@`]/.test(s) ? `"${s.replace(/"/g, '\\"')}"` : s;
 };
 
@@ -71,10 +72,29 @@ const buildIndexTemplaterBlock = (campaign: Campaign) => {
     `const nodeCount = ${campaign.nodes.length};`,
     `const linkCount = ${campaign.links.length};`,
     `const clueCount = ${(campaign.hiddenClues || []).length};`,
+    `const missionCount = ${(campaign.terminalMissions || []).length};`,
+    `const totalMissionXP = ${(campaign.terminalMissions || []).reduce((sum, m) => sum + (m.xpReward || 0), 0)};`,
     `const difficulty = "${campaign.difficulty}";`,
     `const category = "${campaign.category}";`,
     `const estimatedTime = "${campaign.estimatedTime}";`,
     `const isPublished = ${campaign.isPublished};`,
+    `const createdDate = tp.date.now("YYYY-MM-DD");`,
+    `%>`,
+  ];
+  return lines.join('\n') + '\n';
+};
+
+const buildMissionTemplaterBlock = (mission: any, campaign: Campaign) => {
+  const lines = [
+    `<%*`,
+    `const tp = this.app.plugins.plugins["templater-obsidian"].templater.current_functions_object;`,
+    `const dv = this.app.plugins.plugins["dataview"]?.api;`,
+    `const missionId = "${mission.id}";`,
+    `const missionName = "${(mission.name || '').replace(/"/g, '\\"')}";`,
+    `const command = "${(mission.command || '').replace(/"/g, '\\"')}";`,
+    `const campaignId = "${campaign.id}";`,
+    `const campaignName = "${campaign.name.replace(/"/g, '\\"')}";`,
+    `const xpReward = ${mission.xpReward || 0};`,
     `const createdDate = tp.date.now("YYYY-MM-DD");`,
     `%>`,
   ];
@@ -113,12 +133,15 @@ export function exportCampaignObsidian(campaign: Campaign) {
   });
 
   const files: { name: string; content: string }[] = [];
+  const missions = campaign.terminalMissions || [];
+  const nodeMissions = (nodeId: string) => missions.filter(m => m.triggerNodeId === nodeId);
 
   campaign.nodes.forEach(node => {
     const nodeLinks = campaign.links.filter(l => l.source === node.id || l.target === node.id);
     const outgoing = nodeLinks.filter(l => l.source === node.id);
     const incoming = nodeLinks.filter(l => l.target === node.id);
     const clues = nodeClues(node.id);
+    const nodeMissionList = nodeMissions(node.id);
     const siblings = Array.from(new Set(siblingMap[node.id] || []));
 
     const parentRefs = incoming.map(l => {
@@ -184,6 +207,11 @@ export function exportCampaignObsidian(campaign: Campaign) {
     if (clues.length > 0) {
       fm['hidden-clue-count'] = clues.length;
       fm['hidden-clue-types'] = Array.from(new Set(clues.map(c => c.type)));
+    }
+    if (nodeMissionList.length > 0) {
+      fm['terminal-mission-count'] = nodeMissionList.length;
+      fm['terminal-missions'] = nodeMissionList.map(m => `[[Mission_${sanitizeFilename(m.name)}]]`);
+      fm['terminal-xp-total'] = nodeMissionList.reduce((sum, m) => sum + (m.xpReward || 0), 0);
     }
     fm['position-x'] = node.x;
     fm['position-y'] = node.y;
@@ -272,6 +300,20 @@ export function exportCampaignObsidian(campaign: Campaign) {
         md += `> ID: ${c.id}\n\n`;
       });
     }
+    if (nodeMissionList.length > 0) {
+      md += `## Terminal Missions\n\n`;
+      nodeMissionList.forEach(m => {
+        md += `> [!terminal] Mission: ${m.name}\n`;
+        md += `> **Command**: \`${m.command}\`\n`;
+        if (m.description) md += `> **Objective**: ${m.description}\n`;
+        md += `> **XP Reward**: ${m.xpReward}\n`;
+        if (m.hint) md += `> **Hint**: ${m.hint}\n`;
+        if (m.expectedOutput) md += `> **Expected Output**: \`${m.expectedOutput}\`\n`;
+        if (m.toolsRequired?.length) md += `> **Tools**: ${m.toolsRequired.join(', ')}\n`;
+        md += `> Link: [[Mission_${sanitizeFilename(m.name)}]]\n\n`;
+      });
+    }
+
     if (node.metadata?.teachingNotes) {
       md += `## Teaching Notes\n\n${node.metadata.teachingNotes}\n\n`;
     }
@@ -312,7 +354,12 @@ export function exportCampaignObsidian(campaign: Campaign) {
     'node-count': campaign.nodes.length,
     'link-count': campaign.links.length,
     'clue-count': (campaign.hiddenClues || []).length,
-    child: campaign.nodes.map(n => `[[${sanitizeFilename(n.title)}]]`),
+    'mission-count': missions.length,
+    'mission-total-xp': missions.reduce((sum, m) => sum + (m.xpReward || 0), 0),
+    child: [
+      ...campaign.nodes.map(n => `[[${sanitizeFilename(n.title)}]]`),
+      ...missions.map(m => `[[Mission_${sanitizeFilename(m.name)}]]`),
+    ],
     'entry-points': (campaign.entryPoints || []).map(id => {
       const n = campaign.nodes.find(nd => nd.id === id);
       return n ? `[[${sanitizeFilename(n.title)}]]` : id;
@@ -336,8 +383,8 @@ export function exportCampaignObsidian(campaign: Campaign) {
 
   indexMd += `> [!abstract] Campaign Overview\n`;
   indexMd += `> **Category**: ${campaign.category} | **Difficulty**: ${campaign.difficulty} | **Time**: ${campaign.estimatedTime}\n`;
-  indexMd += `> **Nodes**: ${campaign.nodes.length} | **Links**: ${campaign.links.length} | **Clues**: ${(campaign.hiddenClues || []).length}\n`;
-  indexMd += `> **Published**: ${campaign.isPublished ? 'Yes' : 'No'} | **Sitemap**: \`/play/${campaign.id}\`\n\n`;
+  indexMd += `> **Nodes**: ${campaign.nodes.length} | **Links**: ${campaign.links.length} | **Clues**: ${(campaign.hiddenClues || []).length} | **Missions**: ${missions.length}\n`;
+  indexMd += `> **Published**: ${campaign.isPublished ? 'Yes' : 'No'} | **Sitemap**: \`/play/${campaign.id}\`${missions.length > 0 ? ` | **Mission XP**: ${missions.reduce((s, m) => s + (m.xpReward || 0), 0)}` : ''}\n\n`;
 
   if (campaign.isChunk) {
     indexMd += `> [!tip] Modular Chunk\n`;
@@ -395,6 +442,16 @@ export function exportCampaignObsidian(campaign: Campaign) {
     indexMd += '\n';
   }
 
+  if (missions.length > 0) {
+    indexMd += `\n## Terminal Missions\n\n`;
+    indexMd += `| Mission | Command | XP | Tools | Trigger Node |\n|---------|---------|----:|-------|-------------|\n`;
+    missions.forEach(m => {
+      const triggerNode = m.triggerNodeId ? campaign.nodes.find(n => n.id === m.triggerNodeId) : null;
+      indexMd += `| [[Mission_${sanitizeFilename(m.name)}\\|${m.name}]] | \`${m.command}\` | ${m.xpReward} | ${(m.toolsRequired || []).join(', ') || '-'} | ${triggerNode ? `[[${sanitizeFilename(triggerNode.title)}]]` : '-'} |\n`;
+    });
+    indexMd += `\n> [!info] Total Mission XP: **${missions.reduce((s, m) => s + (m.xpReward || 0), 0)}**\n\n`;
+  }
+
   indexMd += `## Breadcrumb Trail\n\n`;
   indexMd += '```breadcrumbs\n';
   indexMd += `type: tree\n`;
@@ -404,6 +461,21 @@ export function exportCampaignObsidian(campaign: Campaign) {
   indexMd += '```\n\n';
 
   indexMd += `## Queries\n\n`;
+
+  if (missions.length > 0) {
+    indexMd += `### Terminal Missions\n`;
+    indexMd += '```dataview\n';
+    indexMd += `TABLE WITHOUT ID\n`;
+    indexMd += `  file.link as "Mission",\n`;
+    indexMd += `  command as "Command",\n`;
+    indexMd += `  xp-reward as "XP",\n`;
+    indexMd += `  tools-required as "Tools",\n`;
+    indexMd += `  trigger-node as "Trigger"\n`;
+    indexMd += `FROM #${campaignTag} AND #terminal-mission\n`;
+    indexMd += `SORT xp-reward DESC\n`;
+    indexMd += '```\n\n';
+  }
+
   indexMd += `### Nodes with Clues\n`;
   indexMd += '```dataview\n';
   indexMd += `TABLE WITHOUT ID\n`;
@@ -449,6 +521,129 @@ export function exportCampaignObsidian(campaign: Campaign) {
   indexMd += `---\n*Exported from Atropos Campaign Builder on ${today2}*\n`;
 
   files.push({ name: `_${sanitizeFilename(campaign.name)}_Index.md`, content: indexMd });
+
+  missions.forEach(m => {
+    const triggerNode = m.triggerNodeId ? campaign.nodes.find(n => n.id === m.triggerNodeId) : null;
+    const mFm: Record<string, unknown> = {
+      id: m.id,
+      type: 'terminal-mission',
+      'BC-folder-note-subtext': 'terminal-mission',
+      'excalibrain-node-style-prefix': 'terminal-mission',
+      'excalibrain-color': '#14b8a6',
+      'excalibrain-shape': 'oval',
+      cssclass: 'atropos-terminal-mission',
+      command: m.command,
+      'xp-reward': m.xpReward,
+      campaign: campaign.name,
+      'campaign-id': campaign.id,
+      category: campaign.category,
+      difficulty: campaign.difficulty,
+      parent: `[[_${sanitizeFilename(campaign.name)}_Index]]`,
+      'BC-campaign-index': `[[_${sanitizeFilename(campaign.name)}_Index]]`,
+      tags: [campaignTag, 'terminal-mission', campaign.category],
+      aliases: [m.name],
+      created: today,
+      modified: today,
+    };
+    if (triggerNode) {
+      mFm['trigger-node'] = `[[${sanitizeFilename(triggerNode.title)}]]`;
+      mFm['sibling'] = [`[[${sanitizeFilename(triggerNode.title)}]]`];
+    }
+    if (m.toolsRequired?.length) mFm['tools-required'] = m.toolsRequired;
+    if (m.hint) mFm['hint'] = m.hint;
+    if (m.expectedOutput) mFm['expected-output'] = m.expectedOutput;
+    if (m.description) mFm['description'] = m.description;
+
+    let mMd = buildMissionTemplaterBlock(m, campaign);
+    mMd += buildYaml(mFm);
+    mMd += `\n# ${m.name}\n\n`;
+    mMd += `> [!terminal] Terminal Mission\n`;
+    mMd += `> **Campaign**: [[_${sanitizeFilename(campaign.name)}_Index|${campaign.name}]]`;
+    if (triggerNode) mMd += ` | **Trigger**: [[${sanitizeFilename(triggerNode.title)}]]`;
+    mMd += `\n> **XP Reward**: ${m.xpReward} | **Category**: ${campaign.category}\n\n`;
+
+    if (m.description) mMd += `## Objective\n\n${m.description}\n\n`;
+
+    mMd += `## Command\n\n\`\`\`bash\n${m.command}\n\`\`\`\n\n`;
+
+    if (m.expectedOutput) {
+      mMd += `## Expected Output\n\n\`\`\`\n${m.expectedOutput}\n\`\`\`\n\n`;
+    }
+
+    if (m.hint) {
+      mMd += `## Hint\n\n> [!tip] Hint\n> ${m.hint}\n\n`;
+    }
+
+    if (m.toolsRequired?.length) {
+      mMd += `## Required Tools\n\n`;
+      m.toolsRequired.forEach(t => { mMd += `- \`${t}\`\n`; });
+      mMd += '\n';
+    }
+
+    mMd += `## Completion Checklist\n\n`;
+    mMd += `- [ ] Execute the command successfully\n`;
+    if (m.expectedOutput) mMd += `- [ ] Verify output matches expected result\n`;
+    if (m.toolsRequired?.length) mMd += `- [ ] Confirm all required tools are available\n`;
+    mMd += `- [ ] Collect XP reward (${m.xpReward} XP)\n\n`;
+
+    mMd += `## Relations\n\n`;
+    mMd += `- parent:: [[_${sanitizeFilename(campaign.name)}_Index]]\n`;
+    if (triggerNode) mMd += `- sibling:: [[${sanitizeFilename(triggerNode.title)}]]\n`;
+    mMd += '\n';
+
+    files.push({ name: `Mission_${sanitizeFilename(m.name)}.md`, content: mMd });
+  });
+
+  let templateMd = '';
+  templateMd += `<%*\n`;
+  templateMd += `const tp = this.app.plugins.plugins["templater-obsidian"].templater.current_functions_object;\n`;
+  templateMd += `const missionName = await tp.system.prompt("Mission name");\n`;
+  templateMd += `const command = await tp.system.prompt("Terminal command");\n`;
+  templateMd += `const description = await tp.system.prompt("Mission objective (optional)", "");\n`;
+  templateMd += `const xpReward = await tp.system.prompt("XP reward", "50");\n`;
+  templateMd += `const hint = await tp.system.prompt("Hint for players (optional)", "");\n`;
+  templateMd += `const tools = await tp.system.prompt("Required tools, comma-separated (optional)", "");\n`;
+  templateMd += `const expectedOutput = await tp.system.prompt("Expected terminal output (optional)", "");\n`;
+  templateMd += `const createdDate = tp.date.now("YYYY-MM-DD");\n`;
+  templateMd += `await tp.file.rename("Mission_" + missionName.replace(/[^a-zA-Z0-9_-]/g, '_'));\n`;
+  templateMd += `%>\n`;
+  templateMd += buildYaml({
+    id: '<% "mission-" + tp.date.now("YYYYMMDDHHmmss") %>',
+    type: 'terminal-mission',
+    'BC-folder-note-subtext': 'terminal-mission',
+    'excalibrain-node-style-prefix': 'terminal-mission',
+    'excalibrain-color': '#14b8a6',
+    'excalibrain-shape': 'oval',
+    cssclass: 'atropos-terminal-mission',
+    command: '<% command %>',
+    'xp-reward': '<% xpReward %>',
+    campaign: campaign.name,
+    'campaign-id': campaign.id,
+    category: campaign.category,
+    tags: [campaignTag, 'terminal-mission', campaign.category],
+    aliases: ['<% missionName %>'],
+    created: '<% createdDate %>',
+    modified: '<% createdDate %>',
+    parent: `[[_${sanitizeFilename(campaign.name)}_Index]]`,
+    'BC-campaign-index': `[[_${sanitizeFilename(campaign.name)}_Index]]`,
+  });
+  templateMd += `\n# <% missionName %>\n\n`;
+  templateMd += `> [!terminal] Terminal Mission\n`;
+  templateMd += `> **Campaign**: [[_${sanitizeFilename(campaign.name)}_Index|${campaign.name}]]\n`;
+  templateMd += `> **XP Reward**: <% xpReward %> | **Category**: ${campaign.category}\n\n`;
+  templateMd += `<% description ? "## Objective\\n\\n" + description + "\\n\\n" : "" %>`;
+  templateMd += `## Command\n\n\`\`\`bash\n<% command %>\n\`\`\`\n\n`;
+  templateMd += `<% expectedOutput ? "## Expected Output\\n\\n\`\`\`\\n" + expectedOutput + "\\n\`\`\`\\n\\n" : "" %>`;
+  templateMd += `<% hint ? "## Hint\\n\\n> [!tip] Hint\\n> " + hint + "\\n\\n" : "" %>`;
+  templateMd += `<% tools ? "## Required Tools\\n\\n" + tools.split(",").map(t => "- \`" + t.trim() + "\`").join("\\n") + "\\n\\n" : "" %>`;
+  templateMd += `## Completion Checklist\n\n`;
+  templateMd += `- [ ] Execute the command successfully\n`;
+  templateMd += `- [ ] Verify output matches expected result\n`;
+  templateMd += `- [ ] Collect XP reward (<% xpReward %> XP)\n\n`;
+  templateMd += `## Relations\n\n`;
+  templateMd += `- parent:: [[_${sanitizeFilename(campaign.name)}_Index]]\n`;
+
+  files.push({ name: `_Template_Terminal_Mission.md`, content: templateMd });
 
   const allContent = files.map(f => `<!-- FILE: ${f.name} -->\n${f.content}\n\n---\n\n`).join('');
   const blob = new Blob([allContent], { type: 'text/markdown' });

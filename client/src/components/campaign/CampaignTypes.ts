@@ -76,6 +76,18 @@ export interface SharedClue {
   usedIn: string[];
 }
 
+export interface TerminalMission {
+  id: string;
+  name: string;
+  command: string;
+  description: string;
+  expectedOutput?: string;
+  hint?: string;
+  xpReward: number;
+  triggerNodeId?: string;
+  toolsRequired?: string[];
+}
+
 export interface Campaign {
   id: string;
   name: string;
@@ -93,6 +105,7 @@ export interface Campaign {
   hiddenClues: HiddenClue[];
   tags: string[];
   isPublished: boolean;
+  terminalMissions?: TerminalMission[];
 }
 
 export interface ArcTemplate {
@@ -143,4 +156,5 @@ export const emptyCampaign = (): Campaign => ({
   id: `campaign-${Date.now()}`, name: 'Untitled Campaign', description: '', category: 'recon',
   difficulty: 'beginner', estimatedTime: '30 min', nodes: [], links: [], rootNodes: [],
   isChunk: false, entryPoints: [], exitPoints: [], clueRefs: [], hiddenClues: [], tags: [], isPublished: false,
+  terminalMissions: [],
 });
