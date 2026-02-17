@@ -1,9 +1,21 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Book, Terminal, Bot, FileText, Settings, Zap, Target, Shield, ChevronRight, Home, Search, Trophy, TrendingUp, Award, GraduationCap, Users, MessageSquare, Map, Layers, QrCode, Briefcase } from 'lucide-react';
+import { 
+  Book, Terminal, Bot, FileText, Settings, Zap, Target, Shield, 
+  ChevronRight, Home, Search, Trophy, TrendingUp, Award, 
+  GraduationCap, Users, MessageSquare, Map, Layers, QrCode, 
+  Briefcase, Menu, X 
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 type WikiSection = {
   id: string;
@@ -15,6 +27,7 @@ type WikiSection = {
 export default function Wiki() {
   const [activeSection, setActiveSection] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const sections: WikiSection[] = [
     {
@@ -1311,61 +1324,110 @@ export default function Wiki() {
 
   const activeContent = sections.find(s => s.id === activeSection);
 
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-stone-950/50">
+      <div className="p-4 border-b border-amber-900/20">
+        <Link href="/">
+          <Button variant="ghost" size="sm" className="text-stone-400 hover:text-amber-400 mb-4 w-full justify-start">
+            <Home className="w-4 h-4 mr-2" />
+            Back to Game
+          </Button>
+        </Link>
+        <h1 className="text-xl font-bold text-amber-400 flex items-center gap-2">
+          <Book className="w-5 h-5" />
+          Wiki
+        </h1>
+        <p className="text-xs text-stone-500 mt-1">SysAdmin Corp Documentation</p>
+      </div>
+
+      <div className="p-4 border-b border-amber-900/20">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+          <Input
+            placeholder="Search docs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 bg-stone-900/50 border-stone-800 text-stone-300 text-sm"
+            data-testid="input-wiki-search"
+          />
+        </div>
+      </div>
+
+      <ScrollArea className="flex-1">
+        <nav className="p-2 space-y-1">
+          {filteredSections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => {
+                setActiveSection(section.id);
+                setIsMobileMenuOpen(false);
+              }}
+              data-testid={`nav-${section.id}`}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                activeSection === section.id
+                  ? 'bg-amber-900/30 text-amber-400'
+                  : 'text-stone-400 hover:text-amber-300 hover:bg-stone-800/50'
+              }`}
+            >
+              {section.icon}
+              {section.title}
+            </button>
+          ))}
+        </nav>
+      </ScrollArea>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950">
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 min-h-screen border-r border-amber-900/30 bg-stone-950/50 p-4 flex flex-col">
-          <div className="mb-6">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="text-stone-400 hover:text-amber-400 mb-4">
-                <Home className="w-4 h-4 mr-2" />
-                Back to Game
-              </Button>
-            </Link>
-            <h1 className="text-xl font-bold text-amber-400 flex items-center gap-2">
-              <Book className="w-5 h-5" />
-              Wiki
-            </h1>
-            <p className="text-xs text-stone-500 mt-1">SysAdmin Corp Documentation</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 flex flex-col">
+      {/* Mobile Header */}
+      <header className="md:hidden flex items-center justify-between p-4 border-b border-amber-900/30 bg-stone-950/80 backdrop-blur-sm sticky top-0 z-20">
+        <div className="flex items-center gap-2">
+          <Book className="w-5 h-5 text-amber-500" />
+          <h1 className="font-bold text-amber-500 text-sm">Wiki Docs</h1>
+        </div>
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="text-amber-500">
+              <Menu className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-72 bg-stone-950 border-r border-amber-900/30">
+            <SheetHeader className="p-4 border-b border-amber-900/20">
+              <SheetTitle className="text-amber-500 flex items-center gap-2 text-left">
+                <Book className="w-5 h-5" />
+                Wiki Navigation
+              </SheetTitle>
+            </SheetHeader>
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      </header>
 
-          <div className="relative mb-4">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-            <Input
-              placeholder="Search docs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 bg-stone-900/50 border-stone-800 text-stone-300 text-sm"
-              data-testid="input-wiki-search"
-            />
-          </div>
-
-          <ScrollArea className="flex-1">
-            <nav className="space-y-1">
-              {filteredSections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  data-testid={`nav-${section.id}`}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    activeSection === section.id
-                      ? 'bg-amber-900/30 text-amber-400'
-                      : 'text-stone-400 hover:text-amber-300 hover:bg-stone-800/50'
-                  }`}
-                >
-                  {section.icon}
-                  {section.title}
-                </button>
-              ))}
-            </nav>
-          </ScrollArea>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop Sidebar */}
+        <aside className="hidden md:flex w-64 lg:w-72 flex-shrink-0 border-r border-amber-900/30 bg-stone-950/50 flex-col">
+          <SidebarContent />
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
-          <div className="max-w-3xl">
-            {activeContent?.content}
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-8 flex items-center gap-2 text-stone-500 text-xs md:text-sm">
+              <Link href="/">
+                <span className="hover:text-amber-500 cursor-pointer">Home</span>
+              </Link>
+              <ChevronRight className="w-3 h-3 md:w-4 h-4" />
+              <span className="text-stone-300 cursor-pointer" onClick={() => setActiveSection('overview')}>Wiki</span>
+              <ChevronRight className="w-3 h-3 md:w-4 h-4" />
+              <span className="text-amber-500 font-medium truncate">
+                {activeContent?.title}
+              </span>
+            </div>
+
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {activeContent?.content}
+            </div>
           </div>
         </main>
       </div>
