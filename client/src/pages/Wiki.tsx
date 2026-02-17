@@ -45,7 +45,7 @@ export default function Wiki() {
 
           <div className="grid gap-4">
             <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-teal-300 mb-2">1. AI Academy (/campaigns)</h3>
+              <h3 className="text-lg font-semibold text-teal-300 mb-2">1. Campaigns (/campaigns)</h3>
               <p className="text-stone-300 text-sm">
                 <strong>Purpose:</strong> Structured learning and skill development.
                 <br />
