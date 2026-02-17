@@ -26,7 +26,7 @@ const RARITY_COLORS: Record<string, string> = {
   common: 'border-stone-600 text-stone-400 bg-stone-900/20',
   uncommon: 'border-teal-700 text-teal-400 bg-teal-900/20',
   rare: 'border-blue-700 text-blue-400 bg-blue-900/20',
-  epic: 'border-purple-700 text-purple-400 bg-purple-900/20',
+  epic: 'border-orange-700 text-orange-400 bg-orange-900/20',
   legendary: 'border-amber-600 text-amber-400 bg-amber-900/20',
 };
 
@@ -153,7 +153,7 @@ export function PlayerStatsPanel() {
                     { label: 'Clues Found', value: gameState.inventory.length, icon: Target, color: 'text-teal-400' },
                     { label: 'Quests Done', value: playerStats?.questCount || 0, icon: Trophy, color: 'text-amber-400' },
                     { label: 'Campaigns', value: gameState.stats.campaignsCompleted, icon: Flame, color: 'text-orange-400' },
-                    { label: 'Commands Run', value: gameState.stats.commandsRun, icon: Zap, color: 'text-purple-400' },
+                    { label: 'Commands Run', value: gameState.stats.commandsRun, icon: Zap, color: 'text-orange-400' },
                     { label: 'Play Time', value: `${gameState.stats.totalPlayTimeMinutes}m`, icon: Clock, color: 'text-stone-400' },
                     { label: 'Achievements', value: gameState.achievements.length, icon: Award, color: 'text-amber-500' },
                   ].map(stat => (
