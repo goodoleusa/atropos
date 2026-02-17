@@ -24,6 +24,7 @@ import PromptBuilder from "@/pages/PromptBuilder";
 import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 import VideoGallery from "@/pages/VideoGallery";
 import Agents from "@/pages/Agents";
+import CrewBuilder from "@/pages/CrewBuilder";
 import CampaignsHub from "@/pages/CampaignsHub";
 import CampaignPlayer from "@/pages/CampaignPlayer";
 import CampaignBuilder from "@/pages/builder/CampaignBuilder";
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/ai-lab" component={AILab} />
       <Route path="/investigate" component={InvestigationWorkspace} />
       <Route path="/agents" component={Agents} />
+      <Route path="/crew-builder" component={CrewBuilder} />
       <Route path="/builder" component={CampaignBuilder} />
       <Route path="/campaigns" component={CampaignsHub} />
       <Route path="/play/:campaignId" component={CampaignPlayer} />
