@@ -173,7 +173,7 @@ export default function Profile() {
               </Button>
             </Link>
             <h1 className="font-orbitron text-xl font-bold">
-              <span className="text-amber-600">PLAYER</span> <span className="text-stone-400">PROFILE</span>
+              <span className="text-amber-600">MISSION</span> <span className="text-stone-400">CONTROL</span>
             </h1>
           </div>
           <Badge variant="outline" className="border-teal-600 text-teal-400">
