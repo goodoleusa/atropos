@@ -6,16 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import {
   BookOpen, ChevronDown, ChevronRight, Save, RefreshCw, Target,
   Layers, Brain, Globe, Edit, X, Check, Trash2, Plus, Zap, Clock,
-  Star, GraduationCap, AlertTriangle, BarChart3, Sparkles, Loader2
+  Star, GraduationCap, AlertTriangle, Sparkles, Loader2
 } from "lucide-react";
 
 interface TrackStat {
@@ -65,9 +62,7 @@ export function CurriculumSection() {
   const [expandedMission, setExpandedMission] = useState<string | null>(null);
   const [editingTrack, setEditingTrack] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
-  const [missionDialogOpen, setMissionDialogOpen] = useState(false);
-  const [missionDialogTrackId, setMissionDialogTrackId] = useState<string | null>(null);
-  const [missionDialogIndex, setMissionDialogIndex] = useState<number | null>(null);
+  const [editingMission, setEditingMission] = useState<string | null>(null);
   const [missionEditForm, setMissionEditForm] = useState<Record<string, any>>({});
 
   const [genOpen, setGenOpen] = useState(false);
@@ -152,10 +147,8 @@ export function CurriculumSection() {
       queryClient.invalidateQueries({ queryKey: ["/api/curriculum"] });
       queryClient.invalidateQueries({ queryKey: ["/api/curriculum/stats/overview"] });
       setEditingTrack(null);
-      setMissionDialogOpen(false);
-      setMissionDialogTrackId(null);
-      setMissionDialogIndex(null);
-      toast({ title: "Track Updated", description: "Changes saved to database." });
+      setEditingMission(null);
+      toast({ title: "Saved", description: "Changes saved to database." });
     },
     onError: () => toast({ title: "Update Failed", variant: "destructive" }),
   });
@@ -176,10 +169,12 @@ export function CurriculumSection() {
     updateTrackMutation.mutate({ trackId, data: editForm });
   };
 
-  const openMissionDialog = (trackId: string, mission: any, missionIndex: number) => {
-    setMissionDialogTrackId(trackId);
-    setMissionDialogIndex(missionIndex);
+  const startEditMission = (trackId: string, mission: any, missionIndex: number) => {
+    const mKey = `${trackId}-${missionIndex}`;
+    setEditingMission(mKey);
     setMissionEditForm({
+      trackId,
+      missionIndex,
       name: mission.name,
       description: mission.description,
       difficulty: mission.difficulty,
@@ -195,16 +190,16 @@ export function CurriculumSection() {
         successCriteria: ex.successCriteria || "",
       })),
     });
-    setMissionDialogOpen(true);
   };
 
   const saveMissionEdit = () => {
-    if (!missionDialogTrackId || missionDialogIndex === null) return;
-    const track = tracks.find(t => t.trackId === missionDialogTrackId);
+    const { trackId, missionIndex } = missionEditForm;
+    if (!trackId || missionIndex === undefined) return;
+    const track = tracks.find(t => t.trackId === trackId);
     if (!track) return;
     const updatedMissions = [...track.missions];
-    updatedMissions[missionDialogIndex] = {
-      ...updatedMissions[missionDialogIndex],
+    updatedMissions[missionIndex] = {
+      ...updatedMissions[missionIndex],
       name: missionEditForm.name,
       description: missionEditForm.description,
       difficulty: missionEditForm.difficulty,
@@ -214,52 +209,7 @@ export function CurriculumSection() {
       keyTakeaways: missionEditForm.keyTakeaways,
       exercises: missionEditForm.exercises,
     };
-    updateTrackMutation.mutate({ trackId: missionDialogTrackId, data: { missions: updatedMissions } });
-  };
-
-  const addObjective = () => {
-    setMissionEditForm(f => ({ ...f, objectives: [...(f.objectives || []), ""] }));
-  };
-  const removeObjective = (index: number) => {
-    setMissionEditForm(f => ({ ...f, objectives: f.objectives.filter((_: any, i: number) => i !== index) }));
-  };
-  const updateObjective = (index: number, value: string) => {
-    setMissionEditForm(f => {
-      const updated = [...f.objectives];
-      updated[index] = value;
-      return { ...f, objectives: updated };
-    });
-  };
-
-  const addKeyTakeaway = () => {
-    setMissionEditForm(f => ({ ...f, keyTakeaways: [...(f.keyTakeaways || []), ""] }));
-  };
-  const removeKeyTakeaway = (index: number) => {
-    setMissionEditForm(f => ({ ...f, keyTakeaways: f.keyTakeaways.filter((_: any, i: number) => i !== index) }));
-  };
-  const updateKeyTakeaway = (index: number, value: string) => {
-    setMissionEditForm(f => {
-      const updated = [...f.keyTakeaways];
-      updated[index] = value;
-      return { ...f, keyTakeaways: updated };
-    });
-  };
-
-  const addExercise = () => {
-    setMissionEditForm(f => ({
-      ...f,
-      exercises: [...(f.exercises || []), { title: "", type: "", instructions: "", hints: [], successCriteria: "" }],
-    }));
-  };
-  const removeExercise = (index: number) => {
-    setMissionEditForm(f => ({ ...f, exercises: f.exercises.filter((_: any, i: number) => i !== index) }));
-  };
-  const updateExercise = (index: number, field: string, value: any) => {
-    setMissionEditForm(f => {
-      const updated = [...f.exercises];
-      updated[index] = { ...updated[index], [field]: value };
-      return { ...f, exercises: updated };
-    });
+    updateTrackMutation.mutate({ trackId, data: { missions: updatedMissions } });
   };
 
   const toggleTrackActive = (trackId: string, isActive: boolean) => {
@@ -288,7 +238,7 @@ export function CurriculumSection() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2" data-testid="curriculum-title">
@@ -472,7 +422,7 @@ export function CurriculumSection() {
                     <Input value={genDraft.id || ''} onChange={e => setGenDraft((d: any) => ({ ...d, id: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-gen-id" />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <div>
                     <Label className="text-[9px] text-stone-500 uppercase">Icon</Label>
                     <Input value={genDraft.icon || ''} onChange={e => setGenDraft((d: any) => ({ ...d, icon: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-gen-icon" />
@@ -675,14 +625,14 @@ export function CurriculumSection() {
         { label: 'AI Mastery', trackList: aiTracks, catColor: 'text-teal-500', borderColor: 'border-teal-900/40' },
         { label: 'Cyber OSINT', trackList: osintTracks, catColor: 'text-cyan-500', borderColor: 'border-cyan-900/40' },
       ].map(section => section.trackList.length > 0 && (
-        <div key={section.label} className="space-y-2">
+        <div key={section.label} className="space-y-3">
           <div className="flex items-center gap-2 px-1">
             <div className={`h-px flex-1 ${section.borderColor}`} style={{ borderTopWidth: 1, borderTopStyle: 'solid' }} />
             <span className={`text-[10px] font-bold uppercase tracking-widest ${section.catColor}`}>{section.label}</span>
             <div className={`h-px flex-1 ${section.borderColor}`} style={{ borderTopWidth: 1, borderTopStyle: 'solid' }} />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             {section.trackList.map(track => {
               const isExpanded = expandedTrack === track.trackId;
               const isEditing = editingTrack === track.trackId;
@@ -756,18 +706,19 @@ export function CurriculumSection() {
                   )}
 
                   {isExpanded && !isEditing && (
-                    <CardContent className="p-3 pt-1 space-y-2">
+                    <CardContent className="p-3 pt-1 space-y-3">
                       <p className="text-[10px] text-stone-500 leading-relaxed">{track.description}</p>
 
                       {track.missions.map((mission: any, mi: number) => {
                         const mKey = `${track.trackId}-${mi}`;
                         const isMissionExpanded = expandedMission === mKey;
+                        const isMissionEditing = editingMission === mKey;
 
                         return (
-                          <div key={mKey} className={`rounded border transition-colors ${isMissionExpanded ? 'border-amber-800/30 bg-stone-950/50' : 'border-stone-800/40 bg-stone-950/30'}`} data-testid={`admin-mission-${mission.id}`}>
+                          <div key={mKey} className={`rounded border transition-colors ${isMissionEditing ? 'border-amber-600/50 bg-amber-950/10' : isMissionExpanded ? 'border-amber-800/30 bg-stone-950/50' : 'border-stone-800/40 bg-stone-950/30'}`} data-testid={`admin-mission-${mission.id}`}>
                             <div
-                              className="flex items-center gap-2 p-2 cursor-pointer min-h-[44px]"
-                              onClick={() => setExpandedMission(isMissionExpanded ? null : mKey)}
+                              className="flex items-center gap-2 p-2.5 cursor-pointer min-h-[44px]"
+                              onClick={() => { if (!isMissionEditing) setExpandedMission(isMissionExpanded ? null : mKey); }}
                             >
                               <span className="text-sm">{mission.icon}</span>
                               <div className="flex-1 min-w-0">
@@ -779,33 +730,52 @@ export function CurriculumSection() {
                                   <span className="flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" /> {mission.estimatedTime}</span>
                                   <span className="flex items-center gap-0.5"><Star className="w-2.5 h-2.5 text-amber-700" /> {mission.xpReward} XP</span>
                                   <span>{(mission.exercises || []).length} exercises</span>
-                                  <span>{(mission.objectives || []).length} objectives</span>
+                                  <span>{(mission.objectives || []).length} obj</span>
                                 </div>
                               </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-9 w-9 p-0 min-h-[44px] min-w-[44px] text-stone-600 hover:text-amber-400 shrink-0"
-                                onClick={(e) => { e.stopPropagation(); openMissionDialog(track.trackId, mission, mi); }}
+                                className={`h-9 w-9 p-0 min-h-[44px] min-w-[44px] shrink-0 ${isMissionEditing ? 'text-amber-400' : 'text-stone-600 hover:text-amber-400'}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (isMissionEditing) {
+                                    setEditingMission(null);
+                                  } else {
+                                    startEditMission(track.trackId, mission, mi);
+                                    setExpandedMission(mKey);
+                                  }
+                                }}
                                 data-testid={`edit-mission-${mission.id}`}
                               >
-                                <Edit className="w-4 h-4" />
+                                {isMissionEditing ? <X className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                               </Button>
                               {isMissionExpanded ? <ChevronDown className="w-3.5 h-3.5 text-stone-600 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-stone-600 shrink-0" />}
                             </div>
 
-                            {isMissionExpanded && (
-                              <div className="px-2 pb-2 space-y-2 border-t border-stone-800/30 mt-1 pt-2">
+                            {isMissionExpanded && !isMissionEditing && (
+                              <div className="px-3 pb-3 space-y-3 border-t border-stone-800/30 mt-1 pt-3">
                                 <p className="text-[10px] text-stone-500">{mission.description}</p>
 
                                 {mission.objectives?.length > 0 && (
                                   <div>
-                                    <span className="text-[9px] text-amber-600 uppercase font-bold tracking-wider">Objectives</span>
-                                    <ul className="mt-1 space-y-0.5">
+                                    <div className="flex items-center justify-between mb-1.5">
+                                      <span className="text-[9px] text-amber-600 uppercase font-bold tracking-wider">Objectives ({mission.objectives.length})</span>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-7 text-[10px] text-amber-400 hover:text-amber-300"
+                                        onClick={(e) => { e.stopPropagation(); startEditMission(track.trackId, mission, mi); setExpandedMission(mKey); }}
+                                        data-testid={`quick-edit-objectives-${mission.id}`}
+                                      >
+                                        <Edit className="w-3 h-3 mr-1" /> Edit
+                                      </Button>
+                                    </div>
+                                    <ul className="space-y-1">
                                       {mission.objectives.map((obj: string, i: number) => (
-                                        <li key={i} className="text-[10px] text-stone-400 flex items-start gap-1.5">
-                                          <Target className="w-2.5 h-2.5 text-amber-700 mt-0.5 shrink-0" />
-                                          {obj}
+                                        <li key={i} className="text-[11px] text-stone-400 flex items-start gap-2 py-0.5">
+                                          <Target className="w-3 h-3 text-amber-700 mt-0.5 shrink-0" />
+                                          <span className="leading-relaxed">{obj}</span>
                                         </li>
                                       ))}
                                     </ul>
@@ -815,13 +785,14 @@ export function CurriculumSection() {
                                 {mission.exercises?.length > 0 && (
                                   <div>
                                     <span className="text-[9px] text-teal-600 uppercase font-bold tracking-wider">Exercises ({mission.exercises.length})</span>
-                                    <div className="mt-1 space-y-1">
+                                    <div className="mt-1.5 space-y-1.5">
                                       {mission.exercises.map((ex: any, ei: number) => (
-                                        <div key={ei} className="flex items-start gap-1.5 text-[10px] text-stone-400 bg-stone-900/30 rounded p-1.5">
-                                          <Zap className="w-2.5 h-2.5 text-teal-600 mt-0.5 shrink-0" />
-                                          <div>
+                                        <div key={ei} className="flex items-start gap-2 text-[11px] text-stone-400 bg-stone-900/30 rounded p-2">
+                                          <Zap className="w-3 h-3 text-teal-600 mt-0.5 shrink-0" />
+                                          <div className="flex-1 min-w-0">
                                             <span className="font-medium text-stone-300">{ex.title}</span>
                                             <Badge className="text-[7px] ml-1.5 bg-stone-800 text-stone-500 border-0">{ex.type}</Badge>
+                                            {ex.instructions && <p className="text-stone-500 text-[10px] mt-0.5 line-clamp-2">{ex.instructions}</p>}
                                           </div>
                                         </div>
                                       ))}
@@ -834,9 +805,9 @@ export function CurriculumSection() {
                                     <span className="text-[9px] text-emerald-600 uppercase font-bold tracking-wider">Key Takeaways</span>
                                     <ul className="mt-1 space-y-0.5">
                                       {mission.keyTakeaways.map((kt: string, i: number) => (
-                                        <li key={i} className="text-[10px] text-stone-400 flex items-start gap-1.5">
-                                          <Check className="w-2.5 h-2.5 text-emerald-700 mt-0.5 shrink-0" />
-                                          {kt}
+                                        <li key={i} className="text-[11px] text-stone-400 flex items-start gap-2 py-0.5">
+                                          <Check className="w-3 h-3 text-emerald-700 mt-0.5 shrink-0" />
+                                          <span className="leading-relaxed">{kt}</span>
                                         </li>
                                       ))}
                                     </ul>
@@ -844,13 +815,169 @@ export function CurriculumSection() {
                                 )}
 
                                 {mission.platformTools?.length > 0 && (
-                                  <div className="flex items-center gap-1 flex-wrap">
-                                    <span className="text-[9px] text-stone-600 uppercase">Tools:</span>
+                                  <div className="flex flex-wrap gap-1">
                                     {mission.platformTools.map((tool: string, i: number) => (
                                       <Badge key={i} variant="outline" className="text-[8px] border-stone-700 text-stone-500">{tool}</Badge>
                                     ))}
                                   </div>
                                 )}
+                              </div>
+                            )}
+
+                            {isMissionEditing && (
+                              <div className="px-3 pb-3 space-y-3 border-t border-amber-800/30 mt-1 pt-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                  <div>
+                                    <label className="text-[9px] text-stone-500 uppercase">Name</label>
+                                    <Input value={missionEditForm.name || ''} onChange={e => setMissionEditForm(f => ({ ...f, name: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-mission-name" />
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-1">
+                                    <div>
+                                      <label className="text-[9px] text-stone-500 uppercase">Difficulty</label>
+                                      <select value={missionEditForm.difficulty || 'beginner'} onChange={e => setMissionEditForm(f => ({ ...f, difficulty: e.target.value }))} className="w-full h-8 text-xs bg-stone-950 border border-stone-800 rounded px-1 text-white" data-testid="select-mission-difficulty">
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                        <option value="expert">Expert</option>
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <label className="text-[9px] text-stone-500 uppercase">Time</label>
+                                      <Input value={missionEditForm.estimatedTime || ''} onChange={e => setMissionEditForm(f => ({ ...f, estimatedTime: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-mission-time" />
+                                    </div>
+                                    <div>
+                                      <label className="text-[9px] text-stone-500 uppercase">XP</label>
+                                      <Input type="number" value={missionEditForm.xpReward || 0} onChange={e => setMissionEditForm(f => ({ ...f, xpReward: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-mission-xp" />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-[9px] text-stone-500 uppercase">Description</label>
+                                  <Textarea value={missionEditForm.description || ''} onChange={e => setMissionEditForm(f => ({ ...f, description: e.target.value }))} className="text-xs bg-stone-950 border-stone-800 min-h-[50px]" data-testid="input-mission-description" />
+                                </div>
+
+                                <div>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <label className="text-[9px] text-amber-500 uppercase font-bold">Objectives ({(missionEditForm.objectives || []).length})</label>
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: [...(f.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-400 hover:text-amber-300" data-testid="add-objective">
+                                      <Plus className="w-3 h-3 mr-1" /> Add
+                                    </Button>
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    {(missionEditForm.objectives || []).map((obj: string, i: number) => (
+                                      <div key={i} className="flex items-center gap-1.5">
+                                        <Target className="w-3 h-3 text-amber-700 shrink-0" />
+                                        <Input
+                                          value={obj}
+                                          onChange={e => {
+                                            setMissionEditForm(f => {
+                                              const updated = [...f.objectives];
+                                              updated[i] = e.target.value;
+                                              return { ...f, objectives: updated };
+                                            });
+                                          }}
+                                          className="h-8 text-xs bg-black/50 border-amber-900/30 flex-1"
+                                          placeholder="Learning objective..."
+                                          data-testid={`input-objective-${i}`}
+                                        />
+                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: f.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-400 hover:text-red-300 shrink-0" data-testid={`delete-objective-${i}`}>
+                                          <X className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                    {(missionEditForm.objectives || []).length === 0 && (
+                                      <p className="text-[10px] text-stone-600 italic pl-5">No objectives yet - click Add to create one</p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <label className="text-[9px] text-emerald-500 uppercase font-bold">Key Takeaways ({(missionEditForm.keyTakeaways || []).length})</label>
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: [...(f.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-emerald-400 hover:text-emerald-300" data-testid="add-takeaway">
+                                      <Plus className="w-3 h-3 mr-1" /> Add
+                                    </Button>
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    {(missionEditForm.keyTakeaways || []).map((kt: string, i: number) => (
+                                      <div key={i} className="flex items-center gap-1.5">
+                                        <Check className="w-3 h-3 text-emerald-700 shrink-0" />
+                                        <Input
+                                          value={kt}
+                                          onChange={e => {
+                                            setMissionEditForm(f => {
+                                              const updated = [...f.keyTakeaways];
+                                              updated[i] = e.target.value;
+                                              return { ...f, keyTakeaways: updated };
+                                            });
+                                          }}
+                                          className="h-8 text-xs bg-black/50 border-emerald-900/30 flex-1"
+                                          placeholder="Key takeaway..."
+                                          data-testid={`input-takeaway-${i}`}
+                                        />
+                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: f.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-400 hover:text-red-300 shrink-0" data-testid={`delete-takeaway-${i}`}>
+                                          <X className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                    {(missionEditForm.keyTakeaways || []).length === 0 && (
+                                      <p className="text-[10px] text-stone-600 italic pl-5">No takeaways yet</p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <label className="text-[9px] text-teal-500 uppercase font-bold">Exercises ({(missionEditForm.exercises || []).length})</label>
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: [...(f.exercises || []), { title: "", type: "", instructions: "", hints: [], successCriteria: "" }] }))} className="h-7 text-[10px] text-teal-400 hover:text-teal-300" data-testid="add-exercise">
+                                      <Plus className="w-3 h-3 mr-1" /> Add
+                                    </Button>
+                                  </div>
+                                  <div className="space-y-2">
+                                    {(missionEditForm.exercises || []).map((ex: any, ei: number) => (
+                                      <div key={ei} className="rounded border border-stone-800/40 bg-stone-950/30 p-2.5 space-y-1.5" data-testid={`exercise-item-${ei}`}>
+                                        <div className="flex items-center justify-between gap-2">
+                                          <span className="text-[9px] text-teal-500 uppercase font-bold">Exercise {ei + 1}</span>
+                                          <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: f.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-400 hover:text-red-300" data-testid={`delete-exercise-${ei}`}>
+                                            <Trash2 className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                                          <div>
+                                            <label className="text-[8px] text-stone-600 uppercase">Title</label>
+                                            <Input value={ex.title} onChange={e => { const v = e.target.value; setMissionEditForm(f => { const u = [...f.exercises]; u[ei] = { ...u[ei], title: v }; return { ...f, exercises: u }; }); }} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-title-${ei}`} />
+                                          </div>
+                                          <div>
+                                            <label className="text-[8px] text-stone-600 uppercase">Type</label>
+                                            <Input value={ex.type} onChange={e => { const v = e.target.value; setMissionEditForm(f => { const u = [...f.exercises]; u[ei] = { ...u[ei], type: v }; return { ...f, exercises: u }; }); }} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-type-${ei}`} />
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <label className="text-[8px] text-stone-600 uppercase">Instructions</label>
+                                          <Textarea value={ex.instructions} onChange={e => { const v = e.target.value; setMissionEditForm(f => { const u = [...f.exercises]; u[ei] = { ...u[ei], instructions: v }; return { ...f, exercises: u }; }); }} className="text-xs bg-black/50 border-amber-900/30 min-h-[40px]" data-testid={`input-exercise-instructions-${ei}`} />
+                                        </div>
+                                        <div>
+                                          <label className="text-[8px] text-stone-600 uppercase">Hints (comma-separated)</label>
+                                          <Input value={(ex.hints || []).join(", ")} onChange={e => { const v = e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean); setMissionEditForm(f => { const u = [...f.exercises]; u[ei] = { ...u[ei], hints: v }; return { ...f, exercises: u }; }); }} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-hints-${ei}`} />
+                                        </div>
+                                        <div>
+                                          <label className="text-[8px] text-stone-600 uppercase">Success Criteria</label>
+                                          <Input value={ex.successCriteria} onChange={e => { const v = e.target.value; setMissionEditForm(f => { const u = [...f.exercises]; u[ei] = { ...u[ei], successCriteria: v }; return { ...f, exercises: u }; }); }} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-criteria-${ei}`} />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    {(missionEditForm.exercises || []).length === 0 && (
+                                      <p className="text-[10px] text-stone-600 italic">No exercises yet</p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex justify-end gap-2 pt-2 border-t border-stone-800/30">
+                                  <Button size="sm" variant="ghost" onClick={() => setEditingMission(null)} className="text-stone-500 text-xs min-h-[44px]" data-testid="cancel-mission-edit">Cancel</Button>
+                                  <Button size="sm" onClick={saveMissionEdit} disabled={updateTrackMutation.isPending} className="bg-amber-700 hover:bg-amber-600 text-black text-xs min-h-[44px]" data-testid="save-mission-inline">
+                                    <Save className="w-3 h-3 mr-1" /> Save Mission
+                                  </Button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -864,154 +991,6 @@ export function CurriculumSection() {
           </div>
         </div>
       ))}
-
-      {missionDialogOpen && (
-        <Dialog open={missionDialogOpen} onOpenChange={(open) => { if (!open) { setMissionDialogOpen(false); setMissionDialogTrackId(null); setMissionDialogIndex(null); } }}>
-          <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto" data-testid="dialog-mission-edit">
-            <DialogHeader>
-              <DialogTitle className="text-amber-600 font-orbitron">Edit Mission</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[9px] text-stone-500 uppercase">Name</label>
-                  <Input value={missionEditForm.name || ''} onChange={e => setMissionEditForm(f => ({ ...f, name: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-mission-name" />
-                </div>
-                <div className="grid grid-cols-3 gap-1">
-                  <div>
-                    <label className="text-[9px] text-stone-500 uppercase">Difficulty</label>
-                    <select value={missionEditForm.difficulty || 'beginner'} onChange={e => setMissionEditForm(f => ({ ...f, difficulty: e.target.value }))} className="w-full h-8 text-xs bg-stone-950 border border-stone-800 rounded px-1 text-white" data-testid="select-mission-difficulty">
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
-                      <option value="expert">Expert</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-stone-500 uppercase">Time</label>
-                    <Input value={missionEditForm.estimatedTime || ''} onChange={e => setMissionEditForm(f => ({ ...f, estimatedTime: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-mission-time" />
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-stone-500 uppercase">XP</label>
-                    <Input type="number" value={missionEditForm.xpReward || 0} onChange={e => setMissionEditForm(f => ({ ...f, xpReward: e.target.value }))} className="h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-mission-xp" />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label className="text-[9px] text-stone-500 uppercase">Description</label>
-                <Textarea value={missionEditForm.description || ''} onChange={e => setMissionEditForm(f => ({ ...f, description: e.target.value }))} className="text-xs bg-stone-950 border-stone-800 min-h-[50px]" data-testid="input-mission-description" />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-[9px] text-stone-500 uppercase">Objectives</label>
-                  <Button size="sm" variant="ghost" onClick={addObjective} className="h-7 text-[10px] text-amber-400 hover:text-amber-300" data-testid="add-objective">
-                    <Plus className="w-3 h-3 mr-1" /> Add Objective
-                  </Button>
-                </div>
-                <div className="space-y-1">
-                  {(missionEditForm.objectives || []).map((obj: string, i: number) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <Input
-                        value={obj}
-                        onChange={e => updateObjective(i, e.target.value)}
-                        className="h-7 text-xs bg-black/50 border-amber-900/30 flex-1"
-                        data-testid={`input-objective-${i}`}
-                      />
-                      <Button size="sm" variant="ghost" onClick={() => removeObjective(i)} className="h-7 w-7 p-0 text-red-400 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`delete-objective-${i}`}>
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ))}
-                  {(missionEditForm.objectives || []).length === 0 && (
-                    <p className="text-[10px] text-stone-600 italic">No objectives yet</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-[9px] text-stone-500 uppercase">Key Takeaways</label>
-                  <Button size="sm" variant="ghost" onClick={addKeyTakeaway} className="h-7 text-[10px] text-amber-400 hover:text-amber-300" data-testid="add-takeaway">
-                    <Plus className="w-3 h-3 mr-1" /> Add Takeaway
-                  </Button>
-                </div>
-                <div className="space-y-1">
-                  {(missionEditForm.keyTakeaways || []).map((kt: string, i: number) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <Input
-                        value={kt}
-                        onChange={e => updateKeyTakeaway(i, e.target.value)}
-                        className="h-7 text-xs bg-black/50 border-amber-900/30 flex-1"
-                        data-testid={`input-takeaway-${i}`}
-                      />
-                      <Button size="sm" variant="ghost" onClick={() => removeKeyTakeaway(i)} className="h-7 w-7 p-0 text-red-400 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`delete-takeaway-${i}`}>
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ))}
-                  {(missionEditForm.keyTakeaways || []).length === 0 && (
-                    <p className="text-[10px] text-stone-600 italic">No key takeaways yet</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-[9px] text-teal-500 uppercase font-bold">Exercises</label>
-                  <Button size="sm" variant="ghost" onClick={addExercise} className="h-7 text-[10px] text-teal-400 hover:text-teal-300" data-testid="add-exercise">
-                    <Plus className="w-3 h-3 mr-1" /> Add Exercise
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {(missionEditForm.exercises || []).map((ex: any, ei: number) => (
-                    <div key={ei} className="rounded border border-stone-800/40 bg-stone-950/30 p-2 space-y-1.5" data-testid={`exercise-item-${ei}`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[9px] text-teal-500 uppercase font-bold">Exercise {ei + 1}</span>
-                        <Button size="sm" variant="ghost" onClick={() => removeExercise(ei)} className="h-7 w-7 p-0 text-red-400 hover:text-red-300 min-h-[44px] min-w-[44px]" data-testid={`delete-exercise-${ei}`}>
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                        <div>
-                          <label className="text-[8px] text-stone-600 uppercase">Title</label>
-                          <Input value={ex.title} onChange={e => updateExercise(ei, 'title', e.target.value)} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-title-${ei}`} />
-                        </div>
-                        <div>
-                          <label className="text-[8px] text-stone-600 uppercase">Type</label>
-                          <Input value={ex.type} onChange={e => updateExercise(ei, 'type', e.target.value)} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-type-${ei}`} />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-[8px] text-stone-600 uppercase">Instructions</label>
-                        <Textarea value={ex.instructions} onChange={e => updateExercise(ei, 'instructions', e.target.value)} className="text-xs bg-black/50 border-amber-900/30 min-h-[40px]" data-testid={`input-exercise-instructions-${ei}`} />
-                      </div>
-                      <div>
-                        <label className="text-[8px] text-stone-600 uppercase">Hints (comma-separated)</label>
-                        <Input value={(ex.hints || []).join(", ")} onChange={e => updateExercise(ei, 'hints', e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-hints-${ei}`} />
-                      </div>
-                      <div>
-                        <label className="text-[8px] text-stone-600 uppercase">Success Criteria</label>
-                        <Input value={ex.successCriteria} onChange={e => updateExercise(ei, 'successCriteria', e.target.value)} className="h-7 text-xs bg-black/50 border-amber-900/30" data-testid={`input-exercise-criteria-${ei}`} />
-                      </div>
-                    </div>
-                  ))}
-                  {(missionEditForm.exercises || []).length === 0 && (
-                    <p className="text-[10px] text-stone-600 italic">No exercises yet</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-stone-800/30">
-                <Button size="sm" variant="ghost" onClick={() => { setMissionDialogOpen(false); setMissionDialogTrackId(null); setMissionDialogIndex(null); }} className="text-stone-500 text-xs min-h-[44px]" data-testid="cancel-mission-edit">Cancel</Button>
-                <Button size="sm" onClick={saveMissionEdit} disabled={updateTrackMutation.isPending} className="bg-amber-700 hover:bg-amber-600 text-black text-xs min-h-[44px]" data-testid="save-mission-dialog">
-                  <Save className="w-3 h-3 mr-1" /> Save Mission
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }
