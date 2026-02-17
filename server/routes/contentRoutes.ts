@@ -258,6 +258,24 @@ router.put("/api/designer/campaigns/:campaignId", async (req, res) => {
   try {
     const { campaignId } = req.params;
     const campaign = await storage.upsertDesignerCampaign(campaignId, req.body);
+    const campaignPath = `/play/${campaignId}`;
+    try {
+      await storage.upsertSitemapEntryByPath(campaignPath, {
+        name: req.body.name || campaign.name || campaignId,
+        path: campaignPath,
+        description: req.body.description || campaign.description || '',
+        icon: 'Rocket',
+        category: 'Campaigns & Learning',
+        color: 'purple',
+        pageLayout: 'card',
+        isCustom: true,
+        isPublished: campaign.isPublished || false,
+        arcTemplateId: req.body.arcTemplateId || null,
+        metadata: { campaignId, source: 'builder' },
+      });
+    } catch (sitemapErr) {
+      console.warn("Sitemap sync on save skipped:", sitemapErr);
+    }
     res.json(campaign);
   } catch (error) {
     console.error("Save designer campaign error:", error);
@@ -280,6 +298,22 @@ router.post("/api/designer/campaigns/:campaignId/publish", async (req, res) => {
   try {
     const { campaignId } = req.params;
     const campaign = await storage.upsertDesignerCampaign(campaignId, { isPublished: true });
+    try {
+      await storage.upsertSitemapEntryByPath(`/play/${campaignId}`, {
+        name: campaign.name || campaignId,
+        path: `/play/${campaignId}`,
+        description: campaign.description || '',
+        icon: 'Rocket',
+        category: 'Campaigns & Learning',
+        color: 'purple',
+        pageLayout: 'card',
+        isCustom: true,
+        isPublished: true,
+        metadata: { campaignId, source: 'builder' },
+      });
+    } catch (sitemapErr) {
+      console.warn("Sitemap sync on publish skipped:", sitemapErr);
+    }
     res.json({ success: true, campaign });
   } catch (error) {
     console.error("Publish campaign error:", error);
@@ -291,6 +325,13 @@ router.post("/api/designer/campaigns/:campaignId/unpublish", async (req, res) =>
   try {
     const { campaignId } = req.params;
     const campaign = await storage.upsertDesignerCampaign(campaignId, { isPublished: false });
+    try {
+      await storage.upsertSitemapEntryByPath(`/play/${campaignId}`, {
+        isPublished: false,
+      });
+    } catch (sitemapErr) {
+      console.warn("Sitemap sync on unpublish skipped:", sitemapErr);
+    }
     res.json({ success: true, campaign });
   } catch (error) {
     console.error("Unpublish campaign error:", error);

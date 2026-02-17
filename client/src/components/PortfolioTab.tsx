@@ -73,7 +73,17 @@ interface PortfolioSources {
   investigations: any[];
   campaignRuns: any[];
   scans: any[];
+  dossiers: any[];
 }
+
+type VizType = "radar" | "severity" | "timeline" | "donut" | "none";
+const VIZ_OPTIONS: { value: VizType; label: string; desc: string }[] = [
+  { value: "none", label: "No Visualization", desc: "Text-only entry" },
+  { value: "radar", label: "Skills Radar", desc: "Radar chart of skill coverage" },
+  { value: "severity", label: "Severity Chart", desc: "Vulnerability severity breakdown" },
+  { value: "timeline", label: "Scan Timeline", desc: "Timeline of scan results" },
+  { value: "donut", label: "Evidence Donut", desc: "Evidence type distribution" },
+];
 
 const SKILL_TAGS = ["OSINT", "Network Security", "Malware Analysis", "Social Engineering", "Crypto Forensics", "Web Security", "Threat Intel", "Incident Response"];
 const TOOL_TAGS = ["Atropos Scanner", "NEXUS Agent", "Shodan", "Censys", "VirusTotal", "Nmap", "Wireshark", "Burp Suite"];
@@ -337,9 +347,15 @@ function EditEntryForm({ entry, onSave, onCancel }: {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(entry.skills);
   const [selectedTools, setSelectedTools] = useState<string[]>(entry.tools);
   const [visibility, setVisibility] = useState(entry.visibility);
+  const existingVizConfig = entry.evidence.find((e: any) => e.type === "viz_config");
+  const [selectedViz, setSelectedViz] = useState<string[]>(existingVizConfig ? existingVizConfig.content.split(",") : []);
 
   const handleSubmit = () => {
     if (!title.trim()) return;
+    const updatedEvidence = entry.evidence.filter((e: any) => e.type !== "viz_config");
+    if (selectedViz.length > 0) {
+      updatedEvidence.push({ type: "viz_config", label: "Visualization Settings", content: selectedViz.join(",") });
+    }
     onSave(entry.id, {
       title: title.trim(),
       summary: summary.trim() || null,
@@ -349,6 +365,7 @@ function EditEntryForm({ entry, onSave, onCancel }: {
       skills: selectedSkills,
       tools: selectedTools,
       visibility,
+      evidence: updatedEvidence,
     });
   };
 
@@ -432,6 +449,28 @@ function EditEntryForm({ entry, onSave, onCancel }: {
               }`}
             >
               {tool}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1"><BarChart3 className="w-2.5 h-2.5" /> Visualization Style</label>
+        <div className="flex flex-wrap gap-1.5">
+          {VIZ_OPTIONS.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              onClick={() => setSelectedViz(prev => value === "none" ? [] : prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value])}
+              className={`px-2 py-0.5 rounded text-[10px] border flex items-center gap-1 transition-colors ${
+                value === "none" && selectedViz.length === 0
+                  ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
+                  : value !== "none" && selectedViz.includes(value)
+                  ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
+                  : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+              }`}
+              data-testid={`edit-viz-option-${value}`}
+            >
+              <Icon className="w-2.5 h-2.5" /> {label}
             </button>
           ))}
         </div>
@@ -664,31 +703,40 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
         {expanded && (
           <div className="px-4 pb-4 space-y-4 border-t border-stone-900/50">
 
-            {(vulns.length > 0 || entry.scanSnapshot.length > 0 || entry.skills.length > 0 || entry.evidence.length > 0) && (
-              <div className="grid grid-cols-2 gap-3 pt-3">
-                {vulns.length > 0 && (
-                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
-                    <SeverityChart vulns={vulns} />
-                  </div>
-                )}
-                {entry.scanSnapshot.length > 0 && (
-                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
-                    <ScanTimeline scans={entry.scanSnapshot} />
-                  </div>
-                )}
-                {entry.skills.length > 0 && (
-                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
-                    <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1 mb-1"><Palette className="w-3 h-3" /> Skills Radar</h5>
-                    <RadarChart skills={skillRadarData} size={140} />
-                  </div>
-                )}
-                {entry.evidence.length > 0 && (
-                  <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
-                    <EvidenceDonut evidence={entry.evidence} />
-                  </div>
-                )}
-              </div>
-            )}
+            {(() => {
+              const vizConfig = entry.evidence.find((e: any) => e.type === "viz_config");
+              const activeViz: string[] = vizConfig ? vizConfig.content.split(",") : [];
+              const showSeverity = activeViz.length === 0 ? vulns.length > 0 : activeViz.includes("severity") && vulns.length > 0;
+              const showTimeline = activeViz.length === 0 ? entry.scanSnapshot.length > 0 : activeViz.includes("timeline") && entry.scanSnapshot.length > 0;
+              const showRadar = activeViz.length === 0 ? entry.skills.length > 0 : activeViz.includes("radar") && entry.skills.length > 0;
+              const showDonut = activeViz.length === 0 ? entry.evidence.filter((e: any) => e.type !== "viz_config").length > 0 : activeViz.includes("donut") && entry.evidence.filter((e: any) => e.type !== "viz_config").length > 0;
+              const hasAnyViz = showSeverity || showTimeline || showRadar || showDonut;
+              return hasAnyViz ? (
+                <div className="grid grid-cols-2 gap-3 pt-3">
+                  {showSeverity && (
+                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                      <SeverityChart vulns={vulns} />
+                    </div>
+                  )}
+                  {showTimeline && (
+                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                      <ScanTimeline scans={entry.scanSnapshot} />
+                    </div>
+                  )}
+                  {showRadar && (
+                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1 mb-1"><Palette className="w-3 h-3" /> Skills Radar</h5>
+                      <RadarChart skills={skillRadarData} size={140} />
+                    </div>
+                  )}
+                  {showDonut && (
+                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                      <EvidenceDonut evidence={entry.evidence.filter((e: any) => e.type !== "viz_config")} />
+                    </div>
+                  )}
+                </div>
+              ) : null;
+            })()}
 
             {entry.agentSnapshot?.extractedIntel && (
               <div className="space-y-2 pt-3">
@@ -830,7 +878,78 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [selectedInvestigation, setSelectedInvestigation] = useState("");
   const [selectedCampaign, setSelectedCampaign] = useState("");
+  const [selectedDossier, setSelectedDossier] = useState("");
+  const [selectedScans, setSelectedScans] = useState<string[]>([]);
   const [visibility, setVisibility] = useState("private");
+  const [selectedViz, setSelectedViz] = useState<VizType[]>([]);
+
+  const hasSources = sources.investigations.length > 0 || sources.campaignRuns.length > 0 || sources.dossiers.length > 0 || sources.scans.length > 0;
+
+  const autoPopulateFromInvestigation = (invId: string) => {
+    setSelectedInvestigation(invId);
+    const inv = sources.investigations.find((i: any) => i.investigationId === invId);
+    if (!inv) return;
+    if (!title) setTitle(inv.name || inv.investigationId);
+    if (!summary) setSummary(`${inv.targetType} investigation targeting ${inv.targetValue}. Phase: ${inv.phase}. Status: ${inv.status}.`);
+    if (!difficulty) {
+      const findingsCount = inv.findings?.length || 0;
+      setDifficulty(findingsCount > 10 ? "expert" : findingsCount > 5 ? "hard" : findingsCount > 2 ? "medium" : "beginner");
+    }
+    if (inv.toolsUsed?.length > 0) {
+      const matchedTools = TOOL_TAGS.filter(t => inv.toolsUsed.some((u: string) => u.toLowerCase().includes(t.toLowerCase())));
+      if (matchedTools.length > 0) setSelectedTools(prev => Array.from(new Set([...prev, ...matchedTools])));
+    }
+    if (inv.findings?.length > 0) {
+      const findingSummary = inv.findings.map((f: any) => `[${f.severity?.toUpperCase()}] ${f.title}`).join("\n");
+      if (!outcome) setOutcome(findingSummary);
+    }
+    const relatedScans = sources.scans.filter((s: any) => s.investigationId === invId);
+    if (relatedScans.length > 0) {
+      setSelectedScans(relatedScans.map((s: any) => s.id?.toString() || s.scanId));
+    }
+    setCategory("investigation");
+  };
+
+  const autoPopulateFromCampaign = (runId: string) => {
+    setSelectedCampaign(runId);
+    const cr = sources.campaignRuns.find((c: any) => c.runId === runId);
+    if (!cr) return;
+    if (!title) setTitle(`Campaign: ${cr.campaignId.replace(/-/g, " ").replace(/campaign /i, "")}`);
+    if (!summary) setSummary(`Campaign run ${cr.status}. Visited ${cr.visitedNodes?.length || 0} nodes. Progress: ${cr.variables?.progress || 0}%.`);
+    if (!difficulty) setDifficulty(cr.visitedNodes?.length > 6 ? "hard" : cr.visitedNodes?.length > 3 ? "medium" : "beginner");
+    setCategory("campaign");
+  };
+
+  const autoPopulateFromDossier = (dossierId: string) => {
+    setSelectedDossier(dossierId);
+    const d = sources.dossiers.find((ds: any) => ds.id?.toString() === dossierId);
+    if (!d) return;
+    if (!title) setTitle(d.title);
+    if (!summary) setSummary(d.summary || `Report: ${d.title}. Severity: ${d.severity}. Status: ${d.status}.`);
+    if (!difficulty) {
+      setDifficulty(d.severity === "critical" ? "expert" : d.severity === "high" ? "hard" : d.severity === "medium" ? "medium" : "beginner");
+    }
+    if (d.tools?.length > 0) {
+      const matchedTools = TOOL_TAGS.filter(t => d.tools.some((u: string) => u.toLowerCase().includes(t.toLowerCase())));
+      if (matchedTools.length > 0) setSelectedTools(prev => Array.from(new Set([...prev, ...matchedTools])));
+    }
+    if (d.findings?.length > 0) {
+      const findingSummary = d.findings.map((f: any) => typeof f === "string" ? f : (f.title || f.description || JSON.stringify(f))).join("\n");
+      if (!outcome) setOutcome(findingSummary);
+    }
+    if (d.iocs?.length > 0 && !outcome) {
+      setOutcome(prev => prev ? prev + "\n\nIOCs: " + d.iocs.join(", ") : "IOCs: " + d.iocs.join(", "));
+    }
+    setCategory("report");
+  };
+
+  const toggleViz = (v: VizType) => {
+    if (v === "none") {
+      setSelectedViz([]);
+      return;
+    }
+    setSelectedViz(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev.filter(x => x !== "none"), v]);
+  };
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -839,7 +958,10 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
         headers: { "Content-Type": "application/json", "x-session-token": sessionToken },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Failed to create entry");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Failed to create entry" }));
+        throw new Error(err.error || "Failed to create entry");
+      }
       return res.json();
     },
     onSuccess: () => {
@@ -847,19 +969,69 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
       toast({ title: "Portfolio entry created", description: "Your work has been saved to your portfolio" });
       onClose();
     },
-    onError: () => {
-      toast({ title: "Error", description: "Failed to create entry", variant: "destructive" });
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message || "Failed to create entry", variant: "destructive" });
     },
   });
 
   const handleSubmit = () => {
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      toast({ title: "Title required", description: "Please enter a title for your portfolio entry", variant: "destructive" });
+      return;
+    }
 
     const inv = sources.investigations.find((i: any) => i.investigationId === selectedInvestigation);
     const campaign = sources.campaignRuns.find((c: any) => c.runId === selectedCampaign);
-    const relatedScans = selectedInvestigation
-      ? sources.scans.filter((s: any) => s.investigationId === selectedInvestigation)
-      : [];
+    const dossier = sources.dossiers.find((d: any) => d.id?.toString() === selectedDossier);
+
+    const relatedScans = selectedScans.length > 0
+      ? sources.scans.filter((s: any) => selectedScans.includes(s.id?.toString() || s.scanId))
+      : selectedInvestigation
+        ? sources.scans.filter((s: any) => s.investigationId === selectedInvestigation)
+        : [];
+
+    const reportSnapshot = dossier ? {
+      findings: dossier.findings || [],
+      reportData: {
+        title: dossier.title,
+        summary: dossier.summary || "",
+        severity: dossier.severity,
+        status: dossier.status,
+        iocs: (dossier.iocs || []).join(", "),
+        bountyAmount: dossier.bountyAmount || "",
+        template: dossier.reportTemplate || "",
+      },
+      completionPercentage: dossier.status === "submitted" || dossier.status === "accepted" ? 100 : dossier.status === "draft" ? 50 : 75,
+    } : inv?.findings?.length > 0 ? {
+      findings: inv.findings,
+      reportData: { name: inv.name, target: inv.targetValue, phase: inv.phase },
+      completionPercentage: inv.status === "completed" ? 100 : inv.status === "active" ? 60 : 30,
+    } : null;
+
+    const agentSnapshot = inv?.compressedHistory ? {
+      messageCount: inv.compressedHistory.split("\n").length,
+      model: "nexus",
+      extractedIntel: {
+        targets: [inv.targetValue],
+        technologies: inv.toolsUsed || [],
+        potentialVulns: (inv.findings || []).filter((f: any) => f.severity === "high" || f.severity === "critical").map((f: any) => ({ type: f.title, severity: f.severity })),
+        recommendations: (inv.hypotheses || []).filter((h: any) => h.status === "confirmed").map((h: any) => h.text),
+      },
+    } : null;
+
+    const evidence: { type: string; label: string; content: string }[] = [];
+    if (dossier?.iocs?.length > 0) {
+      evidence.push({ type: "ioc", label: "Indicators of Compromise", content: dossier.iocs.join("\n") });
+    }
+    if (inv?.hypotheses?.length > 0) {
+      evidence.push({ type: "hypothesis", label: "Investigation Hypotheses", content: inv.hypotheses.map((h: any) => `[${h.status}] ${h.text}`).join("\n") });
+    }
+    if (dossier?.reportTemplate) {
+      evidence.push({ type: "report", label: "Report Template", content: dossier.reportTemplate.slice(0, 500) });
+    }
+    if (selectedViz.length > 0) {
+      evidence.push({ type: "viz_config", label: "Visualization Settings", content: selectedViz.join(",") });
+    }
 
     createMutation.mutate({
       title: title.trim(),
@@ -873,14 +1045,16 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
       campaignRunId: selectedCampaign || null,
       skills: selectedSkills,
       tools: selectedTools,
+      reportSnapshot,
+      agentSnapshot,
       scanSnapshot: relatedScans.map((s: any) => ({
-        scanId: s.scanId,
+        scanId: s.scanId || s.id?.toString(),
         target: s.target,
         scriptPath: s.scriptPath,
         results: s.results,
         completedAt: s.completedAt,
       })),
-      evidence: [],
+      evidence,
     });
   };
 
@@ -895,11 +1069,110 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
             <X className="w-4 h-4" />
           </Button>
         </div>
+        <CardDescription className="text-stone-600 text-xs">
+          Select a source below to auto-fill, or create a blank entry
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {hasSources && (
+          <div className="space-y-3 p-3 bg-amber-950/10 rounded-lg border border-amber-900/20">
+            <h4 className="text-[10px] text-amber-500 uppercase font-mono flex items-center gap-1">
+              <Layers className="w-3 h-3" /> Load From Your Work
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {sources.investigations.length > 0 && (
+                <div>
+                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                    <Crosshair className="w-2.5 h-2.5" /> Investigation ({sources.investigations.length})
+                  </label>
+                  <select
+                    value={selectedInvestigation}
+                    onChange={(e) => autoPopulateFromInvestigation(e.target.value)}
+                    className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+                    data-testid="portfolio-investigation-select"
+                  >
+                    <option value="">Select investigation...</option>
+                    {sources.investigations.map((inv: any) => (
+                      <option key={inv.investigationId} value={inv.investigationId}>
+                        {inv.name || inv.investigationId} — {inv.status} ({inv.findings?.length || 0} findings)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {sources.campaignRuns.length > 0 && (
+                <div>
+                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                    <Target className="w-2.5 h-2.5" /> Campaign ({sources.campaignRuns.length})
+                  </label>
+                  <select
+                    value={selectedCampaign}
+                    onChange={(e) => autoPopulateFromCampaign(e.target.value)}
+                    className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+                    data-testid="portfolio-campaign-select"
+                  >
+                    <option value="">Select campaign...</option>
+                    {sources.campaignRuns.map((cr: any) => (
+                      <option key={cr.runId} value={cr.runId}>
+                        {cr.campaignId.replace(/-/g, " ")} — {cr.status} ({cr.variables?.progress || 0}%)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {sources.dossiers.length > 0 && (
+                <div>
+                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                    <FileText className="w-2.5 h-2.5" /> Report / Dossier ({sources.dossiers.length})
+                  </label>
+                  <select
+                    value={selectedDossier}
+                    onChange={(e) => autoPopulateFromDossier(e.target.value)}
+                    className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+                    data-testid="portfolio-dossier-select"
+                  >
+                    <option value="">Select report...</option>
+                    {sources.dossiers.map((d: any) => (
+                      <option key={d.id} value={d.id.toString()}>
+                        {d.title} — {d.status} ({d.severity})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {sources.scans.length > 0 && (
+                <div>
+                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                    <Scan className="w-2.5 h-2.5" /> Scans ({sources.scans.length})
+                  </label>
+                  <div className="max-h-24 overflow-y-auto space-y-1 bg-stone-900/30 border border-stone-800 rounded-md p-2">
+                    {sources.scans.map((s: any) => {
+                      const scanKey = s.id?.toString() || s.scanId;
+                      return (
+                        <label key={scanKey} className="flex items-center gap-2 text-xs text-stone-400 cursor-pointer hover:text-stone-200">
+                          <input
+                            type="checkbox"
+                            checked={selectedScans.includes(scanKey)}
+                            onChange={() => setSelectedScans(prev => prev.includes(scanKey) ? prev.filter(x => x !== scanKey) : [...prev, scanKey])}
+                            className="rounded border-stone-700"
+                          />
+                          <span className="truncate">{s.target || "Unknown"} — {s.scriptPath || "scan"}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Title</label>
+            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Title *</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -948,43 +1221,33 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
           </div>
         </div>
 
-        {sources.investigations.length > 0 && (
-          <div>
-            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Link Investigation</label>
-            <select
-              value={selectedInvestigation}
-              onChange={(e) => setSelectedInvestigation(e.target.value)}
-              className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
-              data-testid="portfolio-investigation-select"
-            >
-              <option value="">None</option>
-              {sources.investigations.map((inv: any) => (
-                <option key={inv.investigationId} value={inv.investigationId}>
-                  {inv.title || inv.investigationId} — {inv.status}
-                </option>
-              ))}
-            </select>
+        <div>
+          <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+            <Palette className="w-2.5 h-2.5" /> Visualization Style
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {VIZ_OPTIONS.map((v) => (
+              <button
+                key={v.value}
+                onClick={() => toggleViz(v.value)}
+                className={`px-2.5 py-1 rounded text-[10px] border transition-colors ${
+                  (v.value === "none" && selectedViz.length === 0) || selectedViz.includes(v.value)
+                    ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
+                    : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+                }`}
+                title={v.desc}
+                data-testid={`viz-option-${v.value}`}
+              >
+                {v.value === "radar" && <BarChart3 className="w-2.5 h-2.5 inline mr-1" />}
+                {v.value === "severity" && <AlertTriangle className="w-2.5 h-2.5 inline mr-1" />}
+                {v.value === "timeline" && <TrendingUp className="w-2.5 h-2.5 inline mr-1" />}
+                {v.value === "donut" && <PieChart className="w-2.5 h-2.5 inline mr-1" />}
+                {v.label}
+              </button>
+            ))}
           </div>
-        )}
-
-        {sources.campaignRuns.length > 0 && (
-          <div>
-            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Link Campaign</label>
-            <select
-              value={selectedCampaign}
-              onChange={(e) => setSelectedCampaign(e.target.value)}
-              className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
-              data-testid="portfolio-campaign-select"
-            >
-              <option value="">None</option>
-              {sources.campaignRuns.map((cr: any) => (
-                <option key={cr.runId} value={cr.runId}>
-                  {cr.campaignId} — {cr.status} ({cr.score || 0} pts)
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+          <p className="text-[9px] text-stone-700 mt-1">Select which visualizations to show on this entry, or none for text-only</p>
+        </div>
 
         <div>
           <label className="text-[10px] text-stone-600 uppercase mb-1 block">Skills Demonstrated</label>
@@ -1086,7 +1349,7 @@ export default function PortfolioTab() {
   });
 
   const entries = portfolioData?.entries || [];
-  const sources = sourcesData?.sources || { investigations: [], campaignRuns: [], scans: [] };
+  const sources = sourcesData?.sources || { investigations: [], campaignRuns: [], scans: [], dossiers: [] };
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: number; updates: any }) => {

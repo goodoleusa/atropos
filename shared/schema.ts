@@ -1669,6 +1669,31 @@ export const insertPortfolioEntrySchema = createInsertSchema(portfolioEntries).o
 export type PortfolioEntry = typeof portfolioEntries.$inferSelect;
 export type InsertPortfolioEntry = z.infer<typeof insertPortfolioEntrySchema>;
 
+// Sitemap entries - editable interactive platform sitemap
+export const sitemapEntries = pgTable("sitemap_entries", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  path: text("path").notNull(),
+  icon: text("icon").notNull().default("Globe"),
+  description: text("description").notNull().default(""),
+  category: text("category").notNull().default("Core Platform"),
+  color: text("color").notNull().default("amber"),
+  pageLayout: text("page_layout").notNull().default("card"),
+  parentId: integer("parent_id"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isCustom: boolean("is_custom").notNull().default(true),
+  isPublished: boolean("is_published").notNull().default(false),
+  templateId: text("template_id"),
+  arcTemplateId: text("arc_template_id"),
+  metadata: jsonb("metadata").$type<Record<string, any>>().notNull().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertSitemapEntrySchema = createInsertSchema(sitemapEntries).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertSitemapEntry = z.infer<typeof insertSitemapEntrySchema>;
+export type SitemapEntry = typeof sitemapEntries.$inferSelect;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
