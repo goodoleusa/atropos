@@ -17,7 +17,7 @@ import { InteractiveHover } from './InteractiveHover';
 const NAV_STYLES = {
   amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
   teal: { active: 'bg-teal-900/30 text-teal-400', icon: 'text-teal-500' },
-  purple: { active: 'bg-purple-900/30 text-purple-400', icon: 'text-purple-500' },
+  purple: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
 } as const;
 
 export default function QuickNav() {
@@ -66,7 +66,7 @@ export default function QuickNav() {
     
     { path: '/admin', icon: Settings, label: 'Admin', color: 'amber' as const },
     { path: '/debug', icon: Bug, label: 'Debug', color: 'amber' as const },
-    { path: '/void', icon: Sparkles, label: 'Void', color: 'purple' as const },
+    { path: '/void', icon: Sparkles, label: 'Void', color: 'amber' as const },
     { path: '/archive', icon: FileText, label: 'Archive', color: 'amber' as const },
     { path: '/suggestions', icon: Sparkles, label: 'Suggestions', color: 'amber' as const },
   ];
@@ -126,7 +126,7 @@ export default function QuickNav() {
               <p className="text-xs text-amber-400 font-bold truncate max-w-[150px]">{currentSession.name}</p>
               <div className="flex gap-2 mt-1 text-[10px]">
                 <span className="text-teal-400">{targets.length} targets</span>
-                <span className="text-purple-400">{pendingFindings.length} findings</span>
+                <span className="text-amber-400">{pendingFindings.length} findings</span>
               </div>
             </div>
           )}
@@ -159,7 +159,7 @@ export default function QuickNav() {
                     {item.label}
                   </span>
                   {(item as any).badge && (
-                    <Badge className="ml-auto bg-purple-700 text-white text-[10px] px-1.5 relative z-10">
+                    <Badge className="ml-auto bg-amber-700 text-white text-[10px] px-1.5 relative z-10">
                       {(item as any).badge}
                     </Badge>
                   )}
