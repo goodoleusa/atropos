@@ -625,21 +625,14 @@ ${getFullPromptModifier()}
 }
 
 export default function PromptBuilder() {
+  useEffect(() => {
+    window.location.replace('/investigate?tab=prompt');
+  }, []);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <Link href="/">
-            <Button variant="ghost" className="text-amber-600 hover:text-amber-500" data-testid="back-button">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back
-            </Button>
-          </Link>
-          <h1 className="text-xl md:text-2xl font-orbitron text-amber-500">
-            <Brain className="inline w-6 h-6 mr-2" />
-            Agent Prompt Builder
-          </h1>
-        </div>
-        <PromptBuilderContent />
+    <div className="min-h-screen bg-[#0a0500] flex items-center justify-center text-stone-500">
+      <div className="text-center space-y-2">
+        <Brain className="w-8 h-8 mx-auto text-amber-500 animate-pulse" />
+        <p className="text-sm">Redirecting to Investigation Hub...</p>
       </div>
     </div>
   );

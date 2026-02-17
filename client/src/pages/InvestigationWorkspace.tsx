@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,15 @@ import { useLearningStore } from '@/stores/useLearningStore';
 import { useReportContext } from '@/hooks/useReportContext';
 import { LEARNING_STYLES, LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS } from '@/config/learningConfig';
 
+const VALID_TABS = ['chat', 'scanner', 'spiderfoot', 'ai-lab', 'prompt', 'learning'];
+
 export default function InvestigationWorkspace() {
-  const [activeTab, setActiveTab] = useState('chat');
+  const initialTab = (() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    return tab && VALID_TABS.includes(tab) ? tab : 'chat';
+  })();
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [atroposPayload, setAtroposPayload] = useState<string | undefined>(undefined);
   const [showOutputs, setShowOutputs] = useState(false);

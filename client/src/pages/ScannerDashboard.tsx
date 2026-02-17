@@ -1599,17 +1599,14 @@ export function ScannerContent({ injectedTargets }: ScannerContentProps = {}) {
 }
 
 export default function ScannerDashboard() {
+  useEffect(() => {
+    window.location.replace('/investigate?tab=scanner');
+  }, []);
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200" data-testid="scanner-dashboard">
-      <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <div className="flex items-center gap-3">
-          <Radar className="w-7 h-7 text-amber-400" />
-          <div>
-            <h1 className="text-2xl font-bold text-amber-400 tracking-tight">Atropos Scanner</h1>
-            <p className="text-sm text-stone-500">Reconnaissance · Vulnerability Analysis · Threat Intelligence</p>
-          </div>
-        </div>
-        <ScannerContent />
+    <div className="min-h-screen bg-stone-950 flex items-center justify-center text-stone-500">
+      <div className="text-center space-y-2">
+        <Radar className="w-8 h-8 mx-auto text-amber-500 animate-pulse" />
+        <p className="text-sm">Redirecting to Investigation Hub...</p>
       </div>
     </div>
   );
