@@ -215,57 +215,63 @@ export default function QuickNav() {
       )}
 
       <InteractiveHover>
-        <motion.div
-          className="relative"
-          animate={expanded ? {} : {
-            boxShadow: [
-              '0 0 8px 1px rgba(217,119,6,0.3), 0 0 20px 2px rgba(217,119,6,0.1)',
-              '0 0 12px 3px rgba(245,158,11,0.5), 0 0 30px 4px rgba(217,119,6,0.2)',
-              '0 0 8px 1px rgba(217,119,6,0.3), 0 0 20px 2px rgba(217,119,6,0.1)',
-            ],
-          }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ borderRadius: '9999px' }}
-        >
+        <div className="relative w-16 h-16 flex items-center justify-center">
+          {!expanded && (
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'conic-gradient(from 0deg, transparent 0%, rgba(217,119,6,0.6) 10%, rgba(245,158,11,0.9) 20%, rgba(251,191,36,0.5) 30%, transparent 45%, rgba(180,83,9,0.5) 60%, rgba(217,119,6,0.8) 75%, rgba(245,158,11,0.4) 90%, transparent 100%)',
+                filter: 'blur(1px)',
+              }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+            />
+          )}
+          {!expanded && (
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              animate={{
+                boxShadow: [
+                  '0 0 10px 2px rgba(217,119,6,0.4), 0 0 25px 5px rgba(217,119,6,0.15)',
+                  '0 0 18px 5px rgba(245,158,11,0.6), 0 0 40px 8px rgba(217,119,6,0.25)',
+                  '0 0 10px 2px rgba(217,119,6,0.4), 0 0 25px 5px rgba(217,119,6,0.15)',
+                ],
+              }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
           <Button
             onClick={handleToggle}
-            className={`rounded-full w-14 h-14 shadow-lg transition-all duration-300 border-0 relative overflow-hidden ${
+            className={`rounded-full w-14 h-14 transition-all duration-300 border-0 relative z-10 ${
               expanded 
-                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 ring-1 ring-amber-800/60' 
-                : 'bg-stone-950 hover:bg-stone-900 ring-1 ring-amber-700/50'
+                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 shadow-lg' 
+                : 'bg-stone-950 hover:bg-stone-900 shadow-[0_0_0_2px_rgba(217,119,6,0.5)]'
             }`}
             data-testid="quick-nav-toggle"
           >
-            {!expanded && (
-              <motion.div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: 'conic-gradient(from 0deg, transparent 0%, rgba(217,119,6,0.4) 15%, rgba(245,158,11,0.6) 25%, rgba(251,191,36,0.3) 35%, transparent 50%, rgba(180,83,9,0.3) 65%, rgba(217,119,6,0.5) 80%, transparent 100%)',
-                }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-              />
-            )}
-            <div className="absolute inset-[2px] rounded-full bg-stone-950 flex items-center justify-center">
+            <div className="flex items-center justify-center w-full h-full">
               {expanded ? (
                 <ChevronDown className="w-6 h-6 text-amber-500" />
               ) : (
                 <motion.div
                   className="flex flex-col items-center"
-                  animate={{ filter: ['brightness(1)', 'brightness(1.3)', 'brightness(1)'] }}
+                  animate={{ 
+                    filter: ['brightness(1)', 'brightness(1.4)', 'brightness(1)'],
+                    scale: [1, 1.05, 1],
+                  }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <Server className="w-6 h-6 text-amber-500 drop-shadow-[0_0_4px_rgba(217,119,6,0.6)]" />
+                  <Server className="w-6 h-6 text-amber-500 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]" />
                 </motion.div>
               )}
             </div>
             {!expanded && pendingFindings.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-600 rounded-full text-[10px] text-black font-bold flex items-center justify-center border-2 border-stone-950 z-10">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-600 rounded-full text-[10px] text-black font-bold flex items-center justify-center border-2 border-stone-950 z-20">
                 {pendingFindings.length}
               </span>
             )}
           </Button>
-        </motion.div>
+        </div>
       </InteractiveHover>
     </div>
   );
