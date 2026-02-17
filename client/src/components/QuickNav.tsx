@@ -215,55 +215,67 @@ export default function QuickNav() {
       )}
 
       <InteractiveHover>
-        <div className="relative w-16 h-16 flex items-center justify-center">
+        <div className="relative w-20 h-20 flex items-center justify-center">
           {!expanded && (
             <motion.div
               className="absolute inset-0 rounded-full"
               style={{
-                background: 'conic-gradient(from 0deg, transparent 0%, rgba(217,119,6,0.6) 10%, rgba(245,158,11,0.9) 20%, rgba(251,191,36,0.5) 30%, transparent 45%, rgba(180,83,9,0.5) 60%, rgba(217,119,6,0.8) 75%, rgba(245,158,11,0.4) 90%, transparent 100%)',
-                filter: 'blur(1px)',
+                background: 'conic-gradient(from 0deg, #b45309 0%, #f59e0b 20%, #fbbf24 30%, #d97706 45%, #78350f 60%, #f59e0b 75%, #b45309 100%)',
+                filter: 'blur(4px)',
               }}
               animate={{ rotate: 360 }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
             />
           )}
           {!expanded && (
             <motion.div
-              className="absolute inset-0 rounded-full"
+              className="absolute inset-2 rounded-full border-2 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.8)]"
               animate={{
-                boxShadow: [
-                  '0 0 10px 2px rgba(217,119,6,0.4), 0 0 25px 5px rgba(217,119,6,0.15)',
-                  '0 0 18px 5px rgba(245,158,11,0.6), 0 0 40px 8px rgba(217,119,6,0.25)',
-                  '0 0 10px 2px rgba(217,119,6,0.4), 0 0 25px 5px rgba(217,119,6,0.15)',
-                ],
+                scale: [1, 1.1, 1],
+                opacity: [0.5, 0.8, 0.5],
               }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             />
           )}
           <Button
             onClick={handleToggle}
-            className={`rounded-full w-14 h-14 transition-all duration-300 border-0 relative z-10 ${
+            className={`rounded-full w-14 h-14 transition-all duration-500 border-0 relative z-10 ${
               expanded 
-                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 shadow-lg' 
-                : 'bg-stone-950 hover:bg-stone-900 shadow-[0_0_0_2px_rgba(217,119,6,0.5)]'
+                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 shadow-2xl' 
+                : 'bg-stone-950 hover:bg-stone-900 ring-2 ring-amber-600/50 shadow-[0_0_30px_rgba(180,83,9,0.5)]'
             }`}
             data-testid="quick-nav-toggle"
           >
-            <div className="flex items-center justify-center w-full h-full">
-              {expanded ? (
-                <ChevronDown className="w-6 h-6 text-amber-500" />
-              ) : (
+            <div className="flex items-center justify-center w-full h-full relative overflow-hidden rounded-full">
+              {!expanded && (
                 <motion.div
-                  className="flex flex-col items-center"
-                  animate={{ 
-                    filter: ['brightness(1)', 'brightness(1.4)', 'brightness(1)'],
-                    scale: [1, 1.05, 1],
+                  className="absolute inset-0"
+                  style={{
+                    background: 'radial-gradient(circle at center, #fbbf24 0%, #d97706 50%, transparent 100%)',
                   }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <Server className="w-6 h-6 text-amber-500 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]" />
-                </motion.div>
+                  animate={{ 
+                    opacity: [0.1, 0.3, 0.1],
+                    scale: [0.8, 1.2, 0.8]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                />
               )}
+              <div className="relative z-20 flex items-center justify-center">
+                {expanded ? (
+                  <ChevronDown className="w-6 h-6 text-amber-500" />
+                ) : (
+                  <motion.div
+                    className="flex flex-col items-center"
+                    animate={{ 
+                      filter: ['brightness(1) contrast(1)', 'brightness(1.8) contrast(1.2)', 'brightness(1) contrast(1)'],
+                      scale: [1, 1.15, 1],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    <Server className="w-6 h-6 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,1)]" />
+                  </motion.div>
+                )}
+              </div>
             </div>
             {!expanded && pendingFindings.length > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-600 rounded-full text-[10px] text-black font-bold flex items-center justify-center border-2 border-stone-950 z-20">
