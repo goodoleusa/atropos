@@ -3,8 +3,25 @@ import { db } from "../db";
 import { missionFindings, backgroundTasks, insertMissionFindingSchema, insertBackgroundTaskSchema } from "@shared/schema";
 import { eq, desc, and, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
+import { validateSessionToken, sanitizeInput, rateLimit } from "../security";
 
 const router = Router();
+
+const hardenedFindingSchema = insertMissionFindingSchema.extend({
+  title: z.string().max(300),
+  content: z.string().max(50000),
+  source: z.string().max(100),
+  sourceAgent: z.string().max(100).optional().nullable(),
+  type: z.string().max(50),
+  severity: z.string().max(20).optional().nullable(),
+  status: z.string().max(20),
+});
+
+const hardenedTaskSchema = insertBackgroundTaskSchema.extend({
+  taskName: z.string().max(300),
+  taskType: z.string().max(100),
+  error: z.string().max(5000).optional().nullable(),
+});
 
 router.get("/api/mission/findings", async (req: Request, res: Response) => {
   try {
@@ -31,35 +48,74 @@ router.get("/api/mission/findings", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/api/mission/findings", async (req: Request, res: Response) => {
+router.post("/api/mission/findings", rateLimit(30, 60000), async (req: Request, res: Response) => {
   try {
-    const validation = insertMissionFindingSchema.safeParse(req.body);
+    const { sessionToken } = req.body;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      return res.status(400).json({ error: "Valid sessionToken is required" });
+    }
+
+    const validation = hardenedFindingSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({ error: "Validation failed", details: validation.error.issues });
     }
-    const [finding] = await db.insert(missionFindings).values(validation.data).returning();
+
+    const data = {
+      ...validation.data,
+      title: sanitizeInput(validation.data.title, 300),
+      content: sanitizeInput(validation.data.content, 50000),
+    };
+
+    const [finding] = await db.insert(missionFindings).values(data).returning();
     res.json(finding);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.post("/api/mission/findings/batch", async (req: Request, res: Response) => {
+router.post("/api/mission/findings/batch", rateLimit(5, 60000), async (req: Request, res: Response) => {
   try {
-    const items = z.array(insertMissionFindingSchema).safeParse(req.body.findings);
+    const { sessionToken } = req.body;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      return res.status(400).json({ error: "Valid sessionToken is required" });
+    }
+
+    const items = z.array(hardenedFindingSchema).max(20).safeParse(req.body.findings);
     if (!items.success) {
       return res.status(400).json({ error: "Validation failed", details: items.error.issues });
     }
-    const results = await db.insert(missionFindings).values(items.data).returning();
+
+    const sanitizedItems = items.data.map(item => ({
+      ...item,
+      title: sanitizeInput(item.title, 300),
+      content: sanitizeInput(item.content, 50000),
+    }));
+
+    const results = await db.insert(missionFindings).values(sanitizedItems).returning();
     res.json(results);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.patch("/api/mission/findings/:id", async (req: Request, res: Response) => {
+router.patch("/api/mission/findings/:id", rateLimit(60, 60000), async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id as string);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: "Invalid id parameter" });
+    }
+
+    const sessionToken = req.body.sessionToken || req.query.sessionToken as string;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      return res.status(400).json({ error: "Valid sessionToken is required" });
+    }
+
+    const [existing] = await db.select().from(missionFindings).where(eq(missionFindings.id, id));
+    if (!existing) return res.status(404).json({ error: "Finding not found" });
+    if (existing.sessionToken !== sessionToken) {
+      return res.status(400).json({ error: "Session token mismatch" });
+    }
+
     const { status, sentTo } = req.body;
     const updates: any = {};
     if (status) updates.status = status;
@@ -73,9 +129,24 @@ router.patch("/api/mission/findings/:id", async (req: Request, res: Response) =>
   }
 });
 
-router.delete("/api/mission/findings/:id", async (req: Request, res: Response) => {
+router.delete("/api/mission/findings/:id", rateLimit(10, 60000), async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id as string);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: "Invalid id parameter" });
+    }
+
+    const sessionToken = req.body.sessionToken || req.query.sessionToken as string;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      return res.status(400).json({ error: "Valid sessionToken is required" });
+    }
+
+    const [existing] = await db.select().from(missionFindings).where(eq(missionFindings.id, id));
+    if (!existing) return res.status(404).json({ error: "Finding not found" });
+    if (existing.sessionToken !== sessionToken) {
+      return res.status(400).json({ error: "Session token mismatch" });
+    }
+
     await db.delete(missionFindings).where(eq(missionFindings.id, id));
     res.json({ success: true });
   } catch (error: any) {
@@ -122,9 +193,14 @@ router.get("/api/mission/tasks", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/api/mission/tasks", async (req: Request, res: Response) => {
+router.post("/api/mission/tasks", rateLimit(30, 60000), async (req: Request, res: Response) => {
   try {
-    const validation = insertBackgroundTaskSchema.safeParse(req.body);
+    const { sessionToken } = req.body;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      return res.status(400).json({ error: "Valid sessionToken is required" });
+    }
+
+    const validation = hardenedTaskSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({ error: "Validation failed", details: validation.error.issues });
     }
@@ -135,9 +211,24 @@ router.post("/api/mission/tasks", async (req: Request, res: Response) => {
   }
 });
 
-router.patch("/api/mission/tasks/:id", async (req: Request, res: Response) => {
+router.patch("/api/mission/tasks/:id", rateLimit(60, 60000), async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id as string);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: "Invalid id parameter" });
+    }
+
+    const sessionToken = req.body.sessionToken || req.query.sessionToken as string;
+    if (!sessionToken || !validateSessionToken(sessionToken)) {
+      return res.status(400).json({ error: "Valid sessionToken is required" });
+    }
+
+    const [existing] = await db.select().from(backgroundTasks).where(eq(backgroundTasks.id, id));
+    if (!existing) return res.status(404).json({ error: "Task not found" });
+    if (existing.sessionToken !== sessionToken) {
+      return res.status(400).json({ error: "Session token mismatch" });
+    }
+
     const { status, progress, result, error: taskError } = req.body;
     const updates: any = {};
     if (status) updates.status = status;

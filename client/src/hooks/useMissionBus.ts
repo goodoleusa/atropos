@@ -66,7 +66,9 @@ export function useMissionFindings(filters?: { source?: string; type?: string; s
   return useQuery<MissionFinding[]>({
     queryKey: ['/api/mission/findings', qs],
     queryFn: () => fetch(`/api/mission/findings${qs ? `?${qs}` : ''}`).then(r => r.json()),
-    refetchInterval: 10000,
+    refetchInterval: 20000,
+    refetchOnWindowFocus: false,
+    staleTime: 5000,
   });
 }
 
@@ -74,7 +76,9 @@ export function useMissionActivity(limit = 30) {
   return useQuery<ActivityItem[]>({
     queryKey: ['/api/mission/activity', limit],
     queryFn: () => fetch(`/api/mission/activity?limit=${limit}`).then(r => r.json()),
-    refetchInterval: 8000,
+    refetchInterval: 20000,
+    refetchOnWindowFocus: false,
+    staleTime: 5000,
   });
 }
 
@@ -82,7 +86,9 @@ export function useMissionStats() {
   return useQuery<FindingStats>({
     queryKey: ['/api/mission/findings/stats'],
     queryFn: () => fetch('/api/mission/findings/stats').then(r => r.json()),
-    refetchInterval: 15000,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: false,
+    staleTime: 5000,
   });
 }
 
@@ -91,7 +97,9 @@ export function useBackgroundTasks(status?: string) {
   return useQuery<BackgroundTask[]>({
     queryKey: ['/api/mission/tasks', status],
     queryFn: () => fetch(`/api/mission/tasks${qs}`).then(r => r.json()),
-    refetchInterval: 5000,
+    refetchInterval: 15000,
+    refetchOnWindowFocus: false,
+    staleTime: 5000,
   });
 }
 

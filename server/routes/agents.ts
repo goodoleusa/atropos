@@ -17,7 +17,7 @@ const router = Router();
 const AnalyzeRequestSchema = z.object({
   scanData: z.unknown().refine(val => val !== undefined && val !== null, {
     message: "scanData is required"
-  }),
+  }).refine(val => { if (typeof val === 'string') return val.length <= 100000; return JSON.stringify(val).length <= 100000; }, { message: "scanData too large (max 100KB)" }),
   scanId: z.string().min(1, "scanId is required"),
   category: z.enum(["vulnerability", "vuln", "osint", "intel", "secret_detection", "network", "general"]).default("general"),
   sessionToken: z.string().optional(),
