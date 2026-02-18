@@ -13,6 +13,15 @@ The platform features a molten bronze/industrial aesthetic, emphasizes hands-on 
 
 ## Latest Updates (Feb 2026)
 
+### AdminDashboard Modularization (Feb 18 2026)
+- **Reduced from 2411 → 385 lines**: Parent file now contains only layout, auth gate, sidebar navigation, and content routing
+- **14 extracted panel components** in `client/src/pages/admin/`:
+  - 9 standalone panels: `ActivityLogPanel`, `QuickAccessSection`, `SitemapPanel`, `SessionsPanel`, `BehaviorAnalyticsPanel`, `AgentConfigPanel`, `CampaignDesignerPanel`, `ModmailPanel`, `AtroposScannerPanel`
+  - 5 bundled in `AdminUtilityPanels.tsx`: `MessagesPanel`, `TerminalPanel`, `ConfigPanel`, `CampaignsPanel`, `GraphPanel`
+- **Shared nav config**: `client/src/config/adminNav.ts` exports `NAV_GROUPS`, `NAV_ICONS`, `GROUP_COLORS`, `ACTIVE_COLORS`, `Clue`/`Quest` types
+- **Templates manifest updated**: All 21 admin panel files registered in `templates/manifest.json` base files
+- **Pre-existing admin panels** (not touched this round): `AgentConfigSection`, `AgentModulesSection`, `CollectiblesSection`, `CurriculumSection`, `EffectsPlaygroundSection`, `FeedbackSection`, `GameplaySection`, `QuestsSection`, `QuickPushSection`
+
 ### Admin Authentication System
 - **Replit Auth Integration**: OpenID Connect login via Replit (Google, GitHub, email) for admin access
 - **Admin Gate**: `/admin` dashboard requires sign-in; unauthenticated users see login screen
