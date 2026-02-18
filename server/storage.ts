@@ -272,6 +272,8 @@ export interface IStorage {
   createStateCapsule(capsule: InsertStateCapsule): Promise<StateCapsule>;
   getStateCapsulesBySession(sessionToken: string): Promise<StateCapsule[]>;
   getLatestCapsule(sessionToken: string, investigationId?: string): Promise<StateCapsule | undefined>;
+  getAllStateCapsules(limit?: number): Promise<StateCapsule[]>;
+  getStateCapsulesByConversation(conversationId: number): Promise<StateCapsule[]>;
   
   // Abuse Detection
   detectAbuseCluster(timeWindowMinutes?: number, threshold?: number): Promise<{
@@ -1340,6 +1342,22 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(stateCapsules.createdAt))
       .limit(1);
     return latest;
+  }
+
+  async getAllStateCapsules(limit = 50): Promise<StateCapsule[]> {
+    return await db
+      .select()
+      .from(stateCapsules)
+      .orderBy(desc(stateCapsules.createdAt))
+      .limit(limit);
+  }
+
+  async getStateCapsulesByConversation(conversationId: number): Promise<StateCapsule[]> {
+    return await db
+      .select()
+      .from(stateCapsules)
+      .where(eq(stateCapsules.conversationId, conversationId))
+      .orderBy(desc(stateCapsules.createdAt));
   }
 
   // Abuse Detection - clusters suspicious activity across sessions

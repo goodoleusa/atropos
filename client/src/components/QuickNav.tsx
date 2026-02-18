@@ -10,7 +10,6 @@ import { useReportContext } from '@/hooks/useReportContext';
 import { QrCode, Trophy, Server } from 'lucide-react';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
 import { Switch } from '@/components/ui/switch';
-import { InteractiveHover } from './InteractiveHover';
 import { USER_NAV, ADMIN_NAV, type NavItem } from '@/config/navConfig';
 
 const NAV_STYLES = {
@@ -218,52 +217,50 @@ export default function QuickNav() {
         </div>
       )}
 
-      <InteractiveHover>
-        <div className="relative w-16 h-16 flex items-center justify-center">
-          {!expanded && (
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              style={{
-                background: 'radial-gradient(circle at center, rgba(245, 158, 11, 0.15) 0%, transparent 70%)',
-                filter: 'blur(8px)',
-              }}
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.6, 0.3]
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-            />
-          )}
-          <Button
-            onClick={handleToggle}
-            className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/30 relative z-10 ${
-              expanded
-                ? 'bg-stone-900 hover:bg-stone-800 rotate-180 shadow-xl'
-                : 'bg-stone-950 hover:bg-stone-900 shadow-[0_0_15px_rgba(180,83,9,0.2)]'
-            }`}
-            data-testid="quick-nav-toggle"
-          >
-            <div className="flex items-center justify-center w-full h-full relative overflow-hidden rounded-full">
-              <div className="relative z-20 flex items-center justify-center">
-                <motion.div
-                  className="flex flex-col items-center"
-                  animate={expanded ? { rotate: 0 } : {
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <Server className="w-5 h-5 text-amber-500/80" />
-                </motion.div>
-              </div>
+      <div className="relative w-16 h-16 flex items-center justify-center">
+        {!expanded && (
+          <motion.div
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle at center, rgba(245, 158, 11, 0.15) 0%, transparent 70%)',
+              filter: 'blur(8px)',
+            }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+          />
+        )}
+        <Button
+          onClick={handleToggle}
+          className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/30 relative z-10 hover:bg-stone-900 ${
+            expanded
+              ? 'bg-stone-900 rotate-180 shadow-xl'
+              : 'bg-stone-950 shadow-[0_0_15px_rgba(180,83,9,0.2)]'
+          }`}
+          data-testid="quick-nav-toggle"
+        >
+          <div className="flex items-center justify-center w-full h-full relative overflow-hidden rounded-full">
+            <div className="relative z-20 flex items-center justify-center">
+              <motion.div
+                className="flex flex-col items-center"
+                animate={expanded ? { rotate: 0 } : {
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Server className="w-5 h-5 text-amber-500/80" />
+              </motion.div>
             </div>
-          </Button>
-          {!expanded && pendingFindings.length > 0 && (
-            <div className="absolute top-1 right-1 w-4 h-4 bg-amber-600 rounded-full text-[9px] text-black font-bold flex items-center justify-center border border-black z-[10001] pointer-events-none">
-              {pendingFindings.length}
-            </div>
-          )}
-        </div>
-      </InteractiveHover>
+          </div>
+        </Button>
+        {!expanded && pendingFindings.length > 0 && (
+          <div className="absolute top-1 right-1 w-4 h-4 bg-amber-600 rounded-full text-[9px] text-black font-bold flex items-center justify-center border border-black z-[10001] pointer-events-none">
+            {pendingFindings.length}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

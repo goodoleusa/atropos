@@ -20,6 +20,7 @@ import {
   Users,
   Layers,
   Bug,
+  Brain,
 } from "lucide-react";
 
 export interface Clue {
@@ -63,6 +64,7 @@ export const NAV_GROUPS = [
   { label: "AI & Agents", color: "cyan", items: [
     { id: "agent", label: "Agent Chat", icon: "Bot" },
     { id: "agentconfig", label: "Agent Config", icon: "Settings" },
+    { id: "contextmgr", label: "Context Manager", icon: "Brain" },
     { id: "atropos", label: "Atropos Scanner", icon: "ShieldAlert" },
   ]},
   { label: "System", color: "purple", items: [
@@ -88,7 +90,7 @@ export const NAV_GROUPS = [
 export const NAV_ICONS: Record<string, any> = {
   Activity, Server, Eye, Database, Trophy, MessageSquare, Map, Bot, Settings,
   Target, Rocket, ShieldAlert, Terminal, Sparkles, Zap, Globe, BookOpen,
-  Megaphone, Users, Layers, Bug,
+  Megaphone, Users, Layers, Bug, Brain,
 };
 
 export const GROUP_COLORS: Record<string, string> = {
