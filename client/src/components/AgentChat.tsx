@@ -24,51 +24,68 @@ import { useLearningStore } from '@/stores/useLearningStore';
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
 const MODELS = {
-  // Premium paid models
-  paid: [
-    { id: 'openai/gpt-4o', short: 'gpt4o', name: 'GPT-4o', desc: 'OpenAI flagship' },
-    { id: 'openai/gpt-4o-mini', short: 'gpt4m', name: 'GPT-4o Mini', desc: 'Fast & cheap' },
-    { id: 'anthropic/claude-sonnet-4', short: 'claude', name: 'Claude Sonnet 4', desc: 'Anthropic best' },
+  premium: [
+    { id: 'openai/gpt-4o', short: 'gpt4o', name: 'GPT-4o', desc: 'OpenAI flagship', tier: 'premium' },
+    { id: 'anthropic/claude-sonnet-4', short: 'claude', name: 'Claude Sonnet 4', desc: 'Anthropic best', tier: 'premium' },
+    { id: 'google/gemini-2.5-pro-preview', short: 'gpro', name: 'Gemini 2.5 Pro', desc: 'Google reasoning', tier: 'premium' },
   ],
-  // Kimi models (user favorite)
-  kimi: [
-    { id: 'moonshotai/kimi-k2.5', short: 'kimi', name: 'Kimi K2.5', desc: 'Latest Moonshot' },
-    { id: 'moonshotai/kimi-k2-thinking', short: 'kimiT', name: 'Kimi K2 Thinking', desc: 'With reasoning' },
+  budget: [
+    { id: 'openai/gpt-4o-mini', short: 'gpt4m', name: 'GPT-4o Mini', desc: 'Fast & cheap', tier: 'budget' },
+    { id: 'moonshotai/kimi-k2.5', short: 'kimi', name: 'Kimi K2.5', desc: '262K ctx, multimodal', tier: 'budget' },
+    { id: 'moonshotai/kimi-k2-thinking', short: 'kimiT', name: 'Kimi K2 Thinking', desc: 'Deep reasoning', tier: 'budget' },
+    { id: 'mistralai/devstral-2512', short: 'devs', name: 'Devstral 2', desc: '262K agentic coder', tier: 'budget' },
+    { id: 'mistralai/mixtral-8x22b-instruct', short: 'mix22', name: 'Mixtral 8x22B', desc: '141B MoE powerhouse', tier: 'budget' },
+    { id: 'nvidia/nemotron-3-nano-30b-a3b', short: 'nemo3', name: 'Nemotron 3 Nano', desc: '256K ctx, MoE', tier: 'budget' },
+    { id: 'qwen/qwen-2.5-72b-instruct', short: 'qw72', name: 'Qwen 2.5 72B', desc: 'Alibaba flagship', tier: 'budget' },
+    { id: 'deepseek/deepseek-chat', short: 'dsv3', name: 'DeepSeek V3', desc: 'Frontier value king', tier: 'budget' },
   ],
-  // Nemotron models (user favorite)  
-  nemotron: [
-    { id: 'nvidia/nemotron-4-340b-instruct:free', short: 'nemo', name: 'Nemotron-4 340B', desc: 'NVIDIA powerhouse' },
-    { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', short: 'nemo70', name: 'Llama Nemotron 70B', desc: 'Optimized 70B' },
+  free_reasoning: [
+    { id: 'deepseek/deepseek-r1:free', short: 'dsr1', name: 'DeepSeek R1', desc: 'Chain-of-thought reasoning', tier: 'free' },
+    { id: 'moonshotai/kimi-k2-thinking:free', short: 'kimiTF', name: 'Kimi K2 Thinking', desc: 'Reasoning + 256K', tier: 'free' },
+    { id: 'qwen/qwq-32b:free', short: 'qwq', name: 'QwQ 32B', desc: 'Qwen reasoning', tier: 'free' },
   ],
-  // Coding specialists
-  code: [
-    { id: 'mistralai/codestral-2405:free', short: 'code', name: 'Codestral', desc: 'Mistral coder' },
-    { id: 'qwen/qwen-2.5-coder-32b-instruct:free', short: 'qwen', name: 'Qwen 2.5 Coder', desc: 'State of the art coder' },
-    { id: 'deepseek/deepseek-coder:free', short: 'ds', name: 'DeepSeek Coder', desc: 'Powerful open coder' },
+  free_general: [
+    { id: 'meta-llama/llama-3.3-70b-instruct:free', short: 'llama', name: 'Llama 3.3 70B', desc: 'Meta flagship', tier: 'free' },
+    { id: 'qwen/qwen-2.5-72b-instruct:free', short: 'qw72f', name: 'Qwen 2.5 72B', desc: 'Alibaba general', tier: 'free' },
+    { id: 'google/gemini-2.0-flash-exp:free', short: 'gem', name: 'Gemini 2.0 Flash', desc: '1M context window', tier: 'free' },
+    { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', short: 'nemo70', name: 'Nemotron 70B', desc: 'NVIDIA optimized', tier: 'free' },
+    { id: 'nvidia/nemotron-3-nano-30b-a3b:free', short: 'nemo3f', name: 'Nemotron 3 Nano', desc: '256K MoE free', tier: 'free' },
+    { id: 'mistralai/mistral-small-3.1-24b-instruct:free', short: 'misS', name: 'Mistral Small 3.1', desc: '24B fast & smart', tier: 'free' },
   ],
-  // General purpose free
-  general: [
-    { id: 'meta-llama/llama-3.3-70b-instruct:free', short: 'llama', name: 'Llama 3.3 70B', desc: 'Meta flagship' },
-    { id: 'google/gemini-2.0-flash-exp:free', short: 'gem', name: 'Gemini 2.0 Flash', desc: '1M context' },
-    { id: 'deepseek/deepseek-r1:free', short: 'dsr1', name: 'DeepSeek R1', desc: 'Reasoning specialist' },
+  free_code: [
+    { id: 'mistralai/devstral-2512:free', short: 'devsF', name: 'Devstral 2', desc: '262K agentic coder', tier: 'free' },
+    { id: 'mistralai/codestral-2405:free', short: 'code', name: 'Codestral', desc: 'Mistral code gen', tier: 'free' },
+    { id: 'qwen/qwen-2.5-coder-32b-instruct:free', short: 'qwC', name: 'Qwen 2.5 Coder', desc: 'SOTA code 32B', tier: 'free' },
+    { id: 'deepseek/deepseek-coder:free', short: 'dsC', name: 'DeepSeek Coder', desc: 'Code specialist', tier: 'free' },
+  ],
+  free_creative: [
+    { id: 'google/gemma-2-27b-it:free', short: 'gemma', name: 'Gemma 2 27B', desc: 'Google creative', tier: 'free' },
+    { id: 'mistralai/mistral-nemo:free', short: 'misN', name: 'Mistral Nemo', desc: '12B fast inference', tier: 'free' },
+    { id: 'microsoft/phi-4:free', short: 'phi4', name: 'Phi-4', desc: 'Microsoft compact', tier: 'free' },
   ],
 };
 
-// Flatten for dropdown with category headers
+const TIER_COLORS: Record<string, { header: string; item: string; tag: string }> = {
+  premium: { header: 'text-red-400', item: 'text-red-400', tag: '💎' },
+  budget:  { header: 'text-amber-400', item: 'text-amber-400', tag: '⚡' },
+  free:    { header: 'text-emerald-400', item: 'text-emerald-400', tag: '' },
+};
+
 const MODEL_LIST = [
-  { id: 'header-paid', name: '── PAID ($) ──', disabled: true },
-  ...MODELS.paid.map(m => ({ ...m, category: 'paid' })),
-  { id: 'header-kimi', name: '── KIMI ──', disabled: true },
-  ...MODELS.kimi.map(m => ({ ...m, category: 'kimi' })),
-  { id: 'header-nemo', name: '── NEMOTRON ──', disabled: true },
-  ...MODELS.nemotron.map(m => ({ ...m, category: 'nemotron' })),
-  { id: 'header-code', name: '── CODING ──', disabled: true },
-  ...MODELS.code.map(m => ({ ...m, category: 'code' })),
-  { id: 'header-gen', name: '── GENERAL ──', disabled: true },
-  ...MODELS.general.map(m => ({ ...m, category: 'general' })),
+  { id: 'header-premium', name: '── 💎 PREMIUM ──', disabled: true, tier: 'premium' },
+  ...MODELS.premium.map(m => ({ ...m, category: 'premium' })),
+  { id: 'header-budget', name: '── ⚡ BUDGET ──', disabled: true, tier: 'budget' },
+  ...MODELS.budget.map(m => ({ ...m, category: 'budget' })),
+  { id: 'header-free-reason', name: '── REASONING (FREE) ──', disabled: true, tier: 'free' },
+  ...MODELS.free_reasoning.map(m => ({ ...m, category: 'free_reasoning' })),
+  { id: 'header-free-gen', name: '── GENERAL (FREE) ──', disabled: true, tier: 'free' },
+  ...MODELS.free_general.map(m => ({ ...m, category: 'free_general' })),
+  { id: 'header-free-code', name: '── CODING (FREE) ──', disabled: true, tier: 'free' },
+  ...MODELS.free_code.map(m => ({ ...m, category: 'free_code' })),
+  { id: 'header-free-creative', name: '── CREATIVE (FREE) ──', disabled: true, tier: 'free' },
+  ...MODELS.free_creative.map(m => ({ ...m, category: 'free_creative' })),
 ];
 
-// Quick lookup by shortcut
 const MODEL_SHORTCUTS: Record<string, string> = {};
 Object.values(MODELS).flat().forEach(m => {
   MODEL_SHORTCUTS[m.short] = m.id;
@@ -465,7 +482,7 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
       promptConfig: promptConfig,
       model: selectedModel
     }));
-    window.location.href = '/prompt-builder';
+    window.location.href = '/admin';
   };
 
   const exportToReport = () => {
@@ -974,26 +991,27 @@ ${learningProfile}`;
               <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50 max-h-60">
-                {MODEL_LIST.map((model: any) => (
-                  model.disabled ? (
-                    <div key={model.id} className="text-stone-600 text-[10px] px-2 py-1 font-bold">
+              <SelectContent className="bg-[#0a0500] border-amber-900/50 max-h-72">
+                {MODEL_LIST.map((model: any) => {
+                  const tc = TIER_COLORS[model.tier] || TIER_COLORS.free;
+                  return model.disabled ? (
+                    <div key={model.id} className={`text-[10px] px-2 py-1 font-bold ${tc.header}`}>
                       {model.name}
                     </div>
                   ) : (
                     <SelectItem 
                       key={model.id} 
                       value={model.id}
-                      className="text-amber-500 focus:bg-amber-900/30 focus:text-amber-400 text-xs"
+                      className={`${tc.item} focus:bg-amber-900/30 text-xs`}
                     >
-                      <span className="font-mono text-amber-400">[{model.short}]</span> {model.name}
+                      <span className="font-mono opacity-60">[{model.short}]</span> {model.name} <span className="text-stone-600 text-[9px]">{model.desc}</span>
                     </SelectItem>
-                  )
-                ))}
+                  );
+                })}
               </SelectContent>
             </Select>
             <span className="text-[9px] md:text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
-              /kimi /nemo /gpt4o
+              /kimi /devs /nemo3 /llama
             </span>
             <LearningStyleBadge />
             <Button

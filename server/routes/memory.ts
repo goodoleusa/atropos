@@ -39,6 +39,46 @@ function estimateTokens(text: string): number {
   return Math.ceil(text.length / 3.5);
 }
 
+const FALLBACK_MODELS = [
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'qwen/qwen-2.5-72b-instruct:free',
+  'google/gemini-2.0-flash-exp:free',
+  'deepseek/deepseek-r1:free',
+  'nvidia/llama-3.1-nemotron-70b-instruct:free',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
+  'mistralai/devstral-2512:free',
+  'mistralai/mistral-small-3.1-24b-instruct:free',
+  'moonshotai/kimi-k2-thinking:free',
+  'qwen/qwq-32b:free',
+  'microsoft/phi-4:free',
+  'google/gemma-2-27b-it:free',
+];
+
+async function callWithFallback(
+  client: OpenAI,
+  messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+  preferredModel: string,
+  maxTokens: number = 600,
+  temperature: number = 0.2,
+): Promise<{ content: string; model: string }> {
+  const models = [preferredModel, ...FALLBACK_MODELS.filter(m => m !== preferredModel)];
+  for (const model of models) {
+    try {
+      const response = await client.chat.completions.create({ model, messages, max_tokens: maxTokens, temperature });
+      const content = response.choices[0]?.message?.content || '';
+      if (content) return { content, model };
+    } catch (err: any) {
+      const status = err?.status || err?.code;
+      if (status === 403 || status === 429 || status === 503) {
+        console.warn(`[memory] Model ${model} unavailable (${status}), trying next...`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('All models unavailable');
+}
+
 const router = Router();
 
 router.post('/api/chat/memory/check', async (req: Request, res: Response) => {
@@ -79,17 +119,19 @@ router.post('/api/chat/memory/check', async (req: Request, res: Response) => {
       .map((m: any) => `${m.role.toUpperCase()}: ${m.content}`)
       .join('\n');
 
-    const response = await openrouter.chat.completions.create({
-      model,
-      messages: [
+    const result = await callWithFallback(
+      openrouter,
+      [
         { role: 'system', content: COMPRESSION_PROMPT },
         { role: 'user', content: `Compress this conversation:\n\n${conversationText}` },
       ],
-      max_tokens: 600,
-      temperature: 0.2,
-    });
+      model,
+      600,
+      0.2,
+    );
 
-    const compressed = response.choices[0]?.message?.content || '';
+    const compressed = result.content;
+    const usedModel = result.model;
     const compressedTokens = estimateTokens(compressed);
     const latencyMs = Date.now() - startTime;
     const compressionRatio = currentTokens > 0 ? compressedTokens / currentTokens : 1;
@@ -110,7 +152,7 @@ router.post('/api/chat/memory/check', async (req: Request, res: Response) => {
         compressionRatio,
         originalTokens: currentTokens,
         compressedTokens,
-        model,
+        model: usedModel,
         latencyMs,
         messageCount,
         triggerReason,
@@ -121,7 +163,7 @@ router.post('/api/chat/memory/check', async (req: Request, res: Response) => {
       originalTokens: currentTokens,
       compressedTokens,
       compressionRatio,
-      model,
+      model: usedModel,
       latencyMs,
       messageCount,
       triggerReason,
@@ -176,17 +218,19 @@ router.post('/api/chat/memory/force-compress', async (req: Request, res: Respons
 
     const totalTokens = estimateTokens(conversationText);
 
-    const response = await openrouter.chat.completions.create({
-      model,
-      messages: [
+    const result = await callWithFallback(
+      openrouter,
+      [
         { role: 'system', content: COMPRESSION_PROMPT },
         { role: 'user', content: `Compress this conversation:\n\n${conversationText}` },
       ],
-      max_tokens: 600,
-      temperature: 0.2,
-    });
+      model,
+      600,
+      0.2,
+    );
 
-    const compressed = response.choices[0]?.message?.content || '';
+    const compressed = result.content;
+    const usedModel = result.model;
     const compressedTokens = estimateTokens(compressed);
     const latencyMs = Date.now() - startTime;
     const compressionRatio = totalTokens > 0 ? compressedTokens / totalTokens : 1;
@@ -206,7 +250,7 @@ router.post('/api/chat/memory/force-compress', async (req: Request, res: Respons
         compressionRatio,
         originalTokens: totalTokens,
         compressedTokens,
-        model,
+        model: usedModel,
         latencyMs,
         messageCount: messages.length,
         triggerReason: 'manual',
@@ -217,7 +261,7 @@ router.post('/api/chat/memory/force-compress', async (req: Request, res: Respons
       originalTokens: totalTokens,
       compressedTokens,
       compressionRatio,
-      model,
+      model: usedModel,
       latencyMs,
       messageCount: messages.length,
       triggerReason: 'manual',
