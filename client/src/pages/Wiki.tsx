@@ -5,7 +5,8 @@ import {
   ChevronRight, Home, Search, Trophy, TrendingUp, Award, 
   GraduationCap, Users, MessageSquare, Map, Layers, QrCode, 
   Briefcase, Menu, X, Code, FileCode, Puzzle, Wrench,
-  Copy, GitBranch, Download, Brain, AlertTriangle, BookOpen
+  Copy, GitBranch, Download, Brain, AlertTriangle, BookOpen,
+  Network, Radio, Gauge
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -541,45 +542,57 @@ export default function Wiki() {
     },
     {
       id: 'nexus-agent',
-      title: 'NEXUS Agent',
+      title: 'NEXUS Lead Architect',
       icon: <Bot className="w-4 h-4" />,
       content: (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-amber-400">NEXUS AI Investigation Agent</h2>
+          <h2 className="text-2xl font-bold text-amber-400">NEXUS — Lead Architect</h2>
           <p className="text-stone-300 leading-relaxed">
-            NEXUS is your AI-powered investigation assistant. It helps analyze targets, 
-            suggest attack vectors, interpret findings, and guide your investigation strategy.
+            NEXUS is the <strong className="text-amber-300">Lead Architect</strong> of the multi-agent system. 
+            It maintains a bird's-eye view of the entire platform — receiving live Mission Bus findings 
+            and crew agent status directly in its system prompt so every response is informed by the 
+            full operational picture.
           </p>
 
           <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-amber-300 mb-3">Features</h3>
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Core Capabilities</h3>
             <ul className="space-y-3 text-stone-300">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
-                  <strong>Multi-Model Support:</strong> Choose from different AI models (GPT-4, Claude, etc.) 
-                  based on your needs and compare their responses
+                  <strong>Live Situation Awareness:</strong> Mission Bus findings and crew agent status 
+                  are injected into NEXUS's system prompt in real time, giving it holistic context 
+                  across every module
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
-                  <strong>Investigation Campaigns:</strong> Pre-built investigation flows for OSINT, 
-                  BGP tracing, vulnerability assessment, and more
+                  <strong>Multi-Model Support:</strong> Switch between AI models — kimi, nemotron, 
+                  devstral, and mixtral are preferred for investigation tasks, with fallback to 
+                  any OpenRouter-compatible model
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
-                  <strong>Context Awareness:</strong> The agent remembers your conversation history 
-                  and can reference earlier findings
+                  <strong>Automatic Context Compression:</strong> Replit Agent-style memory management 
+                  compresses long conversations automatically, preserving key findings while staying 
+                  within token limits
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
-                  <strong>Export Integration:</strong> Seamlessly export conversations to 
-                  investigation reports
+                  <strong>Crew Delegation:</strong> NEXUS automatically delegates specialized tasks to 
+                  crew agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, etc.) based on investigation context
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Export Integration:</strong> Seamlessly export conversations and crew findings 
+                  to investigation reports
                 </div>
               </li>
             </ul>
@@ -587,6 +600,10 @@ export default function Wiki() {
 
           <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Investigation Campaigns</h3>
+            <p className="text-stone-400 text-sm mb-3">
+              Pre-built investigation flows still work as before — select a campaign and NEXUS guides 
+              you through it, now with crew agent assistance:
+            </p>
             <div className="grid gap-3">
               {[
                 { name: 'OSINT Investigation', desc: 'Open-source intelligence gathering on targets' },
@@ -607,9 +624,10 @@ export default function Wiki() {
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Tips for Effective Use</h3>
             <ul className="list-disc list-inside space-y-1 text-stone-300 text-sm">
               <li>Be specific about your targets and objectives</li>
-              <li>Share relevant context from your terminal discoveries</li>
-              <li>Ask for tool recommendations and methodology guidance</li>
+              <li>Let NEXUS delegate to crew agents — don't try to do everything in one prompt</li>
+              <li>Check the Mission Bus feed to see what other modules have discovered</li>
               <li>Use campaigns to structure complex investigations</li>
+              <li>Ask NEXUS to summarize crew findings for a consolidated view</li>
               <li>Export important findings to reports for later reference</li>
             </ul>
           </div>
@@ -1847,6 +1865,263 @@ export default function Wiki() {
               <li>Reference your pages, components, and routes in the module.json</li>
               <li>Run <code className="text-amber-400 bg-stone-900 px-1 rounded">bash templates/setup.sh custom ./output</code> and select your module</li>
             </ol>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'crew-orchestration',
+      title: 'Crew Orchestration',
+      icon: <Users className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Crew Orchestration</h2>
+          <p className="text-stone-300 leading-relaxed">
+            NEXUS commands a crew of 6 specialist agents, each focused on a distinct domain. 
+            Tasks are delegated automatically based on investigation context — you interact with 
+            NEXUS and the crew works behind the scenes.
+          </p>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Specialist Agents</h3>
+            <div className="grid gap-3">
+              {[
+                { name: 'VulnAnalyst', specialty: 'Vulnerability assessment, CVE correlation, exploit analysis', color: 'text-red-400' },
+                { name: 'OSINTAnalyst', specialty: 'Open-source intelligence, digital footprints, target profiling', color: 'text-teal-400' },
+                { name: 'ThreatIntel', specialty: 'APT tracking, IOC analysis, threat landscape monitoring', color: 'text-amber-400' },
+                { name: 'SecretHunter', specialty: 'Credential discovery, leaked data, exposed secrets', color: 'text-purple-400' },
+                { name: 'NetworkRecon', specialty: 'Infrastructure mapping, BGP analysis, topology discovery', color: 'text-blue-400' },
+                { name: 'Synthesis', specialty: 'Cross-domain correlation, final reporting, pattern recognition', color: 'text-emerald-400' },
+              ].map(({ name, specialty, color }) => (
+                <div key={name} className="bg-stone-800/50 p-3 rounded flex items-start gap-3">
+                  <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-stone-500" />
+                  <div>
+                    <div className={`font-medium ${color}`}>{name}</div>
+                    <div className="text-sm text-stone-400">{specialty}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Crew Status Panel</h3>
+            <p className="text-stone-300 text-sm mb-3">
+              The Crew Status Panel shows real-time agent activity alongside the agent chat. 
+              Each agent displays its current status, specialty, and findings count.
+            </p>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div><strong>Status Indicators:</strong> idle, running, complete, or error — updated in real time</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div><strong>Findings Count:</strong> Each agent tracks how many findings it has produced</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div><strong>Auto-Delegation:</strong> NEXUS assigns tasks to the right agent based on the investigation</div>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Tier-Based Color Coding</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full bg-red-500 flex-shrink-0" />
+                <span className="text-stone-300"><strong className="text-red-400">Red</strong> — Critical findings or agent error state</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full bg-amber-500 flex-shrink-0" />
+                <span className="text-stone-300"><strong className="text-amber-400">Amber</strong> — Warning-level findings or agent running</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0" />
+                <span className="text-stone-300"><strong className="text-emerald-400">Emerald</strong> — Successful completion or low-severity info</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'mission-bus',
+      title: 'Mission Bus',
+      icon: <Radio className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Mission Bus</h2>
+          <p className="text-stone-300 leading-relaxed">
+            The Mission Bus is the cross-module event system that connects every feature on the platform. 
+            When any module produces a finding, it publishes to the bus — and NEXUS consumes those 
+            findings for holistic, platform-wide analysis.
+          </p>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">How It Works</h3>
+            <ul className="space-y-3 text-stone-300">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Publish / Subscribe:</strong> Modules publish findings (scanner results, 
+                  OSINT hits, vulnerability data) to the bus. NEXUS and the UI subscribe to updates.
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Recent Findings Feed:</strong> Up to 8 of the latest findings are injected 
+                  into NEXUS's system prompt, giving it real-time situational awareness across modules.
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Background Task Tracking:</strong> Long-running tasks (scans, crew agent jobs) 
+                  are tracked on the bus and visible in the agent chat interface.
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Force Multiplier Effect:</strong> Tools are not isolated — scanner findings 
+                  feed into NEXUS analysis, crew results inform campaign guidance, and OSINT data 
+                  enriches threat models. Everything feeds everything.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Connected Modules</h3>
+            <div className="grid md:grid-cols-2 gap-3 text-sm">
+              {[
+                { module: 'Scanner / OSINT', action: 'Publishes recon findings' },
+                { module: 'Crew Agents', action: 'Publishes specialist analysis' },
+                { module: 'Campaign Engine', action: 'Publishes objective progress' },
+                { module: 'Terminal', action: 'Publishes command discoveries' },
+                { module: 'Report Builder', action: 'Consumes findings for auto-population' },
+                { module: 'NEXUS Agent', action: 'Consumes all findings for holistic analysis' },
+              ].map(({ module, action }) => (
+                <div key={module} className="bg-stone-800/50 p-3 rounded">
+                  <div className="font-medium text-teal-400">{module}</div>
+                  <div className="text-stone-400 text-xs">{action}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-2">Why It Matters</h3>
+            <p className="text-stone-300 text-sm">
+              Without the Mission Bus, each tool operates in a silo. With it, a scanner finding 
+              can trigger a crew agent deep-dive, whose results inform NEXUS's campaign guidance, 
+              which populates your report — all automatically. This is the "force multiplier" that 
+              makes the platform greater than the sum of its parts.
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'context-memory',
+      title: 'Context & Memory',
+      icon: <Brain className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Context & Memory Management</h2>
+          <p className="text-stone-300 leading-relaxed">
+            NEXUS uses automatic context compression to manage long conversations without losing 
+            critical findings. Inspired by Replit Agent-style memory management, the system 
+            keeps you within token limits while preserving investigation continuity.
+          </p>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Automatic Compression</h3>
+            <ul className="space-y-3 text-stone-300">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Token Threshold Trigger:</strong> When conversation length approaches the 
+                  context window limit, compression fires automatically — no user action needed
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Key Findings Preserved:</strong> The compressor extracts and retains 
+                  critical findings, decisions, and investigation state while discarding verbose exchanges
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Context Window Management:</strong> Prevents token overflow errors that 
+                  would otherwise break long investigation sessions
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">UI Controls</h3>
+            <ul className="space-y-3 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Manual Compress Button:</strong> Trigger compression on demand from the 
+                  agent chat toolbar when you want to free up context space
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Token / Message Count Bar:</strong> A status bar in the agent chat shows 
+                  current token usage and message count so you can gauge remaining capacity
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <div>
+                  <strong>Compressed State Badge:</strong> A visual indicator appears when the 
+                  conversation is operating on compressed context
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Optimization Tracking</h3>
+            <p className="text-stone-300 text-sm mb-3">
+              Compression quality is tracked via Weights & Biases integration to continuously 
+              improve how well the system preserves investigation context:
+            </p>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <span>Compression ratio (original tokens vs. compressed tokens)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <span>Key finding retention accuracy</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
+                <span>Post-compression response quality metrics</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-2">Best Practices</h3>
+            <ul className="list-disc list-inside space-y-1 text-stone-300 text-sm">
+              <li>Let auto-compression handle most cases — it fires at the right time</li>
+              <li>Use manual compress before starting a new investigation phase</li>
+              <li>Watch the token bar to understand your remaining context budget</li>
+              <li>Critical findings survive compression, but verbose tool output may not</li>
+            </ul>
           </div>
         </div>
       )

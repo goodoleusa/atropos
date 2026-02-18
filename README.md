@@ -30,6 +30,15 @@
 
 **See**: [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md) for complete overview
 
+### NEXUS Lead Architect & Multi-Agent Orchestration (NEW)
+- ✅ **NEXUS as Lead Architect** - Bird's-eye view of entire platform, live Mission Bus + crew status in system prompt
+- ✅ **6 Specialist Crew Agents** - VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis
+- ✅ **Mission Bus** - Cross-module event system; findings from any tool feed into NEXUS context automatically
+- ✅ **Automatic Context Compression** - Replit Agent-style memory management with manual override
+- ✅ **Crew Status Panel** - Real-time agent activity with tier-based color coding (red/amber/emerald)
+- ✅ **W&B Tracking** - Weights & Biases integration for compression optimization metrics
+- ✅ **Preferred Models** - Kimi, Nemotron, Devstral, Mixtral with comprehensive tier support
+
 ---
 
 ## 💼 Business Model: Mission + Profit
