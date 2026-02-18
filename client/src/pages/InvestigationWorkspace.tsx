@@ -23,13 +23,14 @@ import { LEARNING_STYLES, LEARNING_GOALS, SKILL_LEVELS, CATEGORY_COLORS } from '
 const VALID_TABS = ['chat', 'scanner', 'spiderfoot', 'ai-lab', 'prompt', 'learning'];
 
 export default function InvestigationWorkspace() {
+  const params = new URLSearchParams(window.location.search);
   const initialTab = (() => {
-    const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab');
     return tab && VALID_TABS.includes(tab) ? tab : 'chat';
   })();
+  const initialCampaignId = params.get('campaign') || undefined;
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [agentChatOpen, setAgentChatOpen] = useState(false);
+  const [agentChatOpen, setAgentChatOpen] = useState(!!initialCampaignId);
   const [atroposPayload, setAtroposPayload] = useState<string | undefined>(undefined);
   const [showOutputs, setShowOutputs] = useState(false);
   const [scannerPivotTargets, setScannerPivotTargets] = useState<string[] | undefined>(undefined);
@@ -441,6 +442,7 @@ export default function InvestigationWorkspace() {
           if (!open) setAtroposPayload(undefined);
         }}
         initialPayload={atroposPayload}
+        initialCampaignId={initialCampaignId}
       />
     </div>
   );

@@ -81,6 +81,11 @@
 2. Complete: 5 anti-trafficking campaigns
 3. Apply: Research fellowship (paid investigations)
 
+### ✊ **Civic Engagement Learners**
+1. Start: http://localhost:5000/campaigns (filter by Civic)
+2. Study: Serbia Otpor!, Euromaidan, Hong Kong, digital citizenship, grassroots organizing
+3. Learn: How laughter and unity toppled authoritarian regimes; apply lessons to your community
+
 ---
 
 ## 🚀 Quick Start
@@ -125,9 +130,10 @@ bash templates/setup.sh full ./my-project
 |--------|-----------------|
 | `minimal` | Core platform + terminal |
 | `learner` | NEXUS AI, terminal, campaigns, gamification, wiki |
+| `civic` | NEXUS AI, terminal, campaigns, civic-engagement, gamification, wiki |
 | `security` | NEXUS AI, terminal, scanner/OSINT, SpiderFoot, reports, portfolio |
 | `marketing` | Behavior analysis, gamification, report builder |
-| `full` | All 13 modules |
+| `full` | All 14 modules including civic-engagement |
 
 ### 13 Feature Modules
 
@@ -136,6 +142,7 @@ bash templates/setup.sh full ./my-project
 | `nexus-ai` | AI | AI investigation assistant, multi-agent orchestration |
 | `terminal` | Core | Custom CLI with command parsing and history |
 | `campaigns` | Content | Investigation campaigns with visual flow editor |
+| `civic-engagement` | Content | Digital citizenship, grassroots organizing, movement history (Serbia, Euromaidan, Hong Kong) |
 | `scanner-osint` | Security | Atropos scanner + real OSINT integration (IOC, DNS, WHOIS) |
 | `qr-c2` | Security | QR C2 framework with guided missions and labs |
 | `gamification` | Engagement | XP, levels, 500+ achievements, leaderboards, daily challenges |

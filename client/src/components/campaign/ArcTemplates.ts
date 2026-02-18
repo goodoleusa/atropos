@@ -1,5 +1,42 @@
 import { ArcTemplate, CampaignNode, CampaignLink, HiddenClue, ClueType, mkNode, mkLink, mkClue } from './CampaignTypes';
 
+export const CIVIC_ARC_TEMPLATES: ArcTemplate[] = [
+  { name: 'Movement Case Study', desc: 'Historical movement analysis', category: 'civic', nodes: [
+    mkNode('mcs1','step','Choose Movement','Select a movement to study (Serbia, Ukraine, Hong Kong, etc.). Proceed to [[Context Research]].',0,0),
+    mkNode('mcs2','tool','Context Research','Gather historical context, key actors, timeline. See [[Tactic Analysis]].',300,0),
+    mkNode('mcs3','step','Tactic Analysis','Analyze humor, unity-building, and key turning points. Proceed to [[Lesson Extraction]].',600,0),
+    mkNode('mcs4','output','Lesson Extraction','Document lessons for contemporary organizers.',900,0),
+  ], links: [mkLink('mcs1','mcs2'),mkLink('mcs2','mcs3'),mkLink('mcs3','mcs4')],
+    clues: [mkClue('source-code','mcs3','Check page source for key slogan','Gotov je'),mkClue('meta-tag','mcs4','Meta description contains movement outcome','democratic transition')]},
+  { name: 'Grassroots Campaign', desc: 'Organizing from the ground up', category: 'civic', nodes: [
+    mkNode('gc1','step','Issue Selection','Identify a winnable, meaningful issue. Map [[Power Analysis]].',0,0),
+    mkNode('gc2','tool','Power Analysis','Identify decision-makers, allies, opposition. See [[One-on-One Plan]].',300,0),
+    mkNode('gc3','step','One-on-One Plan','Design relational conversations. Build [[Leadership Team]].',600,0),
+    mkNode('gc4','output','Leadership Team','Document key leaders and campaign structure.',900,0),
+  ], links: [mkLink('gc1','gc2'),mkLink('gc2','gc3'),mkLink('gc3','gc4')],
+    clues: [mkClue('data-attribute','gc2','data-power-level for key actor','5'),mkClue('console-log','gc4','Console shows coalition size','leaders: 12')]},
+  { name: 'Digital Citizenship', desc: 'Information integrity and safe engagement', category: 'civic', nodes: [
+    mkNode('dc1','step','Claim Identification','Identify a viral claim or image to verify. Proceed to [[Fact-Check]].',0,0),
+    mkNode('dc2','tool','Fact-Check','Reverse image search, source verification, cross-reference. See [[Context Assessment]].',300,0),
+    mkNode('dc3','step','Context Assessment','Evaluate reliability, potential harm of sharing. Proceed to [[Ethical Decision]].',600,0),
+    mkNode('dc4','output','Ethical Decision','Document verification result and sharing recommendation.',900,0),
+  ], links: [mkLink('dc1','dc2'),mkLink('dc2','dc3'),mkLink('dc3','dc4')],
+    clues: [mkClue('http-header','dc2','X-Origin-Date header','2020-03-15'),mkClue('base64','dc4','Base64 verification summary','VmVyaWZpZWQ6IEZhbHNl')]},
+  { name: 'Humor and Unity', desc: 'Tactical humor and unity-building', category: 'civic', nodes: [
+    mkNode('hu1','step','Legitimacy Analysis','Identify regime or authority source of legitimacy. See [[Ridicule Design]].',0,0),
+    mkNode('hu2','tool','Ridicule Design','Design satirical campaign that exposes absurdity. Proceed to [[Unity Message]].',300,0),
+    mkNode('hu3','step','Unity Message','Craft message that transcends divides. See [[Tactical Plan]].',600,0),
+    mkNode('hu4','output','Tactical Plan','Document humor + unity campaign plan.',900,0),
+  ], links: [mkLink('hu1','hu2'),mkLink('hu2','hu3'),mkLink('hu3','hu4')],
+    clues: [mkClue('source-code','hu2','Comment contains satire example','<!-- Gotov je! -->'),mkClue('data-attribute','hu4','data-coalition-breadth','broad')]},
+  { name: 'Civic Engagement Starter', desc: 'Beginner civic participation', category: 'civic', nodes: [
+    mkNode('ces1','step','Government Map','Map local government structure and decision points. See [[Participation Opportunities]].',0,0),
+    mkNode('ces2','tool','Participation Opportunities','Find meetings, votes, contact points. Proceed to [[First Action]].',300,0),
+    mkNode('ces3','output','First Action','Choose and schedule your first civic action.',600,0),
+  ], links: [mkLink('ces1','ces2'),mkLink('ces2','ces3')],
+    clues: [mkClue('meta-tag','ces1','Meta keywords include jurisdiction','city council')]},
+];
+
 export const ARC_TEMPLATES: ArcTemplate[] = [
   { name: 'Phantom Thread', desc: 'Phishing / Initial Access', category: 'social', nodes: [
     mkNode('pt1','step','Suspicious Email','Analyze the phishing email. Check [[Sender Analysis]] for header clues.',0,0),
@@ -118,4 +155,5 @@ export const ARC_TEMPLATES: ArcTemplate[] = [
     mkNode('c2m5','output','Infrastructure Takedown Brief','Compile evidence package for registrar/hosting abuse reports and law enforcement referral. Document full C2 infrastructure map.',600,200),
   ], links: [mkLink('c2m1','c2m2'),mkLink('c2m2','c2m3'),mkLink('c2m3','c2m4'),mkLink('c2m4','c2m5')],
     clues: [mkClue('network-request','c2m3','XHR reveals DGA domain pattern','aG9zdA==.xjk2mf9a.top'),mkClue('http-header','c2m4','Response header contains beacon timing indicator','X-Beacon-Interval: 60s;jitter=0.37'),mkClue('meta-tag','c2m5','Meta tag contains JA3 hash for C2 fingerprinting','ja3:e7d705a3286e19ea42f587b344ee6865')]},
+  ...CIVIC_ARC_TEMPLATES,
 ];
