@@ -48,17 +48,17 @@ export const NAV_GROUPS = [
     { id: "sessions", label: "Sessions", icon: "Server" },
     { id: "behavior", label: "Behavior Analytics", icon: "Eye" },
   ]},
-  { label: "Content", color: "teal", items: [
+  { label: "Game Data", color: "teal", items: [
     { id: "collectibles", label: "Collectibles", icon: "Database" },
     { id: "quests", label: "Quests", icon: "Trophy" },
     { id: "messages", label: "Messages", icon: "MessageSquare" },
     { id: "graph", label: "Knowledge Graph", icon: "Map" },
   ]},
-  { label: "Campaign Design", color: "purple", items: [
-    { id: "designer", label: "Campaign Designer 🎨", icon: "Layers" },
-    { id: "campaigns", label: "Campaign Library", icon: "Rocket" },
-    { id: "agentmodules", label: "Investigation Modules", icon: "Target" },
-    { id: "curriculum", label: "Curriculum", icon: "BookOpen" },
+  { label: "Content", color: "purple", items: [
+    { id: "contentmgr", label: "Content Manager", icon: "Layers" },
+    { id: "designer", label: "Campaign Designer", icon: "Rocket" },
+    { id: "agentmodules", label: "Modules (legacy)", icon: "Target" },
+    { id: "curriculum", label: "Curriculum (legacy)", icon: "BookOpen" },
   ]},
   { label: "AI & Agents", color: "cyan", items: [
     { id: "agent", label: "Agent Chat", icon: "Bot" },
