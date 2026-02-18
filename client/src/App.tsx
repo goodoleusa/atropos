@@ -20,7 +20,6 @@ import AILab from "@/pages/AILab";
 import TheVoid from "@/pages/TheVoid";
 import Archive from "@/pages/Archive";
 import Debug from "@/pages/Debug";
-import PromptBuilder from "@/pages/PromptBuilder";
 import InvestigationWorkspace from "@/pages/InvestigationWorkspace";
 import VideoGallery from "@/pages/VideoGallery";
 import Agents from "@/pages/Agents";
@@ -58,7 +57,7 @@ function Router() {
       <Route path="/archive" component={Archive} />
       <Route path="/recs" component={Recs} />
       <Route path="/debug" component={Debug} />
-      <Route path="/prompt-builder" component={PromptBuilder} />
+      <Route path="/prompt-builder">{() => { window.location.replace('/admin'); return null; }}</Route>
       <Route path="/ai-lab">{() => { window.location.replace('/investigate?tab=ai-lab'); return null; }}</Route>
       <Route path="/investigate" component={InvestigationWorkspace} />
       <Route path="/agents" component={Agents} />
