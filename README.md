@@ -243,6 +243,20 @@ curl -s https://YOUR_APP/api/recommendations/export?format=json&category=new_too
 4. **Repository-Level AI Context** — Sync to `.github/` so every agent session starts with awareness of pending improvements
 5. **Code Review & Voting** — Upvote the most impactful recommendations to prioritize implementation
 
+#### Architecture Review & Recs Push
+
+Periodic architectural reviews produce feature recommendations that can be pushed to the recs system:
+
+```bash
+# Push architecture review recs (requires server running with DATABASE_URL)
+npm run recs:push
+
+# Or with custom APP_URL for deployed instance
+APP_URL=https://your-app.replit.app npm run recs:push
+```
+
+See Wiki → Architecture Review for improvement themes (route cleanup, recs pagination, curriculum-recs integration, real-time updates).
+
 ---
 
 ## 🎉 v2.1 - QR C2 Framework & Attack Simulation (Feb 2026)
