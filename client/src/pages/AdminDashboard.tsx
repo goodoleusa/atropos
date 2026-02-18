@@ -41,6 +41,7 @@ import { AgentModulesSection } from "@/pages/admin/AgentModulesSection";
 import { GameplaySection } from "@/pages/admin/GameplaySection";
 import { FeedbackSection } from "@/pages/admin/FeedbackSection";
 import { CurriculumSection } from "@/pages/admin/CurriculumSection";
+import { ContextManagerPanel } from "@/pages/admin/ContextManagerPanel";
 
 export default function AdminDashboard() {
   const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
@@ -218,6 +219,7 @@ export default function AdminDashboard() {
       case 'config': return <ConfigPanel gameState={gameState} clues={clues} quests={quests} />;
       case 'campaigns': return <CampaignsPanel onOpenBuilder={(campaignId?: string) => navigate(campaignId ? `/builder?campaign=${campaignId}` : '/builder')} />;
       case 'curriculum': return <CurriculumSection />;
+      case 'contextmgr': return <ContextManagerPanel />;
       default: return <ActivityLogPanel />;
     }
   };

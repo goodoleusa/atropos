@@ -400,6 +400,9 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
           detectAndSubmitFeedback(assistantMessage, selectedModel);
           detectAndSubmitRecommendations(assistantMessage, selectedModel);
         } catch (_) {}
+
+        const updatedMessages = [...messages, { role: 'user' as const, content: userMessage }, { role: 'assistant' as const, content: assistantMessage }];
+        checkMemoryAndCompress(updatedMessages, convId);
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -798,36 +801,92 @@ ${learningProfile}`;
     setShowMissionBriefing(false);
   };
 
-  // Compress conversation context using AI
-  const compressContext = useCallback(async () => {
-    if (messages.length < 3) return;
-    
-    setIsCompressing(true);
+  const estimateTokens = useCallback((text: string) => Math.ceil(text.length / 3.5), []);
+
+  const checkMemoryAndCompress = useCallback(async (currentMessages: Message[], currentConvId: number | null) => {
+    const nonSystem = currentMessages.filter(m => m.role !== 'system');
+    const msgCount = nonSystem.length;
+    const totalText = nonSystem.map(m => m.content).join(' ');
+    const tokenEstimate = estimateTokens(totalText);
+
+    const nearMessageLimit = msgCount >= MEMORY_TRIGGERS.message_count;
+    const nearTokenLimit = tokenEstimate >= MEMORY_TRIGGERS.token_threshold;
+
+    if (!nearMessageLimit && !nearTokenLimit) return;
+
     try {
-      const compressionRequest = generateCompressionRequest(messages);
-      
-      const response = await fetch('/api/chat/compress', {
+      const response = await fetch('/api/chat/memory/check', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
         },
         body: JSON.stringify({
-          messages: [compressionRequest],
-          model: selectedModel
+          messages: currentMessages.map(m => ({ role: m.role, content: m.content })),
+          conversationId: currentConvId,
+          sessionToken: gameState?.sessionToken || 'default',
+          model: selectedModel,
+          thresholds: {
+            messageCount: MEMORY_TRIGGERS.message_count,
+            tokenEstimate: MEMORY_TRIGGERS.token_threshold,
+            autoCompress: true,
+          },
+        })
+      });
+
+      if (!response.ok) return;
+      const data = await response.json();
+
+      if (data.action === 'compressed') {
+        setPromptConfig(prev => ({ ...prev, compressedContext: data.compressed }));
+        const keepCount = 4;
+        setMessages(prev => prev.slice(-keepCount));
+        console.log(`[NEXUS] Context auto-compressed. Ratio: ${data.metrics.compressionRatio}, saved ${data.metrics.tokensSaved} tokens`);
+      } else if (data.action === 'handoff') {
+        setPromptConfig(prev => ({ ...prev, compressedContext: data.compressed }));
+        const newConvId = await createConversation();
+        if (newConvId) {
+          setConversationId(newConvId);
+          setMessages([]);
+          console.log(`[NEXUS] Context handoff complete. New conversation #${newConvId}`);
+        }
+      }
+    } catch (error) {
+      console.warn('[NEXUS] Auto-compress check failed:', error);
+    }
+  }, [selectedModel, gameState?.sessionToken, estimateTokens]);
+
+  const compressContext = useCallback(async () => {
+    if (messages.length < 3) return;
+
+    setIsCompressing(true);
+    try {
+      const response = await fetch('/api/chat/memory/force-compress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || ''
+        },
+        body: JSON.stringify({
+          messages: messages.map(m => ({ role: m.role, content: m.content })),
+          conversationId,
+          sessionToken: gameState?.sessionToken || 'default',
+          model: selectedModel,
         })
       });
 
       if (!response.ok) throw new Error('Compression failed');
-      
+
       const data = await response.json();
-      const compressed = data.content || data.compressed || '';
-      
+      const compressed = data.compressed;
+
       setPromptConfig(prev => ({ ...prev, compressedContext: compressed }));
-      
+      const keepCount = 4;
+      setMessages(prev => prev.slice(-keepCount));
+
       toast({
         title: "Context Compressed",
-        description: `Reduced ${messages.length} messages to a compact summary.`,
+        description: `Saved ${data.metrics.tokensSaved} tokens (${Math.round((1 - data.metrics.compressionRatio) * 100)}% reduction).`,
       });
     } catch (error) {
       console.error('Compression error:', error);
@@ -839,7 +898,7 @@ ${learningProfile}`;
     } finally {
       setIsCompressing(false);
     }
-  }, [messages, selectedModel]);
+  }, [messages, selectedModel, conversationId, gameState?.sessionToken]);
 
   return (
     <>

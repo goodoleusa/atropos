@@ -16,6 +16,7 @@ import progressionRoutes from "./routes/progressionRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import curriculumRoutes from "./routes/curriculumRoutes";
 import gameplayRoutes from "./routes/gameplayRoutes";
+import memoryRoutes from "./routes/memory";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -237,6 +238,9 @@ export async function registerRoutes(
 
   // Register Gameplay routes
   app.use(gameplayRoutes);
+
+  // Context Memory Manager (auto-compression, capsules, W&B tracking)
+  app.use(memoryRoutes);
 
   // ==================== Business Projects API ====================
   app.get("/api/business-projects", async (req, res) => {

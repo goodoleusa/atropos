@@ -944,14 +944,22 @@ export const stateCapsules = pgTable("state_capsules", {
   id: serial("id").primaryKey(),
   sessionToken: text("session_token").notNull(),
   investigationId: text("investigation_id"),
-  capsuleType: text("capsule_type").notNull(), // 'handoff', 'checkpoint', 'milestone'
-  content: text("content").notNull(), // The compressed prompt/state
+  conversationId: integer("conversation_id"),
+  capsuleType: text("capsule_type").notNull(), // 'handoff', 'checkpoint', 'milestone', 'auto_compress'
+  content: text("content").notNull(),
   metadata: jsonb("metadata").$type<{
     phase: string;
     findingsCount: number;
     toolsUsed: string[];
     tokensEstimate: number;
     createdBy: 'auto' | 'manual';
+    compressionRatio?: number;
+    originalTokens?: number;
+    compressedTokens?: number;
+    model?: string;
+    latencyMs?: number;
+    messageCount?: number;
+    triggerReason?: 'message_threshold' | 'token_threshold' | 'manual' | 'task_complete';
   }>().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
