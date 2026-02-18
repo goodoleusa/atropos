@@ -2,6 +2,44 @@ import { Campaign, CampaignNode } from './CampaignTypes';
 
 const sanitizeFilename = (name: string) => name.replace(/[^a-zA-Z0-9_-]/g, '_');
 
+const NATION_STATE_TAGS = ['Russia', 'China', 'DPRK', 'Iran'];
+const APT_INDICATOR_TAGS = ['APT', ...NATION_STATE_TAGS];
+const MITRE_TECHNIQUE_PATTERN = /^T\d{4}(\.\d{3})?$/;
+const CISA_REFERENCE_PATTERN = /(?:CISA|AA\d{2}-\d{3}[A-Z]?|advisory|CVE-\d{4}-\d+)/gi;
+
+const hasAptTags = (tags: string[]): boolean =>
+  tags.some(t => APT_INDICATOR_TAGS.some(apt => t.toUpperCase().includes(apt.toUpperCase())) || /^APT\d+$/i.test(t));
+
+const extractNationState = (tags: string[]): string | undefined =>
+  tags.find(t => NATION_STATE_TAGS.some(ns => t.toUpperCase() === ns.toUpperCase()));
+
+const extractThreatGroup = (tags: string[]): string | undefined =>
+  tags.find(t => /^APT\d+$/i.test(t)) || tags.find(t => t.toUpperCase().includes('APT'));
+
+const extractMitreTechniques = (tags: string[]): string[] =>
+  tags.filter(t => MITRE_TECHNIQUE_PATTERN.test(t));
+
+const extractSourceReferences = (description: string): string[] => {
+  const matches = description.match(CISA_REFERENCE_PATTERN);
+  return matches ? Array.from(new Set(matches)) : [];
+};
+
+export function mergeFrontmatter(
+  existing: Record<string, unknown>,
+  newFields: Record<string, unknown>
+): Record<string, unknown> {
+  const merged = { ...existing };
+  for (const [key, newVal] of Object.entries(newFields)) {
+    const existingVal = merged[key];
+    if (existingVal === undefined || existingVal === null) {
+      merged[key] = newVal;
+    } else if (Array.isArray(existingVal) && Array.isArray(newVal)) {
+      merged[key] = Array.from(new Set([...existingVal, ...newVal]));
+    }
+  }
+  return merged;
+}
+
 const yamlVal = (v: unknown): string => {
   if (Array.isArray(v)) return `\n${v.map(i => `  - ${i}`).join('\n')}`;
   if (typeof v === 'boolean') return v ? 'true' : 'false';
@@ -218,6 +256,27 @@ export function exportCampaignObsidian(campaign: Campaign) {
     fm['width'] = node.width;
     fm['height'] = node.height;
 
+    const allTags = [...(campaign.tags || []), ...(fm['tags'] as string[] || [])];
+    if (hasAptTags(allTags)) {
+      const threatGroup = extractThreatGroup(allTags);
+      const nationState = extractNationState(allTags);
+      const mitreTechniques = extractMitreTechniques(allTags);
+      const sourceRefs = extractSourceReferences(campaign.description || '');
+
+      if (threatGroup) fm['threat-group'] = threatGroup;
+      if (nationState) {
+        fm['nation-state'] = nationState;
+        fm['excalibrain-color'] = '#dc2626';
+      }
+      if (mitreTechniques.length > 0) {
+        fm['mitre-techniques'] = mitreTechniques;
+        if (!nationState) fm['excalibrain-color'] = '#ea580c';
+      }
+      fm['case-study'] = true;
+      fm['classification'] = 'PUBLIC';
+      if (sourceRefs.length > 0) fm['source-references'] = sourceRefs;
+    }
+
     let md = buildTemplaterBlock(node, campaign);
     md += buildYaml(fm);
     md += `\n# ${node.title}\n\n`;
@@ -375,6 +434,22 @@ export function exportCampaignObsidian(campaign: Campaign) {
     modified: today,
   };
 
+  const campaignAllTags = campaign.tags || [];
+  const isAptCampaign = hasAptTags(campaignAllTags);
+  if (isAptCampaign) {
+    const threatGroup = extractThreatGroup(campaignAllTags);
+    const nationState = extractNationState(campaignAllTags);
+    const mitreTechniques = extractMitreTechniques(campaignAllTags);
+    const sourceRefs = extractSourceReferences(campaign.description || '');
+
+    if (threatGroup) indexFm['threat-group'] = threatGroup;
+    if (nationState) indexFm['nation-state'] = nationState;
+    if (mitreTechniques.length > 0) indexFm['mitre-techniques'] = mitreTechniques;
+    indexFm['case-study'] = true;
+    indexFm['classification'] = 'PUBLIC';
+    if (sourceRefs.length > 0) indexFm['source-references'] = sourceRefs;
+  }
+
   let indexMd = buildIndexTemplaterBlock(campaign);
   indexMd += buildYaml(indexFm);
 
@@ -510,7 +585,78 @@ export function exportCampaignObsidian(campaign: Campaign) {
   indexMd += `  tool: {color: "#14b8a6", shape: "oval"}\n`;
   indexMd += `  output: {color: "#ef4444", shape: "hexagon"}\n`;
   indexMd += `  folder: {color: "#78716c", shape: "box"}\n`;
+  if (isAptCampaign) {
+    indexMd += `  nation-state: {color: "#dc2626", shape: "hexagon"}\n`;
+    indexMd += `  technique: {color: "#ea580c", shape: "diamond"}\n`;
+  }
   indexMd += '```\n\n';
+
+  if (isAptCampaign) {
+    const aptMitreTechniques = extractMitreTechniques(campaignAllTags);
+    const aptSourceRefs = extractSourceReferences(campaign.description || '');
+
+    indexMd += `## MITRE ATT&CK Mapping\n\n`;
+    indexMd += '```dataview\n';
+    indexMd += `TABLE WITHOUT ID\n`;
+    indexMd += `  file.link as "Node",\n`;
+    indexMd += `  threat-group as "Threat Group",\n`;
+    indexMd += `  nation-state as "Nation State",\n`;
+    indexMd += `  mitre-techniques as "MITRE Techniques"\n`;
+    indexMd += `FROM #${campaignTag}\n`;
+    indexMd += `WHERE mitre-techniques OR threat-group\n`;
+    indexMd += `SORT threat-group ASC\n`;
+    indexMd += '```\n\n';
+
+    if (aptMitreTechniques.length > 0) {
+      indexMd += `### Technique IDs\n\n`;
+      aptMitreTechniques.forEach(t => {
+        indexMd += `- \`${t}\` — [MITRE ATT&CK](https://attack.mitre.org/techniques/${t.replace('.', '/')})\n`;
+      });
+      indexMd += '\n';
+    }
+
+    indexMd += `## Threat Intelligence Sources\n\n`;
+    indexMd += `> [!warning] APT Case Study\n`;
+    indexMd += `> This campaign is based on real-world threat intelligence from public sources.\n`;
+    indexMd += `> Classification: **PUBLIC**\n\n`;
+
+    if (aptSourceRefs.length > 0) {
+      indexMd += `### Advisory References\n\n`;
+      aptSourceRefs.forEach(ref => {
+        indexMd += `- ${ref}\n`;
+      });
+      indexMd += '\n';
+    }
+
+    indexMd += '```dataview\n';
+    indexMd += `TABLE WITHOUT ID\n`;
+    indexMd += `  file.link as "Node",\n`;
+    indexMd += `  source-references as "Sources",\n`;
+    indexMd += `  classification as "Classification"\n`;
+    indexMd += `FROM #${campaignTag}\n`;
+    indexMd += `WHERE source-references\n`;
+    indexMd += `SORT file.name ASC\n`;
+    indexMd += '```\n\n';
+
+    const hasIocContent = campaign.nodes.some(n =>
+      (n.content || '').toLowerCase().includes('ioc') ||
+      (n.content || '').toLowerCase().includes('indicator') ||
+      (n.metadata?.toolsForStep || []).some(t => t.toLowerCase().includes('ioc'))
+    );
+    if (hasIocContent) {
+      indexMd += `## IOC Summary\n\n`;
+      indexMd += '```dataview\n';
+      indexMd += `TABLE WITHOUT ID\n`;
+      indexMd += `  file.link as "Node",\n`;
+      indexMd += `  type as "Type",\n`;
+      indexMd += `  tools as "Tools",\n`;
+      indexMd += `  threat-group as "Threat Group"\n`;
+      indexMd += `FROM #${campaignTag}\n`;
+      indexMd += `WHERE contains(file.content, "IOC") OR contains(file.content, "indicator")\n`;
+      indexMd += `SORT file.name ASC\n`;
+      indexMd += '```\n\n';
+    }
+  }
 
   indexMd += `## Sitemap Integration\n\n`;
   indexMd += `> [!note] Platform Route\n`;
