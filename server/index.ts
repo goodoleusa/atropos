@@ -70,6 +70,42 @@ app.use((req, res, next) => {
 
   await registerRoutes(httpServer, app);
 
+  // Auto-seed agent campaigns on startup
+  async function seedAgentCampaigns() {
+    try {
+      const { AGENT_CAMPAIGNS } = await import("../client/src/config/agentCampaigns");
+      const { storage } = await import("./storage");
+      let seeded = 0;
+      for (const campaign of AGENT_CAMPAIGNS) {
+        await storage.upsertAgentModule(campaign.id, {
+          moduleId: campaign.id,
+          name: campaign.name,
+          icon: campaign.icon,
+          description: campaign.description,
+          difficulty: campaign.difficulty,
+          estimatedTime: campaign.estimatedTime,
+          tags: campaign.tags,
+          color: campaign.color,
+          starterPrompt: campaign.starterPrompt,
+          objectives: campaign.objectives,
+          tools: campaign.tools,
+          targetFields: campaign.targetFields || [],
+          dummyTargets: campaign.dummyTargets || {},
+          steps: campaign.steps || [],
+          adaptivePrompts: campaign.adaptivePrompts || [],
+          isActive: true,
+          sortOrder: seeded
+        });
+        seeded++;
+      }
+      log(`Auto-seeded ${seeded} agent campaigns`);
+    } catch (error) {
+      console.error("Auto-seed agent campaigns failed:", error);
+    }
+  }
+
+  await seedAgentCampaigns();
+
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";

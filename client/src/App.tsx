@@ -39,6 +39,7 @@ import Walkthrough from "@/pages/Walkthrough";
 import BehaviorAnalysis from "@/pages/BehaviorAnalysis";
 import MarketingDashboard from "@/pages/MarketingDashboard";
 import FontCustomizer from "@/components/FontCustomizer";
+import DecoherenceLabPage from "@/pages/DecoherenceLabPage";
 
 function DynamicRouter() {
   const [location] = useLocation();
@@ -79,6 +80,7 @@ function DynamicRouter() {
       <Route path="/crew-builder" component={CrewBuilder} />
       <Route path="/builder" component={CampaignBuilder} />
       <Route path="/campaigns" component={CampaignsHub} />
+      <Route path="/decoherence" component={DecoherenceLabPage} />
       <Route path="/play/:campaignId" component={CampaignPlayer} />
       <Route path="/scanner" component={ScannerDashboard} />
       <Route path="/wiki" component={Wiki} />

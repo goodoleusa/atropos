@@ -239,6 +239,7 @@ export default function Agents() {
       return res.json();
     },
     onSuccess: (data) => {
+      console.log('Agent analysis response:', data);
       if (data.analysis) {
         setTestOutput(data.analysis || 'No output');
         const run: AgentRun = {
