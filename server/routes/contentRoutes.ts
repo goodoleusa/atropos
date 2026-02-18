@@ -296,34 +296,41 @@ router.delete("/api/designer/campaigns/:campaignId", isAdmin, async (req, res) =
 router.post("/api/designer/campaigns/:campaignId/publish", isAdmin, async (req, res) => {
   try {
     const { campaignId } = req.params;
-    const campaign = await storage.upsertDesignerCampaign(campaignId, { isPublished: true });
-    try {
-      await storage.upsertSitemapEntryByPath(`/play/${campaignId}`, {
-        name: campaign.name || campaignId,
-        path: `/play/${campaignId}`,
-        description: campaign.description || '',
-        icon: 'Rocket',
-        category: 'Campaigns & Learning',
-        color: 'purple',
-        pageLayout: 'card',
-        isCustom: true,
-        isPublished: true,
-        metadata: { campaignId, source: 'builder' },
-      });
-    } catch (sitemapErr) {
-      console.warn("Sitemap sync on publish skipped:", sitemapErr);
-    }
-    res.json({ success: true, campaign });
-  } catch (error) {
+    const campaign = await storage.getDesignerCampaignById(campaignId);
+    if (!campaign) return res.status(404).json({ error: "Campaign not found" });
+
+    const updated = await storage.upsertDesignerCampaign(campaignId, { isPublished: true });
+
+    // Create or update sitemap entry
+    await storage.upsertSitemapEntryByPath(`/play/${campaignId}`, {
+      name: updated.name,
+      path: `/play/${campaignId}`,
+      description: updated.description || "",
+      icon: "Play",
+      category: "Campaigns & Learning",
+      color: "purple",
+      isPublished: true,
+      isCustom: true,
+      pageLayout: "card",
+      metadata: { campaignId, source: 'builder' }
+    });
+
+    res.json(updated);
+  } catch (error: any) {
     console.error("Publish campaign error:", error);
-    res.status(500).json({ error: "Failed to publish campaign" });
+    res.status(500).json({ error: error.message });
   }
 });
 
 router.post("/api/designer/campaigns/:campaignId/unpublish", isAdmin, async (req, res) => {
   try {
     const { campaignId } = req.params;
-    const campaign = await storage.upsertDesignerCampaign(campaignId, { isPublished: false });
+    const campaign = await storage.getDesignerCampaignById(campaignId);
+    if (!campaign) return res.status(404).json({ error: "Campaign not found" });
+
+    const updated = await storage.upsertDesignerCampaign(campaignId, { isPublished: false });
+
+    // Update sitemap entry to unpublished
     try {
       await storage.upsertSitemapEntryByPath(`/play/${campaignId}`, {
         isPublished: false,
@@ -331,10 +338,11 @@ router.post("/api/designer/campaigns/:campaignId/unpublish", isAdmin, async (req
     } catch (sitemapErr) {
       console.warn("Sitemap sync on unpublish skipped:", sitemapErr);
     }
-    res.json({ success: true, campaign });
-  } catch (error) {
+
+    res.json(updated);
+  } catch (error: any) {
     console.error("Unpublish campaign error:", error);
-    res.status(500).json({ error: "Failed to unpublish campaign" });
+    res.status(500).json({ error: error.message });
   }
 });
 

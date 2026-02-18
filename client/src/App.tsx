@@ -1,6 +1,6 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GameProvider } from "@/hooks/useGameSession";
@@ -40,7 +40,21 @@ import BehaviorAnalysis from "@/pages/BehaviorAnalysis";
 import MarketingDashboard from "@/pages/MarketingDashboard";
 import FontCustomizer from "@/components/FontCustomizer";
 
-function Router() {
+function DynamicRouter() {
+  const [location] = useLocation();
+  const { data: sitemap = { entries: [] } } = useQuery({
+    queryKey: ["/api/sitemap"],
+    queryFn: () => fetch("/api/sitemap").then((res) => res.json()),
+  });
+
+  const customRoutes = sitemap.entries
+    .filter((e: any) => e.isCustom && e.isPublished && e.path.startsWith("/play/"))
+    .map((e: any) => (
+      <Route key={e.path} path={e.path}>
+        <CampaignPlayer />
+      </Route>
+    ));
+
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -72,6 +86,7 @@ function Router() {
       <Route path="/behavior" component={BehaviorAnalysis} />
       <Route path="/videos" component={VideoGallery} />
       <Route path="/marketing" component={MarketingDashboard} />
+      {customRoutes}
       <Route component={NotFound} />
     </Switch>
   );
@@ -97,7 +112,7 @@ function App() {
             <AgentChatProvider>
               <GlobalEffectsProvider>
                 <Toaster />
-                <Router />
+                <DynamicRouter />
                 <QuickNav />
                 <GlobalEffectsOverlay />
                 <AchievementManager />
