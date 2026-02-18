@@ -6,7 +6,7 @@ import {
   GraduationCap, Users, MessageSquare, Map, Layers, QrCode, 
   Briefcase, Menu, X, Code, FileCode, Puzzle, Wrench,
   Copy, GitBranch, Download, Brain, AlertTriangle, BookOpen,
-  Network, Radio, Gauge
+  Network, Radio, Gauge, Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -2121,6 +2121,207 @@ export default function Wiki() {
               <li>Use manual compress before starting a new investigation phase</li>
               <li>Watch the token bar to understand your remaining context budget</li>
               <li>Critical findings survive compression, but verbose tool output may not</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'content-workflows',
+      title: 'Content Development Workflows',
+      icon: <Wrench className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Content Development Workflows</h2>
+          <p className="text-stone-300 leading-relaxed">
+            These workflows are designed to keep you in a creative flow state. Whether you have a sudden 
+            spark of inspiration or a systematic gap to fill, each path guides you from idea to published 
+            content without breaking your momentum. Every workflow aligns with the platform's pedagogy: 
+            80% hands-on practice, 20% theory, adaptive teaching for all 5 learning styles, and portfolio-ready outcomes.
+          </p>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> Workflow 1: "Spark to Campaign"
+            </h3>
+            <p className="text-stone-400 text-sm mb-3 italic">When inspiration hits — ride the wave from idea to live content.</p>
+            <ol className="space-y-3 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">1.</span>
+                <div><strong className="text-teal-300">Capture the idea in NEXUS Agent chat</strong> — describe the scenario loosely, don't overthink it. The AI thrives on raw concepts.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">2.</span>
+                <div><strong className="text-teal-300">NEXUS generates a recommendation</strong> with starter code, pain points, and suggested learning objectives.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">3.</span>
+                <div><strong className="text-teal-300">Go to Suggestions Dashboard</strong> (<code className="bg-stone-800 px-1 rounded">/suggestions</code>) to refine the recommendation — adjust priority, category, and pain points.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">4.</span>
+                <div><strong className="text-teal-300">Open Curriculum Dashboard &gt; Content Generator</strong> — select the recommendation as source, pick target track, difficulty, and content type (mission, lab, or campaign flow).</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">5.</span>
+                <div><strong className="text-teal-300">Review the AI-generated draft</strong> — edit inline, adjust objectives, key takeaways, XP rewards, and estimated time.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">6.</span>
+                <div><strong className="text-teal-300">Approve and publish</strong> — it's live immediately across the platform.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">7.</span>
+                <div><strong className="text-stone-400">Optionally open Campaign Builder</strong> to create a full investigation flow around the new content.</div>
+              </li>
+            </ol>
+          </div>
+
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3 flex items-center gap-2">
+              <Target className="w-4 h-4" /> Workflow 2: "Gap-Fill"
+            </h3>
+            <p className="text-stone-400 text-sm mb-3 italic">Systematic curriculum improvement — find what's missing and fill it.</p>
+            <ol className="space-y-3 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-teal-500 font-bold min-w-[20px]">1.</span>
+                <div><strong className="text-teal-300">Check Curriculum Dashboard stats</strong> — identify tracks with few missions or missing difficulty levels.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-teal-500 font-bold min-w-[20px]">2.</span>
+                <div><strong className="text-teal-300">Review Suggestions Dashboard</strong> for agent-generated recommendations related to that gap.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-teal-500 font-bold min-w-[20px]">3.</span>
+                <div><strong className="text-teal-300">Use Content Generator</strong> with pain points describing the gap — be specific about what's missing.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-teal-500 font-bold min-w-[20px]">4.</span>
+                <div><strong className="text-teal-300">Review, edit, approve</strong> the draft — ensure it connects to existing content in the track.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-teal-500 font-bold min-w-[20px]">5.</span>
+                <div><strong className="text-teal-300">Test by playing through</strong> as a student in Campaign Player — does the flow make sense?</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-teal-500 font-bold min-w-[20px]">6.</span>
+                <div><strong className="text-teal-300">Iterate based on player analytics</strong> — watch completion rates and adjust difficulty.</div>
+              </li>
+            </ol>
+          </div>
+
+          <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center gap-2">
+              <Zap className="w-4 h-4" /> Workflow 3: "Quick Deploy"
+            </h3>
+            <p className="text-stone-400 text-sm mb-3 italic">Drop a clue or artifact fast — minimal steps, immediate impact.</p>
+            <ol className="space-y-3 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold min-w-[20px]">1.</span>
+                <div><strong className="text-purple-300">Open Admin &gt; Collectibles Library</strong> (or Quick Push section).</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold min-w-[20px]">2.</span>
+                <div><strong className="text-purple-300">Pick a clue template</strong> or create a custom collectible.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold min-w-[20px]">3.</span>
+                <div><strong className="text-purple-300">Select target zones</strong> — terminal, campaign area, investigation workspace, etc.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold min-w-[20px]">4.</span>
+                <div><strong className="text-purple-300">Link to campaigns</strong> if the collectible is relevant to an active investigation.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-500 font-bold min-w-[20px]">5.</span>
+                <div><strong className="text-purple-300">Push</strong> — it's live in those zones immediately.</div>
+              </li>
+            </ol>
+          </div>
+
+          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3 flex items-center gap-2">
+              <GraduationCap className="w-4 h-4" /> Workflow 4: "Deep Dive Track Creation"
+            </h3>
+            <p className="text-stone-400 text-sm mb-3 italic">Building a full specialization track — the most thorough workflow.</p>
+            <ol className="space-y-3 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">1.</span>
+                <div><strong className="text-amber-300">Plan the track structure</strong> — define prerequisites, target audience, and high-level learning objectives.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">2.</span>
+                <div><strong className="text-teal-300">Seed from static config or start fresh</strong> in the Curriculum Dashboard.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">3.</span>
+                <div><strong className="text-teal-300">Create missions one by one</strong> using Content Generator — each mission should map to specific real-world job skills.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">4.</span>
+                <div>
+                  <strong className="text-teal-300">Add exercises per mission</strong> — use the full range of types:
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {['prompt_craft', 'comparison', 'crew_build', 'eval_run', 'observation', 'debate', 'failure_analysis', 'reflection'].map(type => (
+                      <span key={type} className="bg-stone-800 text-stone-400 text-[10px] px-1.5 py-0.5 rounded font-mono">{type}</span>
+                    ))}
+                  </div>
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">5.</span>
+                <div>
+                  <strong className="text-teal-300">Set teachingAdaptations</strong> for all 5 learning styles:
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {['experiential', 'visual', 'analytical', 'social', 'pragmatic'].map(style => (
+                      <span key={style} className="bg-teal-950/40 text-teal-400 text-[10px] px-1.5 py-0.5 rounded">{style}</span>
+                    ))}
+                  </div>
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">6.</span>
+                <div><strong className="text-teal-300">Define key takeaways and platform tools</strong> for each mission.</div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-500 font-bold min-w-[20px]">7.</span>
+                <div><strong className="text-amber-300">Activate the track</strong> — players can discover it immediately.</div>
+              </li>
+            </ol>
+          </div>
+
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-5">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3 flex items-center gap-2">
+              <BookOpen className="w-4 h-4" /> Pedagogy Alignment Checklist
+            </h3>
+            <p className="text-stone-400 text-sm mb-3">
+              Before publishing any content, run through these quick checks to ensure alignment with the platform's learning philosophy:
+            </p>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+                <span>Does each mission have clear objectives tied to <strong>real job skills</strong>?</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+                <span>Is there <strong>80% hands-on, 20% theory</strong>? (exercises outnumber lecture content)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+                <span>Are all <strong>5 learning style adaptations</strong> filled in? (experiential, visual, analytical, social, pragmatic)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+                <span>Does the <strong>difficulty progression</strong> make sense within the track?</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+                <span>Are <strong>XP rewards balanced</strong> with effort and difficulty?</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+                <span>Can a student build <strong>portfolio evidence</strong> from this content?</span>
+              </li>
             </ul>
           </div>
         </div>

@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import {
   BookOpen, ChevronDown, ChevronRight, Save, RefreshCw, Target,
   Layers, Brain, Globe, Edit, X, Check, Trash2, Plus, Zap, Clock,
-  Star, GraduationCap, AlertTriangle, Sparkles, Loader2
+  Star, GraduationCap, AlertTriangle, Sparkles, Loader2, Wrench
 } from "lucide-react";
 
 interface TrackStat {
@@ -65,6 +65,7 @@ export function CurriculumSection() {
   const [editingMission, setEditingMission] = useState<string | null>(null);
   const [missionEditForm, setMissionEditForm] = useState<Record<string, any>>({});
 
+  const [workflowGuideOpen, setWorkflowGuideOpen] = useState(false);
   const [genOpen, setGenOpen] = useState(false);
   const [genContentType, setGenContentType] = useState<string>("mission");
   const [genTargetTrack, setGenTargetTrack] = useState<string>("");
@@ -283,6 +284,40 @@ export function CurriculumSection() {
           ))}
         </div>
       )}
+
+      <Card className={`bg-[#0a0500] transition-colors ${workflowGuideOpen ? 'border-teal-800/40' : 'border-stone-800/40'}`} data-testid="workflow-guide-card">
+        <CardHeader className="p-3 pb-0 cursor-pointer" onClick={() => setWorkflowGuideOpen(o => !o)}>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm text-teal-500 flex items-center gap-2">
+              <Wrench className="w-4 h-4" /> Content Workflow Guide
+            </CardTitle>
+            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-stone-600" data-testid="toggle-workflow-guide">
+              {workflowGuideOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            </Button>
+          </div>
+        </CardHeader>
+        {workflowGuideOpen && (
+          <CardContent className="p-3 pt-2 space-y-2">
+            {[
+              { icon: <Sparkles className="w-3.5 h-3.5 text-amber-400" />, title: 'Spark to Campaign', desc: 'Idea → NEXUS → Recommendation → Content Generator → Publish' },
+              { icon: <Target className="w-3.5 h-3.5 text-teal-400" />, title: 'Gap-Fill', desc: 'Stats → Identify gap → Content Generator → Test → Iterate' },
+              { icon: <Zap className="w-3.5 h-3.5 text-purple-400" />, title: 'Quick Deploy', desc: 'Collectibles → Template → Zones → Push' },
+              { icon: <GraduationCap className="w-3.5 h-3.5 text-amber-300" />, title: 'Deep Dive Track', desc: 'Plan → Seed → Missions → Exercises → Styles → Activate' },
+            ].map(wf => (
+              <div key={wf.title} className="flex items-center gap-2 p-2 bg-stone-950/50 border border-stone-800/30 rounded" data-testid={`workflow-${wf.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                {wf.icon}
+                <div className="min-w-0 flex-1">
+                  <span className="text-[11px] font-semibold text-white">{wf.title}</span>
+                  <p className="text-[9px] text-stone-500 truncate">{wf.desc}</p>
+                </div>
+              </div>
+            ))}
+            <p className="text-[9px] text-stone-600 pt-1">
+              Full docs in <a href="/wiki" className="text-teal-500 hover:underline">Wiki</a>
+            </p>
+          </CardContent>
+        )}
+      </Card>
 
       <Card className={`bg-[#0a0500] transition-colors ${genOpen ? 'border-amber-800/40' : 'border-stone-800/40'}`} data-testid="content-generator-card">
         <CardHeader className="p-3 pb-0 cursor-pointer" onClick={() => setGenOpen(o => !o)}>

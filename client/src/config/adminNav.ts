@@ -49,7 +49,6 @@ export const NAV_GROUPS = [
     { id: "behavior", label: "Behavior Analytics", icon: "Eye" },
   ]},
   { label: "Content", color: "teal", items: [
-    { id: "gameplay", label: "Gameplay Editor", icon: "Layers" },
     { id: "collectibles", label: "Collectibles", icon: "Database" },
     { id: "quests", label: "Quests", icon: "Trophy" },
     { id: "messages", label: "Messages", icon: "MessageSquare" },
@@ -71,7 +70,6 @@ export const NAV_GROUPS = [
     { id: "terminal", label: "Commands", icon: "Terminal" },
     { id: "config", label: "Config", icon: "Settings" },
     { id: "effects", label: "Effects Playground", icon: "Sparkles" },
-    { id: "quickpush", label: "Quick Push", icon: "Zap" },
   ]},
   { label: "Communication", color: "orange", items: [
     { id: "modmail", label: "Modmail", icon: "MessageSquare" },
