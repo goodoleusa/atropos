@@ -189,19 +189,28 @@ export const MEMORY_TRIGGERS = {
   task_complete: true, // Compress on task completion
 };
 
-// Dynamic system prompt builder
+export interface MissionBusSummary {
+  recentFindings: Array<{ title: string; source: string; severity?: string; status: string }>;
+  activeTasks: Array<{ type: string; status: string; progress: number }>;
+}
+
+export interface CrewStatus {
+  agents: Array<{ id: string; name: string; lastRun?: string; status: string }>;
+}
+
 export function buildSystemPrompt(options: {
   modules?: string[];
   compressed_context?: string;
   task_focus?: string;
   coreOverride?: string;
   customInstructions?: string;
+  missionBus?: MissionBusSummary;
+  crewStatus?: CrewStatus;
 }) {
-  const { modules = [], compressed_context, task_focus, coreOverride, customInstructions } = options;
+  const { modules = [], compressed_context, task_focus, coreOverride, customInstructions, missionBus, crewStatus } = options;
 
   let prompt = (coreOverride?.trim() || AGENT_CORE) + '\n\n';
 
-  // Add only needed capability modules
   if (modules.length > 0) {
     prompt += '## ACTIVE MODULES\n';
     modules.forEach(mod => {
@@ -212,24 +221,48 @@ export function buildSystemPrompt(options: {
     prompt += '\n';
   }
 
-  // Inject compressed context if provided
   if (compressed_context) {
     prompt += `## PRIOR CONTEXT\n${compressed_context}\n\n`;
   }
 
-  // Add task focus if provided
+  if (missionBus) {
+    const { recentFindings, activeTasks } = missionBus;
+    if (recentFindings.length > 0 || activeTasks.length > 0) {
+      prompt += `## MISSION BUS (Bird's-Eye View)\n`;
+      if (recentFindings.length > 0) {
+        prompt += `Recent findings across modules:\n`;
+        recentFindings.slice(0, 8).forEach(f => {
+          prompt += `- [${f.source}] ${f.title}${f.severity ? ` (${f.severity})` : ''} — ${f.status}\n`;
+        });
+      }
+      if (activeTasks.length > 0) {
+        prompt += `Background tasks: ${activeTasks.filter(t => t.status === 'running').length} running, ${activeTasks.filter(t => t.status === 'completed').length} completed\n`;
+      }
+      prompt += `You can reference these findings, suggest piping results between modules, or delegate deeper analysis to crew agents.\n\n`;
+    }
+  }
+
+  if (crewStatus) {
+    const { agents } = crewStatus;
+    if (agents.length > 0) {
+      prompt += `## CREW STATUS\n`;
+      agents.forEach(a => {
+        prompt += `- ${a.name}: ${a.status}${a.lastRun ? ` (last: ${a.lastRun})` : ''}\n`;
+      });
+      prompt += `As lead architect, you can recommend deploying specific crew agents for specialized analysis.\n\n`;
+    }
+  }
+
   if (task_focus) {
     prompt += `## CURRENT FOCUS\n${task_focus}\n\n`;
   }
 
-  // Behavior guidelines (always included)
   prompt += `## BEHAVIOR
 - Be concise, technical, slightly mysterious
 - Parse payloads, explain effects, suggest next steps
 - Drop cryptic hints about hidden content
 - Never break character as NEXUS`;
 
-  // Add custom instructions if provided
   if (customInstructions?.trim()) {
     prompt += `\n\n## CUSTOM INSTRUCTIONS\n${customInstructions}`;
   }
