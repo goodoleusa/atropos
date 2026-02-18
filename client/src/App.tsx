@@ -61,6 +61,7 @@ function Router() {
       <Route path="/ai-lab">{() => { window.location.replace('/investigate?tab=ai-lab'); return null; }}</Route>
       <Route path="/investigate" component={InvestigationWorkspace} />
       <Route path="/agents" component={Agents} />
+      <Route path="/agent" component={Agents} />
       <Route path="/crew-builder" component={CrewBuilder} />
       <Route path="/builder" component={CampaignBuilder} />
       <Route path="/campaigns" component={CampaignsHub} />
