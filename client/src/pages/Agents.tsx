@@ -18,6 +18,7 @@ import {
   Globe, Skull, Radio, Database, ExternalLink, Settings, Radar, ShieldAlert,
   ChevronRight, RotateCcw
 } from 'lucide-react';
+import { CrewStatusPanel } from '@/components/CrewStatusPanel';
 
 interface SecurityAgent {
   id: string;
@@ -480,6 +481,18 @@ export default function Agents() {
             </div>
           ))}
         </div>
+
+        {/* ===== CREW STATUS SIDEBAR ===== */}
+        {wizardStep === 1 && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+            <div className="lg:col-span-3">
+              <CrewStatusPanel compact />
+            </div>
+            <div className="hidden lg:block">
+              <CrewStatusPanel />
+            </div>
+          </div>
+        )}
 
         {/* ===== STEP 1: SELECT AGENT ===== */}
         {wizardStep === 1 && (

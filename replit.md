@@ -4,7 +4,8 @@
 Atropos is a professional-grade cybersecurity training and investigation platform that combines:
 - **Player Progression System**: XP, levels, skills, achievements, leaderboards, daily challenges
 - **Experiential Learning Curriculum**: 427-line framework with 6 OSINT specialization tracks
-- **NEXUS AI Agent**: Adaptive teaching assistant with 23 investigation campaigns
+- **NEXUS Lead Architect**: Multi-agent orchestrator with crew delegation, Mission Bus integration, and automatic context compression
+- **Crew Orchestration**: 6 specialist agents (VulnAnalyst, OSINTAnalyst, ThreatIntel, SecretHunter, NetworkRecon, Synthesis) with real-time status tracking
 - **Atropos Scanner**: Rust-based OSINT & vulnerability scanner with Lua scripting
 - **QR C2 Framework**: Educational command & control system with guided missions, 6 hands-on labs, and multi-target simulation
 - **SpiderFoot Integration**: OSINT reconnaissance with streaming scan results and export capabilities
@@ -12,6 +13,15 @@ Atropos is a professional-grade cybersecurity training and investigation platfor
 The platform features a molten bronze/industrial aesthetic, emphasizes hands-on learning (experience > degrees), and provides portfolio-based skill assessment for career development in cybersecurity.
 
 ## Latest Updates (Feb 2026)
+
+### NEXUS Lead Architect & Crew Orchestration (Feb 18 2026)
+- **NEXUS Elevated to Lead Architect**: System prompt dynamically includes Mission Bus findings (up to 8 latest) and crew agent status for bird's-eye platform awareness
+- **Crew Status Panel**: `client/src/components/CrewStatusPanel.tsx` — real-time display of 6 specialist agents with status (idle/running/complete/error), findings count, tier-based colors (red/amber/emerald)
+- **Mission Bus Integration**: Agent chat injects live mission findings and background tasks into NEXUS context on every message via `useMissionFindings` and `useBackgroundTasks` hooks
+- **Memory Compression UI**: Manual compress button, token/message count status bar, compressed state badge, bus findings count badge in `AgentChat.tsx`
+- **System Prompt Upgrade**: `buildSystemPrompt` in `client/src/config/agentPrompts.ts` now accepts `missionBus` and `crewStatus` parameters
+- **Wiki Docs Updated**: New wiki sections for Crew Orchestration, Mission Bus, and Context & Memory Management on `/wiki` page
+- **Key Files**: `client/src/config/agentPrompts.ts`, `client/src/components/AgentChat.tsx`, `client/src/components/CrewStatusPanel.tsx`, `client/src/pages/Wiki.tsx`
 
 ### AdminDashboard Modularization (Feb 18 2026)
 - **Reduced from 2411 → 385 lines**: Parent file now contains only layout, auth gate, sidebar navigation, and content routing

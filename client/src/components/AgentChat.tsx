@@ -996,6 +996,19 @@ ${learningProfile}`;
                   <span className="text-[9px] ml-0.5 hidden md:inline">Report</span>
                 </Button>
                 <div className="w-px h-4 bg-amber-900/20 mx-1" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={compressContext}
+                  disabled={isCompressing || messages.length < 3}
+                  title={promptConfig.compressedContext ? 'Re-compress context' : 'Compress context to save memory'}
+                  className={`h-7 px-1 ${promptConfig.compressedContext ? 'text-teal-500' : 'text-stone-500 hover:text-teal-500'}`}
+                  data-testid="compress-context-btn"
+                >
+                  {isCompressing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                  <span className="text-[9px] ml-0.5 hidden md:inline">{isCompressing ? 'Compressing' : 'Compress'}</span>
+                </Button>
+                <div className="w-px h-4 bg-amber-900/20 mx-1" />
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -1084,6 +1097,31 @@ ${learningProfile}`;
             </div>
           )}
         </DialogHeader>
+
+        {/* Context Memory Bar */}
+        {messages.length > 0 && (
+          <div className="flex-shrink-0 flex items-center gap-2 px-2 py-1 bg-stone-950/50 border-b border-stone-800/30" data-testid="memory-status-bar">
+            <Zap className={`w-3 h-3 ${promptConfig.compressedContext ? 'text-teal-400' : 'text-stone-600'}`} />
+            <span className="text-[9px] text-stone-500">
+              {messages.length} msgs · ~{estimateTokens(messages.map(m => m.content).join(' ')).toLocaleString()} tokens
+            </span>
+            {promptConfig.compressedContext && (
+              <Badge variant="outline" className="text-[7px] border-teal-900/30 text-teal-500 px-1 py-0 h-3.5" data-testid="compressed-badge">
+                COMPRESSED
+              </Badge>
+            )}
+            {isCompressing && (
+              <Badge className="text-[7px] bg-amber-500/20 text-amber-400 border-amber-500/30 px-1 py-0 h-3.5 animate-pulse">
+                COMPRESSING...
+              </Badge>
+            )}
+            {missionBusSummary && missionBusSummary.recentFindings.length > 0 && (
+              <Badge variant="outline" className="text-[7px] border-amber-900/30 text-amber-500 px-1 py-0 h-3.5 ml-auto" data-testid="bus-findings-badge">
+                {missionBusSummary.recentFindings.length} bus findings
+              </Badge>
+            )}
+          </div>
+        )}
 
         {/* Mission Status Bar — compact single-line "you are here" */}
         {(() => {
