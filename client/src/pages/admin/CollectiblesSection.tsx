@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Key, Sparkles, Zap, Edit, Trash2, Database, Star, Moon, Lightbulb, ArrowRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Key, Sparkles, Zap, Edit, Trash2, Database, Star, Moon, Lightbulb, Send, Map } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { MYSTICAL_CARDS } from "@/config/messages";
 import { QUANTUM_EVENTS, QUANTUM_MESSAGES } from "@/config/quantumConfig";
@@ -21,6 +22,60 @@ interface Clue {
   location: string;
   difficulty: number;
 }
+
+interface SharedClue {
+  clueId: string;
+  name: string;
+  description: string;
+  content: string;
+  tags: string[];
+  usedInCampaigns: string[];
+  linkedClues: string[];
+  difficulty: number;
+  category: string;
+}
+
+interface ClueTemplate {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  difficulty: number;
+}
+
+const CLUE_CATEGORIES = ["general", "osint", "crypto", "network", "social", "forensics"];
+
+const CLUE_TEMPLATES: ClueTemplate[] = [
+  { id: 'intel-basic', name: 'Intel Drop', description: 'Basic intelligence document', type: 'intel', difficulty: 1 },
+  { id: 'artifact-data', name: 'Data Fragment', description: 'Encrypted data piece', type: 'artifact', difficulty: 2 },
+  { id: 'secret-code', name: 'Secret Code', description: 'Hidden cipher or passphrase', type: 'secret', difficulty: 3 },
+  { id: 'trail-marker', name: 'Trail Marker', description: 'Breadcrumb to next clue', type: 'trail', difficulty: 1 },
+  { id: 'intel-classified', name: 'Classified File', description: 'High-value classified intel', type: 'intel', difficulty: 4 },
+  { id: 'artifact-hardware', name: 'Hardware Token', description: 'Physical security artifact', type: 'artifact', difficulty: 3 },
+];
+
+const LOCATION_ZONES = [
+  { id: 'terminal', name: 'Terminal', icon: '💻' },
+  { id: 'home', name: 'Home Page', icon: '🏠' },
+  { id: 'ai-lab', name: 'AI Lab', icon: '🧠' },
+  { id: 'report', name: 'Report Builder', icon: '📋' },
+  { id: 'investigate', name: 'Investigation', icon: '🔍' },
+  { id: 'campaign', name: 'Campaign Area', icon: '🎯' },
+  { id: 'debug', name: 'Debug Page', icon: '🐛' },
+];
+
+const DifficultyStars = ({ value, onChange }: { value: number; onChange?: (v: number) => void }) => (
+  <div className="flex gap-0.5">
+    {[1, 2, 3, 4, 5].map((i) => (
+      <Star
+        key={i}
+        className={`w-3.5 h-3.5 ${i <= value ? "text-amber-500 fill-amber-500" : "text-stone-700"} ${onChange ? "cursor-pointer" : ""}`}
+        onClick={() => onChange?.(i)}
+        data-testid={`difficulty-star-${i}`}
+      />
+    ))}
+  </div>
+);
 
 interface Artifact {
   id: string;
@@ -68,6 +123,14 @@ export function CollectiblesSection() {
   const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null);
   const [newQuantumMessage, setNewQuantumMessage] = useState("");
   const [editingMysticalCard, setEditingMysticalCard] = useState<MysticalCard | null>(null);
+
+  const [newClue, setNewClue] = useState<{ clueId: string; name: string; description: string; content: string; tags: string[]; difficulty: number; category: string }>({ clueId: "", name: "", description: "", content: "", tags: [], difficulty: 1, category: "general" });
+  const [editingClue, setEditingClue] = useState<SharedClue | null>(null);
+  const [clueDialogOpen, setClueDialogOpen] = useState(false);
+  const [quickPushTemplate, setQuickPushTemplate] = useState<ClueTemplate | null>(null);
+  const [quickPushZones, setQuickPushZones] = useState<string[]>([]);
+  const [quickPushName, setQuickPushName] = useState("");
+  const [quickPushContent, setQuickPushContent] = useState("");
   
   // Zodiac flavor effects - random items/tips when users engage with zodiac
   const [zodiacEffects, setZodiacEffects] = useState<Record<string, { collectibles: string[]; tips: string[] }>>({});
@@ -90,6 +153,95 @@ export function CollectiblesSection() {
     queryKey: ["/api/clues"],
     queryFn: () => fetch("/api/clues").then((r) => r.json())
   });
+
+  const { data: sharedClues = [] } = useQuery<SharedClue[]>({
+    queryKey: ["/api/designer/clues"],
+    queryFn: () => fetch("/api/designer/clues").then((r) => r.json())
+  });
+
+  const upsertClue = useMutation({
+    mutationFn: (clue: { clueId: string; name: string; description: string; content: string; tags: string[]; difficulty: number; category: string }) =>
+      fetch(`/api/designer/clues/${clue.clueId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(clue)
+      }).then(async (r) => {
+        if (!r.ok) throw new Error((await r.json()).error || "Failed to save clue");
+        return r.json();
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/designer/clues"] });
+      setClueDialogOpen(false);
+      setEditingClue(null);
+      setNewClue({ clueId: "", name: "", description: "", content: "", tags: [], difficulty: 1, category: "general" });
+      toast({ title: "Clue saved" });
+    },
+    onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" })
+  });
+
+  const deleteClue = useMutation({
+    mutationFn: (clueId: string) =>
+      fetch(`/api/designer/clues/${clueId}`, { method: "DELETE" }).then(async (r) => {
+        if (!r.ok) throw new Error((await r.json()).error || "Failed to delete clue");
+        return r.json();
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/designer/clues"] });
+      toast({ title: "Clue deleted" });
+    },
+    onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" })
+  });
+
+  const quickPushClue = useMutation({
+    mutationFn: (clueData: { id: string; name: string; description: string; content: string; location: string; difficulty: number }) =>
+      fetch("/api/clues", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(clueData)
+      }).then(async (r) => {
+        if (!r.ok) throw new Error((await r.json()).error || "Failed to push clue");
+        return r.json();
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/clues"] });
+      setQuickPushTemplate(null);
+      setQuickPushZones([]);
+      setQuickPushName("");
+      setQuickPushContent("");
+      toast({ title: "Clue pushed", description: `Deployed to ${quickPushZones.length} zone(s)` });
+    },
+    onError: (e: Error) => toast({ title: "Push failed", description: e.message, variant: "destructive" })
+  });
+
+  const handleQuickPush = () => {
+    if (!quickPushTemplate && !quickPushName) {
+      toast({ title: "Error", description: "Select a template or enter a custom name", variant: "destructive" });
+      return;
+    }
+    if (quickPushZones.length === 0) {
+      toast({ title: "Error", description: "Select at least one zone", variant: "destructive" });
+      return;
+    }
+    quickPushClue.mutate({
+      id: `push-${Date.now()}`,
+      name: quickPushName || quickPushTemplate?.name || "Unnamed Clue",
+      description: quickPushTemplate?.description || "Quick pushed clue",
+      content: quickPushContent || `Deployed via Quick Push to: ${quickPushZones.join(", ")}`,
+      location: quickPushZones.join(","),
+      difficulty: quickPushTemplate?.difficulty || 2,
+    });
+  };
+
+  const openClueDialog = (clue?: SharedClue) => {
+    if (clue) {
+      setEditingClue(clue);
+      setNewClue({ clueId: clue.clueId, name: clue.name, description: clue.description, content: clue.content, tags: clue.tags || [], difficulty: clue.difficulty || 1, category: clue.category || "general" });
+    } else {
+      setEditingClue(null);
+      setNewClue({ clueId: "", name: "", description: "", content: "", tags: [], difficulty: 1, category: "general" });
+    }
+    setClueDialogOpen(true);
+  };
 
   const { data: artifacts = [] } = useQuery<Artifact[]>({
     queryKey: ["/api/artifacts"],
@@ -299,39 +451,234 @@ export function CollectiblesSection() {
           <Database className="w-5 h-5" /> Collectibles Library
         </h3>
         <Badge variant="outline" className="border-amber-700 text-amber-400">
-          Clues + Artifacts + Popups
+          {sharedClues.length} Clues · {artifacts.length} Artifacts · Popups
         </Badge>
       </div>
 
-      {/* Clues — managed in Gameplay Editor */}
+      {/* Clue Library */}
       <Card className="bg-[#0a0500] border-amber-900/30">
-        <CardContent className="p-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Key className="w-5 h-5 text-amber-500 shrink-0" />
-            <div>
-              <p className="text-amber-500 text-sm font-mono font-bold">Clues ({clues.length})</p>
-              <p className="text-stone-500 text-xs">Clue management has moved to the Gameplay Editor for a single source of truth.</p>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+              <Key className="w-4 h-4" /> Clue Library ({sharedClues.length})
+            </CardTitle>
+            <CardDescription className="text-stone-500 text-xs">
+              Designer clues — create, edit, and manage shared clue definitions
+            </CardDescription>
+          </div>
+          <Button
+            className="bg-amber-700 hover:bg-amber-600 text-black"
+            onClick={() => openClueDialog()}
+            data-testid="add-clue-btn"
+          >
+            <Plus className="w-4 h-4 mr-2" /> Add Clue
+          </Button>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          {sharedClues.map((clue) => (
+            <Card key={clue.clueId} className="bg-black/30 border-amber-900/30" data-testid={`clue-card-${clue.clueId}`}>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+                  <Key className="w-3 h-3" /> {clue.name}
+                </CardTitle>
+                <CardDescription className="text-stone-600 text-xs font-mono">{clue.clueId}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="text-stone-400 line-clamp-2">{clue.description}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge variant="outline" className="border-amber-700 text-amber-400 text-[10px]">
+                    {clue.category || "general"}
+                  </Badge>
+                  <DifficultyStars value={clue.difficulty || 1} />
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {clue.tags?.map((tag) => (
+                    <Badge key={tag} variant="outline" className="border-stone-700 text-stone-500 text-[8px]">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openClueDialog(clue)}
+                    className="border-amber-700 text-amber-400"
+                    data-testid={`edit-clue-${clue.clueId}`}
+                  >
+                    <Edit className="w-3 h-3 mr-1" /> Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => deleteClue.mutate(clue.clueId)}
+                    className="text-red-400"
+                    data-testid={`delete-clue-${clue.clueId}`}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+          {sharedClues.length === 0 && (
+            <p className="text-stone-600 col-span-3 text-center py-8">No clues defined yet. Click "Add Clue" to create one.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Clue Dialog */}
+      <Dialog open={clueDialogOpen} onOpenChange={setClueDialogOpen}>
+        <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
+          <DialogHeader>
+            <DialogTitle className="text-amber-600 font-orbitron">{editingClue ? "Edit Clue" : "Create Clue"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              placeholder="Clue ID (e.g., clue-osint-01)"
+              value={newClue.clueId}
+              onChange={(e) => setNewClue({ ...newClue, clueId: e.target.value })}
+              className="bg-black/50 border-amber-900/30 text-amber-400"
+              disabled={!!editingClue}
+              data-testid="input-clue-id"
+            />
+            <Input
+              placeholder="Name"
+              value={newClue.name}
+              onChange={(e) => setNewClue({ ...newClue, name: e.target.value })}
+              className="bg-black/50 border-amber-900/30 text-amber-400"
+              data-testid="input-clue-name"
+            />
+            <Textarea
+              placeholder="Description"
+              value={newClue.description}
+              onChange={(e) => setNewClue({ ...newClue, description: e.target.value })}
+              className="bg-black/50 border-amber-900/30 text-amber-400"
+              data-testid="input-clue-description"
+            />
+            <Textarea
+              placeholder="Content"
+              value={newClue.content}
+              onChange={(e) => setNewClue({ ...newClue, content: e.target.value })}
+              className="bg-black/50 border-amber-900/30 text-amber-400"
+              data-testid="input-clue-content"
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-amber-600 text-[10px] uppercase font-bold">Category</Label>
+                <Select value={newClue.category} onValueChange={(v) => setNewClue({ ...newClue, category: v })}>
+                  <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-400" data-testid="select-clue-category">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-stone-950 border-amber-900/30">
+                    {CLUE_CATEGORIES.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-amber-600 text-[10px] uppercase font-bold">Difficulty</Label>
+                <div className="pt-2">
+                  <DifficultyStars value={newClue.difficulty} onChange={(v) => setNewClue({ ...newClue, difficulty: v })} />
+                </div>
+              </div>
+            </div>
+            <Input
+              placeholder="Tags (comma-separated)"
+              value={newClue.tags.join(", ")}
+              onChange={(e) => setNewClue({ ...newClue, tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean) })}
+              className="bg-black/50 border-amber-900/30 text-amber-400"
+              data-testid="input-clue-tags"
+            />
+            <Button
+              onClick={() => upsertClue.mutate(newClue)}
+              className="w-full bg-amber-700 hover:bg-amber-600 text-black"
+              disabled={upsertClue.isPending}
+              data-testid="save-clue-btn"
+            >
+              {upsertClue.isPending ? "Saving..." : editingClue ? "Update Clue" : "Create Clue"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Quick Push to Zone */}
+      <Card className="bg-[#0a0500] border-teal-900/30">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-teal-400 text-sm font-mono flex items-center gap-2">
+            <Send className="w-4 h-4" /> Quick Push to Zone
+          </CardTitle>
+          <CardDescription className="text-stone-500 text-xs">
+            Rapidly deploy clues to game zones
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <Label className="text-[10px] text-teal-500 uppercase">Template</Label>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 mt-1">
+              {CLUE_TEMPLATES.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setQuickPushTemplate(quickPushTemplate?.id === t.id ? null : t)}
+                  className={`p-2 rounded border text-left transition-all text-[10px] ${
+                    quickPushTemplate?.id === t.id
+                      ? "border-teal-500 bg-teal-900/20 text-teal-300"
+                      : "border-stone-800 hover:border-stone-600 text-stone-400"
+                  }`}
+                  data-testid={`qp-template-${t.id}`}
+                >
+                  <p className="font-medium truncate">{t.name}</p>
+                  <span className="text-amber-500">{"★".repeat(t.difficulty)}</span>
+                </button>
+              ))}
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            className="border-amber-700 text-amber-400 shrink-0 flex items-center gap-1 cursor-pointer hover:bg-amber-900/30 min-h-[44px]" 
-            data-testid="clues-xref-gameplay"
-            onClick={() => {
-              // This is a hacky way to trigger a tab change in the parent AdminDashboard
-              // if it was passed as a prop, but since it's likely managed by the parent,
-              // we just provide a toast or a way to signal the change.
-              // For now, we'll assume the user needs to manually click Gameplay tab,
-              // or we can try to find the tab buttons in the DOM.
-              const gameplayTab = document.querySelector('[data-testid="admin-tab-gameplay"]');
-              if (gameplayTab instanceof HTMLElement) {
-                gameplayTab.click();
-              } else {
-                toast({ title: "Navigate to Gameplay Editor", description: "Please click the 'Gameplay' tab in the sidebar to manage clues." });
-              }
-            }}
+          <div>
+            <Label className="text-[10px] text-teal-500 uppercase flex items-center gap-1">
+              <Map className="w-3 h-3" /> Zones
+            </Label>
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              {LOCATION_ZONES.map((z) => (
+                <button
+                  key={z.id}
+                  onClick={() => setQuickPushZones((prev) => prev.includes(z.id) ? prev.filter((x) => x !== z.id) : [...prev, z.id])}
+                  className={`px-2 py-1 rounded border text-xs flex items-center gap-1 transition-all ${
+                    quickPushZones.includes(z.id)
+                      ? "border-teal-500 bg-teal-900/20 text-teal-300"
+                      : "border-stone-800 hover:border-stone-600 text-stone-400"
+                  }`}
+                  data-testid={`qp-zone-${z.id}`}
+                >
+                  <span>{z.icon}</span> {z.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Input
+              placeholder="Custom name override"
+              value={quickPushName}
+              onChange={(e) => setQuickPushName(e.target.value)}
+              className="bg-black/50 border-stone-700 text-xs"
+              data-testid="qp-custom-name"
+            />
+            <Input
+              placeholder="Custom content"
+              value={quickPushContent}
+              onChange={(e) => setQuickPushContent(e.target.value)}
+              className="bg-black/50 border-stone-700 text-xs"
+              data-testid="qp-custom-content"
+            />
+          </div>
+          <Button
+            onClick={handleQuickPush}
+            disabled={quickPushClue.isPending}
+            className="w-full bg-teal-700 hover:bg-teal-600 text-black font-bold"
+            data-testid="qp-push-btn"
           >
-            Open Gameplay Editor <ArrowRight className="w-3 h-3" />
+            <Send className="w-4 h-4 mr-2" />
+            {quickPushClue.isPending ? "Pushing..." : `Push to ${quickPushZones.length} Zone(s)`}
           </Button>
         </CardContent>
       </Card>
