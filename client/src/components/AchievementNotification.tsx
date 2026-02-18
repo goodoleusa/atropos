@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, X, Sparkles } from 'lucide-react';
+import { Trophy, X, Sparkles, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export interface AchievementUnlocked {
@@ -171,43 +171,45 @@ let notificationCallback: ((achievement: AchievementUnlocked) => void) | null = 
 export function useAchievementNotifications() {
   const [currentAchievement, setCurrentAchievement] = useState<AchievementUnlocked | null>(null);
 
-  useEffect(() => {
-    notificationCallback = (achievement: AchievementUnlocked) => {
-      achievementQueue.push(achievement);
-      if (!currentAchievement) {
-        showNext();
-      }
-    };
-
-    return () => {
-      notificationCallback = null;
-    };
-  }, [currentAchievement]);
-
-  const showNext = () => {
+  const showNext = useCallback(() => {
     if (achievementQueue.length > 0) {
       const next = achievementQueue.shift()!;
       setCurrentAchievement(next);
     } else {
       setCurrentAchievement(null);
     }
-  };
+  }, []);
 
-  const handleClose = () => {
+  useEffect(() => {
+    notificationCallback = (achievement: AchievementUnlocked) => {
+      achievementQueue.push(achievement);
+      setCurrentAchievement(prev => {
+        if (!prev) {
+          const next = achievementQueue.shift();
+          return next || null;
+        }
+        return prev;
+      });
+    };
+
+    return () => {
+      notificationCallback = null;
+    };
+  }, []);
+
+  const handleClose = useCallback(() => {
     setCurrentAchievement(null);
-    // Show next after a delay
-    setTimeout(showNext, 500);
-  };
+    setTimeout(() => {
+      if (achievementQueue.length > 0) {
+        const next = achievementQueue.shift()!;
+        setCurrentAchievement(next);
+      }
+    }, 500);
+  }, []);
 
   return {
     currentAchievement,
     handleClose,
-    NotificationComponent: () => (
-      <AchievementNotification 
-        achievement={currentAchievement} 
-        onClose={handleClose} 
-      />
-    )
   };
 }
 
