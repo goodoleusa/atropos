@@ -17,10 +17,11 @@ import { MissionBriefing } from './MissionBriefing';
 import { LearningStyleBadge } from './LearningStyleBadge';
 import { type AIMission, type AICurriculumTrack } from '@/config/aiCurriculum';
 import { useCurriculum } from '@/hooks/useCurriculum';
-import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
+import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS, type MissionBusSummary, type CrewStatus } from '@/config/agentPrompts';
 import { exportAgentSessionToReport } from '@/lib/reportExporter';
 import { useLearningStore } from '@/stores/useLearningStore';
 import { SendToInline } from './SendToMenu';
+import { useMissionFindings, useBackgroundTasks } from '@/hooks/useMissionBus';
 
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
@@ -142,6 +143,25 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
   const [completedExerciseIds, setCompletedExerciseIds] = useState<string[]>(
     () => JSON.parse(localStorage.getItem('atropos_completed_exercises') || '[]')
   );
+
+  const { data: recentFindings } = useMissionFindings({ limit: 8 });
+  const { data: bgTasks } = useBackgroundTasks();
+
+  const missionBusSummary: MissionBusSummary | undefined = recentFindings?.length || bgTasks?.length ? {
+    recentFindings: (recentFindings || []).map(f => ({ title: f.title, source: f.source, severity: f.severity || undefined, status: f.status })),
+    activeTasks: (bgTasks || []).map(t => ({ type: t.taskType, status: t.status, progress: t.progress })),
+  } : undefined;
+
+  const crewStatus: CrewStatus = {
+    agents: [
+      { id: 'vuln_analyst', name: 'VulnAnalyst', status: 'standby' },
+      { id: 'osint_analyst', name: 'OSINTAnalyst', status: 'standby' },
+      { id: 'threat_intel', name: 'ThreatIntel', status: 'standby' },
+      { id: 'secret_hunter', name: 'SecretHunter', status: 'standby' },
+      { id: 'network_recon', name: 'NetworkRecon', status: 'standby' },
+      { id: 'synthesis', name: 'Synthesis', status: 'standby' },
+    ]
+  };
 
   // Auto-start session only when capture is enabled
   useEffect(() => {
@@ -321,7 +341,9 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
         compressed_context: promptConfig.compressedContext,
         task_focus: promptConfig.taskFocus,
         coreOverride: adminConfig?.corePrompt,
-        customInstructions: adminConfig?.customInstructions
+        customInstructions: adminConfig?.customInstructions,
+        missionBus: missionBusSummary,
+        crewStatus,
       });
       
       const contextMessages = [
