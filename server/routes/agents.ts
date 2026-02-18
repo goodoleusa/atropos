@@ -8,6 +8,9 @@ import {
   exportToLangChain
 } from "@shared/agents";
 import { rateLimit, validateSessionToken } from "../security";
+import { db } from "../db";
+import { backgroundTasks, missionFindings } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -77,6 +80,15 @@ router.post("/analyze", rateLimit(10, 60000), async (req: Request, res: Response
       return res.status(400).json({ error: "Invalid session token format" });
     }
 
+    const [bgTask] = await db.insert(backgroundTasks).values({
+      sessionToken: sessionToken || null,
+      taskType: 'agent_analysis',
+      taskName: `${category} analysis (${scanId})`,
+      status: 'running',
+      progress: 0,
+      metadata: { category, scanId, agentIds },
+    }).returning();
+
     const result = await agentOrchestrator.orchestrate(
       scanData,
       scanId,
@@ -84,6 +96,31 @@ router.post("/analyze", rateLimit(10, 60000), async (req: Request, res: Response
       sessionToken,
       { runSynthesis, agentIds }
     );
+
+    const synthesisOutput = result.synthesis?.output || result.agentRuns.map(r => r.output).join('\n\n');
+    const agentNames = result.agentRuns.map(r => r.agentId).join(', ');
+
+    await db.update(backgroundTasks).set({
+      status: 'completed',
+      progress: 100,
+      result: { agents: agentNames, summary: synthesisOutput?.slice(0, 200) },
+      completedAt: new Date(),
+    }).where(eq(backgroundTasks.id, bgTask.id));
+
+    if (synthesisOutput) {
+      await db.insert(missionFindings).values({
+        sessionToken: sessionToken || null,
+        source: 'agent',
+        sourceAgent: agentNames || category,
+        type: 'finding',
+        title: `${category} Multi-Agent Analysis`,
+        content: synthesisOutput,
+        severity: 'medium',
+        status: 'new',
+        sentTo: [],
+        metadata: { scanId, bgTaskId: bgTask.id, agentCount: result.agentRuns.length },
+      });
+    }
 
     res.json(result);
   } catch (error: any) {

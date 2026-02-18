@@ -20,6 +20,7 @@ import { useCurriculum } from '@/hooks/useCurriculum';
 import { buildSystemPrompt, generateCompressionRequest, CAPABILITY_MODULES, MEMORY_TRIGGERS } from '@/config/agentPrompts';
 import { exportAgentSessionToReport } from '@/lib/reportExporter';
 import { useLearningStore } from '@/stores/useLearningStore';
+import { SendToInline } from './SendToMenu';
 
 // OpenRouter models - January 2026
 // Organized by category with easy shortcuts
@@ -1252,6 +1253,18 @@ ${learningProfile}`;
                   )}
                   <pre className="whitespace-pre-wrap text-sm font-mono">{msg.content}</pre>
                   
+                  {msg.role === 'assistant' && msg.content && msg.content.length > 50 && (
+                    <div className="mt-2 flex justify-end">
+                      <SendToInline
+                        content={msg.content}
+                        title={msg.content.slice(0, 80).replace(/\n/g, ' ')}
+                        source="nexus"
+                        sourceAgent="nexus"
+                        type="finding"
+                      />
+                    </div>
+                  )}
+
                   {/* Atropos Scan Suggestions */}
                   {msg.scanSuggestions && msg.scanSuggestions.length > 0 && (
                     <div className="mt-3 p-3 bg-orange-900/20 border border-orange-900/50 rounded-lg">

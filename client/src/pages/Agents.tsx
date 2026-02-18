@@ -249,6 +249,22 @@ export default function Agents() {
         } as any;
         setAgentRuns(prev => [run, ...prev].slice(0, 10));
         generateReport(run);
+
+        fetch('/api/mission/findings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'agent',
+            sourceAgent: data.agentId || 'unknown',
+            type: 'finding',
+            title: `${data.agentId || 'Agent'} Analysis`,
+            content: data.analysis,
+            severity: 'medium',
+            status: 'new',
+            sentTo: [],
+            metadata: { latencyMs: run.latencyMs, tokenUsage: run.tokenUsage },
+          }),
+        }).catch(() => {});
       }
       toast({ title: 'Analysis Complete', description: 'Agent finished processing' });
     },

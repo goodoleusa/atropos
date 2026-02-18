@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGame } from "@/hooks/useGameSession";
 import { useLearningStore } from "@/stores/useLearningStore";
+import { ActivityStream } from "./ActivityStream";
+import { useMissionStats } from "@/hooks/useMissionBus";
 import {
   Target,
   Terminal,
@@ -208,6 +212,9 @@ export default function MissionControl() {
     completedMissions.length +
     (gameState.stats?.missionsCompleted || 0);
 
+  const { data: busStats } = useMissionStats();
+  const newFindings = busStats?.new || 0;
+
   return (
     <div className="space-y-6" data-testid="mission-control-tab">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -233,6 +240,33 @@ export default function MissionControl() {
         </div>
       </div>
 
+      <Tabs defaultValue="missions" className="w-full">
+        <TabsList className="bg-stone-900/50 border border-stone-800">
+          <TabsTrigger value="missions" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400 text-xs">
+            Missions
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-400 text-xs" data-testid="activity-tab">
+            Activity Feed
+            {newFindings > 0 && (
+              <Badge variant="outline" className="ml-1.5 text-[9px] px-1 py-0 border-teal-700 text-teal-400">{newFindings}</Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="activity" className="mt-4">
+          <Card className="bg-[#0a0500] border-teal-900/30">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-teal-400 text-sm flex items-center gap-2">
+                <Zap className="w-4 h-4" /> Cross-Module Activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ActivityStream />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="missions" className="mt-4 space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Card className="bg-[#0a0500] border-teal-900/30">
           <CardContent className="p-3 text-center">
@@ -532,6 +566,8 @@ export default function MissionControl() {
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import contentRoutes from "./routes/contentRoutes";
 import curriculumRoutes from "./routes/curriculumRoutes";
 import gameplayRoutes from "./routes/gameplayRoutes";
 import memoryRoutes from "./routes/memory";
+import missionBusRoutes from "./routes/missionBus";
 import { 
   securityHeaders, 
   rateLimit, 
@@ -241,6 +242,9 @@ export async function registerRoutes(
 
   // Context Memory Manager (auto-compression, capsules, W&B tracking)
   app.use(memoryRoutes);
+
+  // Mission Bus - cross-module findings & background tasks
+  app.use(missionBusRoutes);
 
   // ==================== Business Projects API ====================
   app.get("/api/business-projects", async (req, res) => {
