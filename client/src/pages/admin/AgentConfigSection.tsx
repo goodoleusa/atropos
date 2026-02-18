@@ -47,21 +47,25 @@ const FREE_MODELS = [
   { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', name: 'Nemotron 70B' },
 ];
 
+const EMPTY_AGENT_CONFIGS: Record<string, AgentConfig> = {};
+const EMPTY_CONFIG: AgentConfig = {};
+
 export default function AgentConfigSection() {
   const queryClient = useQueryClient();
   const [selectedAgent, setSelectedAgent] = useState(AGENT_INFO[0].id);
   const [localConfig, setLocalConfig] = useState<AgentConfig>({});
   const [wandbApiKey, setWandbApiKey] = useState('');
   
-  const { data: agentConfigs = {}, isLoading: configLoading } = useQuery<Record<string, AgentConfig>>({
+  const { data: agentConfigs = EMPTY_AGENT_CONFIGS, isLoading: configLoading } = useQuery<Record<string, AgentConfig>>({
     queryKey: ['/api/admin/agent-config'],
     queryFn: async () => {
       const res = await fetch('/api/admin/agent-config', {
         headers: { 'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || '' }
       });
-      if (!res.ok) throw new Error('Failed to fetch agent config');
+      if (!res.ok) return {};
       return res.json();
-    }
+    },
+    retry: false,
   });
   
   const { data: wandbConfig, isLoading: wandbLoading } = useQuery<WandBConfig>({
@@ -70,16 +74,18 @@ export default function AgentConfigSection() {
       const res = await fetch('/api/admin/wandb-config', {
         headers: { 'x-access-token': localStorage.getItem('APP_ACCESS_TOKEN') || '' }
       });
-      if (!res.ok) throw new Error('Failed to fetch wandb config');
+      if (!res.ok) return { enabled: false, project: 'nexus-agents', entity: '' };
       return res.json();
-    }
+    },
+    retry: false,
   });
   
   useEffect(() => {
-    if (agentConfigs[selectedAgent]) {
-      setLocalConfig(agentConfigs[selectedAgent]);
+    const cfg = agentConfigs[selectedAgent];
+    if (cfg) {
+      setLocalConfig(cfg);
     } else {
-      setLocalConfig({});
+      setLocalConfig(prev => Object.keys(prev).length === 0 ? prev : EMPTY_CONFIG);
     }
   }, [selectedAgent, agentConfigs]);
   

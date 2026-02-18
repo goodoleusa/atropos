@@ -1,6 +1,6 @@
-import { useAchievementNotifications } from "./AchievementNotification";
+import { useAchievementNotifications, AchievementNotification } from "./AchievementNotification";
 
 export function AchievementManager() {
-  const { NotificationComponent } = useAchievementNotifications();
-  return <NotificationComponent />;
+  const { currentAchievement, handleClose } = useAchievementNotifications();
+  return <AchievementNotification achievement={currentAchievement} onClose={handleClose} />;
 }
