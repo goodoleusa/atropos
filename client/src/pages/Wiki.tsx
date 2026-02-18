@@ -1473,6 +1473,46 @@ export default function Wiki() {
               <div className="bg-stone-950 p-2 rounded text-purple-400">PATCH /api/recs/:id <span className="text-stone-600">— Update status/priority</span></div>
               <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/recs/:id <span className="text-stone-600">— Remove</span></div>
             </div>
+            <p className="text-stone-400 text-xs mt-2">Push architecture recs: <code className="bg-stone-800 px-1 rounded">npm run recs:push</code> (requires server running)</p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'architecture-review',
+      title: 'Architecture Review',
+      icon: <Layers className="w-4 h-4" />,
+      content: (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-amber-400">Platform Architecture</h2>
+          <p className="text-stone-300 leading-relaxed">
+            High-level structure and recurring improvement themes identified during architectural review.
+          </p>
+          <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-300 mb-3">Stack Overview</h3>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li><strong>Frontend:</strong> React 18, TypeScript, Tailwind v4, Framer Motion, Wouter</li>
+              <li><strong>Backend:</strong> Express 5, TypeScript ESM, Drizzle ORM, PostgreSQL</li>
+              <li><strong>AI:</strong> OpenRouter API, NEXUS multi-agent orchestration</li>
+              <li><strong>State:</strong> TanStack Query, Zustand, React Context (GameProvider, ReportProvider, AgentChatProvider)</li>
+            </ul>
+          </div>
+          <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-amber-300 mb-3">Improvement Themes</h3>
+            <ul className="space-y-2 text-stone-300 text-sm">
+              <li><strong>Route Cleanup:</strong> Remove duplicate route blocks in server/routes.ts</li>
+              <li><strong>Recs API:</strong> Add pagination, GET /api/recs/:id, rate limiting</li>
+              <li><strong>Curriculum-Recs Integration:</strong> One-click apply rec from Curriculum Section</li>
+              <li><strong>Rec Dependencies:</strong> blockedBy field for ordering batch prompts</li>
+              <li><strong>Real-time:</strong> SSE or WebSocket for live rec updates on /recs</li>
+            </ul>
+          </div>
+          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-stone-300 mb-3">Related</h3>
+            <p className="text-stone-400 text-sm">
+              See <Link href="/recs"><span className="text-cyan-400 underline cursor-pointer">/recs</span></Link> for all recommendations including architecture improvements.
+              Run <code className="bg-stone-800 px-1 rounded">npm run recs:push</code> to push latest architecture recs (server must be running).
+            </p>
           </div>
         </div>
       )
