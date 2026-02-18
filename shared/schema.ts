@@ -1752,6 +1752,45 @@ export const insertCurriculumTrackSchema = createInsertSchema(curriculumTracks).
 export type InsertCurriculumTrack = z.infer<typeof insertCurriculumTrackSchema>;
 export type CurriculumTrack = typeof curriculumTracks.$inferSelect;
 
+// Mission Bus - shared findings store connecting all modules
+export const missionFindings = pgTable("mission_findings", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token"),
+  source: text("source").notNull(), // 'nexus' | 'agent' | 'scanner' | 'spiderfoot' | 'manual'
+  sourceAgent: text("source_agent"), // e.g. 'osint_analyst', 'vuln_analyst'
+  type: text("type").notNull(), // 'finding' | 'recommendation' | 'artifact' | 'ioc' | 'vulnerability'
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  severity: text("severity"), // 'critical' | 'high' | 'medium' | 'low' | 'info'
+  status: text("status").notNull().default("new"), // 'new' | 'reviewing' | 'sent' | 'archived'
+  sentTo: jsonb("sent_to").$type<string[]>().notNull().default([]), // tracks where it's been piped
+  metadata: jsonb("metadata").$type<Record<string, any>>().notNull().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertMissionFindingSchema = createInsertSchema(missionFindings).omit({ id: true, createdAt: true });
+export type InsertMissionFinding = z.infer<typeof insertMissionFindingSchema>;
+export type MissionFinding = typeof missionFindings.$inferSelect;
+
+// Background Tasks - tracks long-running agent/scan jobs
+export const backgroundTasks = pgTable("background_tasks", {
+  id: serial("id").primaryKey(),
+  sessionToken: text("session_token"),
+  taskType: text("task_type").notNull(), // 'agent_analysis' | 'scan' | 'spiderfoot' | 'compression'
+  taskName: text("task_name").notNull(),
+  status: text("status").notNull().default("running"), // 'running' | 'completed' | 'failed'
+  progress: integer("progress").notNull().default(0), // 0-100
+  result: jsonb("result").$type<Record<string, any>>(),
+  error: text("error"),
+  metadata: jsonb("metadata").$type<Record<string, any>>().notNull().default({}),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const insertBackgroundTaskSchema = createInsertSchema(backgroundTasks).omit({ id: true, startedAt: true });
+export type InsertBackgroundTask = z.infer<typeof insertBackgroundTaskSchema>;
+export type BackgroundTask = typeof backgroundTasks.$inferSelect;
+
 // Export auth and chat models
 export * from "./models/auth";
 export * from "./models/chat";
