@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 import {
-  Search, Play, Shield, Globe, Bug, Network, Users,
-  FileText, Clock, ChevronRight, Zap, Filter, Sparkles, Terminal,
-  AlertTriangle, Skull, Target
+  Search, Shield, Globe, Bug, Network, Users,
+  FileText, Clock, ChevronRight, Terminal,
+  Skull, FlaskConical, BookOpen,
+  X, Layers
 } from 'lucide-react';
-import { GlitchHover, GlitchText } from '@/components/GlitchHover';
+import { ALL_CURRICULUM_TRACKS } from '@/config/aiCurriculum';
 
-interface PublishedCampaign {
+interface UnifiedCampaign {
   campaignId: string;
   name: string;
   description: string;
@@ -21,321 +22,294 @@ interface PublishedCampaign {
   estimatedTime: string;
   nodeCount: number;
   tags: string[];
+  source: 'builder' | 'module' | 'curriculum' | 'lab';
+  icon: string;
+  color: string;
+  route?: string;
 }
 
-interface TemplateInfo {
-  id: string;
-  name: string;
-  categories: string[];
-}
-
-const CATEGORY_META: Record<string, { icon: any; color: string; bg: string }> = {
-  osint: { icon: <Globe className="w-4 h-4" />, color: 'text-teal-400', bg: 'bg-teal-900/20 border-teal-800' },
-  forensics: { icon: <Search className="w-4 h-4" />, color: 'text-blue-400', bg: 'bg-blue-900/20 border-blue-800' },
-  exploit: { icon: <Bug className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-900/20 border-red-800' },
-  social: { icon: <Users className="w-4 h-4" />, color: 'text-purple-400', bg: 'bg-purple-900/20 border-purple-800' },
-  defense: { icon: <Shield className="w-4 h-4" />, color: 'text-amber-400', bg: 'bg-amber-900/20 border-amber-800' },
-  recon: { icon: <Network className="w-4 h-4" />, color: 'text-cyan-400', bg: 'bg-cyan-900/20 border-cyan-800' },
+const CATEGORY_META: Record<string, { icon: any; label: string; color: string; bg: string }> = {
+  all: { icon: <Layers className="w-3.5 h-3.5" />, label: 'All', color: 'text-stone-300', bg: 'bg-stone-800 border-stone-600' },
+  apt: { icon: <Skull className="w-3.5 h-3.5" />, label: 'APT', color: 'text-red-400', bg: 'bg-red-900/30 border-red-800' },
+  osint: { icon: <Globe className="w-3.5 h-3.5" />, label: 'OSINT', color: 'text-teal-400', bg: 'bg-teal-900/30 border-teal-800' },
+  forensics: { icon: <Search className="w-3.5 h-3.5" />, label: 'Forensics', color: 'text-blue-400', bg: 'bg-blue-900/30 border-blue-800' },
+  exploit: { icon: <Bug className="w-3.5 h-3.5" />, label: 'Exploit', color: 'text-red-400', bg: 'bg-red-900/30 border-red-800' },
+  defense: { icon: <Shield className="w-3.5 h-3.5" />, label: 'Defense', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
+  recon: { icon: <Network className="w-3.5 h-3.5" />, label: 'Recon', color: 'text-cyan-400', bg: 'bg-cyan-900/30 border-cyan-800' },
+  social: { icon: <Users className="w-3.5 h-3.5" />, label: 'Social', color: 'text-purple-400', bg: 'bg-purple-900/30 border-purple-800' },
+  curriculum: { icon: <BookOpen className="w-3.5 h-3.5" />, label: 'Learning', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
+  lab: { icon: <FlaskConical className="w-3.5 h-3.5" />, label: 'Labs', color: 'text-violet-400', bg: 'bg-violet-900/30 border-violet-800' },
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: 'border-green-700 text-green-400',
-  intermediate: 'border-amber-700 text-amber-400',
-  advanced: 'border-red-700 text-red-400',
-  expert: 'border-purple-700 text-purple-400',
+  beginner: 'border-emerald-700/60 text-emerald-400 bg-emerald-950/30',
+  intermediate: 'border-amber-700/60 text-amber-400 bg-amber-950/30',
+  advanced: 'border-red-700/60 text-red-400 bg-red-950/30',
+  expert: 'border-purple-700/60 text-purple-400 bg-purple-950/30',
 };
 
-const NATION_STATE_FLAGS: Record<string, { label: string; color: string; bg: string }> = {
-  Russia: { label: 'RUS', color: 'text-red-400', bg: 'bg-red-950/40 border-red-800/50' },
-  China: { label: 'CHN', color: 'text-orange-400', bg: 'bg-orange-950/40 border-orange-800/50' },
-  DPRK: { label: 'DPRK', color: 'text-yellow-400', bg: 'bg-yellow-950/40 border-yellow-800/50' },
-  Iran: { label: 'IRN', color: 'text-emerald-400', bg: 'bg-emerald-950/40 border-emerald-800/50' },
+const NATION_STATE_FLAGS: Record<string, { label: string; color: string }> = {
+  Russia: { label: 'RUS', color: 'text-red-400' },
+  China: { label: 'CHN', color: 'text-orange-400' },
+  DPRK: { label: 'DPRK', color: 'text-yellow-400' },
+  Iran: { label: 'IRN', color: 'text-emerald-400' },
 };
 
 const getAptInfo = (tags: string[]) => {
   const isApt = tags.some(t => t === 'APT' || t.startsWith('APT'));
   const nation = tags.find(t => NATION_STATE_FLAGS[t]);
-  const groupTags = tags.filter(t => ['GRU', 'SVR', 'FSB', 'PLA', 'MSS', 'RGB'].includes(t));
-  return { isApt, nation, groupTags };
+  return { isApt, nation };
 };
 
 export default function CampaignsHub() {
   const [, navigate] = useLocation();
-  const [campaigns, setCampaigns] = useState<PublishedCampaign[]>([]);
-  const [templates, setTemplates] = useState<TemplateInfo[]>([]);
+  const [campaigns, setCampaigns] = useState<UnifiedCampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [difficultyFilter, setDifficultyFilter] = useState<string | null>(null);
-  const [generating, setGenerating] = useState(false);
-  const [genTopic, setGenTopic] = useState('');
-  const [genTemplate, setGenTemplate] = useState('');
-  const [genSkill, setGenSkill] = useState('intermediate');
-  const [showGenerator, setShowGenerator] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeDifficulty, setActiveDifficulty] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/campaigns/published').then(r => r.json()).catch(() => []),
-      fetch('/api/campaign-templates').then(r => r.json()).catch(() => []),
-    ]).then(([c, t]) => {
-      setCampaigns(c);
-      setTemplates(t);
-      setLoading(false);
-    });
+    fetch('/api/campaigns/published')
+      .then(r => r.json())
+      .then((serverCampaigns: UnifiedCampaign[]) => {
+        const curriculumEntries: UnifiedCampaign[] = ALL_CURRICULUM_TRACKS.map(track => ({
+          campaignId: `curriculum-${track.id}`,
+          name: track.name,
+          description: track.description,
+          category: 'curriculum',
+          difficulty: track.missions[0]?.difficulty || 'beginner',
+          estimatedTime: track.missions.reduce((sum, m) => {
+            const mins = parseInt(m.estimatedTime) || 20;
+            return sum + mins;
+          }, 0) + ' min total',
+          nodeCount: track.missions.length,
+          tags: ['curriculum', track.color, ...track.missions.slice(0, 2).map(m => m.name)],
+          source: 'curriculum' as const,
+          icon: track.icon,
+          color: track.color,
+          route: `/wiki?track=${track.id}`,
+        }));
+
+        const decoherenceLab: UnifiedCampaign = {
+          campaignId: 'decoherence-lab',
+          name: 'Decoherence Lab',
+          description: 'AI failure mode exercises — test for hallucination, sycophancy, anchoring bias, and boundary violations. Learn to identify when AI breaks down.',
+          category: 'lab',
+          difficulty: 'intermediate',
+          estimatedTime: '30-60 min',
+          nodeCount: 12,
+          tags: ['AI', 'prompt-engineering', 'bias', 'hallucination', 'lab'],
+          source: 'lab' as const,
+          icon: '🧪',
+          color: 'violet',
+          route: '/decoherence',
+        };
+
+        setCampaigns([...serverCampaigns, decoherenceLab, ...curriculumEntries]);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
+
+  const availableCategories = ['all', ...Array.from(new Set(campaigns.map(c => c.category)))];
 
   const filtered = campaigns.filter(c => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      if (!c.name.toLowerCase().includes(q) && !c.description.toLowerCase().includes(q) && !c.tags.some(t => t.includes(q))) return false;
+      if (!c.name.toLowerCase().includes(q) && !c.description.toLowerCase().includes(q) && !c.tags.some(t => t.toLowerCase().includes(q))) return false;
     }
-    if (categoryFilter && c.category !== categoryFilter) return false;
-    if (difficultyFilter && c.difficulty !== difficultyFilter) return false;
+    if (activeCategory !== 'all' && c.category !== activeCategory) return false;
+    if (activeDifficulty && c.difficulty !== activeDifficulty) return false;
     return true;
   });
 
-  const generateCampaign = async () => {
-    if (!genTemplate || !genTopic) return;
-    setGenerating(true);
-    try {
-      const res = await fetch('/api/campaign-templates/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ templateId: genTemplate, topic: genTopic, skill: genSkill }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate(`/play/${data.campaignId}`);
-      }
-    } catch {}
-    setGenerating(false);
+  const handleCardClick = (campaign: UnifiedCampaign) => {
+    if (campaign.route) {
+      navigate(campaign.route);
+    } else if (campaign.source === 'module') {
+      navigate(`/agents?module=${campaign.campaignId}`);
+    } else {
+      navigate(`/play/${campaign.campaignId}`);
+    }
   };
 
-  const categories = Array.from(new Set(campaigns.map(c => c.category)));
-  const difficulties = ['beginner', 'intermediate', 'advanced', 'expert'];
-
   return (
-    <div className="min-h-screen bg-[#0a0500] text-stone-300">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-mono font-bold text-amber-500" data-testid="hub-title">
-              Investigation Campaigns
-            </h1>
-            <p className="text-stone-500 text-sm mt-1">CTF-style security investigations with hidden clues embedded in page source, network traffic, and dev tools.</p>
+    <div className="min-h-screen bg-[#0a0500] text-stone-300" data-testid="campaigns-hub">
+      <div className="max-w-6xl mx-auto px-4 pt-6 pb-16">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-mono font-bold text-amber-500" data-testid="hub-title">
+            Missions & Labs
+          </h1>
+          <p className="text-stone-500 text-xs sm:text-sm mt-1">
+            Investigations, APT case studies, curriculum tracks, and hands-on labs — all in one place.
+          </p>
+          <div className="flex items-center gap-3 mt-2 text-[10px] text-stone-600 font-mono">
+            <span>{campaigns.length} total</span>
+            <span>·</span>
+            <span>{filtered.length} shown</span>
           </div>
-          <Button
-            onClick={() => setShowGenerator(!showGenerator)}
-            className="bg-amber-700 hover:bg-amber-600 gap-2"
-            data-testid="toggle-generator"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span className="hidden md:inline">Quick Generate</span>
-          </Button>
         </div>
 
-        {showGenerator && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <Card className="bg-stone-950 border-amber-900/30 mb-8">
-              <CardHeader>
-                <CardTitle className="text-amber-400 font-mono text-sm flex items-center gap-2">
-                  <Zap className="w-4 h-4" /> Campaign Generator
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="text-stone-500 text-xs mb-1 block">Template</label>
-                    <select
-                      value={genTemplate}
-                      onChange={e => setGenTemplate(e.target.value)}
-                      className="w-full bg-black/50 border border-stone-700 rounded px-3 py-2 text-sm text-stone-300"
-                      data-testid="select-template"
-                    >
-                      <option value="">Select template...</option>
-                      {templates.map(t => (
-                        <option key={t.id} value={t.id}>{t.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-stone-500 text-xs mb-1 block">Topic</label>
-                    <Input
-                      value={genTopic}
-                      onChange={e => setGenTopic(e.target.value)}
-                      placeholder="e.g. BGP Hijacking, API Security..."
-                      className="bg-black/50 border-stone-700 text-stone-300 text-sm"
-                      data-testid="input-topic"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-stone-500 text-xs mb-1 block">Skill Level</label>
-                    <select
-                      value={genSkill}
-                      onChange={e => setGenSkill(e.target.value)}
-                      className="w-full bg-black/50 border border-stone-700 rounded px-3 py-2 text-sm text-stone-300"
-                      data-testid="select-skill"
-                    >
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
-                    </select>
-                  </div>
-                  <div className="flex items-end">
-                    <Button
-                      onClick={generateCampaign}
-                      disabled={!genTemplate || !genTopic || generating}
-                      className="w-full bg-teal-700 hover:bg-teal-600 gap-2"
-                      data-testid="generate-campaign"
-                    >
-                      {generating ? (
-                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Play className="w-4 h-4" />
-                      )}
-                      Generate & Play
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+        {/* Search — full width, mobile friendly */}
+        <div className="relative mb-4">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-600" />
+          <Input
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search campaigns, labs, tracks..."
+            className="pl-10 pr-10 bg-stone-950 border-stone-700 text-stone-300 h-11 text-sm rounded-lg"
+            data-testid="search-campaigns"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-600 hover:text-stone-300"
+              data-testid="clear-search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-600" />
-            <Input
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search campaigns..."
-              className="pl-10 bg-stone-950 border-stone-700 text-stone-300"
-              data-testid="search-campaigns"
-            />
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <div className="flex items-center gap-1">
-              <Filter className="w-3 h-3 text-stone-600" />
-            </div>
-            {categories.map(cat => {
-              const meta = CATEGORY_META[cat] || CATEGORY_META.recon;
-              return (
-                <Badge
-                  key={cat}
-                  variant="outline"
-                  className={`cursor-pointer transition-all ${
-                    categoryFilter === cat ? `${meta.bg} ${meta.color}` : 'border-stone-700 text-stone-500 hover:text-stone-300'
-                  }`}
-                  onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
-                  data-testid={`filter-category-${cat}`}
-                >
-                  {meta.icon}
-                  <span className="ml-1 capitalize">{cat}</span>
-                </Badge>
-              );
-            })}
-            <span className="text-stone-800">|</span>
-            {difficulties.map(d => (
-              <Badge
-                key={d}
-                variant="outline"
-                className={`cursor-pointer transition-all ${
-                  difficultyFilter === d ? DIFFICULTY_COLORS[d] : 'border-stone-700 text-stone-500 hover:text-stone-300'
+        {/* Category chips — horizontal scroll on mobile */}
+        <div
+          className="flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {availableCategories.map(cat => {
+            const meta = CATEGORY_META[cat] || CATEGORY_META.all;
+            const isActive = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono whitespace-nowrap border transition-all shrink-0 ${
+                  isActive
+                    ? `${meta.bg} ${meta.color} border-current`
+                    : 'bg-stone-950 border-stone-800 text-stone-500 hover:text-stone-300 hover:border-stone-600'
                 }`}
-                onClick={() => setDifficultyFilter(difficultyFilter === d ? null : d)}
-                data-testid={`filter-difficulty-${d}`}
+                data-testid={`filter-category-${cat}`}
               >
-                {d}
-              </Badge>
-            ))}
-          </div>
+                {meta.icon}
+                {meta.label}
+              </button>
+            );
+          })}
         </div>
 
+        {/* Difficulty chips — horizontal scroll on mobile */}
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-4 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {['beginner', 'intermediate', 'advanced', 'expert'].map(d => (
+            <button
+              key={d}
+              onClick={() => setActiveDifficulty(activeDifficulty === d ? null : d)}
+              className={`px-3 py-1 rounded-full text-[11px] font-mono whitespace-nowrap border transition-all shrink-0 capitalize ${
+                activeDifficulty === d
+                  ? DIFFICULTY_COLORS[d]
+                  : 'bg-stone-950 border-stone-800 text-stone-600 hover:text-stone-400'
+              }`}
+              data-testid={`filter-difficulty-${d}`}
+            >
+              {d}
+            </button>
+          ))}
+          {activeDifficulty && (
+            <button
+              onClick={() => setActiveDifficulty(null)}
+              className="px-2 py-1 text-[11px] text-stone-600 hover:text-stone-400"
+            >
+              clear
+            </button>
+          )}
+        </div>
+
+        {/* Content grid */}
         {loading ? (
-          <div className="text-center py-16">
+          <div className="text-center py-20">
             <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-stone-500 font-mono text-sm">Loading campaigns...</p>
+            <p className="text-stone-500 font-mono text-sm">Loading missions...</p>
           </div>
         ) : filtered.length === 0 ? (
-          <Card className="bg-stone-950 border-stone-800">
-            <CardContent className="p-12 text-center">
-              <Terminal className="w-12 h-12 text-stone-700 mx-auto mb-4" />
-              <h3 className="text-stone-400 font-mono mb-2">
-                {campaigns.length === 0 ? 'No Campaigns Yet' : 'No Matching Campaigns'}
-              </h3>
-              <p className="text-stone-600 text-sm mb-4">
-                {campaigns.length === 0
-                  ? 'Use the Quick Generator above to create your first investigation campaign.'
-                  : 'Try adjusting your filters or search terms.'}
-              </p>
-              {campaigns.length === 0 && (
-                <Button
-                  onClick={() => setShowGenerator(true)}
-                  className="bg-amber-700 hover:bg-amber-600 gap-2"
-                >
-                  <Sparkles className="w-4 h-4" /> Create Your First Campaign
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <div className="text-center py-20">
+            <Terminal className="w-12 h-12 text-stone-700 mx-auto mb-4" />
+            <h3 className="text-stone-400 font-mono mb-2">No Matches</h3>
+            <p className="text-stone-600 text-sm mb-4">Try adjusting your filters or search terms.</p>
+            <Button
+              onClick={() => { setSearchQuery(''); setActiveCategory('all'); setActiveDifficulty(null); }}
+              variant="outline"
+              className="border-stone-700 text-stone-400"
+              data-testid="button-clear-filters"
+            >
+              Clear Filters
+            </Button>
+          </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((campaign, index) => {
-              const meta = CATEGORY_META[campaign.category] || CATEGORY_META.recon;
+              const catMeta = CATEGORY_META[campaign.category] || CATEGORY_META.all;
               const aptInfo = getAptInfo(campaign.tags);
               const nationMeta = aptInfo.nation ? NATION_STATE_FLAGS[aptInfo.nation] : null;
+
               return (
                 <motion.div
                   key={campaign.campaignId}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: Math.min(index * 0.03, 0.5) }}
                 >
-                  <GlitchHover effect="scanline" intensity={0.3}>
                   <Card
-                    className={`bg-stone-950 border-stone-800 hover:border-amber-800 transition-all cursor-pointer group ${aptInfo.isApt ? 'ring-1 ring-red-900/20' : ''}`}
-                    onClick={() => navigate(`/play/${campaign.campaignId}`)}
+                    className={`bg-stone-950 border-stone-800/80 hover:border-amber-800/60 transition-all cursor-pointer group active:scale-[0.98] ${
+                      aptInfo.isApt ? 'ring-1 ring-red-900/15' : ''
+                    }`}
+                    onClick={() => handleCardClick(campaign)}
                     data-testid={`campaign-card-${campaign.campaignId}`}
                   >
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between mb-3">
+                    <CardContent className="p-4 sm:p-5">
+                      {/* Top row: icon + category + difficulty */}
+                      <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <GlitchHover effect="color-shift" intensity={0.4}>
-                          <div className={`p-2 rounded-lg border ${aptInfo.isApt ? 'bg-red-950/30 border-red-800/50' : meta.bg}`}>
-                            {aptInfo.isApt ? <Skull className="w-4 h-4 text-red-400" /> : meta.icon}
+                          <div className={`w-8 h-8 rounded-lg border flex items-center justify-center text-sm ${
+                            aptInfo.isApt ? 'bg-red-950/30 border-red-800/40' :
+                            campaign.source === 'lab' ? 'bg-violet-950/30 border-violet-800/40' :
+                            campaign.source === 'curriculum' ? 'bg-emerald-950/30 border-emerald-800/40' :
+                            catMeta.bg
+                          }`}>
+                            {campaign.icon || (aptInfo.isApt ? <Skull className="w-3.5 h-3.5 text-red-400" /> :
+                              campaign.source === 'lab' ? <FlaskConical className="w-3.5 h-3.5 text-violet-400" /> :
+                              campaign.source === 'curriculum' ? <BookOpen className="w-3.5 h-3.5 text-emerald-400" /> :
+                              catMeta.icon)}
                           </div>
-                          </GlitchHover>
-                          {nationMeta && (
-                            <Badge variant="outline" className={`text-[9px] font-mono ${nationMeta.bg} ${nationMeta.color} border`}>
-                              {nationMeta.label}
-                            </Badge>
-                          )}
-                          {aptInfo.groupTags.length > 0 && (
-                            <span className="text-[8px] font-mono text-stone-600 uppercase tracking-wider">{aptInfo.groupTags[0]}</span>
-                          )}
+                          <div className="flex items-center gap-1.5">
+                            <span className={`text-[9px] font-mono uppercase tracking-wider ${catMeta.color}`}>
+                              {catMeta.label}
+                            </span>
+                            {nationMeta && (
+                              <Badge variant="outline" className={`text-[8px] font-mono px-1 py-0 h-4 ${nationMeta.color} border-current/30`}>
+                                {nationMeta.label}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
-                        <Badge variant="outline" className={DIFFICULTY_COLORS[campaign.difficulty] || 'border-stone-700 text-stone-500'}>
+                        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${DIFFICULTY_COLORS[campaign.difficulty] || 'border-stone-700 text-stone-500'}`}>
                           {campaign.difficulty}
                         </Badge>
                       </div>
-                      {aptInfo.isApt && (
-                        <div className="flex items-center gap-1 mb-2">
-                          <AlertTriangle className="w-3 h-3 text-red-500/60" />
-                          <span className="text-[8px] font-mono uppercase tracking-widest text-red-500/60">APT Case Study</span>
-                        </div>
-                      )}
-                      <h3 className="font-mono text-sm font-bold text-stone-200 group-hover:text-amber-400 transition-colors mb-1" data-testid={`campaign-name-${campaign.campaignId}`}>
-                        <GlitchText text={campaign.name} effect="text-scramble" intensity={0.6} />
+
+                      {/* Title */}
+                      <h3 className="font-mono text-sm font-bold text-stone-200 group-hover:text-amber-400 transition-colors mb-1.5 line-clamp-1" data-testid={`campaign-name-${campaign.campaignId}`}>
+                        {campaign.name}
                       </h3>
-                      <p className="text-stone-500 text-xs line-clamp-2 mb-3">{campaign.description}</p>
+
+                      {/* Description */}
+                      <p className="text-stone-500 text-xs line-clamp-2 mb-3 leading-relaxed">{campaign.description}</p>
+
+                      {/* Footer: stats + arrow */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 text-stone-600 text-[10px]">
                           <span className="flex items-center gap-1">
-                            <FileText className="w-3 h-3" /> {campaign.nodeCount} steps
+                            <FileText className="w-3 h-3" /> {campaign.nodeCount} {campaign.source === 'curriculum' ? 'missions' : 'steps'}
                           </span>
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" /> {campaign.estimatedTime}
@@ -343,20 +317,28 @@ export default function CampaignsHub() {
                         </div>
                         <ChevronRight className="w-4 h-4 text-stone-700 group-hover:text-amber-500 transition-colors" />
                       </div>
+
+                      {/* Tags */}
                       {campaign.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-stone-800/50">
-                          {campaign.tags.slice(0, 5).map(tag => (
-                            <span key={tag} className={`text-[9px] px-1.5 py-0.5 rounded ${
-                              tag === 'APT' ? 'text-red-400 bg-red-950/40' :
-                              NATION_STATE_FLAGS[tag] ? `${NATION_STATE_FLAGS[tag].color} ${NATION_STATE_FLAGS[tag].bg}` :
-                              'text-stone-600 bg-stone-900/50'
-                            }`}>{tag}</span>
+                        <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-stone-800/40">
+                          {campaign.tags.slice(0, 4).map(tag => (
+                            <span
+                              key={tag}
+                              className={`text-[9px] px-1.5 py-0.5 rounded ${
+                                tag === 'APT' ? 'text-red-400 bg-red-950/40' :
+                                NATION_STATE_FLAGS[tag] ? `${NATION_STATE_FLAGS[tag].color} bg-stone-900/60` :
+                                tag === 'curriculum' ? 'text-emerald-400 bg-emerald-950/30' :
+                                tag === 'lab' ? 'text-violet-400 bg-violet-950/30' :
+                                'text-stone-600 bg-stone-900/50'
+                              }`}
+                            >
+                              {tag}
+                            </span>
                           ))}
                         </div>
                       )}
                     </CardContent>
                   </Card>
-                  </GlitchHover>
                 </motion.div>
               );
             })}
