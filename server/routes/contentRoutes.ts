@@ -350,8 +350,12 @@ router.post("/api/designer/campaigns/:campaignId/unpublish", isAdmin, async (req
 
 router.get("/api/campaigns/published", async (req, res) => {
   try {
-    const campaigns = await storage.getPublishedDesignerCampaigns();
-    const safe = campaigns.map(c => ({
+    const [designerCampaigns, agentModulesList] = await Promise.all([
+      storage.getPublishedDesignerCampaigns(),
+      storage.getActiveAgentModules(),
+    ]);
+
+    const fromDesigner = designerCampaigns.map(c => ({
       campaignId: c.campaignId,
       name: c.name,
       description: c.description,
@@ -360,8 +364,33 @@ router.get("/api/campaigns/published", async (req, res) => {
       estimatedTime: (c as any).estimatedTime || "15 min",
       nodeCount: (c.nodes as any[])?.length || 0,
       tags: c.tags || [],
+      source: "builder" as const,
+      icon: "",
+      color: (c as any).color || "amber",
     }));
-    res.json(safe);
+
+    const fromModules = agentModulesList.map((m: any) => ({
+      campaignId: m.moduleId,
+      name: m.name,
+      description: m.description || "",
+      category: m.tags?.includes("APT") ? "apt" : (m.color === "red" ? "exploit" : m.color === "teal" ? "osint" : m.color === "blue" ? "forensics" : m.color === "purple" ? "defense" : m.color === "cyan" ? "recon" : "osint"),
+      difficulty: m.difficulty || "intermediate",
+      estimatedTime: m.estimatedTime || "30 min",
+      nodeCount: (m.steps as any[])?.length || 0,
+      tags: m.tags || [],
+      source: "module" as const,
+      icon: m.icon || "",
+      color: m.color || "amber",
+    }));
+
+    const seen = new Set<string>();
+    const combined = [...fromModules, ...fromDesigner].filter(c => {
+      if (seen.has(c.campaignId)) return false;
+      seen.add(c.campaignId);
+      return true;
+    });
+
+    res.json(combined);
   } catch (error) {
     console.error("Get published campaigns error:", error);
     res.status(500).json({ error: "Failed to fetch campaigns" });
