@@ -1,6 +1,7 @@
 # Civic Engagement Learning Campaigns
 
-This platform includes AI-guided learning campaigns focused on digital citizenship, grassroots political organizing, civic engagement, and the history of popular movements that toppled authoritarian regimes with laughter and unity.
+This platform includes AI-guided learning campaigns. **To spin off as your own site or host for free**, see [SPINOFF_AND_HOSTING_GUIDE.md](SPINOFF_AND_HOSTING_GUIDE.md).
+ focused on digital citizenship, grassroots political organizing, civic engagement, and the history of popular movements that toppled authoritarian regimes with laughter and unity.
 
 ## Campaign Topics
 
