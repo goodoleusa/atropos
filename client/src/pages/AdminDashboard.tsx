@@ -42,6 +42,7 @@ import { GameplaySection } from "@/pages/admin/GameplaySection";
 import { FeedbackSection } from "@/pages/admin/FeedbackSection";
 import { CurriculumSection } from "@/pages/admin/CurriculumSection";
 import { ContextManagerPanel } from "@/pages/admin/ContextManagerPanel";
+import { ContentManagerPanel } from "@/pages/admin/ContentManagerPanel";
 
 export default function AdminDashboard() {
   const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
@@ -53,7 +54,7 @@ export default function AdminDashboard() {
   const [clueTrail, setClueTrail] = useState<string[]>([]);
   const [showGraphView, setShowGraphView] = useState(false);
   const [activeSection, setActiveSection] = useState(() => {
-    try { return localStorage.getItem('admin_section') || 'activity'; } catch { return 'activity'; }
+    try { return localStorage.getItem('admin_section') || 'contentmgr'; } catch { return 'contentmgr'; }
   });
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     try {
@@ -201,6 +202,7 @@ export default function AdminDashboard() {
       case 'sitemap': return <SitemapPanel />;
       case 'sessions': return <SessionsPanel />;
       case 'behavior': return <BehaviorAnalyticsPanel />;
+      case 'contentmgr': return <ContentManagerPanel onOpenBuilder={(campaignId?: string) => navigate(campaignId ? `/builder?campaign=${campaignId}` : '/builder')} />;
       case 'designer': return <CampaignDesignerPanel onOpenBuilder={() => navigate('/builder')} />;
       case 'gameplay': return <GameplaySection />;
       case 'collectibles': return <CollectiblesSection />;
