@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 import {
   Search, Play, Shield, Globe, Bug, Network, Users,
-  FileText, Clock, ChevronRight, Zap, Filter, Sparkles, Terminal
+  FileText, Clock, ChevronRight, Zap, Filter, Sparkles, Terminal,
+  AlertTriangle, Skull, Target
 } from 'lucide-react';
 import { GlitchHover, GlitchText } from '@/components/GlitchHover';
 
@@ -41,6 +42,21 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   beginner: 'border-green-700 text-green-400',
   intermediate: 'border-amber-700 text-amber-400',
   advanced: 'border-red-700 text-red-400',
+  expert: 'border-purple-700 text-purple-400',
+};
+
+const NATION_STATE_FLAGS: Record<string, { label: string; color: string; bg: string }> = {
+  Russia: { label: 'RUS', color: 'text-red-400', bg: 'bg-red-950/40 border-red-800/50' },
+  China: { label: 'CHN', color: 'text-orange-400', bg: 'bg-orange-950/40 border-orange-800/50' },
+  DPRK: { label: 'DPRK', color: 'text-yellow-400', bg: 'bg-yellow-950/40 border-yellow-800/50' },
+  Iran: { label: 'IRN', color: 'text-emerald-400', bg: 'bg-emerald-950/40 border-emerald-800/50' },
+};
+
+const getAptInfo = (tags: string[]) => {
+  const isApt = tags.some(t => t === 'APT' || t.startsWith('APT'));
+  const nation = tags.find(t => NATION_STATE_FLAGS[t]);
+  const groupTags = tags.filter(t => ['GRU', 'SVR', 'FSB', 'PLA', 'MSS', 'RGB'].includes(t));
+  return { isApt, nation, groupTags };
 };
 
 export default function CampaignsHub() {
@@ -96,7 +112,7 @@ export default function CampaignsHub() {
   };
 
   const categories = Array.from(new Set(campaigns.map(c => c.category)));
-  const difficulties = ['beginner', 'intermediate', 'advanced'];
+  const difficulties = ['beginner', 'intermediate', 'advanced', 'expert'];
 
   return (
     <div className="min-h-screen bg-[#0a0500] text-stone-300">
@@ -270,6 +286,8 @@ export default function CampaignsHub() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((campaign, index) => {
               const meta = CATEGORY_META[campaign.category] || CATEGORY_META.recon;
+              const aptInfo = getAptInfo(campaign.tags);
+              const nationMeta = aptInfo.nation ? NATION_STATE_FLAGS[aptInfo.nation] : null;
               return (
                 <motion.div
                   key={campaign.campaignId}
@@ -279,21 +297,37 @@ export default function CampaignsHub() {
                 >
                   <GlitchHover effect="scanline" intensity={0.3}>
                   <Card
-                    className="bg-stone-950 border-stone-800 hover:border-amber-800 transition-all cursor-pointer group"
+                    className={`bg-stone-950 border-stone-800 hover:border-amber-800 transition-all cursor-pointer group ${aptInfo.isApt ? 'ring-1 ring-red-900/20' : ''}`}
                     onClick={() => navigate(`/play/${campaign.campaignId}`)}
                     data-testid={`campaign-card-${campaign.campaignId}`}
                   >
                     <CardContent className="p-5">
                       <div className="flex items-start justify-between mb-3">
-                        <GlitchHover effect="color-shift" intensity={0.4}>
-                        <div className={`p-2 rounded-lg border ${meta.bg}`}>
-                          {meta.icon}
+                        <div className="flex items-center gap-2">
+                          <GlitchHover effect="color-shift" intensity={0.4}>
+                          <div className={`p-2 rounded-lg border ${aptInfo.isApt ? 'bg-red-950/30 border-red-800/50' : meta.bg}`}>
+                            {aptInfo.isApt ? <Skull className="w-4 h-4 text-red-400" /> : meta.icon}
+                          </div>
+                          </GlitchHover>
+                          {nationMeta && (
+                            <Badge variant="outline" className={`text-[9px] font-mono ${nationMeta.bg} ${nationMeta.color} border`}>
+                              {nationMeta.label}
+                            </Badge>
+                          )}
+                          {aptInfo.groupTags.length > 0 && (
+                            <span className="text-[8px] font-mono text-stone-600 uppercase tracking-wider">{aptInfo.groupTags[0]}</span>
+                          )}
                         </div>
-                        </GlitchHover>
                         <Badge variant="outline" className={DIFFICULTY_COLORS[campaign.difficulty] || 'border-stone-700 text-stone-500'}>
                           {campaign.difficulty}
                         </Badge>
                       </div>
+                      {aptInfo.isApt && (
+                        <div className="flex items-center gap-1 mb-2">
+                          <AlertTriangle className="w-3 h-3 text-red-500/60" />
+                          <span className="text-[8px] font-mono uppercase tracking-widest text-red-500/60">APT Case Study</span>
+                        </div>
+                      )}
                       <h3 className="font-mono text-sm font-bold text-stone-200 group-hover:text-amber-400 transition-colors mb-1" data-testid={`campaign-name-${campaign.campaignId}`}>
                         <GlitchText text={campaign.name} effect="text-scramble" intensity={0.6} />
                       </h3>
@@ -311,8 +345,12 @@ export default function CampaignsHub() {
                       </div>
                       {campaign.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-stone-800/50">
-                          {campaign.tags.slice(0, 4).map(tag => (
-                            <span key={tag} className="text-[9px] text-stone-600 bg-stone-900/50 px-1.5 py-0.5 rounded">{tag}</span>
+                          {campaign.tags.slice(0, 5).map(tag => (
+                            <span key={tag} className={`text-[9px] px-1.5 py-0.5 rounded ${
+                              tag === 'APT' ? 'text-red-400 bg-red-950/40' :
+                              NATION_STATE_FLAGS[tag] ? `${NATION_STATE_FLAGS[tag].color} ${NATION_STATE_FLAGS[tag].bg}` :
+                              'text-stone-600 bg-stone-900/50'
+                            }`}>{tag}</span>
                           ))}
                         </div>
                       )}

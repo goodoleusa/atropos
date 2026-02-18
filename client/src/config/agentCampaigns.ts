@@ -243,6 +243,8 @@ export const GUIDED_QUESTIONS = {
 
 // Import anti-trafficking campaigns
 import ANTI_TRAFFICKING_CAMPAIGNS from './antiTraffickingCampaigns';
+// Import APT case study campaigns
+import { APT_CASE_STUDIES } from './aptCaseStudies';
 
 export const AGENT_CAMPAIGNS: Campaign[] = [
   // ============================================================================
@@ -250,6 +252,11 @@ export const AGENT_CAMPAIGNS: Campaign[] = [
   // ============================================================================
   ...ANTI_TRAFFICKING_CAMPAIGNS,
   
+  // ============================================================================
+  // 🎯 APT CASE STUDIES — Real documented threat group investigations
+  // ============================================================================
+  ...APT_CASE_STUDIES,
+
   // ============================================================================
   // GENERAL CYBERSECURITY CAMPAIGNS
   // ============================================================================
@@ -1030,6 +1037,7 @@ Walk me through the analysis methodology.`,
 ];
 
 export const CAMPAIGN_CATEGORIES = [
+  { id: 'apt', name: 'APT Case Studies', campaigns: ['apt28_dnc_hack', 'apt29_solarwinds', 'sandworm_notpetya', 'apt1_mandiant', 'apt41_double_dragon', 'hafnium_proxylogon', 'lazarus_crypto_heist', 'turla_snake', 'volt_typhoon', 'salt_typhoon'] },
   { id: 'recon', name: 'Reconnaissance', campaigns: ['passive_recon', 'active_recon', 'network_topology'] },
   { id: 'osint', name: 'OSINT Investigation', campaigns: ['shell_corp_osint', 'social_engineering', 'dark_web_intel'] },
   { id: 'network', name: 'Network Analysis', campaigns: ['bgp_trace', 'network_topology'] },
