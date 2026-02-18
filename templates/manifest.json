@@ -9,7 +9,7 @@
     "required": true,
     "files": {
       "server": ["server/index.ts", "server/db.ts", "server/vite.ts", "server/storage.ts", "server/security.ts", "server/routes.ts", "server/static.ts"],
-      "client": ["client/src/App.tsx", "client/src/main.tsx", "client/src/index.css", "client/src/config/navConfig.ts", "client/src/components/QuickNav.tsx", "client/src/lib/queryClient.ts"],
+      "client": ["client/src/App.tsx", "client/src/main.tsx", "client/src/index.css", "client/src/config/navConfig.ts", "client/src/config/adminNav.ts", "client/src/components/QuickNav.tsx", "client/src/lib/queryClient.ts", "client/src/pages/AdminDashboard.tsx", "client/src/pages/admin/ActivityLogPanel.tsx", "client/src/pages/admin/QuickAccessSection.tsx", "client/src/pages/admin/SitemapPanel.tsx", "client/src/pages/admin/SessionsPanel.tsx", "client/src/pages/admin/BehaviorAnalyticsPanel.tsx", "client/src/pages/admin/AgentConfigPanel.tsx", "client/src/pages/admin/CampaignDesignerPanel.tsx", "client/src/pages/admin/ModmailPanel.tsx", "client/src/pages/admin/AtroposScannerPanel.tsx", "client/src/pages/admin/AdminUtilityPanels.tsx", "client/src/pages/admin/AgentConfigSection.tsx", "client/src/pages/admin/AgentModulesSection.tsx", "client/src/pages/admin/CollectiblesSection.tsx", "client/src/pages/admin/CurriculumSection.tsx", "client/src/pages/admin/EffectsPlaygroundSection.tsx", "client/src/pages/admin/FeedbackSection.tsx", "client/src/pages/admin/GameplaySection.tsx", "client/src/pages/admin/QuestsSection.tsx", "client/src/pages/admin/QuickPushSection.tsx"],
       "shared": ["shared/schema.ts"],
       "config": ["package.json", "tsconfig.json", "vite.config.ts", "drizzle.config.ts", "tailwind.config.ts", "client/index.html"]
     }
