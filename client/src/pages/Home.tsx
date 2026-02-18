@@ -318,6 +318,49 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Civic Engagement Learning Section */}
+      <section className="bg-[#050208] py-24 px-4 relative overflow-hidden border-t border-amber-900/20">
+        <div className="absolute top-1/2 right-0 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl" />
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="font-orbitron text-3xl md:text-4xl text-stone-200 mb-4">
+              <span className="text-amber-500">Civic Engagement</span> & Movement History
+            </h2>
+            <p className="text-stone-500 max-w-2xl mx-auto">
+              Learn from movements that toppled authoritarian regimes with laughter, unity, and creative resistance. Serbia, Euromaidan, Hong Kong, and more.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { id: 'serbia_otpor', icon: '✊', name: 'Serbia: Otpor!', desc: 'Youth-led humor & unity vs Milosevic' },
+              { id: 'euromaidan', icon: '🌻', name: 'Euromaidan', desc: 'Ukraine 2013-14 grassroots mobilization' },
+              { id: 'hong_kong_resistance', icon: '☂️', name: 'Hong Kong', desc: 'Creative resistance & Be Water' },
+              { id: 'humor_unity_resistance', icon: '😄', name: 'Laughter & Unity', desc: 'Comparative nonviolent resistance' },
+            ].map((c) => (
+              <Link key={c.id} href={`/investigate?campaign=${c.id}`}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="p-5 bg-[#0f0a05]/80 border border-amber-900/30 rounded-lg hover:border-amber-600/50 transition-all cursor-pointer group"
+                >
+                  <span className="text-2xl block mb-2">{c.icon}</span>
+                  <h3 className="font-orbitron text-amber-400 group-hover:text-amber-300">{c.name}</h3>
+                  <p className="text-stone-500 text-xs mt-1">{c.desc}</p>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/campaigns">
+              <Button variant="outline" className="border-amber-800/50 text-amber-400 hover:border-amber-600 hover:bg-amber-950/20">
+                View All Civic & Security Campaigns
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-[#0a0500] py-20 px-4 border-t border-amber-900/20">
         <div className="container mx-auto max-w-4xl text-center">

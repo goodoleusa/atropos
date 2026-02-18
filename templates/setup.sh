@@ -25,10 +25,11 @@ show_presets() {
   echo ""
   echo -e "  ${CYAN}1)${NC} ${BOLD}minimal${NC}    — Core platform + terminal"
   echo -e "  ${CYAN}2)${NC} ${BOLD}learner${NC}    — Campaigns, AI agents, gamification, wiki"
-  echo -e "  ${CYAN}3)${NC} ${BOLD}security${NC}   — OSINT tools, scanning, reports, investigations"
-  echo -e "  ${CYAN}4)${NC} ${BOLD}marketing${NC}  — Behavior analysis, engagement, reporting"
-  echo -e "  ${CYAN}5)${NC} ${BOLD}full${NC}       — Everything included"
-  echo -e "  ${CYAN}6)${NC} ${BOLD}custom${NC}     — Pick individual modules"
+  echo -e "  ${CYAN}3)${NC} ${BOLD}civic${NC}      — Civic engagement, grassroots organizing, movement history"
+  echo -e "  ${CYAN}4)${NC} ${BOLD}security${NC}   — OSINT tools, scanning, reports, investigations"
+  echo -e "  ${CYAN}5)${NC} ${BOLD}marketing${NC}  — Behavior analysis, engagement, reporting"
+  echo -e "  ${CYAN}6)${NC} ${BOLD}full${NC}       — Everything included"
+  echo -e "  ${CYAN}7)${NC} ${BOLD}custom${NC}     — Pick individual modules"
   echo ""
 }
 
@@ -55,9 +56,10 @@ get_preset_modules() {
   case "$preset" in
     1|minimal)    echo "terminal" ;;
     2|learner)    echo "nexus-ai terminal campaigns gamification wiki" ;;
-    3|security)   echo "nexus-ai terminal scanner-osint spiderfoot report-builder portfolio" ;;
-    4|marketing)  echo "behavior-analysis gamification report-builder" ;;
-    5|full)       echo "nexus-ai terminal campaigns scanner-osint qr-c2 gamification behavior-analysis report-builder portfolio ai-lab wiki spiderfoot crew-builder" ;;
+    3|civic)      echo "nexus-ai terminal campaigns civic-engagement gamification wiki" ;;
+    4|security)   echo "nexus-ai terminal scanner-osint spiderfoot report-builder portfolio" ;;
+    5|marketing)  echo "behavior-analysis gamification report-builder" ;;
+    6|full)       echo "nexus-ai terminal campaigns civic-engagement scanner-osint qr-c2 gamification behavior-analysis report-builder portfolio ai-lab wiki spiderfoot crew-builder" ;;
     *)            echo "" ;;
   esac
 }
@@ -227,9 +229,9 @@ if [ -n "$1" ]; then
 fi
 
 show_presets
-read -p "Choose a preset (1-6): " choice
+read -p "Choose a preset (1-7): " choice
 
-if [ "$choice" = "6" ]; then
+if [ "$choice" = "7" ]; then
   show_modules
   echo -e "Enter module names separated by spaces (e.g., ${CYAN}nexus-ai terminal gamification${NC}):"
   read -p "> " custom_modules

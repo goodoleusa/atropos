@@ -6,6 +6,10 @@ export type LearningStyle =
   | 'pragmatic';
 
 export type LearningGoal = 
+  | 'digital_citizenship'
+  | 'grassroots_organizing'
+  | 'civic_engagement'
+  | 'movement_history'
   | 'bgp_routing'
   | 'osint_investigation'
   | 'geolocation_osint'
@@ -68,6 +72,34 @@ export const LEARNING_STYLES: { id: LearningStyle; name: string; description: st
 ];
 
 export const LEARNING_GOALS: { id: LearningGoal; name: string; description: string; category: string; tools: string[] }[] = [
+  {
+    id: 'digital_citizenship',
+    name: 'Digital Citizenship',
+    description: 'Fact-checking, media literacy, safe communication, ethical sharing, information integrity',
+    category: 'Civic',
+    tools: ['Reverse image search', 'Fact-check sites', 'Signal', 'Tor Browser']
+  },
+  {
+    id: 'grassroots_organizing',
+    name: 'Grassroots Organizing',
+    description: 'One-on-ones, leadership development, power mapping, coalition building, campaign planning',
+    category: 'Civic',
+    tools: ['Power mapping', 'Meeting facilitation', 'Campaign templates', 'Relational organizing']
+  },
+  {
+    id: 'civic_engagement',
+    name: 'Civic Engagement',
+    description: 'Democratic participation, voting, public comment, local government, civic habits',
+    category: 'Civic',
+    tools: ['Ballot guides', 'Meeting calendars', 'Issue trackers', 'Government websites']
+  },
+  {
+    id: 'movement_history',
+    name: 'Movement History',
+    description: 'Case studies of nonviolent resistance: Serbia, Ukraine, Hong Kong, color revolutions',
+    category: 'Civic',
+    tools: ['CANVAS manuals', 'Primary sources', 'Documentary analysis', 'Comparative case studies']
+  },
   {
     id: 'bgp_routing',
     name: 'BGP & Routing Analysis',
@@ -211,6 +243,7 @@ export const SKILL_LEVELS = [
 ];
 
 export const CATEGORY_COLORS: Record<string, string> = {
+  'Civic': 'bg-amber-900/30 text-amber-400 border-amber-800',
   'Network': 'bg-blue-900/30 text-blue-400 border-blue-800',
   'Intelligence': 'bg-purple-900/30 text-purple-400 border-purple-800',
   'Defense': 'bg-green-900/30 text-green-400 border-green-800',
