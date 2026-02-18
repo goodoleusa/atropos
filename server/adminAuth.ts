@@ -10,15 +10,16 @@ if (!ADMIN_USER_IDS || ADMIN_USER_IDS.length === 0) {
 }
 
 export const isAdmin: RequestHandler = (req, res, next) => {
-  isAuthenticated(req, res, () => {
-    const user = req.user as any;
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-    if (ADMIN_USER_IDS && ADMIN_USER_IDS.length > 0) {
-      if (!ADMIN_USER_IDS.includes(user.claims.sub)) {
-        return res.status(403).json({ message: "Forbidden: Admin access only" });
-      }
+  const user = req.user as any;
+  if (ADMIN_USER_IDS && ADMIN_USER_IDS.length > 0) {
+    if (!user.claims || !ADMIN_USER_IDS.includes(user.claims.sub)) {
+      return res.status(403).json({ message: "Forbidden: Admin access only" });
     }
+  }
 
-    next();
-  });
+  next();
 };

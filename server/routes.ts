@@ -81,6 +81,49 @@ export async function registerRoutes(
   // Apply access gate (requires token in URL or valid cookie)
   app.use(appAccessGate);
   
+  // Register Content routes (Prompt Gallery, Agent Modules, Designer)
+  app.use(contentRoutes);
+  
+  // Register OSINT routes
+  app.use("/api/osint", osintRoutes);
+  
+  // Register Atropos routes
+  app.use("/api/atropos", atroposRoutes);
+  
+  // Register Behavior Analysis routes
+  app.use("/api/behavior", behaviorRoutes);
+  
+  // Register Atropos Scanner routes
+  app.use("/api/atropos", atroposRoutes);
+  
+  // Register SpiderFoot OSINT routes
+  app.use("/api/spiderfoot", spiderfootRoutes);
+
+  // Register Feedback collection routes
+  app.use("/api/feedback", feedbackRoutes);
+  app.use("/api/recs", recsRoutes);
+
+  // Register Portfolio routes
+  app.use(portfolioRoutes);
+
+  // Register Sitemap routes
+  app.use(sitemapRoutes);
+  
+  // Register Progression routes (XP, achievements, leaderboards, challenges)
+  app.use(progressionRoutes);
+
+  // Register Curriculum routes
+  app.use(curriculumRoutes);
+
+  // Register Gameplay routes
+  app.use(gameplayRoutes);
+
+  // Context Memory Manager (auto-compression, capsules, W&B tracking)
+  app.use(memoryRoutes);
+
+  // Mission Bus - cross-module findings & background tasks
+  app.use(missionBusRoutes);
+
   // Protect all admin API routes
   app.use("/api/admin", isAdmin);
 
