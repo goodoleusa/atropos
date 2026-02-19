@@ -2,23 +2,7 @@ import { Router, Request, Response } from 'express';
 import OpenAI from 'openai';
 import { storage } from '../storage';
 import { wandbTracker } from '../lib/wandbTracker';
-
-function getOpenRouterClient() {
-  if (process.env.OPENROUTER_API_KEY) {
-    return new OpenAI({
-      baseURL: "https://openrouter.ai/api/v1",
-      apiKey: process.env.OPENROUTER_API_KEY,
-      defaultHeaders: {
-        "HTTP-Referer": "https://sysadmin.corp",
-        "X-Title": "NEXUS Context Manager"
-      }
-    });
-  }
-  return new OpenAI({
-    baseURL: process.env.AI_INTEGRATIONS_OPENROUTER_BASE_URL,
-    apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
-  });
-}
+import { getOpenRouterClient, withCache, logCacheStatus } from '../lib/openrouterClient';
 
 const COMPRESSION_PROMPT = `You are a context compression engine. Condense the conversation into a dense state capsule that preserves:
 1. KEY FINDINGS: All discoveries, evidence, vulnerabilities, IOCs
@@ -64,7 +48,7 @@ async function callWithFallback(
   const models = [preferredModel, ...FALLBACK_MODELS.filter(m => m !== preferredModel)];
   for (const model of models) {
     try {
-      const response = await client.chat.completions.create({ model, messages, max_tokens: maxTokens, temperature });
+      const response = await client.chat.completions.create(withCache({ model, messages, max_tokens: maxTokens, temperature }, 'memory'));
       const content = response.choices[0]?.message?.content || '';
       if (content) return { content, model };
     } catch (err: any) {
@@ -439,7 +423,7 @@ router.post('/api/chat/memory/quality-check', async (req: Request, res: Response
 
     const openrouter = getOpenRouterClient();
 
-    const response = await openrouter.chat.completions.create({
+    const response = await openrouter.chat.completions.create(withCache({
       model: 'meta-llama/llama-3.3-70b-instruct:free',
       messages: [
         {
@@ -462,8 +446,9 @@ Output ONLY valid JSON:
       ],
       max_tokens: 400,
       temperature: 0.1,
-    });
+    }, 'memory'));
 
+    logCacheStatus(response, 'memory');
     const raw = response.choices[0]?.message?.content || '';
 
     let quality;
@@ -518,7 +503,7 @@ router.post('/api/chat/memory/quality-check-batch', async (req: Request, res: Re
 
     for (const capsule of capsules.slice(0, Math.min(limit, 5))) {
       try {
-        const response = await openrouter.chat.completions.create({
+        const response = await openrouter.chat.completions.create(withCache({
           model: 'meta-llama/llama-3.3-70b-instruct:free',
           messages: [
             {
@@ -532,8 +517,9 @@ router.post('/api/chat/memory/quality-check-batch', async (req: Request, res: Re
           ],
           max_tokens: 200,
           temperature: 0.1,
-        });
+        }, 'memory'));
 
+        logCacheStatus(response, 'memory');
         const raw = response.choices[0]?.message?.content || '';
         const jsonMatch = raw.match(/\{[\s\S]*\}/);
         const quality = jsonMatch ? JSON.parse(jsonMatch[0]) : { overall: 0, verdict: 'fail' };

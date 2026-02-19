@@ -31,21 +31,10 @@ const CATEGORY_AGENTS: Record<string, string[]> = {
   'general': ['vuln_analyst', 'osint_analyst', 'threat_intel', 'secret_hunter', 'network_recon'],
 };
 
-function getOpenRouterClient(): OpenAI {
-  if (process.env.OPENROUTER_API_KEY) {
-    return new OpenAI({
-      baseURL: "https://openrouter.ai/api/v1",
-      apiKey: process.env.OPENROUTER_API_KEY,
-      defaultHeaders: {
-        "HTTP-Referer": "https://nexus.security",
-        "X-Title": "NEXUS Multi-Agent System"
-      }
-    });
-  }
-  return new OpenAI({
-    baseURL: process.env.AI_INTEGRATIONS_OPENROUTER_BASE_URL,
-    apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
-  });
+import { getOpenRouterClient as getCachedClient, logCacheStatus, withCache } from "../lib/openrouterClient";
+
+function getOpenRouterClient() {
+  return getCachedClient({ referer: "https://nexus.security", title: "NEXUS Multi-Agent System" });
 }
 
 export class AgentOrchestrator {
@@ -87,7 +76,7 @@ export class AgentOrchestrator {
     try {
       const userPrompt = this.formatScanDataForAgent(agent, scanData);
       
-      const response = await this.openrouter.chat.completions.create({
+      const response = await this.openrouter.chat.completions.create(withCache({
         model: agent.model,
         messages: [
           { role: "system", content: agent.systemPrompt },
@@ -95,8 +84,9 @@ export class AgentOrchestrator {
         ],
         temperature: agent.temperature,
         max_tokens: agent.maxTokens,
-      });
+      }, 'agent-' + agent.id));
 
+      logCacheStatus(response, 'orchestrator');
       const output = response.choices[0]?.message?.content || "";
       const latencyMs = Date.now() - startTime;
 
