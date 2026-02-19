@@ -1,8 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
-import OpenAI from "openai";
 import { chatStorage } from "./storage";
+import { getOpenRouterClient, logCacheStatus, withCache, withCacheStreaming } from "../../lib/openrouterClient";
 
-// Simple rate limiter for chat routes
 const chatRateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const chatRateLimit = (maxRequests: number, windowMs: number) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -27,28 +26,7 @@ const chatRateLimit = (maxRequests: number, windowMs: number) => {
   };
 };
 
-// Support user's own OpenRouter key (full access) or Replit integration (paid models only)
-// User's key unlocks ALL models including free tier without data policy restrictions
-function getOpenRouterClient() {
-  if (process.env.OPENROUTER_API_KEY) {
-    console.log("[chat] Using user's OpenRouter API key - full model access");
-    return new OpenAI({
-      baseURL: "https://openrouter.ai/api/v1",
-      apiKey: process.env.OPENROUTER_API_KEY,
-      defaultHeaders: {
-        "HTTP-Referer": "https://sysadmin.corp",
-        "X-Title": "SysAdmin Corp NEXUS Agent"
-      }
-    });
-  }
-  console.log("[chat] Using Replit AI Integrations - paid models recommended");
-  return new OpenAI({
-    baseURL: process.env.AI_INTEGRATIONS_OPENROUTER_BASE_URL,
-    apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
-  });
-}
-
-const openrouter = getOpenRouterClient();
+const openrouter = getOpenRouterClient({ referer: "https://sysadmin.corp", title: "SysAdmin Corp NEXUS Agent" });
 
 export function registerChatRoutes(app: Express): void {
   // Get all conversations
@@ -112,7 +90,7 @@ export function registerChatRoutes(app: Express): void {
         return res.status(400).json({ error: "Messages array required" });
       }
 
-      const response = await openrouter.chat.completions.create({
+      const response = await openrouter.chat.completions.create(withCache({
         model,
         messages: messages.map((m: any) => ({
           role: m.role || 'user',
@@ -120,8 +98,9 @@ export function registerChatRoutes(app: Express): void {
         })),
         max_tokens: 500,
         temperature: 0.3,
-      });
+      }, 'compress'));
 
+      logCacheStatus(response, 'chat');
       const content = response.choices[0]?.message?.content || '';
       res.json({ content, compressed: content });
     } catch (error) {
@@ -147,13 +126,14 @@ export function registerChatRoutes(app: Express): void {
       messages.push({ role: 'user', content: prompt });
 
       const startTime = Date.now();
-      const response = await openrouter.chat.completions.create({
+      const response = await openrouter.chat.completions.create(withCache({
         model,
         messages: messages as any,
         max_tokens: 1024,
         temperature: 0.7,
-      });
+      }, 'chat-test'));
 
+      logCacheStatus(response, 'chat');
       const content = response.choices[0]?.message?.content || '';
       const latency = Date.now() - startTime;
 
@@ -193,13 +173,14 @@ export function registerChatRoutes(app: Express): void {
           }
           messages.push({ role: 'user', content: prompt });
 
-          const response = await openrouter.chat.completions.create({
+          const response = await openrouter.chat.completions.create(withCache({
             model,
             messages: messages as any,
             max_tokens: 1024,
             temperature: 0.7,
-          });
+          }));
 
+          logCacheStatus(response, 'chat');
           return {
             model,
             response: response.choices[0]?.message?.content || '',
@@ -272,13 +253,13 @@ export function registerChatRoutes(app: Express): void {
       res.setHeader("Connection", "keep-alive");
 
       // Stream response from OpenRouter with client-specified settings
-      const stream = await openrouter.chat.completions.create({
+      const stream = await openrouter.chat.completions.create(withCacheStreaming({
         model,
         messages: chatMessages as any,
         stream: true,
         max_tokens: Math.min(maxTokens, 4096),
         temperature: Math.max(0, Math.min(2, temperature)),
-      });
+      }, 'nexus-chat'));
 
       let fullResponse = "";
 

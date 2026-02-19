@@ -2417,30 +2417,17 @@ BEHAVIOR:
       
       const fullPrompt = `${baseInstructions}\n\n---\nUser Request:\n${prompt}${scanContext}`;
       
-      // Call OpenRouter API
-      const apiKey = process.env.OPENROUTER_API_KEY;
-      if (!apiKey) {
-        throw new Error("OPENROUTER_API_KEY is not configured");
-      }
+      const { cachedFetch } = await import("./lib/openrouterClient");
+      const { url, init } = cachedFetch(
+        model,
+        [
+          { role: "system", content: baseInstructions },
+          { role: "user", content: prompt + (scanContext ? "\n\nPlease analyze the provided scan results in the context of this request." : "") }
+        ],
+        { temperature, max_tokens: 2000, cacheKey: `nexus-agent-${agentId}` }
+      );
 
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://nexus-security.replit.app",
-          "X-Title": "NEXUS Security Platform"
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: baseInstructions },
-            { role: "user", content: prompt + (scanContext ? "\n\nPlease analyze the provided scan results in the context of this request." : "") }
-          ],
-          temperature,
-          max_tokens: 2000
-        })
-      });
+      const response = await fetch(url, init);
       
       if (!response.ok) {
         const errorText = await response.text();

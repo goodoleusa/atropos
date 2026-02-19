@@ -1,26 +1,9 @@
 import { Router } from "express";
-import OpenAI from "openai";
 import { storage } from "../storage";
 import { isAdmin } from "../adminAuth";
+import { getOpenRouterClient, withCache, logCacheStatus } from "../lib/openrouterClient";
 
 const router = Router();
-
-function getOpenRouterClient() {
-  if (process.env.OPENROUTER_API_KEY) {
-    return new OpenAI({
-      baseURL: "https://openrouter.ai/api/v1",
-      apiKey: process.env.OPENROUTER_API_KEY,
-      defaultHeaders: {
-        "HTTP-Referer": "https://sysadmin.corp",
-        "X-Title": "Atropos Curriculum Generator"
-      }
-    });
-  }
-  return new OpenAI({
-    baseURL: process.env.AI_INTEGRATIONS_OPENROUTER_BASE_URL,
-    apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
-  });
-}
 
 let lastGenTime = 0;
 
@@ -341,7 +324,7 @@ Return EXACTLY this JSON structure (no markdown, pure JSON) — a multi-step inv
 }`;
 
     const openrouter = getOpenRouterClient();
-    const completion = await openrouter.chat.completions.create({
+    const completion = await openrouter.chat.completions.create(withCache({
       model: "google/gemini-2.5-flash",
       messages: [
         { role: "system", content: systemPrompt },
@@ -349,8 +332,9 @@ Return EXACTLY this JSON structure (no markdown, pure JSON) — a multi-step inv
       ],
       temperature: 0.7,
       max_tokens: 4000,
-    });
+    }, 'curriculum-gen'));
 
+    logCacheStatus(completion, 'curriculum');
     const raw = completion.choices?.[0]?.message?.content || "";
     let draft;
     try {
