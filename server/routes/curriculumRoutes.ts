@@ -28,7 +28,7 @@ router.get("/api/curriculum/:trackId", async (req, res) => {
 
 router.put("/api/curriculum/:trackId", isAdmin, async (req, res) => {
   try {
-    const updated = await storage.updateCurriculumTrack(req.params.trackId, req.body);
+    const updated = await storage.updateCurriculumTrack(req.params.trackId as string, req.body);
     if (!updated) return res.status(404).json({ error: "Track not found" });
     res.json(updated);
   } catch (error: any) {
@@ -49,7 +49,7 @@ router.post("/api/curriculum", isAdmin, async (req, res) => {
 
 router.delete("/api/curriculum/:trackId", isAdmin, async (req, res) => {
   try {
-    const deleted = await storage.deleteCurriculumTrack(req.params.trackId);
+    const deleted = await storage.deleteCurriculumTrack(req.params.trackId as string);
     res.json({ success: deleted });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

@@ -2434,4 +2434,15 @@ router.post("/osint/scan/live", async (req: Request, res: Response) => {
   }
 });
 
+const scanHistory: Array<{id: string; target: string; scanType: string; status: string; startedAt: string; completedAt?: string; findingsCount: number}> = [];
+
+export function recordScanHistory(entry: typeof scanHistory[0]) {
+  scanHistory.unshift(entry);
+  if (scanHistory.length > 50) scanHistory.pop();
+}
+
+router.get("/scan-history", async (req: Request, res: Response) => {
+  res.json(scanHistory);
+});
+
 export default router;
