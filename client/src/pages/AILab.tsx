@@ -52,10 +52,11 @@ interface SessionSummary {
   bugReports: string[];
 }
 
-const MODEL_PRICING: Record<string, { input: number; output: number }> = {
-  'openai/gpt-4o': { input: 0.0025, output: 0.01 },
-  'openai/gpt-4o-mini': { input: 0.00015, output: 0.0006 },
-  'anthropic/claude-sonnet-4': { input: 0.003, output: 0.015 },
+const MODEL_PRICING: Record<string, { input: number; output: number; cachedInput?: number }> = {
+  'openai/gpt-4o': { input: 0.0025, output: 0.01, cachedInput: 0.00125 },
+  'openai/gpt-4o-mini': { input: 0.00015, output: 0.0006, cachedInput: 0.000075 },
+  'anthropic/claude-sonnet-4': { input: 0.003, output: 0.015, cachedInput: 0.0003 },
+  'google/gemini-2.5-flash': { input: 0.00015, output: 0.0006, cachedInput: 0.0000375 },
   'moonshotai/kimi-k2.5': { input: 0.0, output: 0.0 },
   'nvidia/nemotron-4-340b-instruct:free': { input: 0.0, output: 0.0 },
   'nvidia/llama-3.1-nemotron-70b-instruct:free': { input: 0.0, output: 0.0 },
@@ -65,6 +66,74 @@ const MODEL_PRICING: Record<string, { input: number; output: number }> = {
   'mistralai/codestral-2405:free': { input: 0.0, output: 0.0 },
   'qwen/qwen-2.5-coder-32b-instruct:free': { input: 0.0, output: 0.0 },
 };
+
+interface CacheSimResult {
+  model: string;
+  modelName: string;
+  systemTokens: number;
+  userTokens: number;
+  outputTokens: number;
+  requests: number;
+  noCacheCost: number;
+  cachedCost: number;
+  savings: number;
+  savingsPercent: number;
+  perRequestBreakdown: Array<{ request: number; inputCost: number; cachedInputCost: number; outputCost: number }>;
+}
+
+function simulateCacheCosts(
+  modelId: string,
+  systemTokens: number,
+  userTokens: number,
+  outputTokens: number,
+  requests: number
+): CacheSimResult | null {
+  const pricing = MODEL_PRICING[modelId];
+  if (!pricing || !pricing.cachedInput) return null;
+  const modelInfo = MODELS.find(m => m.id === modelId);
+
+  const perRequestBreakdown: CacheSimResult['perRequestBreakdown'] = [];
+  let totalNoCacheCost = 0;
+  let totalCachedCost = 0;
+
+  for (let i = 1; i <= requests; i++) {
+    const totalInput = systemTokens + userTokens;
+    const inputCost = (totalInput / 1000) * pricing.input;
+    const outputCost = (outputTokens / 1000) * pricing.output;
+    const noCacheReq = inputCost + outputCost;
+    totalNoCacheCost += noCacheReq;
+
+    let cachedReq: number;
+    if (i === 1) {
+      cachedReq = inputCost + outputCost + (systemTokens / 1000) * pricing.input * 0.25;
+    } else {
+      const cachedInputCost = (systemTokens / 1000) * pricing.cachedInput + (userTokens / 1000) * pricing.input;
+      cachedReq = cachedInputCost + outputCost;
+    }
+    totalCachedCost += cachedReq;
+
+    perRequestBreakdown.push({
+      request: i,
+      inputCost: noCacheReq,
+      cachedInputCost: cachedReq,
+      outputCost,
+    });
+  }
+
+  return {
+    model: modelId,
+    modelName: modelInfo?.name || modelId.split('/').pop() || modelId,
+    systemTokens,
+    userTokens,
+    outputTokens,
+    requests,
+    noCacheCost: totalNoCacheCost,
+    cachedCost: totalCachedCost,
+    savings: totalNoCacheCost - totalCachedCost,
+    savingsPercent: totalNoCacheCost > 0 ? ((totalNoCacheCost - totalCachedCost) / totalNoCacheCost) * 100 : 0,
+    perRequestBreakdown,
+  };
+}
 
 interface ModelInfo {
   id: string;
@@ -260,6 +329,11 @@ export function AILabContent() {
   const [selectedChallenge, setSelectedChallenge] = useState<typeof AI_PENTEST_CHALLENGES[0] | null>(null);
   const [challengeFilter, setChallengeFilter] = useState<string>('all');
   const [showCrewAIExporter, setShowCrewAIExporter] = useState(false);
+  const [showCacheSimulator, setShowCacheSimulator] = useState(false);
+  const [cacheSimSystemTokens, setCacheSimSystemTokens] = useState(4000);
+  const [cacheSimUserTokens, setCacheSimUserTokens] = useState(500);
+  const [cacheSimOutputTokens, setCacheSimOutputTokens] = useState(1000);
+  const [cacheSimRequests, setCacheSimRequests] = useState(50);
   const runTestRef = useRef<HTMLButtonElement>(null);
 
   const generatedPrompt = useMemo(() => {
@@ -1315,6 +1389,208 @@ ${modelRankings.slice(0, 3).map(m => {
             </Button>
           </CardContent>
         </Card>
+
+      <Card className={`border-amber-900/30 bg-black/50 ${showCacheSimulator ? '' : 'cursor-pointer hover:border-amber-700/50 transition-colors'}`}>
+        <CardHeader className="pb-3" onClick={() => setShowCacheSimulator(!showCacheSimulator)}>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+              <DollarSign className="w-5 h-5" /> Cache Cost Simulator
+            </CardTitle>
+            <Badge variant="outline" className={`text-xs ${showCacheSimulator ? 'border-amber-500 text-amber-400' : 'border-stone-700 text-stone-500'}`}>
+              {showCacheSimulator ? 'Collapse' : 'Expand'}
+            </Badge>
+          </div>
+          <CardDescription className="text-stone-500 text-xs">
+            Compare cached vs uncached token costs across models — see how much you save with context caching
+          </CardDescription>
+        </CardHeader>
+        {showCacheSimulator && (
+          <CardContent className="space-y-4" data-testid="cache-simulator-panel">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div>
+                <Label className="text-xs text-stone-400">System Prompt Tokens</Label>
+                <Input
+                  type="number"
+                  value={cacheSimSystemTokens}
+                  onChange={e => setCacheSimSystemTokens(Math.max(100, parseInt(e.target.value) || 100))}
+                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  data-testid="cache-sim-system-tokens"
+                />
+                <p className="text-[10px] text-stone-600 mt-1">Cached between requests</p>
+              </div>
+              <div>
+                <Label className="text-xs text-stone-400">User Prompt Tokens</Label>
+                <Input
+                  type="number"
+                  value={cacheSimUserTokens}
+                  onChange={e => setCacheSimUserTokens(Math.max(10, parseInt(e.target.value) || 10))}
+                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  data-testid="cache-sim-user-tokens"
+                />
+                <p className="text-[10px] text-stone-600 mt-1">Changes each request</p>
+              </div>
+              <div>
+                <Label className="text-xs text-stone-400">Output Tokens (avg)</Label>
+                <Input
+                  type="number"
+                  value={cacheSimOutputTokens}
+                  onChange={e => setCacheSimOutputTokens(Math.max(50, parseInt(e.target.value) || 50))}
+                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  data-testid="cache-sim-output-tokens"
+                />
+                <p className="text-[10px] text-stone-600 mt-1">Model response size</p>
+              </div>
+              <div>
+                <Label className="text-xs text-stone-400">Requests per Session</Label>
+                <Input
+                  type="number"
+                  value={cacheSimRequests}
+                  onChange={e => setCacheSimRequests(Math.max(2, Math.min(500, parseInt(e.target.value) || 2)))}
+                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  data-testid="cache-sim-requests"
+                />
+                <p className="text-[10px] text-stone-600 mt-1">2-500 requests</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => { setCacheSimSystemTokens(2000); setCacheSimUserTokens(200); setCacheSimOutputTokens(500); setCacheSimRequests(20); }}
+                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                data-testid="cache-sim-preset-light"
+              >
+                Light Chat (2K sys)
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => { setCacheSimSystemTokens(5000); setCacheSimUserTokens(500); setCacheSimOutputTokens(1000); setCacheSimRequests(50); }}
+                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                data-testid="cache-sim-preset-agent"
+              >
+                NEXUS Agent (5K sys)
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => { setCacheSimSystemTokens(15000); setCacheSimUserTokens(2000); setCacheSimOutputTokens(2000); setCacheSimRequests(100); }}
+                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                data-testid="cache-sim-preset-codebase"
+              >
+                Codebase Review (15K sys)
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => { setCacheSimSystemTokens(50000); setCacheSimUserTokens(5000); setCacheSimOutputTokens(4000); setCacheSimRequests(200); }}
+                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                data-testid="cache-sim-preset-heavy"
+              >
+                Heavy Analysis (50K sys)
+              </Button>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              {(['anthropic/claude-sonnet-4', 'openai/gpt-4o', 'openai/gpt-4o-mini', 'google/gemini-2.5-flash'] as const).map(modelId => {
+                const result = simulateCacheCosts(modelId, cacheSimSystemTokens, cacheSimUserTokens, cacheSimOutputTokens, cacheSimRequests);
+                if (!result) return null;
+                const maxCost = Math.max(result.noCacheCost, 0.001);
+                const barWidthNormal = 100;
+                const barWidthCached = (result.cachedCost / maxCost) * 100;
+
+                return (
+                  <div key={modelId} className="p-3 rounded-lg border border-stone-800 bg-stone-900/50 space-y-2" data-testid={`cache-sim-result-${result.modelName.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-stone-300">{result.modelName}</span>
+                      <Badge className={`text-xs ${result.savingsPercent > 50 ? 'bg-teal-900 text-teal-300 border-teal-700' : result.savingsPercent > 20 ? 'bg-amber-900 text-amber-300 border-amber-700' : 'bg-stone-800 text-stone-400 border-stone-700'}`}>
+                        {result.savingsPercent > 0 ? `${result.savingsPercent.toFixed(1)}% saved` : 'No caching'}
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-stone-500 w-16 shrink-0">No cache</span>
+                        <div className="flex-1 h-5 bg-stone-800 rounded-sm overflow-hidden relative">
+                          <div className="h-full bg-red-700/80 rounded-sm" style={{ width: `${barWidthNormal}%` }} />
+                          <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-mono">${result.noCacheCost.toFixed(4)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-stone-500 w-16 shrink-0">Cached</span>
+                        <div className="flex-1 h-5 bg-stone-800 rounded-sm overflow-hidden relative">
+                          <div className="h-full bg-teal-700/80 rounded-sm transition-all duration-500" style={{ width: `${Math.max(barWidthCached, 2)}%` }} />
+                          <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-mono">${result.cachedCost.toFixed(4)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between text-[10px] text-stone-500">
+                      <span>Saved: <span className="text-teal-400 font-medium">${result.savings.toFixed(4)}</span></span>
+                      <span>Per request: ${(result.noCacheCost / result.requests).toFixed(5)} → ${(result.cachedCost / result.requests).toFixed(5)}</span>
+                    </div>
+
+                    <div className="flex gap-1 h-8 items-end">
+                      {result.perRequestBreakdown.slice(0, Math.min(result.requests, 50)).map((br, i) => {
+                        const maxReqCost = result.perRequestBreakdown[0]?.inputCost || 0.001;
+                        const normalHeight = (br.inputCost / maxReqCost) * 100;
+                        const cachedHeight = (br.cachedInputCost / maxReqCost) * 100;
+                        return (
+                          <div key={i} className="flex-1 flex gap-[1px] items-end" title={`Request ${br.request}: $${br.inputCost.toFixed(5)} → $${br.cachedInputCost.toFixed(5)}`}>
+                            <div className="flex-1 bg-red-700/60 rounded-t-[1px]" style={{ height: `${Math.max(normalHeight, 2)}%` }} />
+                            <div className="flex-1 bg-teal-600/60 rounded-t-[1px] transition-all duration-300" style={{ height: `${Math.max(cachedHeight, 2)}%` }} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-between text-[10px] text-stone-600">
+                      <span>Request 1 (cache write)</span>
+                      <span>Request {Math.min(result.requests, 50)}{result.requests > 50 ? ` (of ${result.requests})` : ''}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {(() => {
+              const results = (['anthropic/claude-sonnet-4', 'openai/gpt-4o', 'openai/gpt-4o-mini', 'google/gemini-2.5-flash'] as const)
+                .map(m => simulateCacheCosts(m, cacheSimSystemTokens, cacheSimUserTokens, cacheSimOutputTokens, cacheSimRequests))
+                .filter(Boolean) as CacheSimResult[];
+              const bestSaver = results.sort((a, b) => b.savingsPercent - a.savingsPercent)[0];
+              const cheapestCached = results.sort((a, b) => a.cachedCost - b.cachedCost)[0];
+              const monthlyNoCacheBest = (results.sort((a, b) => a.noCacheCost - b.noCacheCost)[0]?.noCacheCost || 0) * 30;
+              const monthlyCachedBest = (cheapestCached?.cachedCost || 0) * 30;
+
+              return (
+                <div className="p-3 rounded-lg border border-amber-900/30 bg-amber-950/20 space-y-2">
+                  <h4 className="text-amber-400 text-xs font-bold flex items-center gap-1">
+                    <Lightbulb className="w-3 h-3" /> Key Insights
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                    <div className="p-2 bg-black/30 rounded border border-stone-800">
+                      <p className="text-stone-500">Highest Cache Savings</p>
+                      <p className="text-teal-400 font-bold">{bestSaver?.modelName} ({bestSaver?.savingsPercent.toFixed(1)}%)</p>
+                    </div>
+                    <div className="p-2 bg-black/30 rounded border border-stone-800">
+                      <p className="text-stone-500">Cheapest with Caching</p>
+                      <p className="text-amber-400 font-bold">{cheapestCached?.modelName} (${cheapestCached?.cachedCost.toFixed(4)}/session)</p>
+                    </div>
+                    <div className="p-2 bg-black/30 rounded border border-stone-800">
+                      <p className="text-stone-500">Monthly Savings (daily use)</p>
+                      <p className="text-teal-400 font-bold">${(monthlyNoCacheBest - monthlyCachedBest).toFixed(2)}/month</p>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-stone-600 italic">
+                    Tip: Larger system prompts benefit more from caching. A 50K token prompt cached 100 times saves up to {bestSaver?.savingsPercent.toFixed(0)}% vs no caching.
+                    Cache key strategy matters — group by agent/feature to maximize hits.
+                  </p>
+                </div>
+              );
+            })()}
+          </CardContent>
+        )}
+      </Card>
 
       <Card className="border-red-900/30 bg-stone-900/50">
         <CardContent className="p-4 sm:p-6">

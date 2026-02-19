@@ -9,34 +9,15 @@ import {
   gameSessions
 } from "@shared/schema";
 import { eq, desc, gte, count, sql, and } from "drizzle-orm";
-import OpenAI from "openai";
+import { getOpenRouterClient, withCache, logCacheStatus } from "../lib/openrouterClient";
 
-// Analysis thresholds
 const ANALYSIS_THRESHOLDS = {
   minInteractionsForAnalysis: 20,
   minMinutesForAnalysis: 5,
   periodicAnalysisIntervalHours: 24,
-  suspiciousRapidFireThreshold: 50, // actions per minute
-  suspiciousErrorRateThreshold: 0.3, // 30% error rate
+  suspiciousRapidFireThreshold: 50,
+  suspiciousErrorRateThreshold: 0.3,
 };
-
-// Get OpenRouter client
-function getAIClient() {
-  if (process.env.OPENROUTER_API_KEY) {
-    return new OpenAI({
-      baseURL: "https://openrouter.ai/api/v1",
-      apiKey: process.env.OPENROUTER_API_KEY,
-      defaultHeaders: {
-        "HTTP-Referer": "https://sysadmin.corp",
-        "X-Title": "SysAdmin Corp Behavior Analyst"
-      }
-    });
-  }
-  return new OpenAI({
-    baseURL: process.env.AI_INTEGRATIONS_OPENROUTER_BASE_URL,
-    apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
-  });
-}
 
 // Collect raw behavioral data for a session
 async function collectSessionData(sessionToken: string) {
@@ -202,7 +183,7 @@ async function generateAIAnalysis(
   metrics: NonNullable<ReturnType<typeof calculateMetrics>>,
   riskData: ReturnType<typeof detectSuspiciousPatterns>
 ) {
-  const client = getAIClient();
+  const client = getOpenRouterClient();
 
   const prompt = `You are a user behavior analyst for a security training platform. Analyze this user's behavior data and provide insights.
 
@@ -261,13 +242,14 @@ Provide a JSON response with these fields:
 }`;
 
   try {
-    const response = await client.chat.completions.create({
+    const response = await client.chat.completions.create(withCache({
       model: "meta-llama/llama-3.3-70b-instruct:free",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 1500,
       temperature: 0.3,
-    });
+    }, 'behavior-analysis'));
 
+    logCacheStatus(response, 'behavior');
     const content = response.choices[0]?.message?.content || '{}';
     // Extract JSON from response
     const jsonMatch = content.match(/\{[\s\S]*\}/);

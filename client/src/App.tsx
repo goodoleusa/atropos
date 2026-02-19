@@ -38,6 +38,7 @@ import Wiki from "@/pages/Wiki";
 import Walkthrough from "@/pages/Walkthrough";
 import BehaviorAnalysis from "@/pages/BehaviorAnalysis";
 import MarketingDashboard from "@/pages/MarketingDashboard";
+import ReportBuilder from "@/pages/ReportBuilder";
 import FontCustomizer from "@/components/FontCustomizer";
 import DecoherenceLabPage from "@/pages/DecoherenceLabPage";
 
@@ -88,6 +89,7 @@ function DynamicRouter() {
       <Route path="/behavior" component={BehaviorAnalysis} />
       <Route path="/videos" component={VideoGallery} />
       <Route path="/marketing" component={MarketingDashboard} />
+      <Route path="/report" component={ReportBuilder} />
       {customRoutes}
       <Route component={NotFound} />
     </Switch>

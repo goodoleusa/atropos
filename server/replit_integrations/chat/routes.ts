@@ -212,6 +212,17 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
+  app.get("/api/conversations/:id/messages", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const messages = await chatStorage.getMessagesByConversation(id);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
   // Send message and get AI response (streaming)
   // Rate limited: 20 messages per minute per IP
   app.post("/api/conversations/:id/messages", chatRateLimit(20, 60000), async (req: Request, res: Response) => {

@@ -300,13 +300,272 @@ export const AI_CURRICULUM_TRACKS: AICurriculumTrack[] = [
   },
 
   {
+    id: 'token_economics',
+    name: 'Token Economics & Context Caching',
+    icon: '💰',
+    description: 'Understand how AI models charge for tokens, what context caching does to cut costs by up to 90%, and how to optimize prompts for large codebases without breaking the bank.',
+    order: 1,
+    color: 'amber',
+    prerequisiteTrackIds: ['scientific_prompting'],
+    missions: [
+      {
+        id: 'te_token_anatomy',
+        trackId: 'token_economics',
+        name: 'Anatomy of a Token',
+        icon: '🔤',
+        description: 'What even IS a token? Learn how text becomes numbers, why "cybersecurity" costs more tokens than "cat", and how tokenizers differ between models.',
+        difficulty: 'beginner',
+        estimatedTime: '15-20 min',
+        xpReward: 100,
+        objectives: [
+          'Explain what a token is and how tokenization works',
+          'Compare token counts for the same text across 3 different models',
+          'Identify why some words cost more tokens than others',
+          'Calculate the token cost of a typical system prompt'
+        ],
+        exercises: [
+          {
+            id: 'te_token_count',
+            title: 'Token Counting Challenge',
+            type: 'observation' as const,
+            instructions: 'Open the AI Lab and select 3 different models. Paste the SAME paragraph into each and note the token counts. Which model tokenizes most efficiently? Try with English text, then with code snippets — do the results change?',
+            hints: [
+              'Code-specialized models (Codestral, DeepSeek Coder) often tokenize code more efficiently',
+              'Subword tokenization means rare words get split into pieces — "cybersecurity" might become "cyber" + "security"',
+              'Check the token count display in the AI Lab after running a test'
+            ],
+            successCriteria: [
+              'Recorded token counts for 3+ models on identical input',
+              'Identified which model was most token-efficient for code vs prose',
+              'Explained why token counts differ between models'
+            ]
+          },
+          {
+            id: 'te_pricing_math',
+            title: 'The $100 Prompt Bill',
+            type: 'eval_run' as const,
+            instructions: 'Using the AI Lab cost tracker, calculate how much it would cost to send a 50,000-token system prompt to GPT-4o vs Claude Sonnet 4 vs a free model. Then calculate the cost if you send that same prompt 100 times per day for a month. Use the MODEL_PRICING reference in the AI Lab. Document which model is cheapest and by how much.',
+            hints: [
+              'GPT-4o input: $2.50/M tokens, output: $10/M tokens',
+              'Claude Sonnet 4 input: $3/M tokens, output: $15/M tokens',
+              'Free models cost $0 but may have rate limits and lower quality',
+              'Monthly cost = daily_cost × 30'
+            ],
+            successCriteria: [
+              'Calculated per-request cost for 3+ models',
+              'Projected monthly costs for a realistic usage scenario',
+              'Identified the cost-optimal model for repetitive prompts'
+            ]
+          }
+        ],
+        keyTakeaways: [
+          'Tokens are the atomic unit of AI billing — every character you send costs money',
+          'Different models tokenize differently — same text, different costs',
+          'System prompts are sent with EVERY request — a 5,000 token system prompt at 100 requests/day adds up fast',
+          'Free models exist but have tradeoffs in quality, speed, and rate limits'
+        ],
+        teachingAdaptations: {
+          experiential: 'Run real prompts in the AI Lab and watch the token counter in real-time',
+          visual: 'Create a comparison chart of token costs across models using the Battleground',
+          analytical: 'Calculate exact costs per million tokens and build a pricing spreadsheet',
+          social: 'Challenge a friend to find the most token-efficient way to phrase the same instruction',
+          pragmatic: 'Bookmark the MODEL_PRICING table — use it every time you pick a model for a task'
+        },
+        platformTools: ['AI Lab', 'Battleground'],
+        furtherReading: [
+          'OpenAI Tokenizer Tool: https://platform.openai.com/tokenizer',
+          'Anthropic Token Counting: https://docs.anthropic.com/en/docs/build-with-claude/token-counting',
+          'OpenRouter Model Pricing: https://openrouter.ai/models'
+        ]
+      },
+      {
+        id: 'te_context_caching',
+        trackId: 'token_economics',
+        name: 'Context Caching: The 90% Discount',
+        icon: '📦',
+        description: 'Learn how context caching lets you reuse system prompts and conversation history without paying for them again. The single biggest cost optimization in production AI.',
+        difficulty: 'intermediate',
+        estimatedTime: '25-35 min',
+        xpReward: 150,
+        objectives: [
+          'Explain how context caching works at the provider level (Anthropic, OpenAI, Google)',
+          'Configure cache_key and cache_ttl_seconds for an API request',
+          'Calculate cost savings from caching on a real-world scenario',
+          'Use the Cache Cost Simulator to compare cached vs uncached costs'
+        ],
+        exercises: [
+          {
+            id: 'te_cache_simulator',
+            title: 'Cache Cost Simulator Showdown',
+            type: 'eval_run' as const,
+            instructions: 'Open the Cache Cost Simulator in the AI Lab. Set a system prompt size of 4,000 tokens (typical for NEXUS agents). Configure 50 requests per session. Compare the total cost for Claude Sonnet 4 with caching ON vs OFF. Then try GPT-4o. Which model benefits more from caching? What happens when you increase the system prompt to 20,000 tokens?',
+            hints: [
+              'Cached tokens are billed at 10% of the normal input rate for Anthropic',
+              'The first request is always a cache MISS (full price) — savings come from requests 2+',
+              'Larger system prompts = bigger savings from caching',
+              'Look at the savings percentage — it should increase with more requests'
+            ],
+            successCriteria: [
+              'Ran the simulator with at least 2 models and 2 prompt sizes',
+              'Correctly identified which model has better cache economics',
+              'Explained why savings increase with more requests per session'
+            ]
+          },
+          {
+            id: 'te_cache_key_strategy',
+            title: 'Design a Cache Key Strategy',
+            type: 'prompt_craft' as const,
+            instructions: 'You are building a multi-agent security platform with 6 specialized agents. Each agent has a unique system prompt. Design a cache key naming strategy that maximizes cache hits while preventing cross-contamination. Consider: What should the key include? How long should the TTL be? What happens if two users send the same prompt?',
+            hints: [
+              'Good cache keys are descriptive: "agent-vulnAnalyst" not "key-1"',
+              'Group by feature area: "nexus-chat", "agent-{id}", "curriculum-gen"',
+              'TTL of 24 hours (86400 seconds) is a good default for stable system prompts',
+              'Cache keys should NOT include user-specific data unless you want per-user caches'
+            ],
+            successCriteria: [
+              'Designed cache keys for 6+ agents with clear naming convention',
+              'Chose appropriate TTL values with reasoning',
+              'Identified when cache keys should vs should NOT include user context'
+            ]
+          },
+          {
+            id: 'te_cache_metrics',
+            title: 'Reading Cache Metrics Like a Pro',
+            type: 'observation' as const,
+            instructions: 'In a real OpenRouter response, the usage object contains cache_read_tokens and cache_write_tokens. A cache WRITE means you paid full price but the prompt is now cached. A cache READ means you got the discount. Monitor the NEXUS agent chat — send the same type of question twice and check if the second response shows cache_read_tokens > 0 in the server logs.',
+            hints: [
+              'Check server console logs for "[chat] cache-read:" entries',
+              'The logCacheStatus helper prints cache metrics automatically',
+              'Not all models support caching — free models usually do not',
+              'First request = cache write (full price), subsequent = cache read (discounted)'
+            ],
+            successCriteria: [
+              'Identified cache_read_tokens vs cache_write_tokens in a response',
+              'Explained the difference between a cache hit and cache miss',
+              'Verified caching is active on at least one endpoint'
+            ]
+          }
+        ],
+        keyTakeaways: [
+          'Context caching can reduce input token costs by up to 90% on supported models',
+          'The first request is always full price (cache write) — savings come from repetition',
+          'Cache keys group related requests so system prompts are reused across a session',
+          'Larger system prompts benefit MORE from caching — a 10K token prompt cached 100 times saves ~$2.25 on Claude',
+          'Not all models support caching — check provider documentation'
+        ],
+        teachingAdaptations: {
+          experiential: 'Use the Cache Cost Simulator to see savings in real-time with different configurations',
+          visual: 'Watch the animated cost comparison chart showing cached vs uncached spending over 100 requests',
+          analytical: 'Calculate exact savings using the formula: savings = (requests - 1) × prompt_tokens × (input_rate × 0.9)',
+          social: 'Compare cache strategies with classmates — whose key naming scheme is most maintainable?',
+          pragmatic: 'Copy the withCache() wrapper pattern from the Atropos codebase and use it in your own projects'
+        },
+        platformTools: ['AI Lab', 'Cache Cost Simulator', 'NEXUS Agent Chat'],
+        furtherReading: [
+          'Anthropic Prompt Caching: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching',
+          'OpenAI Prompt Caching: https://platform.openai.com/docs/guides/prompt-caching',
+          'OpenRouter Caching Guide: https://openrouter.ai/docs/features/caching'
+        ]
+      },
+      {
+        id: 'te_optimization_lab',
+        trackId: 'token_economics',
+        name: 'Lab: Prompt Cost Optimization',
+        icon: '🧪',
+        description: 'Hands-on lab where you take a bloated 8,000-token prompt and optimize it to under 2,000 tokens while maintaining output quality. Real-world skill for production AI.',
+        difficulty: 'intermediate',
+        estimatedTime: '30-40 min',
+        xpReward: 200,
+        objectives: [
+          'Reduce a prompt from 8,000 tokens to under 2,000 without losing output quality',
+          'Apply 4 specific optimization techniques (compression, few-shot reduction, instruction distillation, output constraints)',
+          'Measure quality before and after optimization using the Battleground',
+          'Calculate the monthly cost savings from optimization'
+        ],
+        exercises: [
+          {
+            id: 'te_bloat_audit',
+            title: 'Step 1: The Bloat Audit',
+            type: 'observation' as const,
+            instructions: 'Paste this bloated system prompt into the AI Lab token counter: "You are a highly skilled and experienced cybersecurity analyst with over 15 years of experience in the field of information security, particularly specializing in threat intelligence, vulnerability assessment, and incident response. Your expertise spans across multiple domains including but not limited to network security, application security, cloud security, and endpoint protection..." (continues for 8,000 tokens). Identify the 5 biggest sources of token waste.',
+            hints: [
+              'Redundant qualifiers ("highly skilled and experienced") waste tokens',
+              'Long preambles can be replaced with role assignment: "You are a senior threat analyst"',
+              'Lists of capabilities can be summarized or shown as few-shot examples',
+              'Repetitive instructions ("make sure to", "ensure that", "be certain to") are token sinks'
+            ],
+            successCriteria: [
+              'Identified 5+ specific token waste patterns in the prompt',
+              'Categorized waste types: redundancy, verbosity, unnecessary context, over-specification'
+            ]
+          },
+          {
+            id: 'te_compress',
+            title: 'Step 2: The Compression Challenge',
+            type: 'prompt_craft' as const,
+            instructions: 'Rewrite the bloated prompt using these 4 techniques: (1) Role compression — replace verbose descriptions with a concise role, (2) Few-shot reduction — replace long instructions with 1-2 examples, (3) Instruction distillation — merge overlapping rules, (4) Output constraints — specify format instead of describing it. Target: under 2,000 tokens.',
+            hints: [
+              'Role compression: "You are a senior cybersecurity analyst. Specialize in: threat intel, vuln assessment, IR."',
+              'One good example teaches more than 500 words of instruction',
+              'Merge: "Be concise. Be accurate. Be clear." → "Respond concisely with verified facts."',
+              'Format constraint: "Respond in JSON: {severity, evidence, recommendation}" replaces paragraphs'
+            ],
+            successCriteria: [
+              'Applied all 4 compression techniques',
+              'Achieved token count under 2,000',
+              'Preserved the core instructions and intent of the original prompt'
+            ]
+          },
+          {
+            id: 'te_quality_check',
+            title: 'Step 3: Quality vs Cost Tradeoff',
+            type: 'comparison' as const,
+            instructions: 'Run the SAME test question against both the original 8K-token prompt and your optimized version using the Battleground. Score both responses on: accuracy (did it get the right answer?), format (did it follow instructions?), depth (was it thorough enough?). Calculate cost savings. Was the optimization worth it?',
+            hints: [
+              'Use a cybersecurity question that requires domain knowledge to test quality',
+              'Compare token usage, latency, and output quality side by side',
+              'A 75% cost reduction with 5% quality loss is usually a good trade',
+              'Document the exact savings: (original_cost - optimized_cost) / original_cost × 100'
+            ],
+            successCriteria: [
+              'Ran both versions on identical test inputs',
+              'Scored outputs on 3+ quality dimensions',
+              'Calculated percentage cost savings',
+              'Made a justified decision on whether the optimization was worth it'
+            ]
+          }
+        ],
+        keyTakeaways: [
+          'Most production prompts are 3-5x more verbose than necessary',
+          'One good example replaces 500+ words of instruction',
+          'Format constraints (JSON, bullet points) often improve output AND reduce tokens',
+          'The goal is not minimum tokens — it is maximum value per token',
+          'Monthly savings from prompt optimization compound: 50% reduction × 1000 daily requests = significant budget'
+        ],
+        teachingAdaptations: {
+          experiential: 'Optimize a real bloated prompt and measure the before/after in the Battleground',
+          visual: 'Create a side-by-side diff showing the original vs optimized prompt with waste highlighted',
+          analytical: 'Build a spreadsheet calculating cost per quality point for each optimization technique',
+          social: 'Prompt golf competition — who can get the best output with the fewest tokens?',
+          pragmatic: 'Save your optimized prompt as a reusable template in the Prompt Builder'
+        },
+        platformTools: ['AI Lab', 'Battleground', 'Prompt Builder'],
+        furtherReading: [
+          'Anthropic Prompt Engineering Guide: https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering',
+          'OpenAI Best Practices: https://platform.openai.com/docs/guides/prompt-engineering'
+        ]
+      }
+    ]
+  },
+
+  {
     id: 'prompt_engineering',
     name: 'Prompt Engineering',
     icon: '✏️',
     description: 'Master the art and science of crafting prompts that get consistent, high-quality results. Go beyond simple questions to build reusable prompt templates.',
-    order: 1,
+    order: 2,
     color: 'amber',
-    prerequisiteTrackIds: ['scientific_prompting'],
+    prerequisiteTrackIds: ['scientific_prompting', 'token_economics'],
     missions: [
       {
         id: 'pe_system_prompts',
@@ -427,7 +686,7 @@ export const AI_CURRICULUM_TRACKS: AICurriculumTrack[] = [
     name: 'AI-Human Dyads',
     icon: '🤝',
     description: 'Learn to think WITH an AI, not just talk TO it. Master the partnership model where human judgment and AI processing combine into something neither can do alone.',
-    order: 2,
+    order: 3,
     color: 'teal',
     prerequisiteTrackIds: ['scientific_prompting'],
     missions: [
@@ -501,7 +760,7 @@ export const AI_CURRICULUM_TRACKS: AICurriculumTrack[] = [
     name: 'Emergence & Decoherence',
     icon: '🌊',
     description: 'Understand why AI models sometimes produce brilliant unexpected insights and other times collapse into nonsense. Learn to detect and manage both.',
-    order: 3,
+    order: 4,
     color: 'purple',
     prerequisiteTrackIds: ['prompt_engineering'],
     missions: [
@@ -592,7 +851,7 @@ export const AI_CURRICULUM_TRACKS: AICurriculumTrack[] = [
     name: 'Edge AI Computing (2026)',
     icon: '📡',
     description: 'What runs locally vs cloud in 2026. Understand latency, privacy, cost tradeoffs for security work. When to use edge models vs API models.',
-    order: 4,
+    order: 5,
     color: 'cyan',
     prerequisiteTrackIds: ['emergence_decoherence'],
     missions: [
@@ -672,7 +931,7 @@ export const AI_CURRICULUM_TRACKS: AICurriculumTrack[] = [
     name: 'LLM Evaluation & Fine-Tuning',
     icon: '⚖️',
     description: 'Learn to evaluate whether a model is actually good at YOUR specific task. Run structured evaluations, compare models quantitatively, and understand when fine-tuning makes sense.',
-    order: 5,
+    order: 6,
     color: 'orange',
     prerequisiteTrackIds: ['prompt_engineering'],
     missions: [
@@ -753,7 +1012,7 @@ export const AI_CURRICULUM_TRACKS: AICurriculumTrack[] = [
     name: 'Agent Team Architecture',
     icon: '🏛️',
     description: 'The capstone: learn to design, build, evaluate, and optimize teams of AI agents. Move beyond single-model thinking to orchestrated multi-agent systems.',
-    order: 6,
+    order: 7,
     color: 'rose',
     prerequisiteTrackIds: ['scientific_prompting', 'prompt_engineering', 'llm_eval_tuning'],
     missions: [
