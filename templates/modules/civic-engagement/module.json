@@ -1,0 +1,9 @@
+{
+  "id": "civic-engagement",
+  "name": "Civic Engagement Learning",
+  "description": "Digital citizenship, grassroots organizing, civic engagement, and movement history (Serbia, Euromaidan, Hong Kong). AI-guided learning on nonviolent resistance, humor, and unity.",
+  "inject": {
+    "dependencies": ["campaigns", "nexus-ai"],
+    "env_keys": []
+  }
+}

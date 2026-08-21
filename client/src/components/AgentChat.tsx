@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext, detectFindingFromMessage } from '@/hooks/useReportContext';
 import { Bot, Send, Loader2, Zap, Terminal, QrCode, Rocket, ArrowLeft, Clock, Target, Copy, Download, Save, ExternalLink as ExternalLinkIcon, Settings2, FileText, GraduationCap, CheckCircle2, ChevronRight, X } from 'lucide-react';
-import { AGENT_CAMPAIGNS, getDifficultyColor, type Campaign, type CampaignTargetField, type TargetFieldType } from '@/config/agentCampaigns';
+import { ALL_CAMPAIGNS, getDifficultyColor, type Campaign, type CampaignTargetField, type TargetFieldType } from '@/config/agentCampaigns';
 import { toast } from "@/hooks/use-toast";
 import { PromptStudio, type PromptConfig } from './PromptStudio';
 import { MissionBriefing } from './MissionBriefing';
@@ -104,6 +104,7 @@ interface AgentChatProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialPayload?: string;
+  initialCampaignId?: string;
 }
 
 type ModuleKey = keyof typeof CAPABILITY_MODULES;
@@ -116,7 +117,7 @@ const DEFAULT_PROMPT_CONFIG: PromptConfig = {
   temperature: 0.7
 };
 
-export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps) => {
+export const AgentChat = ({ open, onOpenChange, initialPayload, initialCampaignId }: AgentChatProps) => {
   const { gameState } = useGame();
   const { addAgentMessage, addToolOutput, currentSession, startSession, setCampaign: setContextCampaign, addTarget } = useReportContext();
   const getLearningProfile = useLearningStore((state) => state.getFullPromptModifier);
@@ -175,7 +176,14 @@ export const AgentChat = ({ open, onOpenChange, initialPayload }: AgentChatProps
     if (initialPayload && open) {
       setInput(`Execute this payload:\n${initialPayload}`);
     }
-  }, [initialPayload, open]);
+    if (initialCampaignId && open) {
+      const campaign = ALL_CAMPAIGNS.find(c => c.id === initialCampaignId);
+      if (campaign) {
+        startCampaign(campaign);
+        setShowCampaigns(false);
+      }
+    }
+  }, [initialPayload, initialCampaignId, open]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -1207,7 +1215,7 @@ ${learningProfile}`;
 
                 {/* Module Grid - Mobile Optimized */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
-                  {AGENT_CAMPAIGNS.slice(0, 8).map((campaign) => (
+                  {ALL_CAMPAIGNS.slice(0, 10).map((campaign) => (
                     <button
                       key={campaign.id}
                       onClick={() => startCampaign(campaign)}

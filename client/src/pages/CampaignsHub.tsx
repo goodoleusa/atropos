@@ -12,6 +12,7 @@ import {
   X, Layers
 } from 'lucide-react';
 import { ALL_CURRICULUM_TRACKS } from '@/config/aiCurriculum';
+import { CIVIC_CAMPAIGNS } from '@/config/agentCampaigns';
 
 interface UnifiedCampaign {
   campaignId: string;
@@ -30,6 +31,9 @@ interface UnifiedCampaign {
 
 const CATEGORY_META: Record<string, { icon: any; label: string; color: string; bg: string }> = {
   all: { icon: <Layers className="w-3.5 h-3.5" />, label: 'All', color: 'text-stone-300', bg: 'bg-stone-800 border-stone-600' },
+  civic: { icon: <Users className="w-3.5 h-3.5" />, label: 'Civic', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
+  movements: { icon: <Users className="w-3.5 h-3.5" />, label: 'Movements', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
+  organizing: { icon: <Users className="w-3.5 h-3.5" />, label: 'Organizing', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
   apt: { icon: <Skull className="w-3.5 h-3.5" />, label: 'APT', color: 'text-red-400', bg: 'bg-red-900/30 border-red-800' },
   osint: { icon: <Globe className="w-3.5 h-3.5" />, label: 'OSINT', color: 'text-teal-400', bg: 'bg-teal-900/30 border-teal-800' },
   forensics: { icon: <Search className="w-3.5 h-3.5" />, label: 'Forensics', color: 'text-blue-400', bg: 'bg-blue-900/30 border-blue-800' },
@@ -106,7 +110,22 @@ export default function CampaignsHub() {
           route: '/decoherence',
         };
 
-        setCampaigns([...serverCampaigns, decoherenceLab, ...curriculumEntries]);
+        const civicEntries: UnifiedCampaign[] = CIVIC_CAMPAIGNS.map(c => ({
+          campaignId: c.id,
+          name: c.name,
+          description: c.description,
+          category: 'civic',
+          difficulty: c.difficulty,
+          estimatedTime: c.estimatedTime,
+          nodeCount: c.objectives?.length ?? 4,
+          tags: c.tags,
+          source: 'curriculum' as const,
+          icon: c.icon,
+          color: c.color,
+          route: `/investigate?tab=chat&campaign=${c.id}`,
+        }));
+
+        setCampaigns([...civicEntries, ...serverCampaigns, decoherenceLab, ...curriculumEntries]);
         setLoading(false);
       })
       .catch(() => setLoading(false));
