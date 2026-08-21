@@ -81,26 +81,41 @@
 2. Complete: 5 anti-trafficking campaigns
 3. Apply: Research fellowship (paid investigations)
 
+### ✊ **Civic Engagement Learners**
+1. Start: http://localhost:5000/campaigns (filter by Civic)
+2. Study: Serbia Otpor!, Euromaidan, Hong Kong, digital citizenship, grassroots organizing
+3. Learn: How laughter and unity toppled authoritarian regimes; apply lessons to your community
+
+### 🚀 **Spin Off Your Own Platform**
+See **[SPINOFF_AND_HOSTING_GUIDE.md](docs/SPINOFF_AND_HOSTING_GUIDE.md)** for:
+- Step-by-step: clone this branch → new repo → customize → host free
+- Customization checklist (branding, campaigns, AI, design)
+- Free hosting: Replit, Render, Railway, Fly.io
+
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-# Deploy platform locally
+# 1. Clone and install
+git clone https://github.com/goodoleusa/atropos.git
+cd atropos
+git checkout cursornew-civic-engagement-platform-a0d0   # Civic branch
 npm install
+
+# 2. Set up environment (copy .env.example to .env, fill DATABASE_URL + OPENROUTER_API_KEY)
+cp .env.example .env
+
+# 3. Database
+npm run db:push
+npm run db:seed
+
+# 4. Run locally
 npm run dev
 # Visit: http://localhost:5000
-
-# Test AI security agents
-bash scripts/test-security-agents.sh
-
-# Deploy to production
-bash scripts/week1-deploy.sh
-
-# Deploy agent on client network
-cd server/crewai
-python securityCrew.py deploy --client CLIENT_ID --network 10.0.0.0/24
 ```
+
+**Spinoff & host for free**: See [docs/SPINOFF_AND_HOSTING_GUIDE.md](docs/SPINOFF_AND_HOSTING_GUIDE.md).
 
 ---
 
@@ -125,9 +140,10 @@ bash templates/setup.sh full ./my-project
 |--------|-----------------|
 | `minimal` | Core platform + terminal |
 | `learner` | NEXUS AI, terminal, campaigns, gamification, wiki |
+| `civic` | NEXUS AI, terminal, campaigns, civic-engagement, gamification, wiki |
 | `security` | NEXUS AI, terminal, scanner/OSINT, SpiderFoot, reports, portfolio |
 | `marketing` | Behavior analysis, gamification, report builder |
-| `full` | All 13 modules |
+| `full` | All 14 modules including civic-engagement |
 
 ### 13 Feature Modules
 
@@ -136,6 +152,7 @@ bash templates/setup.sh full ./my-project
 | `nexus-ai` | AI | AI investigation assistant, multi-agent orchestration |
 | `terminal` | Core | Custom CLI with command parsing and history |
 | `campaigns` | Content | Investigation campaigns with visual flow editor |
+| `civic-engagement` | Content | Digital citizenship, grassroots organizing, movement history (Serbia, Euromaidan, Hong Kong) |
 | `scanner-osint` | Security | Atropos scanner + real OSINT integration (IOC, DNS, WHOIS) |
 | `qr-c2` | Security | QR C2 framework with guided missions and labs |
 | `gamification` | Engagement | XP, levels, 500+ achievements, leaderboards, daily challenges |
