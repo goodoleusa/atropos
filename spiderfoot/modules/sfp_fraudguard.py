@@ -7,7 +7,7 @@
 #
 # Created:     18/06/2017
 # Copyright:   (c) Steve Micallef 2017
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import base64
@@ -187,6 +187,7 @@ class sfp_fraudguard(SpiderFootPlugin):
             else:
                 max_netblock = self.opts['maxnetblock']
 
+            max_netblock = self.opts['maxnetblock']
             if IPNetwork(eventData).prefixlen < max_netblock:
                 self.debug(f"Network size bigger than permitted: {IPNetwork(eventData).prefixlen} > {max_netblock}")
                 return
@@ -245,7 +246,7 @@ class sfp_fraudguard(SpiderFootPlugin):
             if eventName == 'NETBLOCK_OWNER':
                 pevent = SpiderFootEvent("IP_ADDRESS", addr, self.__name__, event)
                 self.notifyListeners(pevent)
-            elif eventName == 'NETBLOCKV6_OWNER':
+            if eventName == 'NETBLOCKV6_OWNER':
                 pevent = SpiderFootEvent("IPV6_ADDRESS", addr, self.__name__, event)
                 self.notifyListeners(pevent)
             elif eventName == 'NETBLOCK_MEMBER':

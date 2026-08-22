@@ -7,9 +7,9 @@
 # Updated By:   Brad Chiappetta, GreyNoise
 #
 # Created:      20/11/2018
-# Updated:      31-Aug-2022
+# Updated:      15-Nov-2021
 # Copyright:    (c) Steve Micallef
-# Licence:      MIT
+# Licence:      GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -31,15 +31,15 @@ class sfp_greynoise(SpiderFootPlugin):
         "dataSource": {
             "website": "https://greynoise.io/",
             "model": "FREE_AUTH_LIMITED",
-            "references": ["https://docs.greynoise.io/", "https://viz.greynoise.io/signup"],
+            "references": ["https://docs.greynoise.io/", "https://www.greynoise.io/viz/signup"],
             "apiKeyInstructions": [
-                "Visit https://viz.greynoise.io/signup",
+                "Visit https://www.greynoise.io/viz/signup",
                 "Sign up for a free account",
-                "Navigate to https://viz.greynoise.io/account",
+                "Navigate to https://www.greynoise.io/viz/account/",
                 "The API key is listed under 'API Key'",
             ],
-            "favIcon": "https://viz.greynoise.io/favicon.ico",
-            "logo": "https://viz.greynoise.io/_nuxt/img/greynoise-logo.dccd59d.png",
+            "favIcon": "https://www.greynoise.io/favicon.ico",
+            "logo": "https://www.greynoise.io/_nuxt/img/greynoise-logo.dccd59d.png",
             "description": "At GreyNoise, we collect and analyze untargeted, widespread, "
             "and opportunistic scan and attack activity that reaches every server directly connected to the Internet. "
             "Mass scanners (such as Shodan and Censys), search engines, bots, worms, "
@@ -107,21 +107,39 @@ class sfp_greynoise(SpiderFootPlugin):
 
     def queryIP(self, qry, qry_type):
         gn_context_url = "https://api.greynoise.io/v2/noise/context/"
+        gn_riot_url = "https://api.greynoise.io/v2/riot/"
         gn_gnql_url = "https://api.greynoise.io/v2/experimental/gnql?query="
 
         headers = {"key": self.opts["api_key"]}
         res = {}
         if qry_type == "ip":
             self.debug(f"Querying GreyNoise for IP: {qry}")
-            res = {}
+            ip_res = {}
+            riot_res = {}
             ip_response = self.sf.fetchUrl(
                 gn_context_url + qry,
                 timeout=self.opts["_fetchtimeout"],
-                useragent="greynoise-spiderfoot-v1.2.0",
+                useragent="greynoise-spiderfoot-v1.1.0",
                 headers=headers,
             )
             if ip_response["code"] == "200":
-                res = json.loads(ip_response["content"])
+                ip_res = json.loads(ip_response["content"])
+            riot_response = self.sf.fetchUrl(
+                gn_riot_url + qry,
+                timeout=self.opts["_fetchtimeout"],
+                useragent="greynoise-spiderfoot-v1.1.0",
+                headers=headers,
+            )
+            if riot_response["code"] in ["200", "404"]:
+                riot_res = json.loads(riot_response["content"])
+
+            if ip_res and not riot_res:
+                res = ip_res
+            elif riot_res and not ip_res:
+                res = riot_res
+            else:
+                res = ip_res.copy()
+                res.update(riot_res)
         else:
             self.debug(f"Querying GreyNoise for Netblock: {qry}")
             query_response = self.sf.fetchUrl(
@@ -165,20 +183,28 @@ class sfp_greynoise(SpiderFootPlugin):
         if eventName == "NETBLOCK_OWNER":
             if not self.opts["netblocklookup"]:
                 return
-
-            max_netblock = self.opts['maxnetblock']
-            if IPNetwork(eventData).prefixlen < max_netblock:
-                self.debug(f"Network size bigger than permitted: {IPNetwork(eventData).prefixlen} > {max_netblock}")
-                return
+            else:
+                if IPNetwork(eventData).prefixlen < self.opts["maxnetblock"]:
+                    self.debug(
+                        "Network size bigger than permitted: "
+                        + str(IPNetwork(eventData).prefixlen)
+                        + " > "
+                        + str(self.opts["maxnetblock"])
+                    )
+                    return
 
         if eventName == "NETBLOCK_MEMBER":
             if not self.opts["subnetlookup"]:
                 return
-
-            max_subnet = self.opts['maxsubnet']
-            if IPNetwork(eventData).prefixlen < max_subnet:
-                self.debug(f"Network size bigger than permitted: {IPNetwork(eventData).prefixlen} > {max_subnet}")
-                return
+            else:
+                if IPNetwork(eventData).prefixlen < self.opts["maxsubnet"]:
+                    self.debug(
+                        "Network size bigger than permitted: "
+                        + str(IPNetwork(eventData).prefixlen)
+                        + " > "
+                        + str(self.opts["maxsubnet"])
+                    )
+                    return
 
         if eventName == "IP_ADDRESS":
             evtType = "MALICIOUS_IPADDR"
@@ -195,7 +221,7 @@ class sfp_greynoise(SpiderFootPlugin):
         if not ret:
             return
 
-        if "data" not in ret and "seen" not in ret:
+        if "data" not in ret and "seen" not in ret and "riot" not in ret:
             return
 
         if "data" in ret and len(ret["data"]) > 0:
@@ -246,7 +272,7 @@ class sfp_greynoise(SpiderFootPlugin):
                             descr += "\n - " + "Scans For CVEs: " + ", ".join(rec.get("cve"))
                         if rec.get("raw_data") and not (rec.get("tags") or ret.get("cve")):
                             descr += "\n - " + "Raw data: " + str(rec.get("raw_data"))
-                        descr += "\n<SFURL>https://viz.greynoise.io/ip/" + rec.get("ip") + "</SFURL>"
+                        descr += "\n<SFURL>https://www.greynoise.io/viz/ip/" + rec.get("ip") + "</SFURL>"
                         e = SpiderFootEvent(evtType, descr, self.__name__, event)
                         self.notifyListeners(e)
 
@@ -296,8 +322,35 @@ class sfp_greynoise(SpiderFootPlugin):
                         descr += "\n - " + "Scans For CVEs: " + ", ".join(ret.get("cve"))
                     if ret.get("raw_data") and not (ret.get("tags") or ret.get("cve")):
                         descr += "\n - " + "Raw data: " + str(ret.get("raw_data"))
-                    descr += "\n<SFURL>https://viz.greynoise.io/ip/" + ret.get("ip") + "</SFURL>"
+                    descr += "\n<SFURL>https://www.greynoise.io/viz/ip/" + ret.get("ip") + "</SFURL>"
                     e = SpiderFootEvent(evtType, descr, self.__name__, event)
                     self.notifyListeners(e)
+
+        if "riot" in ret:
+            if ret.get("riot", None):
+                lastseen = ret.get("last_updated", "1970-01-01")
+                lastseen = lastseen.split("T")[0]
+                lastseen_dt = datetime.strptime(lastseen, "%Y-%m-%d")
+                lastseen_ts = int(time.mktime(lastseen_dt.timetuple()))
+                age_limit_ts = int(time.time()) - (86400 * self.opts["age_limit_days"])
+                if self.opts["age_limit_days"] > 0 and lastseen_ts < age_limit_ts:
+                    self.debug("Record found but too old, skipping.")
+                    return
+
+                if ret.get("trust_level"):
+                    descr = (
+                        "GreyNoise - Common-Business Service IP Detected ["
+                        + eventData
+                        + "]\n - Trust Level: "
+                        + ret.get("trust_level")
+                    )
+                    if ret.get("name"):
+                        descr += "\n - " + "Provider Name: " + ret.get("name")
+                    if ret.get("category"):
+                        descr += "\n - " + "Provider Category: " + ret.get("category")
+                    descr += "\n<SFURL>https://www.greynoise.io/viz/ip/" + ret.get("ip") + "</SFURL>"
+                    e = SpiderFootEvent(evtType, descr, self.__name__, event)
+                    self.notifyListeners(e)
+
 
 # End of sfp_greynoise class

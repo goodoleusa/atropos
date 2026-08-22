@@ -8,7 +8,7 @@
 #
 # Created:     26/11/2016
 # Copyright:   (c) Steve Micallef 2012
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 from spiderfoot import SpiderFootEvent, SpiderFootPlugin
@@ -70,12 +70,10 @@ class sfp_similar(SpiderFootPlugin):
 
     # Default options
     opts = {
-        'skipwildcards': True
     }
 
     # Option descriptions
     optdescs = {
-        'skipwildcards': "Skip TLDs and sub-TLDs that have wildcard DNS."
     }
 
     # Internal results tracking
@@ -115,10 +113,6 @@ class sfp_similar(SpiderFootPlugin):
 
         self.results[dom] = True
 
-        # Check if the TLD has wildcards before testing
-        if self.opts['skipwildcards'] and self.sf.checkDnsWildcard(tld[1:]):
-            return
-
         domlist = list()
 
         # Search for typos
@@ -147,8 +141,10 @@ class sfp_similar(SpiderFootPlugin):
             domlist.append(c + dom)
 
         # Search for double character domains
-        for pos, c in enumerate(dom):
+        pos = 0
+        for c in dom:
             domlist.append(dom[0:pos] + c + c + dom[(pos + 1):len(dom)])
+            pos += 1
 
         for d in domlist:
             try:

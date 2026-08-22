@@ -6,7 +6,7 @@
 # Author:      Dhiraj Mishra <dhiraj@notsosecure.com>
 # Created:     28/10/2018
 # Copyright:   (c) Dhiraj Mishra
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re

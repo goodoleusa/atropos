@@ -30,16 +30,16 @@ class SpiderFootPluginLogger(logging.Logger):
     Preserves filename, module, line numbers, etc. from the caller.
     """
 
-    def findCaller(self, stack_info: bool = False, stacklevel: int = 1) -> tuple:
+    def findCaller(self, stack_info=False, stacklevel=1):
         """Find the stack frame of the caller so that we can note the source
         file name, line number and function name.
 
         Args:
-            stack_info (bool): TBD
-            stacklevel (int): TBD
+            stack_info: boolean
+            stacklevel: int
 
         Returns:
-            tuple: filename, line number, module name, and stack trace
+            rv: tuple, filename, line number, module name, and stack trace
         """
         f = logging.currentframe()
         # On some versions of IronPython, currentframe() returns None if
@@ -132,7 +132,7 @@ class SpiderFootPlugin():
     # Maximum threads
     maxThreads = 1
 
-    def __init__(self) -> None:
+    def __init__(self):
         # Holds the thread object when module threading is enabled
         self.thread = None
         # logging overrides
@@ -148,7 +148,7 @@ class SpiderFootPlugin():
             logging.setLoggerClass(logging.Logger)  # reset logger class to default
         return self._log
 
-    def _updateSocket(self, socksProxy: str) -> None:
+    def _updateSocket(self, socksProxy):
         """Hack to override module's use of socket, replacing it with
         one that uses the supplied SOCKS server.
 
@@ -157,14 +157,14 @@ class SpiderFootPlugin():
         """
         self.socksProxy = socksProxy
 
-    def clearListeners(self) -> None:
+    def clearListeners(self):
         """Used to clear any listener relationships, etc. This is needed because
         Python seems to cache local variables even between threads."""
 
         self._listenerModules = list()
         self._stopScanning = False
 
-    def setup(self, sf, userOpts: dict = {}) -> None:
+    def setup(self, sf, userOpts={}):
         """Will always be overriden by the implementer.
 
         Args:
@@ -173,7 +173,7 @@ class SpiderFootPlugin():
         """
         pass
 
-    def debug(self, *args, **kwargs) -> None:
+    def debug(self, *args, **kwargs):
         """For logging.
         A wrapper around logging.debug() that adds the scanId to LogRecord
 
@@ -183,7 +183,7 @@ class SpiderFootPlugin():
         """
         self.log.debug(*args, extra={'scanId': self.__scanId__}, **kwargs)
 
-    def info(self, *args, **kwargs) -> None:
+    def info(self, *args, **kwargs):
         """For logging.
         A wrapper around logging.info() that adds the scanId to LogRecord
 
@@ -193,7 +193,7 @@ class SpiderFootPlugin():
         """
         self.log.info(*args, extra={'scanId': self.__scanId__}, **kwargs)
 
-    def error(self, *args, **kwargs) -> None:
+    def error(self, *args, **kwargs):
         """For logging.
         A wrapper around logging.error() that adds the scanId to LogRecord
 
@@ -203,7 +203,7 @@ class SpiderFootPlugin():
         """
         self.log.error(*args, extra={'scanId': self.__scanId__}, **kwargs)
 
-    def enrichTarget(self, target: str) -> None:
+    def enrichTarget(self, target):
         """Find aliases for a target.
 
         Note: rarely used in special cases
@@ -213,7 +213,7 @@ class SpiderFootPlugin():
         """
         pass
 
-    def setTarget(self, target) -> None:
+    def setTarget(self, target):
         """Assigns the current target this module is acting against.
 
         Args:
@@ -229,7 +229,7 @@ class SpiderFootPlugin():
 
         self._currentTarget = target
 
-    def setDbh(self, dbh) -> None:
+    def setDbh(self, dbh):
         """Used to set the database handle, which is only to be used
         by modules in very rare/exceptional cases (e.g. sfp__stor_db)
 
@@ -238,7 +238,7 @@ class SpiderFootPlugin():
         """
         self.__sfdb__ = dbh
 
-    def setScanId(self, scanId: str) -> None:
+    def setScanId(self, scanId):
         """Set the scan ID.
 
         Args:
@@ -252,7 +252,7 @@ class SpiderFootPlugin():
 
         self.__scanId__ = scanId
 
-    def getScanId(self) -> str:
+    def getScanId(self):
         """Get the scan ID.
 
         Returns:
@@ -266,7 +266,7 @@ class SpiderFootPlugin():
 
         return self.__scanId__
 
-    def getTarget(self) -> str:
+    def getTarget(self):
         """Gets the current target this module is acting against.
 
         Returns:
@@ -280,7 +280,7 @@ class SpiderFootPlugin():
 
         return self._currentTarget
 
-    def registerListener(self, listener) -> None:
+    def registerListener(self, listener):
         """Listener modules which will get notified once we have data for them to
         work with.
 
@@ -290,10 +290,10 @@ class SpiderFootPlugin():
 
         self._listenerModules.append(listener)
 
-    def setOutputFilter(self, types) -> None:
+    def setOutputFilter(self, types):
         self.__outputFilter__ = types
 
-    def tempStorage(self) -> dict:
+    def tempStorage(self):
         """For future use. Module temporary storage.
 
         A dictionary used to persist state (in memory) for a module.
@@ -309,7 +309,7 @@ class SpiderFootPlugin():
         """
         return dict()
 
-    def notifyListeners(self, sfEvent) -> None:
+    def notifyListeners(self, sfEvent):
         """Call the handleEvent() method of every other plug-in listening for
         events from this plug-in. Remember that those plug-ins will be called
         within the same execution context of this thread, not on their own.
@@ -329,10 +329,12 @@ class SpiderFootPlugin():
         eventName = sfEvent.eventType
         eventData = sfEvent.data
 
-        # Be strict about what events to pass on, unless they are
-        # the ROOT event or the event type of the target.
-        if self.__outputFilter__ and eventName not in ['ROOT', self.getTarget().targetType, self.__outputFilter__]:
-            return
+        if self.__outputFilter__:
+            # Be strict about what events to pass on, unless they are
+            # the ROOT event or the event type of the target.
+            if eventName not in ('ROOT', self.getTarget().targetType):
+                if eventName not in self.__outputFilter__:
+                    return
 
         storeOnly = False  # Under some conditions, only store and don't notify
 
@@ -358,9 +360,10 @@ class SpiderFootPlugin():
 
         prevEvent = sfEvent.sourceEvent
         while prevEvent is not None:
-            if prevEvent.sourceEvent is not None and prevEvent.sourceEvent.eventType == sfEvent.eventType and prevEvent.sourceEvent.data.lower() == eventData.lower():
-                storeOnly = True
-                break
+            if prevEvent.sourceEvent is not None:
+                if prevEvent.sourceEvent.eventType == sfEvent.eventType and prevEvent.sourceEvent.data.lower() == eventData.lower():
+                    storeOnly = True
+                    break
             prevEvent = prevEvent.sourceEvent
 
         # output to queue if applicable
@@ -396,11 +399,11 @@ class SpiderFootPlugin():
                             while 1:
                                 self.incomingEventQueue.get_nowait()
 
-    def checkForStop(self) -> bool:
+    def checkForStop(self):
         """For modules to use to check for when they should give back control.
 
         Returns:
-            bool: True if scan should stop
+            bool
         """
         # Stop if module is in error state.
         if self.errorState:
@@ -426,16 +429,16 @@ class SpiderFootPlugin():
         return False
 
     @property
-    def running(self) -> bool:
+    def running(self):
         """Indicates whether the module is currently processing data.
         Modules that process data in pools/batches typically override this method.
 
         Returns:
-            bool: True if the module is currently processing data.
+            bool
         """
         return self.sharedThreadPool.countQueuedTasks(f"{self.__name__}_threadWorker") > 0
 
-    def watchedEvents(self) -> list:
+    def watchedEvents(self):
         """What events is this module interested in for input. The format is a list
         of event types that are applied to event types that this module wants to
         be notified of, or * if it wants everything.
@@ -448,7 +451,7 @@ class SpiderFootPlugin():
 
         return ['*']
 
-    def producedEvents(self) -> list:
+    def producedEvents(self):
         """What events this module produces
         This is to support the end user in selecting modules based on events
         produced.
@@ -459,7 +462,7 @@ class SpiderFootPlugin():
 
         return []
 
-    def handleEvent(self, sfEvent) -> None:
+    def handleEvent(self, sfEvent):
         """Handle events to this module.
         Will usually be overriden by the implementer, unless it doesn't handle any events.
 
@@ -469,7 +472,7 @@ class SpiderFootPlugin():
 
         return
 
-    def asdict(self) -> dict:
+    def asdict(self):
         return {
             'name': self.meta.get('name'),
             'descr': self.meta.get('summary'),
@@ -483,7 +486,7 @@ class SpiderFootPlugin():
             'optdescs': self.optdescs,
         }
 
-    def start(self) -> None:
+    def start(self):
         self.thread = threading.Thread(target=self.threadWorker)
         self.thread.start()
 
@@ -495,7 +498,7 @@ class SpiderFootPlugin():
 
         return
 
-    def threadWorker(self) -> None:
+    def threadWorker(self):
         try:
             # create new database handle since we're in our own thread
             from spiderfoot import SpiderFootDb
@@ -538,7 +541,7 @@ class SpiderFootPlugin():
                 # if there are leftover objects in the queue, the scan will hang.
                 self.incomingEventQueue = None
 
-    def poolExecute(self, callback, *args, **kwargs) -> None:
+    def poolExecute(self, callback, *args, **kwargs):
         """Execute a callback with the given args.
         If we're in a storage module, execute normally.
         Otherwise, use the shared thread pool.
@@ -556,7 +559,7 @@ class SpiderFootPlugin():
     def threadPool(self, *args, **kwargs):
         return SpiderFootThreadPool(*args, **kwargs)
 
-    def setSharedThreadPool(self, sharedThreadPool) -> None:
+    def setSharedThreadPool(self, sharedThreadPool):
         self.sharedThreadPool = sharedThreadPool
 
 # end of SpiderFootPlugin class

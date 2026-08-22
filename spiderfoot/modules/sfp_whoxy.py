@@ -7,7 +7,7 @@
 #
 # Created:     03/09/2018
 # Copyright:   (c) Steve Micallef 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -101,12 +101,10 @@ class sfp_whoxy(SpiderFootPlugin):
 
         try:
             info = json.loads(res['content'])
-
             if info.get("status", 0) == 0:
                 self.error("Error querying Whoxy: " + info.get("status_reason", "Unknown"))
                 self.errorState = True
                 return None
-
             if info.get("total_pages", 1) > 1:
                 if info.get("current_page") < info.get("total_pages"):
                     if accum:
@@ -114,12 +112,12 @@ class sfp_whoxy(SpiderFootPlugin):
                     else:
                         accum = info.get('search_result')
                     return self.query(qry, querytype, page + 1, accum)
-
-                # We are at the last page
-                accum.extend(info.get('search_result', []))
-                return accum
-
-            return info.get('search_result', [])
+                else:
+                    # We are at the last page
+                    accum.extend(info.get('search_result', []))
+                    return accum
+            else:
+                return info.get('search_result', [])
         except Exception as e:
             self.error("Error processing JSON response from Whoxy: " + str(e))
             return None

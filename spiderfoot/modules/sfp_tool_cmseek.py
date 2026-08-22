@@ -8,7 +8,7 @@
 #
 # Created:     16/12/2018
 # Copyright:   (c) Steve Micallef 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import io

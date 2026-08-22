@@ -8,7 +8,7 @@
 #
 # Created:     2018-10-08
 # Copyright:   (c) bcoles 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_flickr(SpiderFootPlugin):
@@ -203,7 +203,7 @@ class sfp_flickr(SpiderFootPlugin):
 
             # Extract data
             for photo in photos.get('photo', list()):
-                emails = SpiderFootHelpers.extractEmailsFromText(str(photo))
+                emails = self.sf.parseEmails(str(photo))
                 for email in emails:
                     if email in self.results:
                         continue
@@ -224,7 +224,7 @@ class sfp_flickr(SpiderFootPlugin):
                     self.notifyListeners(evt)
                     self.results[email] = True
 
-                links = SpiderFootHelpers.extractUrlsFromText(str(photo))
+                links = self.sf.extractUrls(str(photo))
                 for link in links:
                     if link in self.results:
                         continue

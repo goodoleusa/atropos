@@ -10,12 +10,12 @@
 #
 # Created:     06/04/2012
 # Copyright:   (c) Steve Micallef 2012
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_crossref(SpiderFootPlugin):
@@ -124,7 +124,7 @@ class sfp_crossref(SpiderFootPlugin):
             # fetch the base URL of the affiliate to check for a crossref.
             if eventName == "LINKED_URL_EXTERNAL" and self.opts['checkbase']:
                 # Check the base url to see if there is an affiliation
-                url = SpiderFootHelpers.urlBaseUrl(eventData)
+                url = self.sf.urlBaseUrl(eventData)
                 if url in self.fetched:
                     return
 

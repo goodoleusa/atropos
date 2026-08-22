@@ -8,10 +8,10 @@
 #
 # Created:     24/01/2020
 # Copyright:   (c) Steve Micallef 2020
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_hashes(SpiderFootPlugin):
@@ -59,11 +59,11 @@ class sfp_hashes(SpiderFootPlugin):
 
         self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
-        hashes = SpiderFootHelpers.extractHashesFromText(eventData)
+        hashes = self.sf.parseHashes(eventData)
         for hashtup in hashes:
             hashalgo, hashval = hashtup
 
-            evt = SpiderFootEvent("HASH", f"[{hashalgo}] {hashval}", self.__name__, event)
+            evt = SpiderFootEvent("HASH", "[" + hashalgo + "] " + hashval, self.__name__, event)
             if event.moduleDataSource:
                 evt.moduleDataSource = event.moduleDataSource
             else:

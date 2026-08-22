@@ -7,7 +7,7 @@
 #
 # Created:     12/07/2019
 # Copyright:   (c) Steve Micallef 2019
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json

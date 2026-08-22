@@ -8,12 +8,12 @@
 #
 # Created:     2021-03-10
 # Copyright:   (c) bcoles 2021
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
 import os.path
-from subprocess import PIPE, Popen, TimeoutExpired
+from subprocess import PIPE, Popen
 
 from spiderfoot import SpiderFootEvent, SpiderFootPlugin, SpiderFootHelpers
 
@@ -108,12 +108,7 @@ class sfp_tool_wafw00f(SpiderFootPlugin):
         ]
         try:
             p = Popen(args, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = p.communicate(input=None, timeout=300)
-        except TimeoutExpired:
-            p.kill()
-            stdout, stderr = p.communicate()
-            self.debug(f"Timed out waiting for wafw00f to finish on {eventData}")
-            return
+            stdout, stderr = p.communicate(input=None)
         except Exception as e:
             self.error(f"Unable to run wafw00f: {e}")
             return

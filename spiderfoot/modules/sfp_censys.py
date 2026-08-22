@@ -7,7 +7,7 @@
 #
 # Created:     01/02/2017
 # Copyright:   (c) Steve Micallef 2017
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import base64
@@ -35,7 +35,7 @@ class sfp_censys(SpiderFootPlugin):
             'website': "https://censys.io/",
             'model': "FREE_AUTH_LIMITED",
             'references': [
-                "https://search.censys.io/api",
+                "https://censys.io/api",
                 "https://search.censys.io/search/language",
                 "https://github.com/censys/censys-postman/blob/main/Censys_Search.postman_collection.json",
             ],
@@ -61,7 +61,6 @@ class sfp_censys(SpiderFootPlugin):
         'delay': 3,
         'netblocklookup': True,
         'maxnetblock': 24,
-        'maxv6netblock': 120,
         "age_limit_days": 90,
     }
 
@@ -71,7 +70,6 @@ class sfp_censys(SpiderFootPlugin):
         'delay': 'Delay between requests, in seconds.',
         'netblocklookup': "Look up all IPs on netblocks deemed to be owned by your target for possible blacklisted hosts on the same target subdomain/domain?",
         'maxnetblock': "If looking up owned netblocks, the maximum netblock size to look up all IPs within (CIDR value, 24 = /24, 16 = /16, etc.)",
-        'maxv6netblock': "If looking up owned netblocks, the maximum IPv6 netblock size to look up all IPs within (CIDR value, 24 = /24, 16 = /16, etc.)",
         "age_limit_days": "Ignore any records older than this many days. 0 = unlimited.",
     }
 
@@ -86,24 +84,15 @@ class sfp_censys(SpiderFootPlugin):
             self.opts[opt] = userOpts[opt]
 
     def watchedEvents(self):
-        return [
-            "IP_ADDRESS",
-            "IPV6_ADDRESS",
-            "NETBLOCK_OWNER",
-            "NETBLOCKV6_OWNER",
-        ]
+        return ["IP_ADDRESS", "NETBLOCK_OWNER"]
 
     def producedEvents(self):
         return [
             "BGP_AS_MEMBER",
-            "UDP_PORT_OPEN",
             "TCP_PORT_OPEN",
-            "TCP_PORT_OPEN_BANNER",
             "OPERATING_SYSTEM",
-            "SOFTWARE_USED",
             "WEBSERVER_HTTPHEADERS",
             "NETBLOCK_MEMBER",
-            "NETBLOCKV6_MEMBER",
             "GEOINFO",
             "RAW_RIR_DATA"
         ]
@@ -152,9 +141,8 @@ class sfp_censys(SpiderFootPlugin):
 
         return self.parseApiResponse(res)
 
-    def parseApiResponse(self, res: dict):
+    def parseApiResponse(self, res):
         if not res:
-            self.error("No response from Censys.io.")
             return None
 
         if res['code'] == "400":
@@ -199,19 +187,19 @@ class sfp_censys(SpiderFootPlugin):
         return data
 
     def handleEvent(self, event):
+        eventName = event.eventType
+        srcModuleName = event.module
+        eventData = event.data
+
         if self.errorState:
             return
 
-        eventName = event.eventType
-
-        self.debug(f"Received event, {eventName}, from {event.module}")
+        self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
         if self.opts['censys_api_key_uid'] == "" or self.opts['censys_api_key_secret'] == "":
             self.error(f"You enabled {self.__class__.__name__} but did not set an API uid/secret!")
             self.errorState = True
             return
-
-        eventData = event.data
 
         if eventData in self.results:
             self.debug(f"Skipping {eventData}, already checked.")
@@ -219,21 +207,17 @@ class sfp_censys(SpiderFootPlugin):
 
         self.results[eventData] = True
 
-        if eventName in ['NETBLOCK_OWNER', 'NETBLOCKV6_OWNER']:
+        if eventName == 'NETBLOCK_OWNER':
             if not self.opts['netblocklookup']:
                 return
 
-            if eventName == 'NETBLOCKV6_OWNER':
-                max_netblock = self.opts['maxv6netblock']
-            else:
-                max_netblock = self.opts['maxnetblock']
-
+            max_netblock = self.opts['maxnetblock']
             if IPNetwork(eventData).prefixlen < max_netblock:
                 self.debug(f"Network size bigger than permitted: {IPNetwork(eventData).prefixlen} > {max_netblock}")
                 return
 
         qrylist = list()
-        if eventName.startswith("NETBLOCK"):
+        if eventName.startswith("NETBLOCK_"):
             for ipaddr in IPNetwork(eventData):
                 qrylist.append(str(ipaddr))
                 self.results[str(ipaddr)] = True
@@ -257,12 +241,10 @@ class sfp_censys(SpiderFootPlugin):
 
             self.debug(f"Found results for {addr} in Censys.io")
 
-            # For netblocks, we need to create the associated IP address event first.
+            # For netblocks, we need to create the IP address event so that
+            # the threat intel event is more meaningful.
             if eventName == 'NETBLOCK_OWNER':
                 pevent = SpiderFootEvent("IP_ADDRESS", addr, self.__name__, event)
-                self.notifyListeners(pevent)
-            elif eventName == 'NETBLOCKV6_OWNER':
-                pevent = SpiderFootEvent("IPV6_ADDRESS", addr, self.__name__, event)
                 self.notifyListeners(pevent)
             else:
                 pevent = event
@@ -280,7 +262,7 @@ class sfp_censys(SpiderFootPlugin):
                     self.debug(f"Record found but too old ({created_dt}), skipping.")
                     continue
             except Exception as e:
-                self.error(f"Error encountered processing last_updated_at record for {addr}: {e}")
+                self.error(f"Error encountered processing last_updated_at record for {eventData} ({e})")
 
             try:
                 location = rec.get('location')
@@ -292,7 +274,6 @@ class sfp_censys(SpiderFootPlugin):
                                 location.get('province'),
                                 location.get('postal_code'),
                                 location.get('country'),
-                                location.get('continent'),
                             ] if _f
                         ]
                     )
@@ -300,69 +281,30 @@ class sfp_censys(SpiderFootPlugin):
                         e = SpiderFootEvent("GEOINFO", geoinfo, self.__name__, pevent)
                         self.notifyListeners(e)
             except Exception as e:
-                self.error(f"Error encountered processing location record for {addr}: {e}")
+                self.error(f"Error encountered processing location record for {eventData} ({e})")
 
             try:
                 services = rec.get('services')
                 if services:
-                    softwares = list()
-                    tcp_banners = list()
                     for service in services:
                         port = service.get('port')
 
                         if port:
-                            transport_protocol = service.get('transport_protocol')
-                            banner = service.get('banner')
+                            evt = SpiderFootEvent("TCP_PORT_OPEN", f"{addr}:{port}", self.__name__, pevent)
+                            self.notifyListeners(evt)
 
-                            if transport_protocol == "UDP":
-                                evt = SpiderFootEvent("UDP_PORT_OPEN", f"{addr}:{port}", self.__name__, pevent)
-                                self.notifyListeners(evt)
-                            elif transport_protocol == "TCP":
-                                evt = SpiderFootEvent("TCP_PORT_OPEN", f"{addr}:{port}", self.__name__, pevent)
-                                self.notifyListeners(evt)
-                                if banner:
-                                    tcp_banners.append(banner)
+                        try:
+                            headers = service['http']['response']['headers']
+                        except Exception:
+                            headers = None
 
-                        software = service.get('software', list())
-                        if software:
-                            for sw in software:
-                                s = ' '.join(
-                                    filter(
-                                        None,
-                                        [
-                                            sw.get('vendor'),
-                                            sw.get('product'),
-                                            sw.get('version')
-                                        ]
-                                    )
-                                )
-                                if s:
-                                    softwares.append(s)
-
-                        http = service.get('http')
-                        if http:
-                            response = http.get('response')
-                            if response:
-                                headers = response.get('headers')
-                                if headers:
-                                    e = SpiderFootEvent(
-                                        "WEBSERVER_HTTPHEADERS",
-                                        json.dumps(headers, ensure_ascii=False),
-                                        self.__name__,
-                                        pevent
-                                    )
-                                    e.actualSource = addr
-                                    self.notifyListeners(e)
-
-                    for software in set(softwares):
-                        evt = SpiderFootEvent("SOFTWARE_USED", software, self.__name__, pevent)
-                        self.notifyListeners(evt)
-
-                    for banner in set(tcp_banners):
-                        evt = SpiderFootEvent("TCP_PORT_OPEN_BANNER", str(banner), self.__name__, pevent)
-                        self.notifyListeners(evt)
+                        if headers:
+                            dat = json.dumps(headers, ensure_ascii=False)
+                            e = SpiderFootEvent("WEBSERVER_HTTPHEADERS", dat, self.__name__, pevent)
+                            e.actualSource = addr
+                            self.notifyListeners(e)
             except Exception as e:
-                self.error(f"Error encountered processing services record for {addr}: {e}")
+                self.error(f"Error encountered processing services record for {eventData} ({e})")
 
             try:
                 autonomous_system = rec.get('autonomous_system')
@@ -373,34 +315,23 @@ class sfp_censys(SpiderFootPlugin):
                         self.notifyListeners(e)
 
                     bgp_prefix = autonomous_system.get('bgp_prefix')
-                    if bgp_prefix and self.sf.validIpNetwork(bgp_prefix):
-                        if ':' in bgp_prefix:
-                            e = SpiderFootEvent("NETBLOCKV6_MEMBER", str(bgp_prefix), self.__name__, pevent)
-                        else:
-                            e = SpiderFootEvent("NETBLOCK_MEMBER", str(bgp_prefix), self.__name__, pevent)
+                    if bgp_prefix:
+                        e = SpiderFootEvent("NETBLOCK_MEMBER", str(bgp_prefix), self.__name__, pevent)
                         self.notifyListeners(e)
             except Exception as e:
-                self.error(f"Error encountered processing autonomous_system record for {addr}: {e}")
+                self.error(f"Error encountered processing autonomous_system record for {eventData} ({e})")
 
             try:
                 operating_system = rec.get('operating_system')
                 if operating_system:
-                    os = ' '.join(
-                        filter(
-                            None,
-                            [
-                                operating_system.get('vendor'),
-                                operating_system.get('product'),
-                                operating_system.get('version'),
-                                operating_system.get('edition')
-                            ]
-                        )
-                    )
+                    vendor = operating_system.get('vendor')
+                    product = operating_system.get('product')
+                    os = ' '.join(filter(None, [vendor, product]))
 
                     if os:
                         e = SpiderFootEvent("OPERATING_SYSTEM", os, self.__name__, pevent)
                         self.notifyListeners(e)
             except Exception as e:
-                self.error(f"Error encountered processing operating_system record for {addr}: {e}")
+                self.error(f"Error encountered processing operating_system record for {eventData} ({e})")
 
 # End of sfp_censys class

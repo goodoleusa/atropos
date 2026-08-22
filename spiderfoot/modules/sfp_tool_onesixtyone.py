@@ -8,14 +8,14 @@
 #
 # Created:     2022-04-02
 # Copyright:   (c) Steve Micallef 2022
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import sys
 import os.path
 import tempfile
 from netaddr import IPNetwork
-from subprocess import PIPE, Popen, TimeoutExpired
+from subprocess import PIPE, Popen
 
 from spiderfoot import SpiderFootPlugin, SpiderFootEvent, SpiderFootHelpers
 
@@ -66,9 +66,10 @@ class sfp_tool_onesixtyone(SpiderFootPlugin):
         # Write communities to file for use later on
         try:
             _, self.communitiesFile = tempfile.mkstemp("communities")
-            with open(self.communitiesFile, "w") as f:
-                for community in self.opts['communities'].split(","):
-                    f.write(community.strip() + "\n")
+            f = open(self.communitiesFile, "w")
+            for community in self.opts['communities'].split(","):
+                f.write(community.strip() + "\n")
+            f.close()
         except BaseException as e:
             self.error(f"Unable to write communities file ({self.communitiesFile}): {e}")
             self.errorState = True
@@ -132,12 +133,12 @@ class sfp_tool_onesixtyone(SpiderFootPlugin):
         if eventData in self.results:
             self.debug(f"Skipping {eventData} as already scanned.")
             return
-
-        # Might be a subnet within a subnet or IP within a subnet
-        for addr in self.results:
-            if IPNetwork(eventData) in IPNetwork(addr):
-                self.debug(f"Skipping {eventData} as already within a scanned range.")
-                return
+        else:
+            # Might be a subnet within a subnet or IP within a subnet
+            for addr in self.results:
+                if IPNetwork(eventData) in IPNetwork(addr):
+                    self.debug(f"Skipping {eventData} as already within a scanned range.")
+                    return
 
         self.results[eventData] = True
 
@@ -154,13 +155,8 @@ class sfp_tool_onesixtyone(SpiderFootPlugin):
             ]
             try:
                 p = Popen(args, stdout=PIPE, stderr=PIPE)
-                out, stderr = p.communicate(input=None, timeout=60)
+                out, stderr = p.communicate(input=None)
                 stdout = out.decode(sys.stdin.encoding)
-            except TimeoutExpired:
-                p.kill()
-                stdout, stderr = p.communicate()
-                self.debug(f"Timed out waiting for onesixtyone to finish on {target}")
-                continue
             except Exception as e:
                 self.error(f"Unable to run onesixtyone: {e}")
                 continue

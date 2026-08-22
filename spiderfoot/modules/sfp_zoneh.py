@@ -8,7 +8,7 @@
 #
 # Created:     09/01/2014
 # Copyright:   (c) Steve Micallef, 2014
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
@@ -130,7 +130,6 @@ class sfp_zoneh(SpiderFootPlugin):
             evtType = 'DEFACED_AFFILIATE_IPADDR'
         else:
             self.debug(f"Unexpected event type {eventName}, skipping")
-            return
 
         if self.checkForStop():
             return

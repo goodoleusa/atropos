@@ -7,12 +7,12 @@
 #
 # Created:     23/08/2014
 # Copyright:   (c) Steve Micallef 2014
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import random
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_junkfiles(SpiderFootPlugin):
@@ -77,7 +77,7 @@ class sfp_junkfiles(SpiderFootPlugin):
                                useragent=self.opts['_useragent'],
                                verify=False)
         if res['code'] != "404":
-            host = SpiderFootHelpers.urlBaseUrl(junkUrl)
+            host = self.sf.urlBaseUrl(junkUrl)
             self.skiphosts[host] = True
             return False
         return True
@@ -95,7 +95,7 @@ class sfp_junkfiles(SpiderFootPlugin):
 
         self.results[eventData] = True
 
-        host = SpiderFootHelpers.urlBaseUrl(eventData)
+        host = self.sf.urlBaseUrl(eventData)
 
         if host in self.skiphosts:
             self.debug("Skipping " + host + " because it doesn't return 404s.")
@@ -137,7 +137,7 @@ class sfp_junkfiles(SpiderFootPlugin):
                         evt = SpiderFootEvent("JUNK_FILE", fetch, self.__name__, event)
                         self.notifyListeners(evt)
 
-        base = SpiderFootHelpers.urlBaseDir(eventData)
+        base = self.sf.urlBaseDir(eventData)
         if not base or base in self.bases:
             return
 

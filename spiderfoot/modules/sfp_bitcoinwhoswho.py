@@ -7,7 +7,7 @@
 #
 # Created:     2020-09-09
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -69,7 +69,7 @@ class sfp_bitcoinwhoswho(SpiderFootPlugin):
         return ["BITCOIN_ADDRESS"]
 
     def producedEvents(self):
-        return ["MALICIOUS_BITCOIN_ADDRESS", "RAW_RIR_DATA"]
+        return ["MALICIOUS_BITCOIN_ADDRESS"]
 
     def query(self, qry):
         qs = urllib.parse.urlencode({"address": qry})

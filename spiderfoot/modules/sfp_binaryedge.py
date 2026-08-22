@@ -7,7 +7,7 @@
 #
 # Created:     02/04/2019
 # Copyright:   (c) Steve Micallef 2019
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -267,8 +267,9 @@ class sfp_binaryedge(SpiderFootPlugin):
                         continue
 
                     if self.getTarget().matches(host, includeParents=True):
-                        if self.opts['verify'] and not self.sf.resolveHost(host) and not self.sf.resolveHost6(host):
-                            continue
+                        if self.opts['verify']:
+                            if not self.sf.resolveHost(host) and not self.sf.resolveHost6(host):
+                                continue
 
                         evt = SpiderFootEvent("INTERNET_NAME", host, self.__name__, event)
                         self.notifyListeners(evt)
@@ -302,9 +303,10 @@ class sfp_binaryedge(SpiderFootPlugin):
 
                     self.reportedhosts[rec] = True
 
-                    if self.opts['verify'] and not self.sf.resolveHost(rec) and not self.sf.resolveHost6(rec):
-                        self.debug(f"Couldn't resolve {rec}, so skipping.")
-                        continue
+                    if self.opts['verify']:
+                        if not self.sf.resolveHost(rec) and not self.sf.resolveHost6(rec):
+                            self.debug(f"Couldn't resolve {rec}, so skipping.")
+                            continue
 
                     e = SpiderFootEvent('INTERNET_NAME', rec, self.__name__, event)
                     self.notifyListeners(e)

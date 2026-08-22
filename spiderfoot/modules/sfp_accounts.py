@@ -8,7 +8,7 @@
 #
 # Created:     18/02/2015
 # Copyright:   (c) Steve Micallef 2015
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -18,14 +18,14 @@ import time
 from queue import Empty as QueueEmpty
 from queue import Queue
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_accounts(SpiderFootPlugin):
 
     meta = {
         'name': "Account Finder",
-        'summary': "Look for possible associated accounts on over 500 social and other websites such as Instagram, Reddit, etc.",
+        'summary': "Look for possible associated accounts on nearly 200 websites like Ebay, Slashdot, reddit, etc.",
         'useCases': ["Footprint", "Passive"],
         'categories': ["Social Media"]
     }
@@ -37,7 +37,6 @@ class sfp_accounts(SpiderFootPlugin):
         "musthavename": True,
         "userfromemail": True,
         "permutate": False,
-        "usernamesize": 4,
         "_maxthreads": 20
     }
 
@@ -48,7 +47,6 @@ class sfp_accounts(SpiderFootPlugin):
         "musthavename": "The username must be mentioned on the social media page to consider it valid (helps avoid false positives).",
         "userfromemail": "Extract usernames from e-mail addresses at all? If disabled this can reduce false positives for common usernames but for highly unique usernames it would result in missed accounts.",
         "permutate": "Look for the existence of account name permutations. Useful to identify fraudulent social media accounts or account squatting.",
-        "usernamesize": "The minimum length of a username to query across social media sites. Helps avoid false positives for very common short usernames.",
         "_maxthreads": "Maximum threads"
     }
 
@@ -73,12 +71,12 @@ class sfp_accounts(SpiderFootPlugin):
         for opt in list(userOpts.keys()):
             self.opts[opt] = userOpts[opt]
 
-        self.commonNames = SpiderFootHelpers.humanNamesFromWordlists()
-        self.words = SpiderFootHelpers.dictionaryWordsFromWordlists()
+        self.commonNames = set(self.sf.dictnames())
+        self.words = set(self.sf.dictwords())
 
-        content = self.sf.cacheGet("sfaccountsv2", 48)
+        content = self.sf.cacheGet("sfaccounts", 48)
         if content is None:
-            url = "https://raw.githubusercontent.com/WebBreacher/WhatsMyName/main/wmn-data.json"
+            url = "https://raw.githubusercontent.com/WebBreacher/WhatsMyName/master/web_accounts_list.json"
             data = self.sf.fetchUrl(url, useragent="SpiderFoot")
 
             if data['content'] is None:
@@ -87,10 +85,10 @@ class sfp_accounts(SpiderFootPlugin):
                 return
 
             content = data['content']
-            self.sf.cachePut("sfaccountsv2", content)
+            self.sf.cachePut("sfaccounts", content)
 
         try:
-            self.sites = [site for site in json.loads(content)['sites'] if not site.get('valid', True) is False]
+            self.sites = [site for site in json.loads(content)['sites'] if site['valid']]
         except Exception as e:
             self.error(f"Unable to parse social media accounts list: {e}")
             self.errorState = True
@@ -104,23 +102,18 @@ class sfp_accounts(SpiderFootPlugin):
                 "SIMILAR_ACCOUNT_EXTERNAL"]
 
     def checkSite(self, name, site):
-        if 'uri_check' not in site:
+        if 'check_uri' not in site:
             return
 
-        url = site['uri_check'].format(account=name)
-        if 'uri_pretty' in site:
-            ret_url = site['uri_pretty'].format(account=name)
+        url = site['check_uri'].format(account=name)
+        if 'pretty_uri' in site:
+            ret_url = site['pretty_uri'].format(account=name)
         else:
             ret_url = url
-        retname = f"{site['name']} (Category: {site['cat']})\n<SFURL>{ret_url}</SFURL>"
-
-        post = None
-        if site.get('post_body'):
-            post = site['post_body']
+        retname = f"{site['name']} (Category: {site['category']})\n<SFURL>{ret_url}</SFURL>"
 
         res = self.sf.fetchUrl(
             url,
-            postData=post,
             timeout=self.opts['_fetchtimeout'],
             useragent=self.opts['_useragent'],
             noLog=True,
@@ -132,13 +125,12 @@ class sfp_accounts(SpiderFootPlugin):
                 self.siteResults[retname] = False
             return
 
-        if site.get('e_code') != site.get('m_code'):
-            if res['code'] != str(site.get('e_code')):
-                with self.lock:
-                    self.siteResults[retname] = False
-                return
+        if res['code'] != site.get('account_existence_code'):
+            with self.lock:
+                self.siteResults[retname] = False
+            return
 
-        if site.get('e_string') not in res['content'] or (site.get('m_string') and site.get('m_string') in res['content']):
+        if site.get('account_existence_string') not in res['content']:
             with self.lock:
                 self.siteResults[retname] = False
             return
@@ -311,7 +303,7 @@ class sfp_accounts(SpiderFootPlugin):
         # sites are by attempting to fetch a garbage user.
         if not self.distrustedChecked:
             # Check if a state cache exists first, to not have to do this all the time
-            content = self.sf.cacheGet("sfaccounts_state_v3", 72)
+            content = self.sf.cacheGet("sfaccounts_state_v2", 72)
             if content:
                 if content != "None":  # "None" is written to the cached file when no sites are distrusted
                     delsites = list()
@@ -334,7 +326,7 @@ class sfp_accounts(SpiderFootPlugin):
                 else:
                     # The caching code needs *some* content
                     delsites = "None"
-                self.sf.cachePut("sfaccounts_state_v3", delsites)
+                self.sf.cachePut("sfaccounts_state_v2", delsites)
 
             self.distrustedChecked = True
 
@@ -371,10 +363,6 @@ class sfp_accounts(SpiderFootPlugin):
                 continue
 
             if user not in self.reportedUsers and eventData != user:
-                if len(user) < self.opts['usernamesize']:
-                    self.debug(f"{user} is too short, skipping.")
-                    continue
-
                 evt = SpiderFootEvent("USERNAME", user, self.__name__, event)
                 self.notifyListeners(evt)
                 self.reportedUsers.append(user)

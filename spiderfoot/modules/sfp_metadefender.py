@@ -7,7 +7,7 @@
 #
 # Created:     2019-09-21
 # Copyright:   (c) bcoles 2019
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -117,11 +117,7 @@ class sfp_metadefender(SpiderFootPlugin):
         return self.parseApiResponse(res)
 
     # Parse API response
-    def parseApiResponse(self, res: dict):
-        if not res:
-            self.error("No response from MetaDefender.")
-            return None
-
+    def parseApiResponse(self, res):
         if res['code'] == "401":
             self.error("Invalid MetaDefender API key")
             self.errorState = True
@@ -195,8 +191,6 @@ class sfp_metadefender(SpiderFootPlugin):
 
             for m in sources:
                 if not m.get('assessment'):
-                    continue
-                if m['assessment'] != "trustworthy":
                     continue
                 provider = m.get('provider')
                 evt = SpiderFootEvent('MALICIOUS_IPADDR', provider + ' [' + eventData + ']', self.__name__, event)

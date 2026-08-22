@@ -9,7 +9,7 @@
 #
 # Created:     2020-08-29
 # Copyright:   (c) bcoles 2020
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -82,13 +82,9 @@ class sfp_crobat_api(SpiderFootPlugin):
 
         time.sleep(self.opts['delay'])
 
-        return self.parseApiResponse(res)
+        return self.parseAPIResponse(res)
 
-    def parseApiResponse(self, res: dict):
-        if not res:
-            self.error("No response from Crobat API.")
-            return None
-
+    def parseAPIResponse(self, res):
         # Future proofing - Crobat API does not implement rate limiting
         if res['code'] == '429':
             self.error("You are being rate-limited by Crobat API")

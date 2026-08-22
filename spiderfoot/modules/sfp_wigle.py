@@ -6,7 +6,7 @@
 #
 # Created:     10/09/2017
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import base64
@@ -83,19 +83,51 @@ class sfp_wigle(SpiderFootPlugin):
 
     # What events is this module interested in for input
     def watchedEvents(self):
-        return ["PHYSICAL_COORDINATES"]
+        return ["PHYSICAL_ADDRESS"]
 
     # What events this module produces
     def producedEvents(self):
         return ["WIFI_ACCESS_POINT"]
 
+    def getcoords(self, qry):
+        params = {
+            'addresscode': qry.encode('utf-8', errors='replace')
+        }
+        hdrs = {
+            "Accept": "application/json",
+            "Authorization": "Basic " + self.opts['api_key_encoded']
+        }
+
+        res = self.sf.fetchUrl(
+            "https://api.wigle.net/api/v2/network/geocode?" + urllib.parse.urlencode(params),
+            timeout=30,
+            useragent="SpiderFoot",
+            headers=hdrs
+        )
+
+        if res['code'] == "404" or not res['content']:
+            return None
+
+        if "too many queries" in res['content']:
+            self.error("Wigle.net query limit reached for the day.")
+            return None
+
+        try:
+            info = json.loads(res['content'])
+            if len(info.get('results', [])) == 0:
+                return None
+            return info['results'][0]['boundingbox']
+        except Exception as e:
+            self.error(f"Error processing JSON response from Wigle.net: {e}")
+            return None
+
     def getnetworks(self, coords):
         params = {
             'onlymine': 'false',
             'latrange1': str(coords[0]),
-            'latrange2': str(coords[0]),
-            'longrange1': str(coords[1]),
-            'longrange2': str(coords[1]),
+            'latrange2': str(coords[1]),
+            'longrange1': str(coords[2]),
+            'longrange2': str(coords[3]),
             'freenet': 'false',
             'paynet': 'false',
             'variance': self.opts['variance']
@@ -175,7 +207,12 @@ class sfp_wigle(SpiderFootPlugin):
 
         self.results[eventData] = True
 
-        nets = self.getnetworks(eventData.replace(" ", "").split(","))
+        coords = self.getcoords(eventData)
+        if not coords:
+            self.error("Couldn't get coordinates for address from Wigle.net.")
+            return
+
+        nets = self.getnetworks(coords)
         if not nets:
             self.error("Couldn't get networks for coordinates from Wigle.net.")
             return

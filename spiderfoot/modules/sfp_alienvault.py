@@ -7,7 +7,7 @@
 #
 # Created:     26/03/2017
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -145,11 +145,7 @@ class sfp_alienvault(SpiderFootPlugin):
         ]
 
     # Parse API response
-    def parseApiResponse(self, res: dict):
-        if not res:
-            self.error("No response from AlienVault OTX.")
-            return None
-
+    def parseAPIResponse(self, res):
         # Future proofing - AlienVault OTX does not implement rate limiting
         if res['code'] == '429':
             self.error("You are being rate-limited by AienVault OTX")
@@ -191,7 +187,7 @@ class sfp_alienvault(SpiderFootPlugin):
             useragent="SpiderFoot",
             headers=headers)
 
-        return self.parseApiResponse(res)
+        return self.parseAPIResponse(res)
 
     def queryPassiveDns(self, qry):
         if ":" in qry:
@@ -213,7 +209,7 @@ class sfp_alienvault(SpiderFootPlugin):
             useragent="SpiderFoot",
             headers=headers)
 
-        return self.parseApiResponse(res)
+        return self.parseAPIResponse(res)
 
     def queryDomainUrlList(self, qry, page=1, per_page=50):
         params = urllib.parse.urlencode({
@@ -231,7 +227,7 @@ class sfp_alienvault(SpiderFootPlugin):
             useragent="SpiderFoot",
             headers=headers)
 
-        return self.parseApiResponse(res)
+        return self.parseAPIResponse(res)
 
     def queryHostnameUrlList(self, qry, page=1, per_page=50):
         params = urllib.parse.urlencode({
@@ -249,7 +245,7 @@ class sfp_alienvault(SpiderFootPlugin):
             useragent="SpiderFoot",
             headers=headers)
 
-        return self.parseApiResponse(res)
+        return self.parseAPIResponse(res)
 
     # Handle events sent to this module
     def handleEvent(self, event):
@@ -350,6 +346,7 @@ class sfp_alienvault(SpiderFootPlugin):
             else:
                 max_netblock = self.opts['maxnetblock']
 
+            max_netblock = self.opts['maxnetblock']
             if IPNetwork(eventData).prefixlen < max_netblock:
                 self.debug(f"Network size bigger than permitted: {IPNetwork(eventData).prefixlen} > {max_netblock}")
                 return

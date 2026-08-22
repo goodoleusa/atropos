@@ -8,10 +8,10 @@
 #
 # Created:     06/04/2012
 # Copyright:   (c) Steve Micallef 2012
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_email(SpiderFootPlugin):
@@ -40,7 +40,7 @@ class sfp_email(SpiderFootPlugin):
         return ["TARGET_WEB_CONTENT", "BASE64_DATA", "AFFILIATE_DOMAIN_WHOIS",
                 "CO_HOSTED_SITE_DOMAIN_WHOIS", "DOMAIN_WHOIS", "NETBLOCK_WHOIS",
                 "LEAKSITE_CONTENT", "RAW_DNS_RECORDS", "RAW_FILE_META_DATA",
-                'RAW_RIR_DATA', "SIMILARDOMAIN_WHOIS",
+                'RAW_RIR_DATA', "SEARCH_ENGINE_WEB_CONTENT", "SIMILARDOMAIN_WHOIS",
                 "SSL_CERTIFICATE_RAW", "SSL_CERTIFICATE_ISSUED", "TCP_PORT_OPEN_BANNER",
                 "WEBSERVER_BANNER", "WEBSERVER_HTTPHEADERS"]
 
@@ -56,7 +56,7 @@ class sfp_email(SpiderFootPlugin):
 
         self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
-        emails = SpiderFootHelpers.extractEmailsFromText(eventData)
+        emails = self.sf.parseEmails(eventData)
         for email in set(emails):
             evttype = "EMAILADDR"
             email = email.lower()

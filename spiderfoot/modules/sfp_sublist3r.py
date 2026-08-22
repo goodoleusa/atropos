@@ -8,7 +8,7 @@
 #
 # Created:     05/21/2021
 # Copyright:   (c) Steve Micallef 2021
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json

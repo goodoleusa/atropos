@@ -7,12 +7,11 @@
 #
 # Created:     2020-09-01
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
-import time
-import urllib.parse
+from urllib.parse import urlencode
 
 from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
@@ -59,7 +58,6 @@ class sfp_bitcoinabuse(SpiderFootPlugin):
 
     def setup(self, sfc, userOpts=None):
         self.sf = sfc
-        self.errorState = False
         self.results = self.tempStorage()
 
         if userOpts:
@@ -69,83 +67,45 @@ class sfp_bitcoinabuse(SpiderFootPlugin):
         return ["BITCOIN_ADDRESS"]
 
     def producedEvents(self):
-        return [
-            "MALICIOUS_BITCOIN_ADDRESS",
-            "RAW_RIR_DATA",
-        ]
+        return ["MALICIOUS_BITCOIN_ADDRESS"]
 
-    def queryAddress(self, address: str):
-        params = {
-            "address": address,
-            "api_token": self.opts["api_key"]
-        }
-
+    def query(self, address):
+        params = {"address": address, "api_token": self.opts["api_key"]}
+        qry = urlencode(params)
         res = self.sf.fetchUrl(
-            f"https://www.bitcoinabuse.com/api/reports/check?{urllib.parse.urlencode(params)}",
+            f"https://www.bitcoinabuse.com/api/reports/check?{qry}",
             timeout=self.opts["_fetchtimeout"],
             useragent="SpiderFoot",
         )
-
-        # All endpoints other than Report Address have a rate limit of
-        # 30 requests per minute or one request every two seconds on average.
-        time.sleep(2)
-
-        return self.parseApiResponse(res)
-
-    def parseApiResponse(self, res: dict):
-        if not res:
-            self.error("No response from BitcoinAbuse.")
+        if res["code"] != "200":
+            self.info(f"Failed to get results for {address}, code {res['code']}")
             return None
 
-        if res['code'] == '404':
-            self.debug("No results for query")
-            return None
-
-        if res['code'] == "401":
-            self.error("Invalid BitcoinAbuse API key.")
-            self.errorState = True
-            return None
-
-        if res['code'] == '429':
-            self.error("You are being rate-limited by BitcoinAbuse")
-            self.errorState = True
-            return None
-
-        if res['code'] in ['500', '502', '503']:
-            self.error("BitcoinAbuse service unavailable")
-            self.errorState = True
-            return None
-
-        # Catch all other non-200 status codes, and presume something went wrong
-        if res['code'] != '200':
-            self.error("Failed to retrieve content from BitcoinAbuse")
-            self.errorState = True
-            return None
-
-        if res['content'] is None:
+        if res["content"] is None:
+            self.info(f"Failed to get results for {address}, empty content")
             return None
 
         try:
-            return json.loads(res['content'])
+            return json.loads(res["content"])
         except Exception as e:
-            self.debug(f"Error processing JSON response from BitcoinAbuse: {e}")
+            self.error(f"Error processing JSON response from BitcoinAbuse: {e}")
 
         return None
 
     def handleEvent(self, event):
+        eventName = event.eventType
+        srcModuleName = event.module
+        eventData = event.data
+
         if self.errorState:
             return
 
-        eventName = event.eventType
-
-        self.debug(f"Received event, {eventName}, from {event.module}")
+        self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
         if self.opts["api_key"] == "":
-            self.error(f"You enabled {self.__class__.__name__} but did not set an API key!")
+            self.error("You enabled sfp_bitcoinabuse but did not set an API key!")
             self.errorState = True
             return
-
-        eventData = event.data
 
         if eventData in self.results:
             self.debug(f"Skipping {eventData}, already checked.")
@@ -154,37 +114,17 @@ class sfp_bitcoinabuse(SpiderFootPlugin):
         self.results[eventData] = True
 
         if eventName == "BITCOIN_ADDRESS":
-            rec = self.queryAddress(eventData)
+            rec = self.query(eventData)
+            if isinstance(rec, dict):
+                count = rec.get("count")
+                if isinstance(count, int):
+                    if count > 0:
+                        evt = SpiderFootEvent(
+                            "MALICIOUS_BITCOIN_ADDRESS", f"BitcoinAbuse [{rec['address']}][https://www.bitcoinabuse.com/reports/{rec['address']}]", self.__name__, event
+                        )
+                        self.notifyListeners(evt)
 
-            if not rec:
-                return
-
-            if not isinstance(rec, dict):
-                return
-
-            count = rec.get("count")
-
-            if not count:
-                return
-
-            if not isinstance(count, int):
-                return
-
-            address = rec.get('address')
-
-            if not address:
-                return
-
-            url = f"https://www.bitcoinabuse.com/reports/{address}"
-            evt = SpiderFootEvent(
-                "MALICIOUS_BITCOIN_ADDRESS",
-                f"BitcoinAbuse [{address}]\n<SFURL>{url}</SFURL>",
-                self.__name__,
-                event
-            )
-            self.notifyListeners(evt)
-
-            rirevt = SpiderFootEvent(
-                "RAW_RIR_DATA", json.dumps(rec), self.__name__, event
-            )
-            self.notifyListeners(rirevt)
+                        rirevt = SpiderFootEvent(
+                            "RAW_RIR_DATA", json.dumps(rec), self.__name__, event
+                        )
+                        self.notifyListeners(rirevt)

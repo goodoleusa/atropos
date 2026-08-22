@@ -8,10 +8,10 @@
 #
 # Created:     21/04/2020
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_creditcard(SpiderFootPlugin):
@@ -58,7 +58,7 @@ class sfp_creditcard(SpiderFootPlugin):
 
         self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
-        creditCards = SpiderFootHelpers.extractCreditCardsFromText(eventData)
+        creditCards = self.sf.parseCreditCards(eventData)
 
         for creditCard in set(creditCards):
             self.info(f"Found credit card number: {creditCard}")

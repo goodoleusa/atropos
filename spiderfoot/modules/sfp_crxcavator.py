@@ -7,7 +7,7 @@
 #
 # Created:     2020-09-19
 # Copyright:   (c) bcoles 2019
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -69,8 +69,7 @@ class sfp_crxcavator(SpiderFootPlugin):
             'LINKED_URL_INTERNAL',
             'AFFILIATE_INTERNET_NAME',
             'AFFILIATE_INTERNET_NAME_UNRESOLVED',
-            'PHYSICAL_ADDRESS',
-            'RAW_RIR_DATA'
+            'PHYSICAL_ADDRESS'
         ]
 
     def query(self, qry):

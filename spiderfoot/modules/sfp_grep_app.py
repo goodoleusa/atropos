@@ -8,7 +8,7 @@
 #
 # Created:     2020-04-12
 # Copyright:   (c) bcoles 2020
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_grep_app(SpiderFootPlugin):
@@ -174,7 +174,7 @@ class sfp_grep_app(SpiderFootPlugin):
                 if snippet is None:
                     continue
 
-                links = self.sf.extractUrlsFromText(snippet.replace('<mark>', '').replace('</mark>', ''))
+                links = self.sf.extractUrls(snippet.replace('<mark>', '').replace('</mark>', ''))
                 if links:
                     for link in links:
                         if link in self.results:
@@ -196,7 +196,7 @@ class sfp_grep_app(SpiderFootPlugin):
                         self.notifyListeners(evt)
                         self.results[link] = True
 
-                emails = SpiderFootHelpers.extractEmailsFromText(snippet.replace('<mark>', '').replace('</mark>', ''))
+                emails = self.sf.parseEmails(snippet.replace('<mark>', '').replace('</mark>', ''))
                 if emails:
                     for email in emails:
                         if email in self.results:

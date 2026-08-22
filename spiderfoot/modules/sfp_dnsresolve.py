@@ -8,7 +8,7 @@
 #
 # Created:     07/07/2017
 # Copyright:   (c) Steve Micallef 2017
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
@@ -193,7 +193,7 @@ class sfp_dnsresolve(SpiderFootPlugin):
             "TARGET_WEB_CONTENT", "BASE64_DATA", "AFFILIATE_DOMAIN_WHOIS",
             "CO_HOSTED_SITE_DOMAIN_WHOIS", "DOMAIN_WHOIS", "NETBLOCK_WHOIS",
             "LEAKSITE_CONTENT", "RAW_DNS_RECORDS", "RAW_FILE_META_DATA",
-            "RAW_RIR_DATA", "SIMILARDOMAIN_WHOIS",
+            "RAW_RIR_DATA", "SEARCH_ENGINE_WEB_CONTENT", "SIMILARDOMAIN_WHOIS",
             "SSL_CERTIFICATE_RAW", "SSL_CERTIFICATE_ISSUED", "TCP_PORT_OPEN_BANNER",
             "WEBSERVER_BANNER", "WEBSERVER_HTTPHEADERS"
         ]

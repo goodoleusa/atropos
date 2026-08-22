@@ -226,8 +226,9 @@ class SpiderFootEvent():
         if not isinstance(module, str):
             raise TypeError(f"module is {type(module )}; expected str()")
 
-        if not module and self.eventType != "ROOT":
-            raise ValueError("module is empty")
+        if not module:
+            if self.eventType != "ROOT":
+                raise ValueError("module is empty")
 
         self._module = module
 
@@ -295,8 +296,9 @@ class SpiderFootEvent():
             'source': ''
         }
 
-        if self.sourceEvent is not None and self.sourceEvent.data is not None:
-            evtDict['source'] = self.sourceEvent.data
+        if self.sourceEvent is not None:
+            if self.sourceEvent.data is not None:
+                evtDict['source'] = self.sourceEvent.data
 
         return evtDict
 

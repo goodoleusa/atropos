@@ -8,7 +8,7 @@
 #
 # Created:     2020-08-21
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -133,8 +133,7 @@ class sfp_onyphe(SpiderFootPlugin):
                 )
                 self.errorState = True
                 return None
-
-            if "results" not in info or info["results"] == []:
+            elif "results" not in info or info["results"] == []:
                 self.info(f"No Onyphe {endpoint} data found for {ip}")
                 return None
         except Exception as e:
@@ -214,9 +213,12 @@ class sfp_onyphe(SpiderFootPlugin):
                     self.debug("Host no longer resolves to our IP.")
                     continue
 
-                if not self.opts["cohostsamedomain"] and self.getTarget().matches(domain, includeParents=True):
-                    self.debug(f"Skipping {domain} because it is on the same domain.")
-                    continue
+                if not self.opts["cohostsamedomain"]:
+                    if self.getTarget().matches(domain, includeParents=True):
+                        self.debug(
+                            "Skipping " + domain + " because it is on the same domain."
+                        )
+                        continue
 
                 evt = SpiderFootEvent("CO_HOSTED_SITE", domain, self.__name__, event)
                 self.notifyListeners(evt)

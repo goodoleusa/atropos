@@ -7,12 +7,12 @@
 #
 # Created:     16/11/2016
 # Copyright:   (c) Steve Micallef 2016
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import datetime
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_wikileaks(SpiderFootPlugin):
@@ -67,15 +67,16 @@ class sfp_wikileaks(SpiderFootPlugin):
     # This is to support the end user in selecting modules based on events
     # produced.
     def producedEvents(self):
-        return ["LEAKSITE_CONTENT", "LEAKSITE_URL"]
+        return ["LEAKSITE_CONTENT", "LEAKSITE_URL", "SEARCH_ENGINE_WEB_CONTENT"]
 
     # Handle events sent to this module
     def handleEvent(self, event):
         eventName = event.eventType
+        srcModuleName = event.module
         eventData = event.data
         self.currentEventSrc = event
 
-        self.debug(f"Received event, {eventName}, from {event.module}")
+        self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
         if eventData in self.results:
             self.debug(f"Skipping {eventData}, already checked.")
@@ -104,12 +105,13 @@ class sfp_wikileaks(SpiderFootPlugin):
             self.error("Unable to fetch Wikileaks content.")
             return
 
+        # Fetch the paste site content
         links = dict()
-        p = SpiderFootHelpers.extractLinksFromHtml(wlurl, res['content'], "wikileaks.org")
+        p = self.sf.parseLinks(wlurl, res['content'], "wikileaks.org")
         if p:
             links.update(p)
 
-        p = SpiderFootHelpers.extractLinksFromHtml(wlurl, res['content'], "cryptome.org")
+        p = self.sf.parseLinks(wlurl, res['content'], "cryptome.org")
         if p:
             links.update(p)
 
@@ -122,24 +124,30 @@ class sfp_wikileaks(SpiderFootPlugin):
             if "page=" not in res['content']:
                 keepGoing = False
 
+            valid = False
             for link in links:
-                # We can safely skip search.wikileaks.org and others.
                 if "search.wikileaks.org/" in link:
                     continue
 
+                # We can safely skip search.wikileaks.org and others.
                 if "wikileaks.org/" not in link and "cryptome.org/" not in link:
                     continue
+                else:
+                    self.debug("Found a link: " + link)
+                    if self.checkForStop():
+                        return
 
-                self.debug(f"Found a link: {link}")
+                    # Wikileaks leak links will have a nested folder structure link
+                    if link.count('/') >= 4:
+                        if not link.endswith(".js") and not link.endswith(".css"):
+                            evt = SpiderFootEvent("LEAKSITE_URL", link, self.__name__, event)
+                            self.notifyListeners(evt)
+                            valid = True
 
-                if self.checkForStop():
-                    return
-
-                # Wikileaks leak links will have a nested folder structure link
-                if link.count('/') >= 4:
-                    if not link.endswith(".js") and not link.endswith(".css"):
-                        evt = SpiderFootEvent("LEAKSITE_URL", link, self.__name__, event)
-                        self.notifyListeners(evt)
+            if valid:
+                evt = SpiderFootEvent("SEARCH_ENGINE_WEB_CONTENT", res['content'],
+                                      self.__name__, event)
+                self.notifyListeners(evt)
 
             # Fail-safe to prevent infinite looping
             if page > 50:
@@ -152,17 +160,16 @@ class sfp_wikileaks(SpiderFootPlugin):
                         external + "&new_search=True&order_by=most_relevant&page=" + \
                         str(page) + "#results"
                 res = self.sf.fetchUrl(wlurl)
-                if not res:
-                    break
                 if not res['content']:
                     break
 
+                # Fetch the paste site content
                 links = dict()
-                p = SpiderFootHelpers.extractLinksFromHtml(wlurl, res['content'], "wikileaks.org")
+                p = self.sf.parseLinks(wlurl, res['content'], "wikileaks.org")
                 if p:
                     links.update(p)
 
-                p = SpiderFootHelpers.extractLinksFromHtml(wlurl, res['content'], "cryptome.org")
+                p = self.sf.parseLinks(wlurl, res['content'], "cryptome.org")
                 if p:
                     links.update(p)
 

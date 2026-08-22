@@ -8,7 +8,7 @@
 #
 # Created:     28/04/2019
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import datetime
