@@ -28,3 +28,6 @@ vite.config.ts.*
 *_maltego_export_*.json.md5
 *_maltego_export_*.txt.md5
 obsidian-vault/.obsidian/workspace.json
+
+# Claude Code harness-managed scratch state (agent worktrees, etc.)
+.claude/
