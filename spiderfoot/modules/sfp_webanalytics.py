@@ -8,7 +8,7 @@
 #
 # Created:     2018-10-28
 # Copyright:   (c) bcoles 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
@@ -94,22 +94,6 @@ class sfp_webanalytics(SpiderFootPlugin):
                 evt = SpiderFootEvent("WEB_ANALYTICS_ID",
                                       "Google AdSense: " + m,
                                       self.__name__, event)
-                evt.moduleDataSource = datasource
-                self.notifyListeners(evt)
-
-            # Google Tag Manager
-            matches = re.findall(r"\b(GTM-[0-9a-zA-Z]{6,10})\b", eventData)
-            for m in set(matches):
-                if m.lower().startswith('GTM-XXXXXX'):
-                    continue
-
-                self.debug(f"Google Tag Manager match: {m}")
-                evt = SpiderFootEvent(
-                    "WEB_ANALYTICS_ID",
-                    f"Google Tag Manager: {m}",
-                    self.__name__,
-                    event
-                )
                 evt.moduleDataSource = datasource
                 self.notifyListeners(evt)
 

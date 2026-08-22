@@ -7,7 +7,7 @@
 #
 # Created:     21/07/2015
 # Copyright:   (c) Steve Micallef 2015
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -102,6 +102,11 @@ class sfp_duckduckgo(SpiderFootPlugin):
         if not ret['Heading']:
             self.debug(f"No DuckDuckGo information for {eventData}")
             return
+
+        # Submit the DuckDuckGo results for analysis
+        evt = SpiderFootEvent("SEARCH_ENGINE_WEB_CONTENT", res['content'],
+                              self.__name__, event)
+        self.notifyListeners(evt)
 
         abstract_text = ret.get('AbstractText')
         if abstract_text:

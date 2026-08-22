@@ -8,7 +8,7 @@
 #
 # Created:     2022-04-02
 # Copyright:   (c) Steve Micallef 2022
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import os
@@ -25,7 +25,10 @@ class sfp_tool_wappalyzer(SpiderFootPlugin):
         "name": "Tool - Wappalyzer",
         "summary": "Wappalyzer indentifies technologies on websites.",
         "flags": ["tool"],
-        "useCases": ["Footprint", "Investigate"],
+        "useCases": [
+            "Footprint",
+            "Investigate"
+        ],
         "categories": ["Content Analysis"],
         "toolDetails": {
             "name": "Wappalyzer",

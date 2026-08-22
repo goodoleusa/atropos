@@ -8,14 +8,14 @@
 #
 # Created:     29/09/2018
 # Copyright:   (c) bcoles 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
 
 from bs4 import BeautifulSoup
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_emailformat(SpiderFootPlugin):
@@ -90,7 +90,7 @@ class sfp_emailformat(SpiderFootPlugin):
             # fall back to raw page contents
             data = res["content"]
 
-        emails = SpiderFootHelpers.extractEmailsFromText(data)
+        emails = self.sf.parseEmails(data)
         for email in emails:
             # Skip unrelated emails
             mailDom = email.lower().split('@')[1]

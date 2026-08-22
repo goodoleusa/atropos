@@ -7,7 +7,7 @@
 #
 # Created:     2020-06-20
 # Copyright:   (c) bcoles 2020
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -16,7 +16,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_jsonwhoiscom(SpiderFootPlugin):
@@ -102,14 +102,10 @@ class sfp_jsonwhoiscom(SpiderFootPlugin):
 
         time.sleep(self.opts['delay'])
 
-        return self.parseApiResponse(res)
+        return self.parseAPIResponse(res)
 
     # Parse API response
-    def parseApiResponse(self, res: dict):
-        if not res:
-            self.error("No response from JsonWHOIS.com.")
-            return None
-
+    def parseAPIResponse(self, res):
         if res['code'] == '404':
             self.debug("No results for query")
             return None
@@ -215,7 +211,7 @@ class sfp_jsonwhoiscom(SpiderFootPlugin):
         for contact in contacts:
             email = contact.get('email')
             if email:
-                if SpiderFootHelpers.validEmail(email):
+                if self.sf.validEmail(email):
                     emails.append(email)
 
             name = contact.get("name")
@@ -227,7 +223,7 @@ class sfp_jsonwhoiscom(SpiderFootPlugin):
                 phone = phone.replace(" ", "").replace("-", "").replace("(", "").replace(")", "").replace(".", "")
                 phones.append(phone)
 
-            country = SpiderFootHelpers.countryNameFromCountryCode(contact.get('country_code'))
+            country = self.sf.countryNameFromCountryCode(contact.get('country_code'))
             location = ', '.join([_f for _f in [contact.get('address'), contact.get('city'), contact.get('state'), contact.get('zip'), country] if _f])
             if location:
                 locations.append(location)
@@ -238,7 +234,7 @@ class sfp_jsonwhoiscom(SpiderFootPlugin):
                 if email.split("@")[0] in self.opts['_genericusers'].split(","):
                     evttype = "EMAILADDR_GENERIC"
                 else:
-                    evttype = "EMAILADDR"
+                    evttype = "EMAILADR"
                 evt = SpiderFootEvent(evttype, email, self.__name__, event)
                 self.notifyListeners(evt)
             else:

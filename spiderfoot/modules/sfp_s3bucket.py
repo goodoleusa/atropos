@@ -8,7 +8,7 @@
 #
 # Created:     24/07/2016
 # Copyright:   (c) Steve Micallef 2016
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import random
@@ -29,10 +29,6 @@ class sfp_s3bucket(SpiderFootPlugin):
         'dataSource': {
             'website': "https://aws.amazon.com/s3/",
             'model': "FREE_NOAUTH_UNLIMITED",
-            'favIcon': 'https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico',
-            'logo': 'https://a0.awsstatic.com/libra-css/images/site/touch-icon-ipad-144-smile.png',
-            'description': "Amazon S3 is cloud object storage with industry-leading scalability, data availability, security, and performance. "
-            "S3 is ideal for data lakes, mobile applications, backup and restore, archival, IoT devices, ML, AI, and analytics."
         }
     }
 
@@ -95,9 +91,10 @@ class sfp_s3bucket(SpiderFootPlugin):
     def threadSites(self, siteList):
         self.s3results = dict()
         running = True
+        i = 0
         t = []
 
-        for i, site in enumerate(siteList):
+        for site in siteList:
             if self.checkForStop():
                 return False
 
@@ -106,6 +103,7 @@ class sfp_s3bucket(SpiderFootPlugin):
             t.append(threading.Thread(name='thread_sfp_s3buckets_' + tname,
                                       target=self.checkSite, args=(site,)))
             t[i].start()
+            i += 1
 
         # Block until all threads are finished
         while running:

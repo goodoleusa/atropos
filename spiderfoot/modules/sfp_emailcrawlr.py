@@ -8,7 +8,7 @@
 #
 # Created:     2020-06-19
 # Copyright:   (c) bcoles 2020
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -103,14 +103,10 @@ class sfp_emailcrawlr(SpiderFootPlugin):
 
         time.sleep(self.opts['delay'])
 
-        return self.parseApiResponse(res)
+        return self.parseAPIResponse(res)
 
     # Parse API response
-    def parseApiResponse(self, res: dict):
-        if not res:
-            self.error("No response from EmailCrawlr.")
-            return None
-
+    def parseAPIResponse(self, res):
         if res['code'] == '404':
             self.debug("No results for query")
             return None

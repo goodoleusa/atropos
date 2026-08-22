@@ -8,7 +8,7 @@
 #
 # Created:     16/05/2020
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -16,7 +16,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_snov(SpiderFootPlugin):
@@ -206,7 +206,7 @@ class sfp_snov(SpiderFootPlugin):
                         if email:
                             if email in self.results:
                                 continue
-                            if not SpiderFootHelpers.validEmail(email):
+                            if not self.sf.validEmail(email):
                                 continue
                             self.results[email] = True
 

@@ -8,7 +8,7 @@
 #
 # Created:     11/05/2020
 # Copyright:   (c) Steve Micallef 2020
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import dns.resolver
@@ -112,7 +112,6 @@ class sfp_cloudflaredns(SpiderFootPlugin):
             e = "BLACKLISTED_COHOST"
         else:
             self.debug(f"Unexpected event type {eventName}, skipping")
-            return
 
         family = self.sf.normalizeDNS(self.queryFamilyDNS(eventData))
         malware = self.sf.normalizeDNS(self.queryMalwareDNS(eventData))

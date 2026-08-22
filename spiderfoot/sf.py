@@ -8,7 +8,7 @@
 #
 # Created:     03/04/2012
 # Copyright:   (c) Steve Micallef 2012
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import argparse
@@ -39,7 +39,7 @@ scanId = None
 dbh = None
 
 
-def main() -> None:
+def main():
     # web server config
     sfWebUiConfig = {
         'host': '127.0.0.1',
@@ -61,10 +61,9 @@ def main() -> None:
         '_fetchtimeout': 5,  # number of seconds before giving up on a fetch
         '_internettlds': 'https://publicsuffix.org/list/effective_tld_names.dat',
         '_internettlds_cache': 72,
-        '_genericusers': ",".join(SpiderFootHelpers.usernamesFromWordlists(['generic-usernames'])),
+        '_genericusers': "abuse,admin,billing,compliance,devnull,dns,ftp,hostmaster,inoc,ispfeedback,ispsupport,list-request,list,maildaemon,marketing,noc,no-reply,noreply,null,peering,peering-notify,peering-request,phish,phishing,postmaster,privacy,registrar,registry,root,routing-registry,rr,sales,security,spam,support,sysadmin,tech,undisclosed-recipients,unsubscribe,usenet,uucp,webmaster,www",
         '__database': f"{SpiderFootHelpers.dataPath()}/spiderfoot.db",
         '__modules__': None,  # List of modules. Will be set after start-up.
-        '__correlationrules__': None,  # List of correlation rules. Will be set after start-up.
         '_socks1type': '',
         '_socks2addr': '',
         '_socks3port': '',
@@ -135,65 +134,84 @@ def main() -> None:
     logWorkerSetup(loggingQueue)
     log = logging.getLogger(f"spiderfoot.{__name__}")
 
-    # Add descriptions of the global config options
-    sfConfig['__globaloptdescs__'] = sfOptdescs
+    sfModules = dict()
+    correlationRulesRaw = dict()
+    sft = SpiderFoot(sfConfig)
 
     # Load each module in the modules directory with a .py extension
-    try:
-        mod_dir = os.path.dirname(os.path.abspath(__file__)) + '/modules/'
-        sfModules = SpiderFootHelpers.loadModulesAsDict(mod_dir, ['sfp_template.py'])
-    except BaseException as e:
-        log.critical(f"Failed to load modules: {e}", exc_info=True)
+    mod_dir = sft.myPath() + '/modules/'
+
+    # Load each correlation rule in the correlations directory with
+    # a .yaml extension
+    corr_dir = sft.myPath() + '/correlations/'
+
+    if not os.path.isdir(mod_dir):
+        log.critical(f"Modules directory does not exist: {mod_dir}")
         sys.exit(-1)
+
+    for filename in os.listdir(mod_dir):
+        if not filename.endswith(".py"):
+            continue
+        if not filename.startswith("sfp_"):
+            continue
+        if filename in ('sfp_template.py'):
+            continue
+
+        modName = filename.split('.')[0]
+
+        # Load and instantiate the module
+        sfModules[modName] = dict()
+        try:
+            mod = __import__('modules.' + modName, globals(), locals(), [modName])
+            sfModules[modName]['object'] = getattr(mod, modName)()
+            mod_dict = sfModules[modName]['object'].asdict()
+            sfModules[modName].update(mod_dict)
+        except BaseException as e:
+            log.critical(f"Failed to load module {modName}: {e}")
+            sys.exit(-1)
 
     if not sfModules:
         log.critical(f"No modules found in modules directory: {mod_dir}")
         sys.exit(-1)
 
-    # Load each correlation rule in the correlations directory with
-    # a .yaml extension
-    try:
-        correlations_dir = os.path.dirname(os.path.abspath(__file__)) + '/correlations/'
-        correlationRulesRaw = SpiderFootHelpers.loadCorrelationRulesRaw(correlations_dir, ['template.yaml'])
-    except BaseException as e:
-        log.critical(f"Failed to load correlation rules: {e}", exc_info=True)
+    if not os.path.isdir(corr_dir):
+        log.critical(f"Correlation rules directory does not exist: {corr_dir}")
         sys.exit(-1)
 
-    # Initialize database handle
-    try:
-        dbh = SpiderFootDb(sfConfig)
-    except Exception as e:
-        log.critical(f"Failed to initialize database: {e}", exc_info=True)
-        sys.exit(-1)
+    for filename in os.listdir(corr_dir):
+        if not filename.endswith(".yaml"):
+            continue
+        if filename in ('template.yaml'):
+            continue
+
+        ruleName = filename.split('.')[0]
+        correlationRulesRaw[ruleName] = open(corr_dir + filename, 'r').read()
 
     # Sanity-check the rules and parse them
-    sfCorrelationRules = list()
+    dbh = SpiderFootDb(sfConfig)
+    correlator = None
     if not correlationRulesRaw:
-        log.error(f"No correlation rules found in correlations directory: {correlations_dir}")
+        log.error(f"No correlation rules found in the directory: {corr_dir}. Maybe this was intended?")
+        sfCorrelationRules = list()
     else:
-        try:
-            correlator = SpiderFootCorrelator(dbh, correlationRulesRaw)
-            sfCorrelationRules = correlator.get_ruleset()
-        except Exception as e:
-            log.critical(f"Failure initializing correlation rules: {e}", exc_info=True)
-            sys.exit(-1)
+        correlator = SpiderFootCorrelator(dbh, correlationRulesRaw)
+        if not correlator:
+            log.fatal("Failure initializing correlation rules, aborting.")
+        sfCorrelationRules = correlator.get_ruleset()
 
-    # Add modules and correlation rules to sfConfig so they can be used elsewhere
+    # Add modules and the correlator to sfConfig so they can be used elsewhere
     sfConfig['__modules__'] = sfModules
     sfConfig['__correlationrules__'] = sfCorrelationRules
+    # Add descriptions of the global config options
+    sfConfig['__globaloptdescs__'] = sfOptdescs
 
     if args.correlate:
         if not correlationRulesRaw:
             log.error("Unable to perform correlations as no correlation rules were found.")
             sys.exit(-1)
-
-        try:
-            log.info(f"Running {len(correlationRulesRaw)} correlation rules against scan, {args.correlate}.")
-            corr = SpiderFootCorrelator(dbh, correlationRulesRaw, args.correlate)
-            corr.run_correlations()
-        except Exception as e:
-            log.critical(f"Unable to run correlation rules: {e}", exc_info=True)
-            sys.exit(-1)
+        log.info(f"Running {len(correlationRulesRaw)} correlation rules against scan, {args.correlate}.")
+        corr = SpiderFootCorrelator(dbh, correlationRulesRaw, args.correlate)
+        corr.run_correlations()
         sys.exit(0)
 
     if args.modules:
@@ -201,7 +219,7 @@ def main() -> None:
         for m in sorted(sfModules.keys()):
             if "__" in m:
                 continue
-            print(f"{m.ljust(25)}  {sfModules[m]['descr']}")
+            print(('{0:25}  {1}'.format(m, sfModules[m]['descr'])))
         sys.exit(0)
 
     if args.types:
@@ -213,7 +231,7 @@ def main() -> None:
             types[r[1]] = r[0]
 
         for t in sorted(types.keys()):
-            print(f"{t.ljust(45)}  {types[t]}")
+            print(('{0:45}  {1}'.format(t, types[t])))
         sys.exit(0)
 
     if args.l:
@@ -227,12 +245,12 @@ def main() -> None:
         sfWebUiConfig['port'] = port
 
         start_web_server(sfWebUiConfig, sfConfig, loggingQueue)
-        sys.exit(0)
+        exit(0)
 
     start_scan(sfConfig, sfModules, args, loggingQueue)
 
 
-def start_scan(sfConfig: dict, sfModules: dict, args, loggingQueue) -> None:
+def start_scan(sfConfig, sfModules, args, loggingQueue):
     """Start scan
 
     Args:
@@ -413,12 +431,12 @@ def start_scan(sfConfig: dict, sfModules: dict, args, loggingQueue) -> None:
 
         if args.r:
             if delim == "\t":
-                headers = delim.join(["Source".ljust(30), "Type".ljust(45), "Source Data", "Data"])
+                headers = '{0:30}{1}{2:45}{3}{4}{5}{6}'.format("Source", delim, "Type", delim, "Source Data", delim, "Data")
             else:
                 headers = delim.join(["Source", "Type", "Source Data", "Data"])
         else:
             if delim == "\t":
-                headers = delim.join(["Source".ljust(30), "Type".ljust(45), "Data"])
+                headers = '{0:30}{1}{2:45}{3}{4}'.format("Source", delim, "Type", delim, "Data")
             else:
                 headers = delim.join(["Source", "Type", "Data"])
 
@@ -442,13 +460,6 @@ def start_scan(sfConfig: dict, sfModules: dict, args, loggingQueue) -> None:
         if not info:
             continue
         if info[5] in ["ERROR-FAILED", "ABORT-REQUESTED", "ABORTED", "FINISHED"]:
-            # allow 60 seconds for post-scan correlations to complete
-            timeout = 60
-            p.join(timeout=timeout)
-            if (p.is_alive()):
-                log.error(f"Timeout reached ({timeout}s) waiting for scan {scanId} post-processing to complete.")
-                sys.exit(-1)
-
             if sfConfig['__logging']:
                 log.info(f"Scan completed with status {info[5]}")
             if args.o == "json":
@@ -458,7 +469,7 @@ def start_scan(sfConfig: dict, sfModules: dict, args, loggingQueue) -> None:
     return
 
 
-def start_web_server(sfWebUiConfig: dict, sfConfig: dict, loggingQueue=None) -> None:
+def start_web_server(sfWebUiConfig, sfConfig, loggingQueue=None):
     """Start the web server so you can start looking at results
 
     Args:
@@ -481,6 +492,8 @@ def start_web_server(sfWebUiConfig: dict, sfConfig: dict, loggingQueue=None) -> 
 
     log.info(f"Starting web server at {web_host}:{web_port} ...")
 
+    sf = SpiderFoot(sfConfig)
+
     # Enable access to static files via the web directory
     conf = {
         '/query': {
@@ -490,7 +503,7 @@ def start_web_server(sfWebUiConfig: dict, sfConfig: dict, loggingQueue=None) -> 
         '/static': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': 'static',
-            'tools.staticdir.root': f"{os.path.dirname(os.path.abspath(__file__))}/spiderfoot"
+            'tools.staticdir.root': f"{sf.myPath()}/spiderfoot"
         }
     }
 
@@ -501,10 +514,9 @@ def start_web_server(sfWebUiConfig: dict, sfConfig: dict, loggingQueue=None) -> 
             log.error("Could not read passwd file. Permission denied.")
             sys.exit(-1)
 
-        with open(passwd_file, 'r') as f:
-            passwd_data = f.readlines()
+        pw = open(passwd_file, 'r')
 
-        for line in passwd_data:
+        for line in pw.readlines():
             if line.strip() == '':
                 continue
 
@@ -586,7 +598,7 @@ def start_web_server(sfWebUiConfig: dict, sfConfig: dict, loggingQueue=None) -> 
     cherrypy.quickstart(SpiderFootWebUi(sfWebUiConfig, sfConfig, loggingQueue), script_name=web_root, config=conf)
 
 
-def handle_abort(signal, frame) -> None:
+def handle_abort(signal, frame):
     """Handle interrupt and abort scan.
 
     Args:

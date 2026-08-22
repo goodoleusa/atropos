@@ -8,7 +8,7 @@
 #
 # Created:     05/21/2021
 # Copyright:   (c) Steve Micallef 2021
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
@@ -71,7 +71,7 @@ class sfp_dnsdumpster(SpiderFootPlugin):
                 if k == "csrftoken":
                     csrftoken = str(v)
             csrfmiddlewaretoken = html.find("input", {"name": "csrfmiddlewaretoken"}).attrs.get("value", None)
-        except Exception:
+        except AttributeError:
             pass
 
         # Abort if we didn't get the tokens
@@ -79,8 +79,8 @@ class sfp_dnsdumpster(SpiderFootPlugin):
             self.error("Error obtaining CSRF tokens")
             self.errorState = True
             return ret
-
-        self.debug("Successfully obtained CSRF tokens")
+        else:
+            self.debug("Successfully obtained CSRF tokens")
 
         # Otherwise, do the needful
         url = "https://dnsdumpster.com/"

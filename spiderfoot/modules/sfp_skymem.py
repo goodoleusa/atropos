@@ -8,12 +8,12 @@
 #
 # Created:     29/09/2018
 # Copyright:   (c) bcoles 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_skymem(SpiderFootPlugin):
@@ -83,7 +83,7 @@ class sfp_skymem(SpiderFootPlugin):
             return
 
         # Extract emails from results page
-        emails = SpiderFootHelpers.extractEmailsFromText(res['content'])
+        emails = self.sf.parseEmails(res['content'])
 
         for email in emails:
             # Skip unrelated emails
@@ -111,16 +111,12 @@ class sfp_skymem(SpiderFootPlugin):
         domain_id = domain_ids[0]
 
         for page in range(1, 21):
-            res = self.sf.fetchUrl(
-                f"http://www.skymem.info/domain/{domain_id}?p={page}",
-                timeout=self.opts['_fetchtimeout'],
-                useragent=self.opts['_useragent']
-            )
+            res = self.sf.fetchUrl("http://www.skymem.info/domain/" + domain_id + "?p=" + str(page), timeout=self.opts['_fetchtimeout'], useragent=self.opts['_useragent'])
 
             if res['content'] is None:
                 break
 
-            emails = SpiderFootHelpers.extractEmailsFromText(res['content'])
+            emails = self.sf.parseEmails(res['content'])
             for email in emails:
                 # Skip unrelated emails
                 mailDom = email.lower().split('@')[1]

@@ -7,7 +7,7 @@
 #
 # Created:     14/06/2020
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import base64

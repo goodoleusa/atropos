@@ -7,7 +7,7 @@
 #
 # Created:     19/03/2014
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -83,7 +83,7 @@ class sfp_shodan(SpiderFootPlugin):
     def producedEvents(self):
         return ["OPERATING_SYSTEM", "DEVICE_TYPE",
                 "TCP_PORT_OPEN", "TCP_PORT_OPEN_BANNER",
-                'RAW_RIR_DATA', 'GEOINFO', 'IP_ADDRESS',
+                'RAW_RIR_DATA', 'GEOINFO',
                 'VULNERABILITY_CVE_CRITICAL',
                 'VULNERABILITY_CVE_HIGH', 'VULNERABILITY_CVE_MEDIUM',
                 'VULNERABILITY_CVE_LOW', 'VULNERABILITY_GENERAL']
@@ -95,11 +95,6 @@ class sfp_shodan(SpiderFootPlugin):
             useragent="SpiderFoot"
         )
         time.sleep(1)
-
-        if res['code'] in ["403", "401"]:
-            self.error("SHODAN API key seems to have been rejected or you have exceeded usage limits.")
-            self.errorState = True
-            return None
 
         if res['content'] is None:
             self.info(f"No SHODAN info found for {qry}")
@@ -129,12 +124,6 @@ class sfp_shodan(SpiderFootPlugin):
             useragent="SpiderFoot"
         )
         time.sleep(1)
-
-        if res['code'] in ["403", "401"]:
-            self.error("SHODAN API key seems to have been rejected or you have exceeded usage limits.")
-            self.errorState = True
-            return None
-
         if res['content'] is None:
             self.info(f"No SHODAN info found for {qry}")
             return None
@@ -163,12 +152,6 @@ class sfp_shodan(SpiderFootPlugin):
             useragent="SpiderFoot"
         )
         time.sleep(1)
-
-        if res['code'] in ["403", "401"]:
-            self.error("SHODAN API key seems to have been rejected or you have exceeded usage limits.")
-            self.errorState = True
-            return None
-
         if res['content'] is None:
             self.info(f"No SHODAN info found for {qry}")
             return None

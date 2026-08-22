@@ -7,7 +7,7 @@
 #
 # Created:     04/09/2018
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -176,6 +176,7 @@ class sfp_pulsedive(SpiderFootPlugin):
             else:
                 max_netblock = self.opts['maxnetblock']
 
+            max_netblock = self.opts['maxnetblock']
             if IPNetwork(eventData).prefixlen < max_netblock:
                 self.debug(f"Network size bigger than permitted: {IPNetwork(eventData).prefixlen} > {max_netblock}")
                 return

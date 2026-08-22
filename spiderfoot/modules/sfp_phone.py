@@ -9,7 +9,7 @@
 #
 # Created:     19/06/2016
 # Copyright:   (c) Steve Micallef 2016
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import phonenumbers

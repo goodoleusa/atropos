@@ -8,7 +8,7 @@
 #
 # Created:     14/07/2019
 # Copyright:   (c) Steve Micallef 2019
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import random
@@ -28,11 +28,7 @@ class sfp_azureblobstorage(SpiderFootPlugin):
         'categories': ["Crawling and Scanning"],
         'dataSource': {
             'website': "https://azure.microsoft.com/en-in/services/storage/blobs/",
-            'model': "FREE_NOAUTH_UNLIMITED",
-            'favIcon': 'https://azurecomcdn.azureedge.net/cvt-4fd6fa9ffb60246fd6387e4b34f89dc454cdf3df85d2b5d3215846066fceb0b6/images/icon/favicon.ico',
-            'logo': 'https://azurecomcdn.azureedge.net/cvt-4fd6fa9ffb60246fd6387e4b34f89dc454cdf3df85d2b5d3215846066fceb0b6/images/icon/favicon.ico',
-            'description': "Massively scalable and secure object storage for cloud-native workloads,"
-            "archives, data lakes, high-performance computing and machine learning."
+            'model': "FREE_NOAUTH_UNLIMITED"
         }
     }
 

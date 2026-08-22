@@ -7,7 +7,7 @@
 #
 # Created:     12/04/2014
 # Copyright:   (c) Steve Micallef 2014
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -102,9 +102,6 @@ class sfp_robtex(SpiderFootPlugin):
         eventData = event.data
         self.currentEventSrc = event
 
-        if self.errorState:
-            return
-
         self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
         if self.cohostcount > self.opts['maxcohost']:
@@ -127,6 +124,7 @@ class sfp_robtex(SpiderFootPlugin):
             else:
                 max_netblock = self.opts['maxnetblock']
 
+            max_netblock = self.opts['maxnetblock']
             if IPNetwork(eventData).prefixlen < max_netblock:
                 self.debug(f"Network size bigger than permitted: {IPNetwork(eventData).prefixlen} > {max_netblock}")
                 return
@@ -176,14 +174,12 @@ class sfp_robtex(SpiderFootPlugin):
 
             if res['content'] is None:
                 self.error("No reply from robtex API.")
-                self.errorState = True
                 continue
 
             try:
                 data = json.loads(res['content'])
             except Exception as e:
                 self.error(f"Error parsing JSON from Robtex API: {e}")
-                self.errorState = True
                 return
 
             if not data:
@@ -194,7 +190,7 @@ class sfp_robtex(SpiderFootPlugin):
             if status and status == "ratelimited":
                 self.error("You are being rate-limited by robtex API.")
                 self.errorState = True
-                return
+                continue
 
             evt = SpiderFootEvent("RAW_RIR_DATA", json.dumps(data), self.__name__, event)
             self.notifyListeners(evt)

@@ -7,7 +7,7 @@
 #
 # Created:     2020-08-21
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 import json
 
@@ -178,12 +178,10 @@ class sfp_hostio(SpiderFootPlugin):
                     if isinstance(email_data, dict):
                         value = email_data["value"]
                         if value and isinstance(value, str):
-                            for email in value.split(','):
-                                email = email.strip('.')
-                                evt = SpiderFootEvent(
-                                    "EMAILADDR", email, self.__name__, event
-                                )
-                                self.notifyListeners(evt)
+                            evt = SpiderFootEvent(
+                                "EMAILADDR", value, self.__name__, event
+                            )
+                            self.notifyListeners(evt)
                             found = True
 
         web = data.get("web")

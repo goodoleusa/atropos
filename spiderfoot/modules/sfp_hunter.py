@@ -6,7 +6,7 @@
 #
 # Created:     22/02/2017
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json

@@ -7,7 +7,7 @@
 #
 # Created:     12/04/2014
 # Copyright:   (c) Steve Micallef 2014
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
@@ -219,8 +219,8 @@ class sfp_socialprofiles(SpiderFootPlugin):
                     self.debug("Match found: " + match)
                     if match in instances:
                         continue
-
-                    instances.append(match)
+                    else:
+                        instances.append(match)
 
                     if self.checkForStop():
                         return
@@ -242,18 +242,17 @@ class sfp_socialprofiles(SpiderFootPlugin):
 
                         if pres["content"] is None:
                             continue
-
-                        found = False
-                        for kw in self.keywords:
-                            if re.search(
-                                r"[^a-zA-Z\-\_]" + kw + r"[^a-zA-Z\-\_]",
-                                pres["content"],
-                                re.IGNORECASE,
-                            ):
-                                found = True
-
-                        if not found:
-                            continue
+                        else:
+                            found = False
+                            for kw in self.keywords:
+                                if re.search(
+                                    r"[^a-zA-Z\-\_]" + kw + r"[^a-zA-Z\-\_]",
+                                    pres["content"],
+                                    re.IGNORECASE,
+                                ):
+                                    found = True
+                            if not found:
+                                continue
 
                     self.info("Social Media Profile found at " + site + ": " + match)
                     match = urllib.parse.unquote(match)

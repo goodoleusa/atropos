@@ -8,7 +8,7 @@
 #
 # Created:     2018-10-25
 # Copyright:   (c) bcoles 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import datetime

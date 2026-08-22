@@ -8,13 +8,13 @@
 #
 # Created:     2022-04-02
 # Copyright:   (c) Steve Micallef 2022
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import sys
 import json
 import os
-from subprocess import PIPE, Popen, TimeoutExpired
+from subprocess import PIPE, Popen
 
 from spiderfoot import SpiderFootPlugin, SpiderFootEvent
 
@@ -135,13 +135,8 @@ class sfp_tool_trufflehog(SpiderFootPlugin):
         args.append(url)
         try:
             p = Popen(args, stdout=PIPE, stderr=PIPE)
-            out, _ = p.communicate(input=None, timeout=600)
+            out, _ = p.communicate(input=None)
             stdout = out.decode(sys.stdin.encoding)
-        except TimeoutExpired:
-            p.kill()
-            stdout, stderr = p.communicate()
-            self.debug(f"Timed out waiting for trufflehog to finish on {url}")
-            return
         except Exception as e:
             self.error(f"Unable to run trufflehog: {e}")
             return

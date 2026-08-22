@@ -8,7 +8,7 @@
 #
 # Created:     2022-04-02
 # Copyright:   (c) Steve Micallef 2022
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import os
@@ -31,7 +31,10 @@ class sfp_tool_nuclei(SpiderFootPlugin):
             "slow",
             "invasive"
         ],
-        "useCases": ["Footprint", "Investigate"],
+        "useCases": [
+            "Footprint",
+            "Investigate"
+        ],
         "categories": ["Crawling and Scanning"],
         "toolDetails": {
             "name": "Nuclei",

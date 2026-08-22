@@ -8,7 +8,7 @@
 #
 # Created:     2019-09-16
 # Copyright:   (c) bcoles 2019
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -218,11 +218,7 @@ class sfp_networksdb(SpiderFootPlugin):
 
     # Parse API response
     # https://networksdb.io/api/plans
-    def parseApiResponse(self, res: dict):
-        if not res:
-            self.error("No response from NetworksDB.")
-            return None
-
+    def parseApiResponse(self, res):
         # Future proofing - NetworksDB does not implement rate limiting
         if res['code'] == '429':
             self.error("You are being rate-limited by NetworksDB")

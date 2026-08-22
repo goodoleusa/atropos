@@ -8,10 +8,10 @@
 #
 # Created:     26/04/2020
 # Copyright:   (c) Steve Micallef
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
-from spiderfoot import SpiderFootEvent, SpiderFootHelpers, SpiderFootPlugin
+from spiderfoot import SpiderFootEvent, SpiderFootPlugin
 
 
 class sfp_iban(SpiderFootPlugin):
@@ -59,8 +59,8 @@ class sfp_iban(SpiderFootPlugin):
 
         self.debug(f"Received event, {eventName}, from {srcModuleName}")
 
-        ibans = SpiderFootHelpers.extractIbansFromText(eventData)
-        for ibanNumber in set(ibans):
+        ibanNumbers = self.sf.parseIBANNumbers(eventData)
+        for ibanNumber in set(ibanNumbers):
             self.info(f"Found IBAN number: {ibanNumber}")
             evt = SpiderFootEvent("IBAN_NUMBER", ibanNumber, self.__name__, event)
             if event.moduleDataSource:

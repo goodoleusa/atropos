@@ -7,7 +7,7 @@
 #
 # Created:     2021-10-09
 # Copyright:   (c) bcoles 2021
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -144,9 +144,6 @@ class sfp_focsec(SpiderFootPlugin):
         eventName = event.eventType
         srcModuleName = event.module
         eventData = event.data
-
-        if self.errorState:
-            return
 
         if eventData in self.results:
             self.debug(f"Skipping {eventData}, already checked.")

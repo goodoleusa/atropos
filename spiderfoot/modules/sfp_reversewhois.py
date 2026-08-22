@@ -7,7 +7,7 @@
 #
 # Created:     05/20/2021
 # Copyright:   (c) Steve Micallef 2021
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import re
@@ -48,7 +48,6 @@ class sfp_reversewhois(SpiderFootPlugin):
     def setup(self, sfc, userOpts=dict()):
         self.sf = sfc
         self.results = self.tempStorage()
-        self.errorState = False
 
         # Clear / reset any other class member variables here
         # or you risk them persisting between threads.
@@ -68,12 +67,14 @@ class sfp_reversewhois(SpiderFootPlugin):
     def query(self, qry):
         url = f"https://reversewhois.io?searchterm={qry}"
 
+        ret = ([], [])
+
         res = self.sf.fetchUrl(url, timeout=self.opts.get("_fetchtimeout", 30))
 
         if res["code"] not in ["200"]:
             self.error("You may have exceeded ReverseWhois usage limits.")
             self.errorState = True
-            return ([], [])
+            return ret
 
         html = BeautifulSoup(res["content"], features="lxml")
         date_regex = re.compile(r'\d{4}-\d{2}-\d{2}')
@@ -94,10 +95,12 @@ class sfp_reversewhois(SpiderFootPlugin):
                 self.debug(f"Invalid row {table_row}")
                 continue
 
+        ret = (list(domains), list(registrars))
+
         if not registrars and not domains:
             self.info(f"No ReverseWhois info found for {qry}")
 
-        return (list(domains), list(registrars))
+        return ret
 
     # Handle events sent to this module
     def handleEvent(self, event):
@@ -118,7 +121,7 @@ class sfp_reversewhois(SpiderFootPlugin):
 
         domains, registrars = self.query(eventData)
 
-        for domain in set(domains):
+        for domain in domains:
             # if this domain isn't the main target
             if not self.getTarget().matches(domain, includeChildren=False):
                 e = SpiderFootEvent("AFFILIATE_INTERNET_NAME", domain, self.__name__, event)
@@ -127,7 +130,7 @@ class sfp_reversewhois(SpiderFootPlugin):
                     evt = SpiderFootEvent("AFFILIATE_DOMAIN_NAME", domain, self.__name__, event)
                     self.notifyListeners(evt)
 
-        for registrar in set(registrars):
+        for registrar in registrars:
             e = SpiderFootEvent("DOMAIN_REGISTRAR", registrar, self.__name__, event)
             self.notifyListeners(e)
 

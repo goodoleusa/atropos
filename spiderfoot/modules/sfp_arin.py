@@ -8,7 +8,7 @@
 #
 # Created:     23/02/2018
 # Copyright:   (c) Steve Micallef 2018
-# Licence:     MIT
+# Licence:     GPL
 # -------------------------------------------------------------------------------
 
 import json
@@ -71,7 +71,7 @@ class sfp_arin(SpiderFootPlugin):
     # This is to support the end user in selecting modules based on events
     # produced.
     def producedEvents(self):
-        return ["RAW_RIR_DATA", "HUMAN_NAME"]
+        return ["RAW_RIR_DATA"]
 
     # Fetch content and notify of the raw data
     def fetchRir(self, url):
@@ -153,7 +153,11 @@ class sfp_arin(SpiderFootPlugin):
                             sname = name.split(", ", 1)
                             name = sname[1] + " " + sname[0]
 
-                        evt = SpiderFootEvent("HUMAN_NAME", name,
+                        # A bit of a hack. The reason we do this is because
+                        # the names are separated in the content and sfp_names
+                        # won't recognise it. So we submit this and see if it
+                        # really is considered a name.
+                        evt = SpiderFootEvent("RAW_RIR_DATA", "Possible full name: " + name,
                                               self.__name__, self.currentEventSrc)
                         self.notifyListeners(evt)
 

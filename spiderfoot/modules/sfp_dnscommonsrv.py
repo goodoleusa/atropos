@@ -8,7 +8,7 @@
 #
 # Created:     22/08/2017
 # Copyright:   (c) Michael Scherer 2017
-# Licence:     MIT
+# Licence:     GPL
 # -----------------------------------------------------------------------------
 
 import dns.resolver
@@ -124,7 +124,7 @@ class sfp_dnscommonsrv(SpiderFootPlugin):
                 continue
 
             try:
-                answers = res.query(name, 'SRV', timeout=10)
+                answers = res.query(name, 'SRV')
             except Exception:
                 answers = []
 
