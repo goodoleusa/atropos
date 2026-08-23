@@ -344,6 +344,16 @@
     font-family: var(--font-nav);
   }
 
+  /* font-orbitron was used across Home.tsx (section headers, stat numbers)
+     with no matching font-face ever loaded or defined -- silently falling
+     back to the browser default sans this whole time. Orbitron is a real
+     angular sci-fi/cyberpunk-HUD display face, loaded in index.html
+     alongside the rest of the type system; this class actually resolves
+     to it now instead of being a dead class name. */
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+  }
+
   h1, h2, h3 {
     font-family: var(--font-heading);
     font-weight: var(--font-heading-weight);
