@@ -24,11 +24,11 @@ const STYLE_ICONS: Record<LearningStyle, typeof Brain> = {
 };
 
 const STYLE_COLORS: Record<LearningStyle, string> = {
-  experiential: 'border-emerald-600 bg-emerald-950/30 text-emerald-300',
-  visual: 'border-sky-600 bg-sky-950/30 text-sky-300',
-  analytical: 'border-purple-600 bg-purple-950/30 text-purple-300',
-  social: 'border-amber-600 bg-amber-950/30 text-amber-300',
-  pragmatic: 'border-rose-600 bg-rose-950/30 text-rose-300',
+  experiential: 'border-emerald-600 bg-emerald-950/30 text-emerald-800',
+  visual: 'border-sky-600 bg-sky-950/30 text-sky-800',
+  analytical: 'border-purple-600 bg-purple-950/30 text-purple-800',
+  social: 'border-amber-600 bg-amber-950/30 text-amber-800',
+  pragmatic: 'border-rose-600 bg-rose-950/30 text-rose-800',
 };
 
 interface LearningSettingsProps {
@@ -86,7 +86,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
       {compact && (
         <button
           onClick={() => setExpanded(false)}
-          className="w-full flex items-center justify-between text-xs text-muted-foreground hover:text-teal-400 min-h-[36px]"
+          className="w-full flex items-center justify-between text-xs text-muted-foreground hover:text-teal-800 min-h-[36px]"
         >
           <span className="flex items-center gap-2">
             <BookOpen className="w-3 h-3 text-teal-800" />
@@ -132,7 +132,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
               onClick={() => handleSkillChange(level.id as LearningProfile['skillLevel'])}
               className={`px-2.5 py-1.5 md:py-1 rounded text-[10px] md:text-[10px] border transition-all min-h-[36px] md:min-h-0 ${
                 store.skillLevel === level.id
-                  ? 'border-amber-600 bg-amber-950/30 text-amber-300'
+                  ? 'border-amber-600 bg-amber-950/30 text-amber-800'
                   : 'border-border text-muted-foreground hover:border-border active:bg-border/30'
               }`}
               title={level.description}
@@ -161,7 +161,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
               data-testid={`goal-${goal.id}`}
             >
               <div className="flex items-center justify-between">
-                <span className={store.goals.includes(goal.id) ? 'text-purple-300' : 'text-muted-foreground'}>
+                <span className={store.goals.includes(goal.id) ? 'text-purple-800' : 'text-muted-foreground'}>
                   {goal.name}
                 </span>
                 <Badge 

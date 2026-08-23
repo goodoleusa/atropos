@@ -25,7 +25,7 @@ interface LeaderboardEntry {
 const RARITY_COLORS: Record<string, string> = {
   common: 'border-muted text-muted-foreground bg-card/20',
   uncommon: 'border-teal-700 text-teal-800 bg-teal-900/20',
-  rare: 'border-blue-700 text-blue-400 bg-blue-900/20',
+  rare: 'border-blue-700 text-blue-800 bg-blue-900/20',
   epic: 'border-orange-700 text-orange-800 bg-orange-900/20',
   legendary: 'border-amber-600 text-amber-800 bg-amber-900/20',
 };
@@ -81,7 +81,7 @@ export function PlayerStatsPanel() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-amber-800/70 hover:text-amber-400 hover:bg-amber-900/20 gap-1.5"
+          className="text-amber-800/70 hover:text-amber-700 hover:bg-amber-900/20 gap-1.5"
           data-testid="button-player-stats"
         >
           <Star className="w-4 h-4" />

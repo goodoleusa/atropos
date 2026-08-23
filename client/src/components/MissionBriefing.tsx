@@ -14,22 +14,22 @@ import {
 import type { LearningStyle } from '@/config/learningConfig';
 
 const STYLE_META: Record<LearningStyle, { label: string; icon: any; color: string; short: string }> = {
-  experiential: { label: 'Experiential', icon: FlaskConical, color: 'text-emerald-400', short: 'Hands-on first, theory later' },
-  visual: { label: 'Visual', icon: Eye, color: 'text-sky-400', short: 'Diagrams, maps, visual structure' },
+  experiential: { label: 'Experiential', icon: FlaskConical, color: 'text-emerald-700', short: 'Hands-on first, theory later' },
+  visual: { label: 'Visual', icon: Eye, color: 'text-sky-700', short: 'Diagrams, maps, visual structure' },
   analytical: { label: 'Analytical', icon: Brain, color: 'text-purple-700', short: 'Deep theory, citations, why' },
   social: { label: 'Social', icon: Users, color: 'text-amber-800', short: 'Community, discussion, collaboration' },
-  pragmatic: { label: 'Pragmatic', icon: Wrench, color: 'text-rose-400', short: 'Cheat sheets, rules, quick wins' },
+  pragmatic: { label: 'Pragmatic', icon: Wrench, color: 'text-rose-700', short: 'Cheat sheets, rules, quick wins' },
 };
 
 const EXERCISE_TYPE_META: Record<string, { label: string; color: string }> = {
   prompt_craft: { label: 'Prompt Craft', color: 'bg-amber-900/30 text-amber-800 border-amber-800/40' },
-  comparison: { label: 'Compare', color: 'bg-sky-900/30 text-sky-400 border-sky-800/40' },
+  comparison: { label: 'Compare', color: 'bg-sky-900/30 text-sky-800 border-sky-800/40' },
   crew_build: { label: 'Crew Build', color: 'bg-purple-900/30 text-purple-700 border-purple-800/40' },
   eval_run: { label: 'Eval Run', color: 'bg-teal-900/30 text-teal-800 border-teal-800/40' },
   observation: { label: 'Observe', color: 'bg-border/50 text-foreground border-border' },
   debate: { label: 'Debate', color: 'bg-orange-900/30 text-orange-800 border-orange-800/40' },
   failure_analysis: { label: 'Failure Lab', color: 'bg-red-900/30 text-red-700 border-red-800/40' },
-  reflection: { label: 'Reflect', color: 'bg-indigo-900/30 text-indigo-400 border-indigo-800/40' },
+  reflection: { label: 'Reflect', color: 'bg-indigo-900/30 text-indigo-800 border-indigo-800/40' },
 };
 
 interface MissionBriefingProps {
@@ -76,7 +76,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
     return (
       <div className="space-y-2 md:space-y-3">
         <div className="flex items-center justify-between">
-          <button onClick={() => setSelectedMission(null)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-amber-400 transition-colors min-h-[36px] md:min-h-0 px-1" data-testid="back-to-tracks">
+          <button onClick={() => setSelectedMission(null)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-amber-700 transition-colors min-h-[36px] md:min-h-0 px-1" data-testid="back-to-tracks">
             <ChevronRight className="w-3.5 h-3.5 md:w-3 md:h-3 rotate-180" /> Back
           </button>
           <button onClick={onClose} className="p-2 md:p-1.5 rounded text-muted-foreground hover:text-white hover:bg-border/50 transition-colors" data-testid="close-mission-detail">
@@ -272,7 +272,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                         <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                           <span className="text-[11px] md:text-xs font-medium text-white truncate">{track.name}</span>
                           {track.order === 0 && (
-                            <Badge className="text-[7px] md:text-[8px] bg-emerald-900/30 text-emerald-400 border-0">Foundation</Badge>
+                            <Badge className="text-[7px] md:text-[8px] bg-emerald-900/30 text-emerald-800 border-0">Foundation</Badge>
                           )}
                           {!isPrereqMet && (
                             <Badge className="text-[7px] md:text-[8px] bg-border text-muted-foreground border-0">Locked</Badge>

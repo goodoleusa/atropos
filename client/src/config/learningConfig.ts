@@ -244,9 +244,9 @@ export const SKILL_LEVELS = [
 
 export const CATEGORY_COLORS: Record<string, string> = {
   'Civic': 'bg-amber-900/30 text-amber-800 border-amber-800',
-  'Network': 'bg-blue-900/30 text-blue-400 border-blue-800',
+  'Network': 'bg-blue-900/30 text-blue-800 border-blue-800',
   'Intelligence': 'bg-purple-900/30 text-purple-700 border-purple-800',
-  'Defense': 'bg-green-900/30 text-green-400 border-green-800',
+  'Defense': 'bg-green-900/30 text-green-800 border-green-800',
   'Offense': 'bg-red-900/30 text-red-700 border-red-800',
   'Analysis': 'bg-amber-900/30 text-amber-800 border-amber-800',
   'Research': 'bg-teal-900/30 text-teal-800 border-teal-800'
