@@ -104,7 +104,7 @@ export default function BuilderSidebar({
       <Tabs defaultValue="files" className="flex-1 flex flex-col overflow-hidden">
         <TabsList className="bg-card/50 border-b border-border rounded-none h-8 px-1 shrink-0 w-full justify-start flex-wrap">
           {['files', 'arcs', 'clues', 'missions', 'meta', 'import'].map(tab => (
-            <TabsTrigger key={tab} value={tab} className={`text-[9px] uppercase font-bold px-2 h-6 data-[state=active]:text-amber-500 text-muted-foreground ${tab === 'missions' ? 'data-[state=active]:bg-teal-600/20 data-[state=active]:text-teal-400' : 'data-[state=active]:bg-amber-600/20'}`}>
+            <TabsTrigger key={tab} value={tab} className={`text-[9px] uppercase font-bold px-2 h-6 data-[state=active]:text-amber-800 text-muted-foreground ${tab === 'missions' ? 'data-[state=active]:bg-teal-600/20 data-[state=active]:text-teal-800' : 'data-[state=active]:bg-amber-600/20'}`}>
               {tab}
             </TabsTrigger>
           ))}
@@ -259,7 +259,7 @@ export default function BuilderSidebar({
                       data-testid={`delete-clue-${clue.id}`}
                       variant="ghost"
                       size="icon"
-                      className="h-5 w-5 text-muted-foreground hover:text-red-400 opacity-0 group-hover:opacity-100 shrink-0"
+                      className="h-5 w-5 text-muted-foreground hover:text-red-700 opacity-0 group-hover:opacity-100 shrink-0"
                       onClick={() => onDeleteClue(clue.id)}
                     >
                       <Trash2 className="w-3 h-3" />
@@ -303,7 +303,7 @@ export default function BuilderSidebar({
                     key={preset.name}
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-[9px] h-6 text-muted-foreground hover:text-teal-400 hover:bg-teal-900/10 px-2"
+                    className="w-full justify-start text-[9px] h-6 text-muted-foreground hover:text-teal-700 hover:bg-teal-900/10 px-2"
                     onClick={() => {
                       setNewMission({
                         name: preset.name,
@@ -481,7 +481,7 @@ export default function BuilderSidebar({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-5 w-5 text-muted-foreground hover:text-amber-400"
+                          className="h-5 w-5 text-muted-foreground hover:text-amber-700"
                           onClick={() => {
                             setEditingMissionId(mission.id);
                             setNewMission({
@@ -502,7 +502,7 @@ export default function BuilderSidebar({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-5 w-5 text-muted-foreground hover:text-red-400"
+                          className="h-5 w-5 text-muted-foreground hover:text-red-700"
                           onClick={() => onDeleteTerminalMission?.(mission.id)}
                         >
                           <Trash2 className="w-3 h-3" />

@@ -185,7 +185,7 @@ export default function CampaignCanvas({
         )}
         
         <div className="flex items-center gap-2 mb-2">
-          <span className={`text-${node.color}-400`}>{nodeType?.icon}</span>
+          <span className={`text-${node.color}-700`}>{nodeType?.icon}</span>
           {isInlineEditing ? (
             <Input
               autoFocus
@@ -199,7 +199,7 @@ export default function CampaignCanvas({
           ) : (
             <span className="text-xs font-bold text-foreground truncate flex-1">{node.title}</span>
           )}
-          <Badge variant="outline" className={`text-[8px] border-${node.color}-600 text-${node.color}-400`}>
+          <Badge variant="outline" className={`text-[8px] border-${node.color}-600 text-${node.color}-700`}>
             {nodeType?.label}
           </Badge>
         </div>
@@ -375,7 +375,7 @@ export default function CampaignCanvas({
                   <button
                     key={node.id}
                     onClick={() => setSelectedNode(node.id)}
-                    className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-300 hover:bg-purple-800/50 min-h-[24px]"
+                    className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-800 hover:bg-purple-800/50 min-h-[24px]"
                   >
                     {node.title}
                   </button>
@@ -389,7 +389,7 @@ export default function CampaignCanvas({
                   <button
                     key={node.id}
                     onClick={() => setSelectedNode(node.id)}
-                    className="px-1.5 py-0.5 rounded bg-teal-900/30 text-teal-300 hover:bg-teal-800/50 min-h-[24px]"
+                    className="px-1.5 py-0.5 rounded bg-teal-900/30 text-teal-800 hover:bg-teal-800/50 min-h-[24px]"
                   >
                     {node.title}
                   </button>
@@ -403,7 +403,7 @@ export default function CampaignCanvas({
                   <button
                     key={node.id}
                     onClick={() => setSelectedNode(node.id)}
-                    className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-300 hover:bg-amber-800/50 min-h-[24px]"
+                    className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-800 hover:bg-amber-800/50 min-h-[24px]"
                   >
                     {node.title}
                   </button>
@@ -514,7 +514,7 @@ export default function CampaignCanvas({
                             </div>
                             <button
                               onClick={() => setEditingNode(node)}
-                              className="text-amber-800 text-sm font-bold hover:text-amber-300 text-left"
+                              className="text-amber-800 text-sm font-bold hover:text-amber-800 text-left"
                             >
                               {node.title}
                             </button>
@@ -647,7 +647,7 @@ export default function CampaignCanvas({
               <div className="space-y-1">
                 {campaign.nodes.filter(n => n.metadata?.linkedClues?.length).map(node => (
                   <div key={node.id} className="flex items-center justify-between p-2 bg-card/30 rounded border border-border">
-                    <button onClick={() => { setViewMode('canvas'); setSelectedNode(node.id); }} className="text-sm text-foreground hover:text-amber-400">
+                    <button onClick={() => { setViewMode('canvas'); setSelectedNode(node.id); }} className="text-sm text-foreground hover:text-amber-700">
                       {node.title}
                     </button>
                     <div className="flex gap-1">
@@ -667,7 +667,7 @@ export default function CampaignCanvas({
       ) : viewMode === 'overview' ? (
         <ScrollArea className="h-full p-4">
           <div className="space-y-4">
-            <h3 className="text-cyan-400 font-bold flex items-center gap-2">
+            <h3 className="text-cyan-700 font-bold flex items-center gap-2">
               <Eye className="w-4 h-4" /> Campaign Overview
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -723,7 +723,7 @@ export default function CampaignCanvas({
               </div>
             </div>
             <div className="bg-card/30 border border-border rounded-lg">
-              <div className="p-3 pb-2"><p className="text-sm text-cyan-400 font-semibold">Decision Tree Paths</p></div>
+              <div className="p-3 pb-2"><p className="text-sm text-cyan-700 font-semibold">Decision Tree Paths</p></div>
               <div className="px-3 pb-3 space-y-1 max-h-[200px] overflow-y-auto">
                 {campaign.nodes.filter(n => n.type === 'decision').map(node => {
                   const children = campaign.links.filter(l => l.source === node.id);
@@ -829,7 +829,7 @@ export default function CampaignCanvas({
               size="sm"
               variant="ghost"
               onClick={() => setZoom(z => Math.min(2, z + 0.25))}
-              className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+              className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
               data-testid="zoom-in-btn"
             >
               <ZoomIn className="w-5 h-5" />
@@ -839,7 +839,7 @@ export default function CampaignCanvas({
               size="sm"
               variant="ghost"
               onClick={() => setZoom(z => Math.max(0.25, z - 0.25))}
-              className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+              className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
               data-testid="zoom-out-btn"
             >
               <ZoomOut className="w-5 h-5" />
@@ -849,7 +849,7 @@ export default function CampaignCanvas({
                 size="sm"
                 variant="ghost"
                 onClick={() => setZoom(1)}
-                className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-400 text-xs"
+                className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-700 text-xs"
                 data-testid="zoom-reset-btn"
               >
                 Reset
@@ -860,7 +860,7 @@ export default function CampaignCanvas({
                 size="sm"
                 variant="ghost"
                 onClick={autoOrganize}
-                className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-400"
+                className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-700"
                 title="Auto-organize nodes"
                 data-testid="auto-organize-btn"
               >
@@ -878,7 +878,7 @@ export default function CampaignCanvas({
                   size="sm"
                   variant="ghost"
                   onClick={() => moveNodeUp(selectedNode)}
-                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
                   title="Move node up (↑)"
                   data-testid="move-up-btn"
                 >
@@ -890,7 +890,7 @@ export default function CampaignCanvas({
                   size="sm"
                   variant="ghost"
                   onClick={() => outdentNode(selectedNode)}
-                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-400"
+                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-700"
                   title="Outdent (←)"
                   data-testid="outdent-btn"
                 >
@@ -907,7 +907,7 @@ export default function CampaignCanvas({
                   size="sm"
                   variant="ghost"
                   onClick={() => indentNode(selectedNode)}
-                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-400"
+                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-700"
                   title="Indent (→)"
                   data-testid="indent-btn"
                 >
@@ -919,7 +919,7 @@ export default function CampaignCanvas({
                   size="sm"
                   variant="ghost"
                   onClick={() => moveNodeDown(selectedNode)}
-                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+                  className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
                   title="Move node down (↓)"
                   data-testid="move-down-btn"
                 >
@@ -931,7 +931,7 @@ export default function CampaignCanvas({
           )}
 
           {linkingFrom && (
-            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-50 bg-teal-900/90 text-teal-300 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
+            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-50 bg-teal-900/90 text-teal-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
               <Link2 className="w-4 h-4" />
               Click target node or canvas to cancel
             </div>
@@ -1068,7 +1068,7 @@ export default function CampaignCanvas({
                     </Select>
                   </div>
                 ) : (
-                  <Badge className="bg-amber-900 text-amber-300">End of flow - no outgoing links</Badge>
+                  <Badge className="bg-amber-900 text-amber-800">End of flow - no outgoing links</Badge>
                 )}
 
                 <div className="pt-2 border-t border-teal-900">
@@ -1090,7 +1090,7 @@ export default function CampaignCanvas({
                           }}
                           className={`text-[10px] px-2 py-1 rounded border ${
                             index === testHistory.length - 1
-                              ? 'border-teal-600 text-teal-300 bg-teal-900/30'
+                              ? 'border-teal-600 text-teal-800 bg-teal-900/30'
                               : 'border-border text-muted-foreground hover:text-foreground'
                           }`}
                           data-testid={`test-history-${index}`}

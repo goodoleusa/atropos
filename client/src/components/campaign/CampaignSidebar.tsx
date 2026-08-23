@@ -87,7 +87,7 @@ export default function CampaignSidebar({
           </p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-800 hover:text-amber-300 touch-manipulation" data-testid="new-campaign-btn">
+              <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-800 hover:text-amber-600 touch-manipulation" data-testid="new-campaign-btn">
                 <Plus className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -112,7 +112,7 @@ export default function CampaignSidebar({
                   key={c.id}
                   className={`group flex items-center gap-1 p-1.5 rounded cursor-pointer text-xs transition-all ${
                     c.id === campaign.id 
-                      ? 'bg-amber-900/40 text-amber-300' 
+                      ? 'bg-amber-900/40 text-amber-800' 
                       : 'hover:bg-border text-muted-foreground'
                   }`}
                   onClick={() => loadCampaign(c.id)}
@@ -123,14 +123,14 @@ export default function CampaignSidebar({
                   <div className="hidden group-hover:flex gap-0.5">
                     <button 
                       onClick={(e) => { e.stopPropagation(); duplicateCampaign(c.id); }}
-                      className="p-0.5 hover:text-teal-400"
+                      className="p-0.5 hover:text-teal-700"
                       title="Duplicate"
                     >
                       <Copy className="w-3 h-3" />
                     </button>
                     <button 
                       onClick={(e) => { e.stopPropagation(); deleteCampaign(c.id); }}
-                      className="p-0.5 hover:text-red-400"
+                      className="p-0.5 hover:text-red-700"
                       title="Delete"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -173,7 +173,7 @@ export default function CampaignSidebar({
             size="sm"
             variant="ghost"
             onClick={() => setShowFileTree(!showFileTree)}
-            className="p-0 h-5 w-5 text-muted-foreground hover:text-amber-400 sm:hidden"
+            className="p-0 h-5 w-5 text-muted-foreground hover:text-amber-700 sm:hidden"
             title="Toggle File Tree"
           >
             <FolderTree className="w-3 h-3" />
