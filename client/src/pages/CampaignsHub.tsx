@@ -105,7 +105,7 @@ export default function CampaignsHub() {
           nodeCount: 12,
           tags: ['AI', 'prompt-engineering', 'bias', 'hallucination', 'lab'],
           source: 'lab' as const,
-          icon: '🧪',
+          icon: '',
           color: 'violet',
           route: '/decoherence',
         };
