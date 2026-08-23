@@ -412,19 +412,19 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-4 gap-2 text-center">
               <div className="bg-border/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-amber-300">{scanResult.summary.subdomains}</div>
+                <div className="text-xl font-bold text-amber-700">{scanResult.summary.subdomains}</div>
                 <div className="text-xs text-muted-foreground">Subdomains</div>
               </div>
               <div className="bg-border/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-teal-300">{scanResult.summary.openPorts}</div>
+                <div className="text-xl font-bold text-teal-700">{scanResult.summary.openPorts}</div>
                 <div className="text-xs text-muted-foreground">Open Ports</div>
               </div>
               <div className="bg-border/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-blue-300">{scanResult.summary.technologies}</div>
+                <div className="text-xl font-bold text-blue-700">{scanResult.summary.technologies}</div>
                 <div className="text-xs text-muted-foreground">Technologies</div>
               </div>
               <div className="bg-border/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-red-300">{scanResult.summary.vulnerabilities}</div>
+                <div className="text-xl font-bold text-red-700">{scanResult.summary.vulnerabilities}</div>
                 <div className="text-xs text-muted-foreground">Vulns</div>
               </div>
             </div>

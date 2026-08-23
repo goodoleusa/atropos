@@ -131,7 +131,7 @@ export function ActivityStream({ limit = 30 }: { limit?: number }) {
           {runningTasks.map(task => (
             <div key={task.id} className="flex items-center gap-2 px-3 py-2 bg-amber-900/10 border border-amber-900/20 rounded text-xs">
               <Loader2 className="w-3 h-3 animate-spin text-amber-800" />
-              <span className="text-amber-300">{task.taskName}</span>
+              <span className="text-amber-800">{task.taskName}</span>
               <span className="text-amber-800 ml-auto">{task.progress}%</span>
             </div>
           ))}
