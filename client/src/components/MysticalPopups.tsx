@@ -159,15 +159,15 @@ export const MysticalPopups = () => {
           <div className={`
             relative p-4 sm:p-6 rounded-lg backdrop-blur-md border shadow-2xl
             ${activeCard.type === 'tarot' 
-              ? 'bg-gradient-to-br from-[#1a0f05] to-[#0a0500] border-amber-700/50 shadow-amber-900/30' 
-              : 'bg-gradient-to-br from-[#0a0510] to-[#050008] border-purple-900/50 shadow-purple-900/30'
+              ? 'bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--card))] border-amber-700/50 shadow-amber-900/30' 
+              : 'bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--card))] border-purple-900/50 shadow-purple-900/30'
             }
           `}>
             {/* Close button - larger touch target for mobile */}
             <button 
               onClick={(e) => { e.stopPropagation(); dismissCard(); }}
               onPointerDown={(e) => { e.stopPropagation(); dismissCard(); }}
-              className="absolute -top-3 -right-3 sm:top-2 sm:right-2 bg-stone-900 hover:bg-red-900 text-stone-300 hover:text-white transition-colors rounded-full w-[48px] h-[48px] flex items-center justify-center cursor-pointer shadow-xl border-2 border-stone-500 z-[100]"
+              className="absolute -top-3 -right-3 sm:top-2 sm:right-2 bg-card hover:bg-red-900 text-foreground hover:text-white transition-colors rounded-full w-[48px] h-[48px] flex items-center justify-center cursor-pointer shadow-xl border-2 border-muted z-[100]"
               style={{ touchAction: 'manipulation' }}
               data-testid="mystical-close"
               type="button"
@@ -176,7 +176,7 @@ export const MysticalPopups = () => {
             </button>
             
             {/* Tap to dismiss hint */}
-            <div className="absolute -bottom-5 left-0 right-0 text-center text-[10px] text-stone-500 sm:hidden">
+            <div className="absolute -bottom-5 left-0 right-0 text-center text-[10px] text-muted-foreground sm:hidden">
               tap X to close
             </div>
 
@@ -187,15 +187,15 @@ export const MysticalPopups = () => {
                 <div className="text-xs text-amber-700 font-mono mb-1">
                   {(activeCard.data as typeof DEFAULT_TAROT[0]).symbol}
                 </div>
-                <h3 className="text-amber-500 font-orbitron text-lg mb-3">
+                <h3 className="text-amber-800 font-orbitron text-lg mb-3">
                   {activeCard.data.name}
                 </h3>
-                <p className="text-stone-400 text-sm italic mb-4">
+                <p className="text-muted-foreground text-sm italic mb-4">
                   "{activeCard.data.hint}"
                 </p>
                 <button
                   onClick={handleCollect}
-                  className="px-4 py-2 bg-amber-900/50 hover:bg-amber-800/50 text-amber-400 text-xs font-mono rounded border border-amber-700/30 transition-colors"
+                  className="px-4 py-2 bg-amber-900/50 hover:bg-amber-800/50 text-amber-800 text-xs font-mono rounded border border-amber-700/30 transition-colors"
                   data-testid="mystical-collect"
                 >
                   ARCHIVE VISION
@@ -204,21 +204,21 @@ export const MysticalPopups = () => {
             ) : (
               // Zodiac Sign Design
               <div className="text-center">
-                <div className="text-5xl mb-2 text-purple-400">
+                <div className="text-5xl mb-2 text-purple-700">
                   {(activeCard.data as typeof DEFAULT_ZODIAC[0]).symbol}
                 </div>
                 <div className="text-xs text-purple-700 font-mono mb-1">
                   {(activeCard.data as typeof DEFAULT_ZODIAC[0]).element}
                 </div>
-                <h3 className="text-purple-400 font-orbitron text-lg mb-3">
+                <h3 className="text-purple-700 font-orbitron text-lg mb-3">
                   {activeCard.data.name}
                 </h3>
-                <p className="text-stone-400 text-sm italic mb-4">
+                <p className="text-muted-foreground text-sm italic mb-4">
                   "{activeCard.data.hint}"
                 </p>
                 <button
                   onClick={handleCollect}
-                  className="px-4 py-2 bg-purple-900/50 hover:bg-purple-800/50 text-purple-400 text-xs font-mono rounded border border-purple-700/30 transition-colors"
+                  className="px-4 py-2 bg-purple-900/50 hover:bg-purple-800/50 text-purple-700 text-xs font-mono rounded border border-purple-700/30 transition-colors"
                   data-testid="mystical-collect-zodiac"
                 >
                   ARCHIVE OMEN

@@ -31,11 +31,11 @@ export function WikiLinkInput({
 
   const getIconForType = (type: string) => {
     switch (type) {
-      case 'clue': return <FileText className="w-3 h-3 text-amber-500" />;
-      case 'quest': return <Sparkles className="w-3 h-3 text-purple-500" />;
-      case 'location': return <MapPin className="w-3 h-3 text-teal-500" />;
+      case 'clue': return <FileText className="w-3 h-3 text-amber-800" />;
+      case 'quest': return <Sparkles className="w-3 h-3 text-purple-700" />;
+      case 'location': return <MapPin className="w-3 h-3 text-teal-800" />;
       case 'route': return <Link2 className="w-3 h-3 text-blue-500" />;
-      default: return <FileText className="w-3 h-3 text-stone-500" />;
+      default: return <FileText className="w-3 h-3 text-muted-foreground" />;
     }
   };
 
@@ -103,7 +103,7 @@ export function WikiLinkInput({
       if (linkMatch) {
         const [, id, displayName] = linkMatch;
         return (
-          <span key={i} className="bg-amber-900/30 text-amber-400 px-1 rounded border border-amber-700/50">
+          <span key={i} className="bg-amber-900/30 text-amber-800 px-1 rounded border border-amber-700/50">
             {displayName || id}
           </span>
         );
@@ -122,21 +122,21 @@ export function WikiLinkInput({
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full min-h-[120px] bg-black/50 border border-amber-900/30 rounded-lg p-3 text-stone-300 text-sm font-mono focus:border-amber-600/50 focus:outline-none resize-y"
+            className="w-full min-h-[120px] bg-black/50 border border-amber-900/30 rounded-lg p-3 text-foreground text-sm font-mono focus:border-amber-600/50 focus:outline-none resize-y"
             data-testid="wikilink-input"
           />
         </PopoverAnchor>
         <PopoverContent 
-          className="w-64 p-0 bg-[#0a0500] border border-amber-900/50" 
+          className="w-64 p-0 bg-[hsl(var(--card))] border border-amber-900/50" 
           align="start"
           sideOffset={5}
         >
           <Command className="bg-transparent">
             <CommandList>
-              <CommandEmpty className="py-3 text-center text-stone-500 text-xs">
+              <CommandEmpty className="py-3 text-center text-muted-foreground text-xs">
                 No matching links found
               </CommandEmpty>
-              <CommandGroup heading="Available Links" className="text-amber-600 text-[10px]">
+              <CommandGroup heading="Available Links" className="text-amber-800 text-[10px]">
                 {filteredLinks.slice(0, 8).map((link) => (
                   <CommandItem
                     key={link.id}
@@ -147,10 +147,10 @@ export function WikiLinkInput({
                   >
                     {getIconForType(link.type)}
                     <div className="flex-1 min-w-0">
-                      <p className="text-amber-500 text-xs font-bold truncate">{link.name}</p>
-                      <p className="text-stone-600 text-[10px] truncate">{link.id}</p>
+                      <p className="text-amber-800 text-xs font-bold truncate">{link.name}</p>
+                      <p className="text-muted-foreground text-[10px] truncate">{link.id}</p>
                     </div>
-                    <span className="text-[9px] text-stone-700 uppercase">{link.type}</span>
+                    <span className="text-[9px] text-muted-foreground uppercase">{link.type}</span>
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -159,10 +159,10 @@ export function WikiLinkInput({
         </PopoverContent>
       </Popover>
 
-      <div className="mt-2 text-[10px] text-stone-600 flex items-center gap-2">
+      <div className="mt-2 text-[10px] text-muted-foreground flex items-center gap-2">
         <span className="bg-amber-900/20 px-1.5 py-0.5 rounded">[[</span>
         <span>to link</span>
-        <span className="text-stone-700">|</span>
+        <span className="text-muted-foreground">|</span>
         <span className="bg-amber-900/20 px-1.5 py-0.5 rounded">Tab</span>
         <span>to select</span>
       </div>

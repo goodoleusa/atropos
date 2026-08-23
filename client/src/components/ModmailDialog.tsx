@@ -19,10 +19,10 @@ const CATEGORIES = [
 ];
 
 const STATUS_ICONS = {
-  open: <Clock className="w-3 h-3 text-amber-500" />,
+  open: <Clock className="w-3 h-3 text-amber-800" />,
   in_progress: <MessageCircle className="w-3 h-3 text-blue-500" />,
   resolved: <CheckCircle className="w-3 h-3 text-emerald-500" />,
-  closed: <CheckCircle className="w-3 h-3 text-stone-500" />
+  closed: <CheckCircle className="w-3 h-3 text-muted-foreground" />
 };
 
 export function ModmailDialog() {
@@ -77,16 +77,16 @@ export function ModmailDialog() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-amber-400/70 hover:text-amber-300 hover:bg-amber-900/20"
+          className="text-amber-800/70 hover:text-amber-300 hover:bg-amber-900/20"
           data-testid="button-modmail"
         >
           <HelpCircle className="w-4 h-4 mr-1" />
           Help
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 max-w-md">
+      <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-amber-500 font-orbitron flex items-center gap-2">
+          <DialogTitle className="text-amber-800 font-orbitron flex items-center gap-2">
             <HelpCircle className="w-5 h-5" />
             Contact Support
           </DialogTitle>
@@ -116,12 +116,12 @@ export function ModmailDialog() {
         {!showMyTickets ? (
           <div className="space-y-3">
             <div>
-              <Label className="text-xs text-stone-500 uppercase">Category</Label>
+              <Label className="text-xs text-muted-foreground uppercase">Category</Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="bg-black/50 border-stone-700" data-testid="select-category">
+                <SelectTrigger className="bg-black/50 border-border" data-testid="select-category">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0a0500] border-amber-900/50">
+                <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">
                   {CATEGORIES.map(cat => (
                     <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
                   ))}
@@ -130,24 +130,24 @@ export function ModmailDialog() {
             </div>
 
             <div>
-              <Label className="text-xs text-stone-500 uppercase">Subject</Label>
+              <Label className="text-xs text-muted-foreground uppercase">Subject</Label>
               <Input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Brief summary of your question..."
-                className="bg-black/50 border-stone-700"
+                className="bg-black/50 border-border"
                 maxLength={200}
                 data-testid="input-subject"
               />
             </div>
 
             <div>
-              <Label className="text-xs text-stone-500 uppercase">Message</Label>
+              <Label className="text-xs text-muted-foreground uppercase">Message</Label>
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Describe your question or issue in detail..."
-                className="bg-black/50 border-stone-700 min-h-[120px]"
+                className="bg-black/50 border-border min-h-[120px]"
                 maxLength={5000}
                 data-testid="input-message"
               />
@@ -166,27 +166,27 @@ export function ModmailDialog() {
         ) : (
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {myTickets.length === 0 ? (
-              <p className="text-stone-500 text-sm text-center py-4">No tickets yet</p>
+              <p className="text-muted-foreground text-sm text-center py-4">No tickets yet</p>
             ) : (
               myTickets.map((ticket: any) => (
                 <div
                   key={ticket.ticketId}
-                  className="bg-black/30 border border-stone-800 rounded-md p-3"
+                  className="bg-black/30 border border-border rounded-md p-3"
                   data-testid={`ticket-${ticket.ticketId}`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-amber-500 font-mono">{ticket.ticketId}</span>
+                    <span className="text-xs text-amber-800 font-mono">{ticket.ticketId}</span>
                     <div className="flex items-center gap-1 text-xs">
                       {STATUS_ICONS[ticket.status as keyof typeof STATUS_ICONS]}
                       <span className="capitalize">{ticket.status.replace('_', ' ')}</span>
                     </div>
                   </div>
-                  <h4 className="text-sm font-medium text-stone-200">{ticket.subject}</h4>
-                  <p className="text-xs text-stone-500 mt-1 line-clamp-2">{ticket.message}</p>
+                  <h4 className="text-sm font-medium text-foreground">{ticket.subject}</h4>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{ticket.message}</p>
                   {ticket.adminResponse && (
                     <div className="mt-2 p-2 bg-amber-900/20 rounded border-l-2 border-amber-600">
-                      <p className="text-xs text-stone-400">
-                        <span className="text-amber-400">Admin:</span> {ticket.adminResponse}
+                      <p className="text-xs text-muted-foreground">
+                        <span className="text-amber-800">Admin:</span> {ticket.adminResponse}
                       </p>
                     </div>
                   )}

@@ -38,12 +38,12 @@ interface LabRun {
 }
 
 const CATEGORY_META: Record<string, { label: string; color: string; icon: typeof Brain; desc: string }> = {
-  hallucination: { label: 'Hallucination', color: 'text-red-400 bg-red-900/20 border-red-800/30', icon: Skull, desc: 'Model invents facts, citations, or data' },
-  sycophancy: { label: 'Sycophancy', color: 'text-amber-400 bg-amber-900/20 border-amber-800/30', icon: Shield, desc: 'Model agrees with you even when wrong' },
-  leading: { label: 'Leading Questions', color: 'text-purple-400 bg-purple-900/20 border-purple-800/30', icon: Target, desc: 'Prompt presupposes an answer' },
+  hallucination: { label: 'Hallucination', color: 'text-red-700 bg-red-900/20 border-red-800/30', icon: Skull, desc: 'Model invents facts, citations, or data' },
+  sycophancy: { label: 'Sycophancy', color: 'text-amber-800 bg-amber-900/20 border-amber-800/30', icon: Shield, desc: 'Model agrees with you even when wrong' },
+  leading: { label: 'Leading Questions', color: 'text-purple-700 bg-purple-900/20 border-purple-800/30', icon: Target, desc: 'Prompt presupposes an answer' },
   anchoring: { label: 'Anchoring Bias', color: 'text-sky-400 bg-sky-900/20 border-sky-800/30', icon: Brain, desc: 'First information dominates reasoning' },
-  contradiction: { label: 'Contradiction', color: 'text-orange-400 bg-orange-900/20 border-orange-800/30', icon: AlertTriangle, desc: 'Model contradicts itself within a response' },
-  boundary: { label: 'Boundary Testing', color: 'text-teal-400 bg-teal-900/20 border-teal-800/30', icon: Eye, desc: 'Model hallucinates beyond its knowledge cutoff' },
+  contradiction: { label: 'Contradiction', color: 'text-orange-800 bg-orange-900/20 border-orange-800/30', icon: AlertTriangle, desc: 'Model contradicts itself within a response' },
+  boundary: { label: 'Boundary Testing', color: 'text-teal-800 bg-teal-900/20 border-teal-800/30', icon: Eye, desc: 'Model hallucinates beyond its knowledge cutoff' },
 };
 
 const EXERCISES: DecoherenceExercise[] = [
@@ -219,8 +219,8 @@ const EXERCISES: DecoherenceExercise[] = [
 
 const DIFFICULTY_COLOR: Record<string, string> = {
   beginner: 'text-emerald-400',
-  intermediate: 'text-amber-400',
-  advanced: 'text-red-400',
+  intermediate: 'text-amber-800',
+  advanced: 'text-red-700',
 };
 
 const MODELS = [
@@ -346,7 +346,7 @@ export function DecoherenceLab() {
     return (
       <div className="space-y-3 md:space-y-4">
         <div className="flex items-center justify-between">
-          <button onClick={() => { setSelectedExercise(null); setResponse(''); setPrompt(''); setNotes(''); setFailureDetected(false); }} className="flex items-center gap-1 text-xs text-stone-500 hover:text-amber-400 transition-colors min-h-[36px] px-1" data-testid="back-to-exercises">
+          <button onClick={() => { setSelectedExercise(null); setResponse(''); setPrompt(''); setNotes(''); setFailureDetected(false); }} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-amber-400 transition-colors min-h-[36px] px-1" data-testid="back-to-exercises">
             <ChevronRight className="w-3 h-3 rotate-180" /> Back
           </button>
           <Badge className={`text-[9px] border ${catMeta.color}`}>
@@ -355,29 +355,29 @@ export function DecoherenceLab() {
           </Badge>
         </div>
 
-        <Card className="bg-stone-900/50 border-amber-900/30">
+        <Card className="bg-card/50 border-amber-900/30">
           <CardHeader className="p-3 md:p-4 pb-2">
-            <CardTitle className="text-sm md:text-base text-amber-400 flex items-center gap-2">
+            <CardTitle className="text-sm md:text-base text-amber-800 flex items-center gap-2">
               <FlaskConical className="w-4 h-4" />
               {selectedExercise.title}
             </CardTitle>
-            <p className="text-[10px] md:text-xs text-stone-500 mt-1">{selectedExercise.description}</p>
+            <p className="text-[10px] md:text-xs text-muted-foreground mt-1">{selectedExercise.description}</p>
           </CardHeader>
           <CardContent className="p-3 md:p-4 pt-0 space-y-3">
-            <div className="bg-stone-950/50 rounded border border-stone-800 p-2 md:p-2.5">
-              <p className="text-[10px] text-stone-500 uppercase font-bold mb-1 flex items-center gap-1">
+            <div className="bg-card/50 rounded border border-border p-2 md:p-2.5">
+              <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1 flex items-center gap-1">
                 <Target className="w-3 h-3" /> Objective
               </p>
-              <p className="text-[10px] md:text-xs text-stone-300">{selectedExercise.objective}</p>
+              <p className="text-[10px] md:text-xs text-foreground">{selectedExercise.objective}</p>
             </div>
 
             <div>
-              <p className="text-[10px] text-stone-500 uppercase font-bold mb-1 flex items-center gap-1">
+              <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1 flex items-center gap-1">
                 <Eye className="w-3 h-3" /> What to look for
               </p>
               <div className="space-y-0.5">
                 {selectedExercise.whatToLookFor.map((item, i) => (
-                  <div key={i} className="flex items-start gap-1.5 text-[10px] text-stone-400">
+                  <div key={i} className="flex items-start gap-1.5 text-[10px] text-muted-foreground">
                     <AlertTriangle className="w-2.5 h-2.5 text-amber-700 shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </div>
@@ -389,12 +389,12 @@ export function DecoherenceLab() {
 
         <div className="flex flex-col sm:flex-row gap-2">
           <Select value={selectedModel} onValueChange={setSelectedModel}>
-            <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-8 md:h-7 w-full sm:w-auto sm:min-w-[180px]" data-testid="decoherence-model-select">
+            <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-800 text-xs h-8 md:h-7 w-full sm:w-auto sm:min-w-[180px]" data-testid="decoherence-model-select">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#0a0500] border-amber-900/50">
+            <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">
               {MODELS.map(m => (
-                <SelectItem key={m.id} value={m.id} className="text-amber-500 text-xs">
+                <SelectItem key={m.id} value={m.id} className="text-amber-800 text-xs">
                   [{m.short}] {m.name}
                 </SelectItem>
               ))}
@@ -404,7 +404,7 @@ export function DecoherenceLab() {
             variant="outline"
             size="sm"
             onClick={() => setPrompt(selectedExercise.starterPrompt)}
-            className="border-stone-700 text-stone-400 text-xs h-8 md:h-7 min-h-[36px] md:min-h-0"
+            className="border-border text-muted-foreground text-xs h-8 md:h-7 min-h-[36px] md:min-h-0"
             data-testid="load-starter-prompt"
           >
             <Lightbulb className="w-3 h-3 mr-1" /> Load Starter Prompt
@@ -416,7 +416,7 @@ export function DecoherenceLab() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Enter your test prompt..."
-            className="bg-black/50 border-stone-800 text-stone-300 text-xs min-h-[80px] md:min-h-[60px] resize-y"
+            className="bg-black/50 border-border text-foreground text-xs min-h-[80px] md:min-h-[60px] resize-y"
             data-testid="decoherence-prompt-input"
           />
           <div className="flex gap-2 mt-2">
@@ -438,7 +438,7 @@ export function DecoherenceLab() {
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}
-                className="border-stone-700 text-stone-400 text-xs h-9 md:h-8 min-h-[44px] md:min-h-0"
+                className="border-border text-muted-foreground text-xs h-9 md:h-8 min-h-[44px] md:min-h-0"
               >
                 {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
               </Button>
@@ -447,22 +447,22 @@ export function DecoherenceLab() {
         </div>
 
         {response && (
-          <Card className="bg-stone-950/50 border-stone-800">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-3 md:p-4">
-              <p className="text-[10px] text-stone-500 uppercase font-bold mb-2">Model Response</p>
+              <p className="text-[10px] text-muted-foreground uppercase font-bold mb-2">Model Response</p>
               <ScrollArea className="max-h-[200px] md:max-h-[300px]">
-                <pre className="text-[11px] md:text-xs text-stone-300 whitespace-pre-wrap font-mono leading-relaxed">{response}</pre>
+                <pre className="text-[11px] md:text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed">{response}</pre>
               </ScrollArea>
 
-              <div className="mt-3 pt-3 border-t border-stone-800 space-y-2">
-                <p className="text-[10px] text-stone-500 uppercase font-bold flex items-center gap-1">
+              <div className="mt-3 pt-3 border-t border-border space-y-2">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" /> Your Analysis
                 </p>
                 <Textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="What failure did you observe? Be specific..."
-                  className="bg-black/30 border-stone-800 text-stone-300 text-xs min-h-[50px] resize-y"
+                  className="bg-black/30 border-border text-foreground text-xs min-h-[50px] resize-y"
                   data-testid="failure-notes"
                 />
                 <div className="flex gap-2">
@@ -476,7 +476,7 @@ export function DecoherenceLab() {
                   <Button
                     variant="outline"
                     onClick={() => { setPrompt(''); setResponse(''); setNotes(''); }}
-                    className="border-stone-700 text-stone-400 text-xs h-9 md:h-8 min-h-[44px] md:min-h-0"
+                    className="border-border text-muted-foreground text-xs h-9 md:h-8 min-h-[44px] md:min-h-0"
                     data-testid="reset-exercise"
                   >
                     <RotateCcw className="w-3 h-3 mr-1" /> Reset
@@ -489,13 +489,13 @@ export function DecoherenceLab() {
                 )}
               </div>
 
-              <div className="mt-3 pt-3 border-t border-stone-800">
-                <p className="text-[10px] text-stone-500 uppercase font-bold mb-1 flex items-center gap-1">
+              <div className="mt-3 pt-3 border-t border-border">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1 flex items-center gap-1">
                   <Lightbulb className="w-3 h-3" /> Tips
                 </p>
                 <div className="space-y-0.5">
                   {selectedExercise.tips.map((tip, i) => (
-                    <div key={i} className="flex items-start gap-1.5 text-[9px] text-stone-600">
+                    <div key={i} className="flex items-start gap-1.5 text-[9px] text-muted-foreground">
                       <ChevronRight className="w-2.5 h-2.5 text-teal-700 shrink-0 mt-0.5" />
                       <span>{tip}</span>
                     </div>
@@ -508,14 +508,14 @@ export function DecoherenceLab() {
 
         {exerciseRuns.length > 0 && (
           <div>
-            <p className="text-[10px] text-stone-500 uppercase font-bold mb-1.5">Previous Runs ({exerciseRuns.length})</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1.5">Previous Runs ({exerciseRuns.length})</p>
             <div className="space-y-1">
               {exerciseRuns.slice(0, 3).map(run => (
-                <div key={run.id} className={`text-[10px] p-1.5 rounded border ${run.failureDetected ? 'border-red-900/30 bg-red-950/10' : 'border-stone-800 bg-stone-950/30'}`}>
+                <div key={run.id} className={`text-[10px] p-1.5 rounded border ${run.failureDetected ? 'border-red-900/30 bg-red-950/10' : 'border-border bg-card/30'}`}>
                   <div className="flex items-center gap-2">
-                    <span className="text-stone-600">{new Date(run.timestamp).toLocaleTimeString()}</span>
-                    <span className="text-stone-500 truncate flex-1">{run.model.split('/').pop()}</span>
-                    {run.failureDetected && <Badge className="text-[7px] bg-red-900/30 text-red-400 border-0">Failure</Badge>}
+                    <span className="text-muted-foreground">{new Date(run.timestamp).toLocaleTimeString()}</span>
+                    <span className="text-muted-foreground truncate flex-1">{run.model.split('/').pop()}</span>
+                    {run.failureDetected && <Badge className="text-[7px] bg-red-900/30 text-red-700 border-0">Failure</Badge>}
                   </div>
                 </div>
               ))}
@@ -530,15 +530,15 @@ export function DecoherenceLab() {
     <div className="space-y-3 md:space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <h3 className="text-sm md:text-base font-orbitron text-red-400 flex items-center gap-2" data-testid="decoherence-lab-title">
+          <h3 className="text-sm md:text-base font-orbitron text-red-700 flex items-center gap-2" data-testid="decoherence-lab-title">
             <Skull className="w-4 h-4 md:w-5 md:h-5" />
             Decoherence Lab
           </h3>
-          <p className="text-[10px] md:text-xs text-stone-500 mt-0.5">Push models to fail. Learn their limits. Build better prompts.</p>
+          <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">Push models to fail. Learn their limits. Build better prompts.</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-xs text-stone-400">{totalCompleted}/{totalExercises}</p>
-          <Progress value={(totalCompleted / totalExercises) * 100} className="h-1 w-16 md:w-20 bg-stone-800 mt-1" />
+          <p className="text-xs text-muted-foreground">{totalCompleted}/{totalExercises}</p>
+          <Progress value={(totalCompleted / totalExercises) * 100} className="h-1 w-16 md:w-20 bg-border mt-1" />
         </div>
       </div>
 
@@ -551,7 +551,7 @@ export function DecoherenceLab() {
           const catCompleted = exercises.filter(e => completedIds.has(e.id)).length;
 
           return (
-            <div key={category} className={`rounded-lg border transition-colors ${isExpanded ? `${meta.color.split(' ')[2]} bg-stone-900/30` : 'border-stone-800 bg-stone-900/20'}`} data-testid={`category-${category}`}>
+            <div key={category} className={`rounded-lg border transition-colors ${isExpanded ? `${meta.color.split(' ')[2]} bg-card/30` : 'border-border bg-card/20'}`} data-testid={`category-${category}`}>
               <button
                 onClick={() => setExpandedCategory(isExpanded ? null : category)}
                 className="w-full text-left p-2.5 md:p-3 flex items-center gap-2 min-h-[44px]"
@@ -564,9 +564,9 @@ export function DecoherenceLab() {
                       <span className="text-[9px] text-emerald-500">{catCompleted}/{exercises.length}</span>
                     )}
                   </div>
-                  <p className="text-[9px] md:text-[10px] text-stone-600 mt-0.5">{meta.desc}</p>
+                  <p className="text-[9px] md:text-[10px] text-muted-foreground mt-0.5">{meta.desc}</p>
                 </div>
-                {isExpanded ? <ChevronDown className="w-4 h-4 text-stone-600 shrink-0" /> : <ChevronRight className="w-4 h-4 text-stone-600 shrink-0" />}
+                {isExpanded ? <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
               </button>
 
               {isExpanded && (
@@ -580,7 +580,7 @@ export function DecoherenceLab() {
                         className={`w-full text-left p-2 md:p-2.5 rounded border transition-all min-h-[44px] ${
                           isDone
                             ? 'border-emerald-900/30 bg-emerald-950/10 hover:border-emerald-800/40'
-                            : 'border-stone-800 bg-stone-950/50 hover:border-amber-800/40 active:bg-stone-900/40'
+                            : 'border-border bg-card/50 hover:border-amber-800/40 active:bg-card/40'
                         }`}
                         data-testid={`exercise-${exercise.id}`}
                       >
@@ -588,16 +588,16 @@ export function DecoherenceLab() {
                           {isDone ? (
                             <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                           ) : (
-                            <FlaskConical className="w-3.5 h-3.5 text-stone-600 shrink-0" />
+                            <FlaskConical className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className={`text-[11px] font-medium ${isDone ? 'text-stone-500' : 'text-white'}`}>{exercise.title}</span>
+                              <span className={`text-[11px] font-medium ${isDone ? 'text-muted-foreground' : 'text-white'}`}>{exercise.title}</span>
                               <span className={`text-[8px] md:text-[9px] ${DIFFICULTY_COLOR[exercise.difficulty]}`}>{exercise.difficulty}</span>
                             </div>
-                            <p className="text-[9px] md:text-[10px] text-stone-600 mt-0.5 line-clamp-1">{exercise.objective}</p>
+                            <p className="text-[9px] md:text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{exercise.objective}</p>
                           </div>
-                          <ChevronRight className="w-3 h-3 text-stone-700 shrink-0" />
+                          <ChevronRight className="w-3 h-3 text-muted-foreground shrink-0" />
                         </div>
                       </button>
                     );

@@ -56,8 +56,8 @@ export function QuestsSection({ quests }: QuestsSectionProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-orbitron text-amber-600">Quest Chains</h3>
-          <p className="text-xs text-stone-500 mt-1">Guide players with structured quest milestones.</p>
+          <h3 className="text-lg font-orbitron text-amber-800">Quest Chains</h3>
+          <p className="text-xs text-muted-foreground mt-1">Guide players with structured quest milestones.</p>
         </div>
         <Dialog open={questDialogOpen} onOpenChange={setQuestDialogOpen}>
           <DialogTrigger asChild>
@@ -65,43 +65,43 @@ export function QuestsSection({ quests }: QuestsSectionProps) {
               <Plus className="w-4 h-4 mr-2" /> Add Quest
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300">
+          <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground">
             <DialogHeader>
-              <DialogTitle className="text-amber-600 font-orbitron">Create New Quest</DialogTitle>
+              <DialogTitle className="text-amber-800 font-orbitron">Create New Quest</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-amber-600 text-xs">Quest ID</Label>
+                <Label className="text-amber-800 text-xs">Quest ID</Label>
                 <Input
                   placeholder="e.g., quest-01"
                   value={newQuest.id || ""}
                   onChange={(e) => setNewQuest({ ...newQuest, id: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
+                  className="bg-black/50 border-amber-900/30 text-amber-800"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-amber-600 text-xs">Quest Name</Label>
+                <Label className="text-amber-800 text-xs">Quest Name</Label>
                 <Input
                   placeholder="Quest Name"
                   value={newQuest.name || ""}
                   onChange={(e) => setNewQuest({ ...newQuest, name: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
+                  className="bg-black/50 border-amber-900/30 text-amber-800"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-amber-600 text-xs">Description</Label>
+                <Label className="text-amber-800 text-xs">Description</Label>
                 <Textarea
                   placeholder="Detailed quest description"
                   value={newQuest.description || ""}
                   onChange={(e) => setNewQuest({ ...newQuest, description: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
+                  className="bg-black/50 border-amber-900/30 text-amber-800"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-amber-600 text-xs">Required Clues (IDs, comma-separated)</Label>
+                <Label className="text-amber-800 text-xs">Required Clues (IDs, comma-separated)</Label>
                 <Input
                   placeholder="clue-01, clue-02"
                   value={newQuest.requiredClues?.join(", ") || ""}
@@ -114,25 +114,25 @@ export function QuestsSection({ quests }: QuestsSectionProps) {
                         .filter(Boolean)
                     })
                   }
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
+                  className="bg-black/50 border-amber-900/30 text-amber-800"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-amber-600 text-xs">Reward (Optional)</Label>
+                <Label className="text-amber-800 text-xs">Reward (Optional)</Label>
                 <Input
                   placeholder="e.g., Access to Archive"
                   value={newQuest.reward || ""}
                   onChange={(e) => setNewQuest({ ...newQuest, reward: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
+                  className="bg-black/50 border-amber-900/30 text-amber-800"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-amber-600 text-xs">Unlocks (Optional)</Label>
+                <Label className="text-amber-800 text-xs">Unlocks (Optional)</Label>
                 <Input
                   placeholder="e.g., /archive"
                   value={newQuest.unlocks || ""}
                   onChange={(e) => setNewQuest({ ...newQuest, unlocks: e.target.value })}
-                  className="bg-black/50 border-amber-900/30 text-amber-500"
+                  className="bg-black/50 border-amber-900/30 text-amber-800"
                 />
               </div>
               <Button
@@ -149,22 +149,22 @@ export function QuestsSection({ quests }: QuestsSectionProps) {
 
       <div className="grid md:grid-cols-2 gap-4">
         {quests.map((quest) => (
-          <Card key={quest.id} className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors">
+          <Card key={quest.id} className="bg-[hsl(var(--card))] border-amber-900/30 hover:border-amber-600/50 transition-colors">
             <CardHeader className="pb-2">
-              <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                 <Trophy className="w-4 h-4" /> {quest.name}
               </CardTitle>
-              <CardDescription className="text-stone-600 text-xs">{quest.id}</CardDescription>
+              <CardDescription className="text-muted-foreground text-xs">{quest.id}</CardDescription>
             </CardHeader>
             <CardContent className="text-xs">
-              <p className="text-stone-400 mb-2">{quest.description}</p>
+              <p className="text-muted-foreground mb-2">{quest.description}</p>
               <p className="text-amber-700">Requires: {quest.requiredClues?.join(", ") || "None"}</p>
-              {quest.unlocks && <p className="text-amber-600 mt-1">Unlocks: {quest.unlocks}</p>}
+              {quest.unlocks && <p className="text-amber-800 mt-1">Unlocks: {quest.unlocks}</p>}
             </CardContent>
           </Card>
         ))}
         {quests.length === 0 && (
-          <p className="text-stone-600 col-span-2 text-center py-8">No quests defined. Create quest chains to guide players!</p>
+          <p className="text-muted-foreground col-span-2 text-center py-8">No quests defined. Create quest chains to guide players!</p>
         )}
       </div>
     </div>

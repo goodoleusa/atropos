@@ -82,31 +82,31 @@ export default function Archive() {
 
   const getClassColor = (classification: ArchivedFile["classification"]) => {
     switch (classification) {
-      case "PUBLIC": return "text-amber-500 border-amber-900/50";
-      case "CLASSIFIED": return "text-orange-500 border-orange-900/50";
-      case "REDACTED": return "text-red-500 border-red-900/50";
-      case "VOID": return "text-purple-500 border-purple-900/50";
+      case "PUBLIC": return "text-amber-800 border-amber-900/50";
+      case "CLASSIFIED": return "text-orange-800 border-orange-900/50";
+      case "REDACTED": return "text-red-700 border-red-900/50";
+      case "VOID": return "text-purple-700 border-purple-900/50";
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#050200] text-stone-300 font-mono relative overflow-hidden">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground font-mono relative overflow-hidden">
       {/* Background static effect */}
       <div className="fixed inset-0 opacity-5 pointer-events-none">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')] animate-pulse" />
       </div>
 
       {/* Header */}
-      <header className="border-b border-amber-900/30 bg-[#0a0500]/90 backdrop-blur-sm relative z-10">
+      <header className="border-b border-amber-900/30 bg-[hsl(var(--card))]/90 backdrop-blur-sm relative z-10">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ArchiveIcon className="w-6 h-6 text-amber-600" />
-            <h1 className={`font-orbitron text-xl font-bold ${glitchText ? 'text-red-500' : ''}`}>
-              <span className="text-amber-600">DATA</span> ARCHIVE
+            <ArchiveIcon className="w-6 h-6 text-amber-800" />
+            <h1 className={`font-orbitron text-xl font-bold ${glitchText ? 'text-red-700' : ''}`}>
+              <span className="text-amber-800">DATA</span> ARCHIVE
             </h1>
           </div>
           <Link href="/">
-            <Button variant="ghost" className="text-stone-500 hover:text-amber-500" data-testid="link-home">
+            <Button variant="ghost" className="text-muted-foreground hover:text-amber-500" data-testid="link-home">
               <ArrowLeft className="w-4 h-4 mr-2" /> Return
             </Button>
           </Link>
@@ -115,11 +115,11 @@ export default function Archive() {
 
       <div className="container mx-auto px-6 py-8 relative z-10">
         {/* Access Level Indicator */}
-        <div className="mb-8 p-4 bg-[#0a0500] border border-amber-900/30 rounded-lg">
-          <p className="text-amber-600 text-sm">
-            ACCESS LEVEL: <span className="text-amber-500 font-bold">{clueCount} DATA FRAGMENTS</span>
+        <div className="mb-8 p-4 bg-[hsl(var(--card))] border border-amber-900/30 rounded-lg">
+          <p className="text-amber-800 text-sm">
+            ACCESS LEVEL: <span className="text-amber-800 font-bold">{clueCount} DATA FRAGMENTS</span>
           </p>
-          <p className="text-stone-600 text-xs mt-1">
+          <p className="text-muted-foreground text-xs mt-1">
             Collect more fragments to unlock classified documents.
           </p>
         </div>
@@ -135,14 +135,14 @@ export default function Archive() {
                 className={`cursor-pointer ${!accessible ? 'opacity-50' : ''}`}
                 onClick={() => handleViewFile(file)}
               >
-                <Card className={`bg-[#0a0500] ${getClassColor(file.classification)} transition-all hover:shadow-lg`} data-testid={`card-file-${file.id}`}>
+                <Card className={`bg-[hsl(var(--card))] ${getClassColor(file.classification)} transition-all hover:shadow-lg`} data-testid={`card-file-${file.id}`}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+                      <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                         <FileText className="w-4 h-4" /> {file.name}
                       </CardTitle>
                       {accessible ? (
-                        <Unlock className="w-4 h-4 text-amber-500" />
+                        <Unlock className="w-4 h-4 text-amber-800" />
                       ) : (
                         <Lock className="w-4 h-4 text-red-600" />
                       )}
@@ -153,7 +153,7 @@ export default function Archive() {
                       [{file.classification}]
                     </div>
                     {accessible ? (
-                      <p className="text-stone-500 text-xs">Click to access file contents...</p>
+                      <p className="text-muted-foreground text-xs">Click to access file contents...</p>
                     ) : (
                       <p className="text-red-600 text-xs">
                         LOCKED - Requires {file.requiredClues} data fragments
@@ -181,11 +181,11 @@ export default function Archive() {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-[#0a0500] border border-amber-900/50 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-auto"
+              className="bg-[hsl(var(--card))] border border-amber-900/50 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-auto"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-amber-600 font-orbitron flex items-center gap-2">
+                <h3 className="text-amber-800 font-orbitron flex items-center gap-2">
                   <Eye className="w-5 h-5" /> {selectedFile.name}
                 </h3>
                 <span className={`text-xs ${getClassColor(selectedFile.classification).split(' ')[0]}`}>
@@ -193,7 +193,7 @@ export default function Archive() {
                 </span>
               </div>
               
-              <pre className="bg-black/50 p-4 rounded text-sm text-stone-400 whitespace-pre-wrap font-mono border border-amber-900/20">
+              <pre className="bg-black/50 p-4 rounded text-sm text-muted-foreground whitespace-pre-wrap font-mono border border-amber-900/20">
                 {selectedFile.content}
               </pre>
 

@@ -80,10 +80,10 @@ const PRESET_OPTIONS: Record<string, { label: string; description: string }> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  running: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  completed: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
-  error: 'bg-red-500/20 text-red-400 border-red-500/30',
-  cancelled: 'bg-stone-500/20 text-stone-400 border-stone-500/30',
+  running: 'bg-amber-500/20 text-amber-800 border-amber-500/30',
+  completed: 'bg-teal-500/20 text-teal-800 border-teal-500/30',
+  error: 'bg-red-500/20 text-red-700 border-red-500/30',
+  cancelled: 'bg-muted/20 text-muted-foreground border-muted/30',
 };
 
 interface SpiderFootTabProps {
@@ -347,14 +347,14 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
-          <Radar className="w-5 h-5 text-amber-400" />
-          <h3 className="text-lg font-bold text-amber-400">SpiderFoot OSINT</h3>
+          <Radar className="w-5 h-5 text-amber-800" />
+          <h3 className="text-lg font-bold text-amber-800">SpiderFoot OSINT</h3>
           {health?.available ? (
-            <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30" data-testid="status-health-available">
+            <Badge className="bg-teal-500/20 text-teal-800 border-teal-500/30" data-testid="status-health-available">
               <Wifi className="w-3 h-3 mr-1" /> Online{health.version ? ` · ${health.version}` : ''}
             </Badge>
           ) : (
-            <Badge className="bg-red-500/20 text-red-400 border-red-500/30" data-testid="status-health-unavailable">
+            <Badge className="bg-red-500/20 text-red-700 border-red-500/30" data-testid="status-health-unavailable">
               <WifiOff className="w-3 h-3 mr-1" /> Offline
             </Badge>
           )}
@@ -362,41 +362,41 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
         <Button
           size="sm"
           variant={showApiKeys ? 'default' : 'outline'}
-          className={showApiKeys ? 'bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]' : 'border-stone-700 text-amber-400 hover:border-amber-700 min-h-[44px]'}
+          className={showApiKeys ? 'bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]' : 'border-border text-amber-800 hover:border-amber-700 min-h-[44px]'}
           onClick={() => setShowApiKeys(!showApiKeys)}
           data-testid="button-toggle-api-keys"
         >
           <Settings className="w-4 h-4 mr-1" />
-          API Keys {configuredCount > 0 && <Badge variant="outline" className="ml-1 text-[10px] border-teal-500/30 text-teal-400">{configuredCount}</Badge>}
+          API Keys {configuredCount > 0 && <Badge variant="outline" className="ml-1 text-[10px] border-teal-500/30 text-teal-800">{configuredCount}</Badge>}
         </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-4">
-          <Card className="bg-stone-900/50 border-stone-800">
+          <Card className="bg-card/50 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-400 flex items-center gap-2 text-base">
+              <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                 <Target className="w-4 h-4" /> Scan Controls
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="sf-target" className="text-stone-300 text-sm">Target</Label>
+                <Label htmlFor="sf-target" className="text-foreground text-sm">Target</Label>
                 <Input
                   id="sf-target"
                   placeholder="example.com / 192.168.1.1 / email@test.com"
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
-                  className="bg-stone-900/60 border-stone-800 text-stone-200 placeholder:text-stone-600 min-h-[44px]"
+                  className="bg-card/60 border-border text-foreground placeholder:text-muted-foreground min-h-[44px]"
                   data-testid="input-sf-target"
                   onKeyDown={(e) => e.key === 'Enter' && !isScanning && handleStartScan()}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="sf-preset" className="text-stone-300 text-sm">Scan Preset</Label>
+                <Label htmlFor="sf-preset" className="text-foreground text-sm">Scan Preset</Label>
                 <Select value={selectedPreset} onValueChange={setSelectedPreset}>
-                  <SelectTrigger className="bg-stone-900/60 border-stone-800 text-stone-200 min-h-[44px]" data-testid="select-sf-preset">
+                  <SelectTrigger className="bg-card/60 border-border text-foreground min-h-[44px]" data-testid="select-sf-preset">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -404,7 +404,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                       <SelectItem key={key} value={key} data-testid={`preset-option-${key}`}>
                         <div className="flex flex-col items-start">
                           <span className="font-medium">{label}</span>
-                          <span className="text-xs text-stone-500">{description}</span>
+                          <span className="text-xs text-muted-foreground">{description}</span>
                         </div>
                       </SelectItem>
                     ))}
@@ -413,7 +413,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
               </div>
 
               {selectedPreset !== 'custom' && modulesData?.presets?.[selectedPreset] && (
-                <div className="text-xs text-stone-500">
+                <div className="text-xs text-muted-foreground">
                   Modules: {modulesData.presets[selectedPreset].map(m => m.replace('sfp_', '')).join(', ')}
                 </div>
               )}
@@ -432,13 +432,13 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
               </Button>
 
               {isScanning && (
-                <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-500/10 rounded-md p-2 border border-amber-500/20">
+                <div className="flex items-center gap-2 text-xs text-amber-800 bg-amber-500/10 rounded-md p-2 border border-amber-500/20">
                   <Loader2 className="w-3 h-3 animate-spin" />
                   <span>Scanning {scanResult?.target}...</span>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="ml-auto h-6 px-2 text-red-400 hover:text-red-300 min-h-0"
+                    className="ml-auto h-6 px-2 text-red-700 hover:text-red-800 min-h-0"
                     onClick={() => {
                       fetch(`/api/spiderfoot/scan/${activeScanId}/cancel`, { method: 'POST' });
                       setActiveScanId(null);
@@ -452,11 +452,11 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
             </CardContent>
           </Card>
 
-          <Card className="bg-stone-900/50 border-stone-800">
+          <Card className="bg-card/50 border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-stone-300 flex items-center justify-between text-sm">
+              <CardTitle className="text-foreground flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> Scan History</span>
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-stone-500 hover:text-stone-300" onClick={() => refetchHistory()} data-testid="button-refresh-history">
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => refetchHistory()} data-testid="button-refresh-history">
                   <RefreshCw className="w-3.5 h-3.5" />
                 </Button>
               </CardTitle>
@@ -464,19 +464,19 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
             <CardContent>
               <ScrollArea className="h-48">
                 {history.length === 0 ? (
-                  <div className="text-center text-stone-600 text-sm py-6">No scans yet</div>
+                  <div className="text-center text-muted-foreground text-sm py-6">No scans yet</div>
                 ) : (
                   <div className="space-y-2">
                     {history.map((entry) => (
                       <div
                         key={entry.scanId}
-                        className="flex items-center justify-between p-2 rounded-md bg-stone-950/60 border border-stone-800/50 cursor-pointer hover:border-stone-700 transition-colors"
+                        className="flex items-center justify-between p-2 rounded-md bg-card/60 border border-border/50 cursor-pointer hover:border-border transition-colors"
                         onClick={() => { setActiveScanId(entry.scanId); refetchScan(); }}
                         data-testid={`history-entry-${entry.scanId}`}
                       >
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm text-stone-200 truncate">{entry.target}</div>
-                          <div className="text-[10px] text-stone-500">
+                          <div className="text-sm text-foreground truncate">{entry.target}</div>
+                          <div className="text-[10px] text-muted-foreground">
                             {new Date(entry.startedAt).toLocaleString()} · {entry.resultCount} results
                           </div>
                         </div>
@@ -485,7 +485,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 w-6 p-0 text-stone-600 hover:text-amber-400"
+                              className="h-6 w-6 p-0 text-muted-foreground hover:text-amber-700"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.open(`/api/spiderfoot/scan/${entry.scanId}/export?format=json`, '_blank');
@@ -510,10 +510,10 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
         </div>
 
         <div className="lg:col-span-2 space-y-4">
-          <Card className="bg-stone-900/50 border-stone-800">
+          <Card className="bg-card/50 border-border">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-amber-400 flex items-center gap-2 text-base">
+                <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                   <Search className="w-4 h-4" /> Scan Results
                   {scanResult && scanResult.status !== 'running' && (
                     <Badge variant="outline" className={`text-[10px] ${STATUS_COLORS[scanResult.status] || ''}`}>
@@ -522,28 +522,28 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                   )}
                 </CardTitle>
                 {scanResult && (
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-stone-500 hover:text-red-400" onClick={() => setActiveScanId(null)} data-testid="button-clear-results">
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-red-700" onClick={() => setActiveScanId(null)} data-testid="button-clear-results">
                     <X className="w-3.5 h-3.5" />
                   </Button>
                 )}
               </div>
               {scanResult?.target && (
-                <div className="text-xs text-stone-500">Target: {scanResult.target}</div>
+                <div className="text-xs text-muted-foreground">Target: {scanResult.target}</div>
               )}
               {hasResults && (
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-stone-700 text-stone-400 hover:text-amber-400 hover:border-amber-700 gap-1" onClick={exportAsJSON} data-testid="button-export-json">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground hover:text-amber-700 hover:border-amber-700 gap-1" onClick={exportAsJSON} data-testid="button-export-json">
                     <FileJson className="w-3 h-3" /> JSON
                   </Button>
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-stone-700 text-stone-400 hover:text-amber-400 hover:border-amber-700 gap-1" onClick={exportAsCSV} data-testid="button-export-csv">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground hover:text-amber-700 hover:border-amber-700 gap-1" onClick={exportAsCSV} data-testid="button-export-csv">
                     <FileSpreadsheet className="w-3 h-3" /> CSV
                   </Button>
-                  <div className="w-px h-4 bg-stone-700 mx-1" />
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-teal-800 text-teal-400 hover:bg-teal-900/30 hover:border-teal-600 gap-1" onClick={handleSendToAgent} disabled={!onSendToAgent} data-testid="button-send-to-agent">
+                  <div className="w-px h-4 bg-border mx-1" />
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-teal-800 text-teal-800 hover:bg-teal-900/30 hover:border-teal-600 gap-1" onClick={handleSendToAgent} disabled={!onSendToAgent} data-testid="button-send-to-agent">
                     <MessageSquare className="w-3 h-3" /> Agent
                     <ArrowRight className="w-2.5 h-2.5" />
                   </Button>
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-orange-800 text-orange-400 hover:bg-orange-900/30 hover:border-orange-600 gap-1" onClick={handleSendToAtropos} disabled={!onSendToAtropos} data-testid="button-send-to-atropos">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-orange-800 text-orange-800 hover:bg-orange-900/30 hover:border-orange-600 gap-1" onClick={handleSendToAtropos} disabled={!onSendToAtropos} data-testid="button-send-to-atropos">
                     <Crosshair className="w-3 h-3" /> Scanner
                     <ArrowRight className="w-2.5 h-2.5" />
                   </Button>
@@ -552,20 +552,20 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
             </CardHeader>
             <CardContent>
               {!scanResult && !isScanning ? (
-                <div className="text-center py-12 text-stone-600">
+                <div className="text-center py-12 text-muted-foreground">
                   <Globe className="w-10 h-10 mx-auto mb-3 opacity-30" />
                   <div className="text-sm">Run a scan to see results here</div>
                 </div>
               ) : scanResult?.status === 'error' ? (
-                <div className="text-center py-8 text-red-400">
+                <div className="text-center py-8 text-red-700">
                   <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-60" />
                   <div className="text-sm">{scanResult.error || 'Scan failed'}</div>
                 </div>
               ) : isScanning && (!scanResult?.results || scanResult.results.length === 0) ? (
-                <div className="text-center py-12 text-amber-400">
+                <div className="text-center py-12 text-amber-800">
                   <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin opacity-50" />
                   <div className="text-sm">Scanning in progress...</div>
-                  <div className="text-[10px] text-stone-500 mt-1">Results will appear as they arrive</div>
+                  <div className="text-[10px] text-muted-foreground mt-1">Results will appear as they arrive</div>
                 </div>
               ) : (
                 <ScrollArea className="h-[400px]">
@@ -573,24 +573,24 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                     {Object.entries(groupedResults)
                       .sort(([, a], [, b]) => b.length - a.length)
                       .map(([type, results]) => (
-                        <div key={type} className="border border-stone-800/50 rounded-md overflow-hidden">
+                        <div key={type} className="border border-border/50 rounded-md overflow-hidden">
                           <button
-                            className="w-full flex items-center justify-between p-2 hover:bg-stone-800/30 transition-colors text-left min-h-[44px]"
+                            className="w-full flex items-center justify-between p-2 hover:bg-border/30 transition-colors text-left min-h-[44px]"
                             onClick={() => toggleType(type)}
                             data-testid={`toggle-type-${type}`}
                           >
                             <div className="flex items-center gap-2">
-                              {expandedTypes.has(type) ? <ChevronDown className="w-3.5 h-3.5 text-stone-500" /> : <ChevronRight className="w-3.5 h-3.5 text-stone-500" />}
-                              <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/20">{type}</Badge>
-                              <span className="text-xs text-stone-500">{results.length} result{results.length !== 1 ? 's' : ''}</span>
+                              {expandedTypes.has(type) ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+                              <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-800 border-amber-500/20">{type}</Badge>
+                              <span className="text-xs text-muted-foreground">{results.length} result{results.length !== 1 ? 's' : ''}</span>
                             </div>
                           </button>
                           {expandedTypes.has(type) && (
-                            <div className="border-t border-stone-800/50 bg-stone-950/40">
+                            <div className="border-t border-border/50 bg-card/40">
                               {results.map((r, i) => (
-                                <div key={i} className="flex items-start gap-2 px-3 py-1.5 text-sm border-b border-stone-800/20 last:border-0" data-testid={`result-${type}-${i}`}>
-                                  <span className="text-stone-200 break-all flex-1">{r.data}</span>
-                                  <span className="text-stone-600 text-[10px] whitespace-nowrap">{r.module?.replace('sfp_', '')}</span>
+                                <div key={i} className="flex items-start gap-2 px-3 py-1.5 text-sm border-b border-border/20 last:border-0" data-testid={`result-${type}-${i}`}>
+                                  <span className="text-foreground break-all flex-1">{r.data}</span>
+                                  <span className="text-muted-foreground text-[10px] whitespace-nowrap">{r.module?.replace('sfp_', '')}</span>
                                 </div>
                               ))}
                             </div>
@@ -598,7 +598,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                         </div>
                       ))}
                     {Object.keys(groupedResults).length === 0 && scanResult?.status === 'completed' && (
-                      <div className="text-center py-6 text-stone-500 text-sm">No results found</div>
+                      <div className="text-center py-6 text-muted-foreground text-sm">No results found</div>
                     )}
                   </div>
                 </ScrollArea>
@@ -609,16 +609,16 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
       </div>
 
       {showApiKeys && (
-        <Card className="bg-stone-900/50 border-stone-800" data-testid="card-api-keys">
+        <Card className="bg-card/50 border-border" data-testid="card-api-keys">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-amber-400 flex items-center gap-2 text-base">
+              <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                 <Key className="w-4 h-4" /> API Key Management
-                <Badge variant="outline" className="text-[10px] border-teal-500/30 text-teal-400">
+                <Badge variant="outline" className="text-[10px] border-teal-500/30 text-teal-800">
                   {configuredCount}/{apiKeysData?.services?.length || 0} configured
                 </Badge>
               </CardTitle>
-              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-stone-500 hover:text-stone-300" onClick={() => setShowApiKeys(false)}>
+              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => setShowApiKeys(false)}>
                 <X className="w-3.5 h-3.5" />
               </Button>
             </div>
@@ -627,33 +627,33 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
             <ScrollArea className="h-[320px]">
               <div className="space-y-3">
                 {(apiKeysData?.services || []).map((svc) => (
-                  <div key={svc.key} className="p-3 rounded-md bg-stone-950/60 border border-stone-800/50 space-y-2">
+                  <div key={svc.key} className="p-3 rounded-md bg-card/60 border border-border/50 space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-stone-200">{svc.service}</span>
+                        <span className="text-sm font-medium text-foreground">{svc.service}</span>
                         {svc.configured ? (
-                          <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-[10px]">
+                          <Badge className="bg-teal-500/20 text-teal-800 border-teal-500/30 text-[10px]">
                             <CheckCircle2 className="w-2.5 h-2.5 mr-0.5" /> Configured
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500">Not Set</Badge>
+                          <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">Not Set</Badge>
                         )}
                         {svc.free && <Badge variant="outline" className="text-[10px] border-teal-800 text-teal-600">Free</Badge>}
                       </div>
-                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-amber-400 transition-colors">
+                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-amber-700 transition-colors">
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     </div>
-                    <div className="text-xs text-stone-500">{svc.description}</div>
+                    <div className="text-xs text-muted-foreground">{svc.description}</div>
                     {svc.configured && svc.maskedValue && (
-                      <div className="text-xs text-stone-600 font-mono">{svc.maskedValue}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{svc.maskedValue}</div>
                     )}
                     <div className="flex gap-2">
                       <Input
                         placeholder="Paste API key..."
                         value={apiKeyInputs[svc.key] || ''}
                         onChange={(e) => setApiKeyInputs(prev => ({ ...prev, [svc.key]: e.target.value }))}
-                        className="bg-stone-900/60 border-stone-800 text-stone-200 placeholder:text-stone-600 text-xs h-9 flex-1"
+                        className="bg-card/60 border-border text-foreground placeholder:text-muted-foreground text-xs h-9 flex-1"
                         type="password"
                         data-testid={`input-api-key-${svc.key}`}
                       />
@@ -670,7 +670,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-9 w-9 p-0 text-stone-500 hover:text-red-400"
+                          className="h-9 w-9 p-0 text-muted-foreground hover:text-red-700"
                           onClick={() => removeKeyMutation.mutate(svc.key)}
                           data-testid={`button-remove-key-${svc.key}`}
                         >

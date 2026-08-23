@@ -95,25 +95,25 @@ export function PromptStudio({
   const tokenBudgetPercent = Math.min(100, (estimatedTokens.total / currentConfig.maxTokens) * 100);
 
   return (
-    <div className={`bg-[#0a0500] border border-amber-900/30 rounded-lg overflow-hidden ${className}`}>
+    <div className={`bg-[hsl(var(--card))] border border-amber-900/30 rounded-lg overflow-hidden ${className}`}>
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
           <button className="w-full flex items-center justify-between px-3 py-2 hover:bg-amber-900/10 transition-colors">
             <div className="flex items-center gap-2">
-              <Settings2 className="w-4 h-4 text-amber-600" />
-              <span className="text-xs font-bold text-amber-500">PROMPT STUDIO</span>
-              <Badge variant="outline" className="text-[9px] border-amber-800 text-amber-600">
+              <Settings2 className="w-4 h-4 text-amber-800" />
+              <span className="text-xs font-bold text-amber-800">PROMPT STUDIO</span>
+              <Badge variant="outline" className="text-[9px] border-amber-800 text-amber-800">
                 {currentConfig.modules.length} modules
               </Badge>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
-                <Gauge className="w-3 h-3 text-stone-600" />
-                <span className={`text-[10px] ${tokenBudgetPercent > 80 ? 'text-red-500' : 'text-stone-500'}`}>
+                <Gauge className="w-3 h-3 text-muted-foreground" />
+                <span className={`text-[10px] ${tokenBudgetPercent > 80 ? 'text-red-700' : 'text-muted-foreground'}`}>
                   ~{estimatedTokens.total} tokens
                 </span>
               </div>
-              {isExpanded ? <ChevronUp className="w-4 h-4 text-stone-500" /> : <ChevronDown className="w-4 h-4 text-stone-500" />}
+              {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
             </div>
           </button>
         </CollapsibleTrigger>
@@ -130,8 +130,8 @@ export function PromptStudio({
                     onClick={() => toggleModule(mod)}
                     className={`px-2 py-1 rounded text-[10px] transition-all flex items-center gap-1 ${
                       currentConfig.modules.includes(mod)
-                        ? 'bg-amber-700/30 border border-amber-600/50 text-amber-400'
-                        : 'bg-black/30 border border-stone-800 text-stone-500 hover:border-stone-600'
+                        ? 'bg-amber-700/30 border border-amber-600/50 text-amber-800'
+                        : 'bg-black/30 border border-border text-muted-foreground hover:border-muted'
                     }`}
                     title={moduleInfo[mod].desc}
                   >
@@ -146,7 +146,7 @@ export function PromptStudio({
             <div>
               <div className="flex items-center justify-between mb-1">
                 <Label className="text-amber-700 text-[10px] uppercase">Token Budget</Label>
-                <span className="text-[10px] text-stone-500">{estimatedTokens.total} / {currentConfig.maxTokens}</span>
+                <span className="text-[10px] text-muted-foreground">{estimatedTokens.total} / {currentConfig.maxTokens}</span>
               </div>
               <div className="h-2 bg-black/50 rounded-full overflow-hidden">
                 <motion.div 
@@ -156,7 +156,7 @@ export function PromptStudio({
                   transition={{ duration: 0.3 }}
                 />
               </div>
-              <div className="flex justify-between text-[9px] text-stone-600 mt-1">
+              <div className="flex justify-between text-[9px] text-muted-foreground mt-1">
                 <span>System: {estimatedTokens.system}</span>
                 <span>Context: {estimatedTokens.context}</span>
                 <span>Messages: {estimatedTokens.messages}</span>
@@ -188,7 +188,7 @@ export function PromptStudio({
                 size="sm"
                 variant="outline"
                 onClick={copySystemPrompt}
-                className="border-amber-800 text-amber-500 h-8"
+                className="border-amber-800 text-amber-800 h-8"
               >
                 {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
               </Button>
@@ -198,7 +198,7 @@ export function PromptStudio({
             {currentConfig.compressedContext && (
               <div className="bg-teal-950/20 border border-teal-900/30 rounded p-2">
                 <Label className="text-teal-600 text-[9px] uppercase mb-1 block">Compressed Context</Label>
-                <p className="text-[10px] text-teal-400 font-mono line-clamp-3">
+                <p className="text-[10px] text-teal-800 font-mono line-clamp-3">
                   {currentConfig.compressedContext}
                 </p>
               </div>
@@ -211,7 +211,7 @@ export function PromptStudio({
             <div>
               <div className="flex items-center justify-between mb-1">
                 <Label className="text-amber-700 text-[10px] uppercase">Temperature</Label>
-                <span className="text-[10px] text-stone-500">{currentConfig.temperature.toFixed(1)}</span>
+                <span className="text-[10px] text-muted-foreground">{currentConfig.temperature.toFixed(1)}</span>
               </div>
               <Slider
                 value={[currentConfig.temperature]}
@@ -221,7 +221,7 @@ export function PromptStudio({
                 step={0.1}
                 className="py-2"
               />
-              <div className="flex justify-between text-[9px] text-stone-600">
+              <div className="flex justify-between text-[9px] text-muted-foreground">
                 <span>Focused</span>
                 <span>Creative</span>
               </div>
@@ -274,13 +274,13 @@ export function ModelBattleground({
   };
 
   return (
-    <div className="bg-[#0a0500] border border-purple-900/30 rounded-lg p-4 space-y-4">
+    <div className="bg-[hsl(var(--card))] border border-purple-900/30 rounded-lg p-4 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-purple-500" />
-          <h3 className="text-purple-400 font-bold text-sm">Model Battleground</h3>
+          <BarChart3 className="w-5 h-5 text-purple-700" />
+          <h3 className="text-purple-700 font-bold text-sm">Model Battleground</h3>
         </div>
-        <Badge variant="outline" className="border-purple-700 text-purple-400 text-[10px]">
+        <Badge variant="outline" className="border-purple-700 text-purple-700 text-[10px]">
           {selectedModels.length}/4 selected
         </Badge>
       </div>
@@ -293,11 +293,11 @@ export function ModelBattleground({
             className={`p-2 rounded border text-left transition-all ${
               selectedModels.includes(model.id)
                 ? 'border-purple-500 bg-purple-950/30'
-                : 'border-stone-800 hover:border-stone-600'
+                : 'border-border hover:border-muted'
             }`}
           >
-            <p className="text-xs text-stone-300 truncate">{model.name}</p>
-            <p className="text-[9px] text-stone-600 truncate">{model.id}</p>
+            <p className="text-xs text-foreground truncate">{model.name}</p>
+            <p className="text-[9px] text-muted-foreground truncate">{model.id}</p>
           </button>
         ))}
       </div>
@@ -325,15 +325,15 @@ export function ModelBattleground({
             if (!result) return null;
             
             return (
-              <div key={modelId} className="bg-black/30 border border-stone-800 rounded p-3">
+              <div key={modelId} className="bg-black/30 border border-border rounded p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-purple-400 font-bold">{modelId}</span>
-                  <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                  <span className="text-xs text-purple-700 font-bold">{modelId}</span>
+                  <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                     {result.latency}ms
                   </Badge>
                 </div>
                 <ScrollArea className="h-24">
-                  <p className="text-xs text-stone-400 whitespace-pre-wrap">
+                  <p className="text-xs text-muted-foreground whitespace-pre-wrap">
                     {result.response}
                   </p>
                 </ScrollArea>

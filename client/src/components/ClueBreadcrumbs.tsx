@@ -55,7 +55,7 @@ export function ClueBreadcrumbs({
           size="sm"
           onClick={navigateBack}
           disabled={trail.length <= 1}
-          className="h-7 w-7 p-0 text-stone-500 hover:text-amber-500"
+          className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-500"
           data-testid="breadcrumb-back"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -68,8 +68,8 @@ export function ClueBreadcrumbs({
               className="flex items-center gap-1 px-2 py-1 rounded hover:bg-amber-900/20 transition-colors"
               data-testid="breadcrumb-home"
             >
-              <Home className="w-3 h-3 text-amber-600" />
-              <span className="text-xs text-amber-500">Root</span>
+              <Home className="w-3 h-3 text-amber-800" />
+              <span className="text-xs text-amber-800">Root</span>
             </button>
             
             {trail.map((clueId, index) => {
@@ -80,13 +80,13 @@ export function ClueBreadcrumbs({
               
               return (
                 <div key={`${clueId}-${index}`} className="flex items-center">
-                  <ChevronRight className="w-3 h-3 text-stone-700 mx-1" />
+                  <ChevronRight className="w-3 h-3 text-muted-foreground mx-1" />
                   <button
                     onClick={() => navigateToIndex(index)}
                     className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${
                       isLast 
-                        ? 'bg-amber-900/30 text-amber-400 border border-amber-700/50' 
-                        : 'hover:bg-amber-900/20 text-stone-400 hover:text-amber-500'
+                        ? 'bg-amber-900/30 text-amber-800 border border-amber-700/50' 
+                        : 'hover:bg-amber-900/20 text-muted-foreground hover:text-amber-500'
                     }`}
                     data-testid={`breadcrumb-${clueId}`}
                   >
@@ -103,12 +103,12 @@ export function ClueBreadcrumbs({
       {currentClue && (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <p className="text-[10px] text-stone-600 uppercase font-bold flex items-center gap-1">
+            <p className="text-[10px] text-muted-foreground uppercase font-bold flex items-center gap-1">
               <ArrowLeft className="w-3 h-3" /> Backlinks ({currentClue.linkedFrom.length})
             </p>
             <div className="space-y-1">
               {currentClue.linkedFrom.length === 0 ? (
-                <p className="text-xs text-stone-700 italic">No backlinks</p>
+                <p className="text-xs text-muted-foreground italic">No backlinks</p>
               ) : (
                 currentClue.linkedFrom.map(id => {
                   const linked = getClueById(id);
@@ -119,8 +119,8 @@ export function ClueBreadcrumbs({
                       className="w-full flex items-center gap-2 px-2 py-1.5 bg-black/30 rounded border border-amber-900/20 hover:border-amber-600/50 transition-colors text-left"
                       data-testid={`backlink-${id}`}
                     >
-                      <Link2 className="w-3 h-3 text-teal-500" />
-                      <span className="text-xs text-stone-400 truncate">{linked.name}</span>
+                      <Link2 className="w-3 h-3 text-teal-800" />
+                      <span className="text-xs text-muted-foreground truncate">{linked.name}</span>
                     </button>
                   ) : null;
                 })
@@ -129,12 +129,12 @@ export function ClueBreadcrumbs({
           </div>
 
           <div className="space-y-2">
-            <p className="text-[10px] text-stone-600 uppercase font-bold flex items-center gap-1">
+            <p className="text-[10px] text-muted-foreground uppercase font-bold flex items-center gap-1">
               Forward Links ({currentClue.linkedTo.length}) <ArrowRight className="w-3 h-3" />
             </p>
             <div className="space-y-1">
               {currentClue.linkedTo.length === 0 ? (
-                <p className="text-xs text-stone-700 italic">No forward links</p>
+                <p className="text-xs text-muted-foreground italic">No forward links</p>
               ) : (
                 currentClue.linkedTo.map(id => {
                   const linked = getClueById(id);
@@ -145,8 +145,8 @@ export function ClueBreadcrumbs({
                       className="w-full flex items-center gap-2 px-2 py-1.5 bg-black/30 rounded border border-amber-900/20 hover:border-amber-600/50 transition-colors text-left"
                       data-testid={`forwardlink-${id}`}
                     >
-                      <Link2 className="w-3 h-3 text-amber-500" />
-                      <span className="text-xs text-stone-400 truncate">{linked.name}</span>
+                      <Link2 className="w-3 h-3 text-amber-800" />
+                      <span className="text-xs text-muted-foreground truncate">{linked.name}</span>
                     </button>
                   ) : null;
                 })

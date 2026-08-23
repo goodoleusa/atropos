@@ -44,18 +44,18 @@ interface UserJourney {
 }
 
 const PERSONA_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  explorer: { bg: 'bg-teal-900/30', text: 'text-teal-400', label: 'Explorer' },
-  power_user: { bg: 'bg-amber-900/30', text: 'text-amber-400', label: 'Power User' },
+  explorer: { bg: 'bg-teal-900/30', text: 'text-teal-800', label: 'Explorer' },
+  power_user: { bg: 'bg-amber-900/30', text: 'text-amber-800', label: 'Power User' },
   learner: { bg: 'bg-blue-900/30', text: 'text-blue-400', label: 'Learner' },
-  casual: { bg: 'bg-stone-800/50', text: 'text-stone-400', label: 'Casual' },
-  analyst: { bg: 'bg-purple-900/30', text: 'text-purple-400', label: 'Analyst' },
-  builder: { bg: 'bg-orange-900/30', text: 'text-orange-400', label: 'Builder' },
+  casual: { bg: 'bg-border/50', text: 'text-muted-foreground', label: 'Casual' },
+  analyst: { bg: 'bg-purple-900/30', text: 'text-purple-700', label: 'Analyst' },
+  builder: { bg: 'bg-orange-900/30', text: 'text-orange-800', label: 'Builder' },
 };
 
 const ENGAGEMENT_COLORS = {
-  low: 'bg-stone-700/30 text-stone-400 border-stone-600/30',
-  medium: 'bg-amber-900/30 text-amber-400 border-amber-700/30',
-  high: 'bg-teal-900/30 text-teal-400 border-teal-700/30',
+  low: 'bg-border/30 text-muted-foreground border-muted/30',
+  medium: 'bg-amber-900/30 text-amber-800 border-amber-700/30',
+  high: 'bg-teal-900/30 text-teal-800 border-teal-700/30',
 };
 
 function classifyPersona(events: BehaviorEvent[]): string {
@@ -112,18 +112,18 @@ function JourneyTimeline({ journey }: { journey: UserJourney }) {
   const steps = expanded ? journey.events : journey.events.slice(0, 6);
 
   return (
-    <Card className="bg-stone-950/80 border-stone-800" data-testid={`journey-${journey.sessionToken.slice(0, 8)}`}>
+    <Card className="bg-card/80 border-border" data-testid={`journey-${journey.sessionToken.slice(0, 8)}`}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-amber-500" />
-            <code className="text-xs text-stone-400 font-mono">{journey.sessionToken.slice(0, 12)}...</code>
+            <User className="w-4 h-4 text-amber-800" />
+            <code className="text-xs text-muted-foreground font-mono">{journey.sessionToken.slice(0, 12)}...</code>
             <Badge className={persona.bg + ' ' + persona.text + ' text-[9px]'}>{persona.label}</Badge>
             <Badge variant="outline" className={ENGAGEMENT_COLORS[journey.engagement] + ' text-[9px]'}>
               {journey.engagement} engagement
             </Badge>
           </div>
-          <span className="text-[10px] text-stone-500">{journey.totalActions} actions</span>
+          <span className="text-[10px] text-muted-foreground">{journey.totalActions} actions</span>
         </div>
       </CardHeader>
       <CardContent className="pb-3">
@@ -132,26 +132,26 @@ function JourneyTimeline({ journey }: { journey: UserJourney }) {
             <div key={evt.id || i} className="flex items-center gap-1">
               <div className="group relative">
                 <div className={`px-2 py-1 rounded text-[10px] font-mono border cursor-default transition-colors
-                  ${evt.category === 'agent' ? 'bg-teal-900/20 border-teal-800/40 text-teal-400' :
-                    evt.category === 'terminal' ? 'bg-amber-900/20 border-amber-800/40 text-amber-400' :
+                  ${evt.category === 'agent' ? 'bg-teal-900/20 border-teal-800/40 text-teal-800' :
+                    evt.category === 'terminal' ? 'bg-amber-900/20 border-amber-800/40 text-amber-800' :
                     evt.category === 'navigation' ? 'bg-blue-900/20 border-blue-800/40 text-blue-400' :
-                    evt.category === 'quest' ? 'bg-purple-900/20 border-purple-800/40 text-purple-400' :
-                    'bg-stone-900/40 border-stone-800 text-stone-400'}`}
+                    evt.category === 'quest' ? 'bg-purple-900/20 border-purple-800/40 text-purple-700' :
+                    'bg-card/40 border-border text-muted-foreground'}`}
                 >
                   {evt.actionType}
                 </div>
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10 bg-stone-900 border border-stone-700 rounded px-2 py-1 text-[9px] text-stone-300 whitespace-nowrap shadow-lg">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10 bg-card border border-border rounded px-2 py-1 text-[9px] text-foreground whitespace-nowrap shadow-lg">
                   {evt.category} · {new Date(evt.createdAt).toLocaleTimeString()}
                 </div>
               </div>
-              {i < steps.length - 1 && <ArrowRight className="w-3 h-3 text-stone-700 shrink-0" />}
+              {i < steps.length - 1 && <ArrowRight className="w-3 h-3 text-muted-foreground shrink-0" />}
             </div>
           ))}
           {journey.events.length > 6 && (
             <Button
               variant="ghost"
               size="sm"
-              className="text-[10px] text-amber-500 h-6 px-2"
+              className="text-[10px] text-amber-800 h-6 px-2"
               onClick={() => setExpanded(!expanded)}
               data-testid="button-expand-journey"
             >
@@ -159,10 +159,10 @@ function JourneyTimeline({ journey }: { journey: UserJourney }) {
             </Button>
           )}
         </div>
-        <div className="flex gap-4 text-[10px] text-stone-500">
+        <div className="flex gap-4 text-[10px] text-muted-foreground">
           <span><Clock className="w-3 h-3 inline mr-1" />First: {new Date(journey.firstSeen).toLocaleString()}</span>
           <span>Last: {new Date(journey.lastSeen).toLocaleString()}</span>
-          <span className="text-stone-600">Top: {journey.topCategories.join(', ')}</span>
+          <span className="text-muted-foreground">Top: {journey.topCategories.join(', ')}</span>
         </div>
       </CardContent>
     </Card>
@@ -175,12 +175,12 @@ function PersonaBreakdown({ journeys }: { journeys: UserJourney[] }) {
   const total = journeys.length || 1;
 
   return (
-    <Card className="bg-stone-950/80 border-stone-800">
+    <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <Users className="w-4 h-4" /> User Personas
         </CardTitle>
-        <CardDescription className="text-stone-500 text-xs">Auto-classified from behavior patterns</CardDescription>
+        <CardDescription className="text-muted-foreground text-xs">Auto-classified from behavior patterns</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -190,10 +190,10 @@ function PersonaBreakdown({ journeys }: { journeys: UserJourney[] }) {
             return (
               <div key={key} className="flex items-center gap-3" data-testid={`persona-${key}`}>
                 <Badge className={`${style.bg} ${style.text} text-[10px] w-24 justify-center`}>{style.label}</Badge>
-                <div className="flex-1 h-2 bg-stone-800 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
                   <div className="h-full bg-amber-600/80 rounded-full transition-all" style={{ width: `${pct}%` }} />
                 </div>
-                <span className="text-xs text-stone-400 w-12 text-right">{count} ({pct}%)</span>
+                <span className="text-xs text-muted-foreground w-12 text-right">{count} ({pct}%)</span>
               </div>
             );
           })}
@@ -210,16 +210,16 @@ function EngagementFunnel({ journeys }: { journeys: UserJourney[] }) {
   const low = journeys.filter(j => j.engagement === 'low').length;
 
   const stages = [
-    { label: 'All Visitors', count: total, color: 'bg-stone-600' },
-    { label: 'Low Engagement', count: low, color: 'bg-stone-500' },
+    { label: 'All Visitors', count: total, color: 'bg-muted' },
+    { label: 'Low Engagement', count: low, color: 'bg-muted' },
     { label: 'Medium Engagement', count: medium, color: 'bg-amber-600' },
     { label: 'High Engagement', count: high, color: 'bg-teal-600' },
   ];
 
   return (
-    <Card className="bg-stone-950/80 border-stone-800">
+    <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <Target className="w-4 h-4" /> Engagement Funnel
         </CardTitle>
       </CardHeader>
@@ -229,7 +229,7 @@ function EngagementFunnel({ journeys }: { journeys: UserJourney[] }) {
             const w = total > 0 ? Math.max(15, (stage.count / total) * 100) : 0;
             return (
               <div key={stage.label} className="flex items-center gap-3" data-testid={`funnel-stage-${i}`}>
-                <span className="text-[10px] text-stone-400 w-32 text-right uppercase tracking-wider">{stage.label}</span>
+                <span className="text-[10px] text-muted-foreground w-32 text-right uppercase tracking-wider">{stage.label}</span>
                 <div className="flex-1 flex items-center">
                   <div className={`h-6 ${stage.color} rounded flex items-center justify-end pr-2 transition-all`}
                     style={{ width: `${w}%` }}>
@@ -250,12 +250,12 @@ function CategoryHeatmap({ trends }: { trends: BehaviorTrends | null }) {
   const maxCount = Math.max(...trends.categoryDistribution.map(c => c.count), 1);
 
   return (
-    <Card className="bg-stone-950/80 border-stone-800">
+    <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <BarChart3 className="w-4 h-4" /> Behavior Heatmap
         </CardTitle>
-        <CardDescription className="text-stone-500 text-xs">Category distribution across all sessions</CardDescription>
+        <CardDescription className="text-muted-foreground text-xs">Category distribution across all sessions</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -264,12 +264,12 @@ function CategoryHeatmap({ trends }: { trends: BehaviorTrends | null }) {
             return (
               <div
                 key={cat.category}
-                className="rounded-lg p-3 border border-stone-800 text-center transition-colors"
+                className="rounded-lg p-3 border border-border text-center transition-colors"
                 style={{ backgroundColor: `rgba(245, 158, 11, ${intensity * 0.3})` }}
                 data-testid={`heatmap-${cat.category}`}
               >
-                <div className="text-lg font-bold text-amber-400">{cat.count}</div>
-                <div className="text-[10px] text-stone-400 uppercase tracking-wider">{cat.category}</div>
+                <div className="text-lg font-bold text-amber-800">{cat.count}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{cat.category}</div>
               </div>
             );
           })}
@@ -284,9 +284,9 @@ function ActionTimeline({ trends }: { trends: BehaviorTrends | null }) {
   const max = Math.max(...trends.actionTypeDistribution.map(a => a.count), 1);
 
   return (
-    <Card className="bg-stone-950/80 border-stone-800">
+    <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <Activity className="w-4 h-4" /> Action Types
         </CardTitle>
       </CardHeader>
@@ -294,11 +294,11 @@ function ActionTimeline({ trends }: { trends: BehaviorTrends | null }) {
         <div className="space-y-2">
           {trends.actionTypeDistribution.slice(0, 12).map(action => (
             <div key={action.actionType} className="flex items-center gap-3">
-              <span className="text-[10px] text-stone-400 w-28 truncate font-mono">{action.actionType}</span>
-              <div className="flex-1 h-2 bg-stone-800 rounded-full overflow-hidden">
+              <span className="text-[10px] text-muted-foreground w-28 truncate font-mono">{action.actionType}</span>
+              <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
                 <div className="h-full bg-amber-600/70 rounded-full" style={{ width: `${(action.count / max) * 100}%` }} />
               </div>
-              <span className="text-xs text-stone-500 w-8 text-right">{action.count}</span>
+              <span className="text-xs text-muted-foreground w-8 text-right">{action.count}</span>
             </div>
           ))}
         </div>
@@ -390,13 +390,13 @@ function MarketingInsights({ journeys, trends }: { journeys: UserJourney[]; tren
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+        <h3 className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
           <TrendingUp className="w-4 h-4" /> Marketing Insights
         </h3>
         <Button
           size="sm"
           variant="outline"
-          className="border-amber-700 text-amber-400 hover:bg-amber-900/30"
+          className="border-amber-700 text-amber-800 hover:bg-amber-900/30"
           onClick={exportReport}
           data-testid="button-export-insights"
         >
@@ -408,16 +408,16 @@ function MarketingInsights({ journeys, trends }: { journeys: UserJourney[]; tren
         {insights.map(insight => {
           const Icon = insight.icon;
           return (
-            <Card key={insight.title} className="bg-stone-950/80 border-stone-800" data-testid={`insight-${insight.title.toLowerCase().replace(/\s+/g, '-')}`}>
+            <Card key={insight.title} className="bg-card/80 border-border" data-testid={`insight-${insight.title.toLowerCase().replace(/\s+/g, '-')}`}>
               <CardContent className="pt-4 pb-3 px-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Icon className="w-4 h-4 text-amber-500" />
-                  {insight.severity === 'good' && <CheckCircle2 className="w-3 h-3 text-teal-500" />}
-                  {insight.severity === 'warn' && <AlertTriangle className="w-3 h-3 text-red-400" />}
+                  <Icon className="w-4 h-4 text-amber-800" />
+                  {insight.severity === 'good' && <CheckCircle2 className="w-3 h-3 text-teal-800" />}
+                  {insight.severity === 'warn' && <AlertTriangle className="w-3 h-3 text-red-700" />}
                 </div>
-                <div className="text-2xl font-bold text-amber-400">{insight.value}</div>
-                <div className="text-[10px] text-stone-500 uppercase tracking-wider mt-1">{insight.title}</div>
-                <div className="text-[10px] text-stone-600 mt-0.5">{insight.description}</div>
+                <div className="text-2xl font-bold text-amber-800">{insight.value}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{insight.title}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">{insight.description}</div>
               </CardContent>
             </Card>
           );
@@ -459,15 +459,15 @@ export default function BehaviorAnalysis() {
     : journeys.filter(j => j.persona === personaFilter);
 
   return (
-    <div className="fixed inset-0 bg-stone-950 overflow-hidden flex flex-col">
-      <div className="shrink-0 px-4 md:px-8 pt-4 md:pt-6 pb-3 border-b border-stone-800 bg-stone-950/95">
+    <div className="fixed inset-0 bg-card overflow-hidden flex flex-col">
+      <div className="shrink-0 px-4 md:px-8 pt-4 md:pt-6 pb-3 border-b border-border bg-card/95">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg md:text-xl font-orbitron text-amber-400 flex items-center gap-2">
+              <h1 className="text-lg md:text-xl font-orbitron text-amber-800 flex items-center gap-2">
                 <Eye className="w-5 h-5" /> Behavior Analysis
               </h1>
-              <p className="text-[10px] md:text-xs text-stone-500 mt-1 uppercase tracking-widest">Customer Journeys · User Profiles · Marketing Analytics</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-1 uppercase tracking-widest">Customer Journeys · User Profiles · Marketing Analytics</p>
             </div>
             <div className="flex items-center gap-2">
               {[7, 14, 30].map(days => (
@@ -476,7 +476,7 @@ export default function BehaviorAnalysis() {
                   variant={selectedDays === days ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedDays(days)}
-                  className={selectedDays === days ? "bg-amber-800 text-white" : "border-amber-900/50 text-amber-400"}
+                  className={selectedDays === days ? "bg-amber-800 text-white" : "border-amber-900/50 text-amber-800"}
                   data-testid={`button-days-${days}`}
                 >
                   {days}d
@@ -485,7 +485,7 @@ export default function BehaviorAnalysis() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-stone-700 text-stone-400"
+                className="border-border text-muted-foreground"
                 onClick={loadData}
                 disabled={loading}
                 data-testid="button-refresh"
@@ -500,7 +500,7 @@ export default function BehaviorAnalysis() {
       <ScrollArea className="flex-1">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 pb-24 md:pb-8">
           {loading ? (
-            <div className="flex items-center justify-center h-64 text-stone-500">
+            <div className="flex items-center justify-center h-64 text-muted-foreground">
               <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading behavioral data...
             </div>
           ) : (
@@ -520,12 +520,12 @@ export default function BehaviorAnalysis() {
               <TabsContent value="journeys" className="mt-0 space-y-4">
                 <div className="flex items-center gap-3 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-stone-500" />
+                    <Filter className="w-4 h-4 text-muted-foreground" />
                     <Select value={personaFilter} onValueChange={setPersonaFilter}>
-                      <SelectTrigger className="w-40 h-8 bg-stone-900 border-stone-800 text-stone-300 text-xs" data-testid="select-persona-filter">
+                      <SelectTrigger className="w-40 h-8 bg-card border-border text-foreground text-xs" data-testid="select-persona-filter">
                         <SelectValue placeholder="All personas" />
                       </SelectTrigger>
-                      <SelectContent className="bg-stone-900 border-stone-700">
+                      <SelectContent className="bg-card border-border">
                         <SelectItem value="all">All Personas</SelectItem>
                         {Object.entries(PERSONA_STYLES).map(([key, style]) => (
                           <SelectItem key={key} value={key}>{style.label}</SelectItem>
@@ -533,17 +533,17 @@ export default function BehaviorAnalysis() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Badge variant="outline" className="border-stone-700 text-stone-400 text-[10px]">
+                  <Badge variant="outline" className="border-border text-muted-foreground text-[10px]">
                     {filteredJourneys.length} journeys
                   </Badge>
                 </div>
 
                 {filteredJourneys.length === 0 ? (
-                  <Card className="bg-stone-950/80 border-stone-800">
+                  <Card className="bg-card/80 border-border">
                     <CardContent className="py-12 text-center">
-                      <Map className="w-8 h-8 text-stone-700 mx-auto mb-2" />
-                      <p className="text-stone-500 text-sm">No customer journeys recorded yet</p>
-                      <p className="text-stone-600 text-xs mt-1">Journeys are built from user behavior events</p>
+                      <Map className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-muted-foreground text-sm">No customer journeys recorded yet</p>
+                      <p className="text-muted-foreground text-xs mt-1">Journeys are built from user behavior events</p>
                     </CardContent>
                   </Card>
                 ) : (
@@ -552,7 +552,7 @@ export default function BehaviorAnalysis() {
                       <JourneyTimeline key={journey.sessionToken} journey={journey} />
                     ))}
                     {filteredJourneys.length > 20 && (
-                      <p className="text-center text-stone-600 text-xs">Showing top 20 of {filteredJourneys.length} journeys</p>
+                      <p className="text-center text-muted-foreground text-xs">Showing top 20 of {filteredJourneys.length} journeys</p>
                     )}
                   </div>
                 )}
@@ -573,12 +573,12 @@ export default function BehaviorAnalysis() {
                 <MarketingInsights journeys={journeys} trends={trends} />
 
                 {trends?.flaggedSessions?.length ? (
-                  <Card className="bg-stone-950/80 border-red-900/30">
+                  <Card className="bg-card/80 border-red-900/30">
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-red-400 text-sm font-orbitron flex items-center gap-2">
+                      <CardTitle className="text-red-700 text-sm font-orbitron flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4" /> Flagged Sessions
                       </CardTitle>
-                      <CardDescription className="text-stone-500 text-xs">Sessions that triggered behavioral flags</CardDescription>
+                      <CardDescription className="text-muted-foreground text-xs">Sessions that triggered behavioral flags</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
@@ -586,9 +586,9 @@ export default function BehaviorAnalysis() {
                           <div key={i} className="flex items-center justify-between bg-red-950/20 p-2 rounded border border-red-900/40">
                             <div className="flex items-center gap-2">
                               <code className="text-[10px] text-red-300 font-mono">{session.sessionToken?.substring(0, 12)}...</code>
-                              <Badge className="bg-red-900/30 text-red-400 text-[9px]">{session.reason}</Badge>
+                              <Badge className="bg-red-900/30 text-red-700 text-[9px]">{session.reason}</Badge>
                             </div>
-                            <span className="text-[10px] text-stone-500">{new Date(session.timestamp).toLocaleString()}</span>
+                            <span className="text-[10px] text-muted-foreground">{new Date(session.timestamp).toLocaleString()}</span>
                           </div>
                         ))}
                       </div>

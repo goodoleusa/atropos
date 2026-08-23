@@ -276,10 +276,10 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
 
   const diffColor = (d: string) => {
     if (d === "beginner") return "text-emerald-400 border-emerald-800/50";
-    if (d === "intermediate") return "text-amber-400 border-amber-800/50";
-    if (d === "advanced") return "text-orange-400 border-orange-800/50";
-    if (d === "expert") return "text-red-400 border-red-800/50";
-    return "text-stone-400 border-stone-700";
+    if (d === "intermediate") return "text-amber-800 border-amber-800/50";
+    if (d === "advanced") return "text-orange-800 border-orange-800/50";
+    if (d === "expert") return "text-red-700 border-red-800/50";
+    return "text-muted-foreground border-border";
   };
 
   const TreeItem = ({ icon, label, isActive, isSelected, onClick, badge, statusColor }: {
@@ -289,14 +289,14 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
     <button
       onClick={onClick}
       className={`w-full flex items-center gap-2 px-3 py-1.5 rounded text-[11px] transition-all group ${
-        isSelected ? "bg-amber-900/30 text-amber-400 border border-amber-700/50" : "text-stone-400 hover:text-stone-200 hover:bg-stone-900/50 border border-transparent"
+        isSelected ? "bg-amber-900/30 text-amber-800 border border-amber-700/50" : "text-muted-foreground hover:text-foreground hover:bg-card/50 border border-transparent"
       }`}
       data-testid={`tree-item-${label.toLowerCase().replace(/\s+/g, "-")}`}
     >
       <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusColor || (isActive !== false ? "bg-emerald-500" : "bg-red-500")}`} />
       <span className="shrink-0">{icon}</span>
       <span className="truncate text-left flex-1">{label}</span>
-      {badge && <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 border-stone-700 text-stone-500 shrink-0">{badge}</Badge>}
+      {badge && <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 border-border text-muted-foreground shrink-0">{badge}</Badge>}
     </button>
   );
 
@@ -305,49 +305,49 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
   }) => (
     <button
       onClick={() => toggleFolder(folderKey)}
-      className="w-full flex items-center gap-2 px-2 py-2 rounded hover:bg-stone-900/30 transition-all group"
+      className="w-full flex items-center gap-2 px-2 py-2 rounded hover:bg-card/30 transition-all group"
       data-testid={`folder-${folderKey}`}
     >
-      {expandedFolders[folderKey] ? <ChevronDown className="w-3 h-3 text-stone-600" /> : <ChevronRight className="w-3 h-3 text-stone-600" />}
+      {expandedFolders[folderKey] ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
       <span className={`${color}`}>{icon}</span>
       <span className={`text-[10px] font-bold uppercase tracking-wider ${color} flex-1 text-left`}>{label}</span>
-      <span className="text-[9px] text-stone-600 font-mono">{count}</span>
+      <span className="text-[9px] text-muted-foreground font-mono">{count}</span>
     </button>
   );
 
   const renderOverview = () => (
     <div className="space-y-6 p-6">
       <div>
-        <h2 className="text-lg font-mono font-bold text-amber-500 mb-1" data-testid="content-manager-title">Content Manager</h2>
-        <p className="text-xs text-stone-500">All content that appears in the Missions & Labs hub. Select an item from the tree to edit.</p>
+        <h2 className="text-lg font-mono font-bold text-amber-800 mb-1" data-testid="content-manager-title">Content Manager</h2>
+        <p className="text-xs text-muted-foreground">All content that appears in the Missions & Labs hub. Select an item from the tree to edit.</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {[
-          { label: "APT Case Studies", count: aptModules.length, icon: <Skull className="w-4 h-4" />, color: "text-red-400" },
-          { label: "Investigation Modules", count: regularModules.length, icon: <Target className="w-4 h-4" />, color: "text-amber-400" },
-          { label: "Designer Campaigns", count: designerCampaigns.length, icon: <Layers className="w-4 h-4" />, color: "text-purple-400" },
+          { label: "APT Case Studies", count: aptModules.length, icon: <Skull className="w-4 h-4" />, color: "text-red-700" },
+          { label: "Investigation Modules", count: regularModules.length, icon: <Target className="w-4 h-4" />, color: "text-amber-800" },
+          { label: "Designer Campaigns", count: designerCampaigns.length, icon: <Layers className="w-4 h-4" />, color: "text-purple-700" },
           { label: "Curriculum Tracks", count: curriculumTracks.length, icon: <BookOpen className="w-4 h-4" />, color: "text-emerald-400" },
           { label: "Labs", count: 1, icon: <FlaskConical className="w-4 h-4" />, color: "text-violet-400" },
-          { label: "Total", count: modules.length + designerCampaigns.length + curriculumTracks.length + 1, icon: <Globe className="w-4 h-4" />, color: "text-stone-300" },
+          { label: "Total", count: modules.length + designerCampaigns.length + curriculumTracks.length + 1, icon: <Globe className="w-4 h-4" />, color: "text-foreground" },
         ].map(s => (
-          <Card key={s.label} className="bg-stone-950 border-stone-800/50">
+          <Card key={s.label} className="bg-card border-border/50">
             <CardContent className="p-3 text-center">
               <div className={`mx-auto mb-1 ${s.color}`}>{s.icon}</div>
-              <div className="text-lg font-bold text-stone-200">{s.count}</div>
-              <div className="text-[9px] text-stone-600 uppercase">{s.label}</div>
+              <div className="text-lg font-bold text-foreground">{s.count}</div>
+              <div className="text-[9px] text-muted-foreground uppercase">{s.label}</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider">Quick Actions</h3>
+        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Quick Actions</h3>
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" onClick={() => onOpenBuilder()} className="bg-purple-900/30 text-purple-400 hover:bg-purple-900/50 border border-purple-800/50" data-testid="btn-new-campaign">
+          <Button size="sm" onClick={() => onOpenBuilder()} className="bg-purple-900/30 text-purple-700 hover:bg-purple-900/50 border border-purple-800/50" data-testid="btn-new-campaign">
             <Plus className="w-3.5 h-3.5 mr-1.5" /> New Campaign
           </Button>
-          <Button size="sm" variant="outline" onClick={() => seedModulesMut.mutate()} disabled={seedModulesMut.isPending} className="border-amber-800/50 text-amber-400" data-testid="btn-seed-modules">
+          <Button size="sm" variant="outline" onClick={() => seedModulesMut.mutate()} disabled={seedModulesMut.isPending} className="border-amber-800/50 text-amber-800" data-testid="btn-seed-modules">
             <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${seedModulesMut.isPending ? "animate-spin" : ""}`} /> Seed Modules
           </Button>
           <Button size="sm" variant="outline" onClick={() => seedCurriculumMut.mutate()} disabled={seedCurriculumMut.isPending} className="border-emerald-800/50 text-emerald-400" data-testid="btn-seed-curriculum">
@@ -359,14 +359,14 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
         </div>
       </div>
 
-      <Card className="bg-stone-950 border-stone-800/50">
+      <Card className="bg-card border-border/50">
         <CardContent className="p-4 space-y-3">
-          <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider">How It Works</h3>
-          <div className="space-y-2 text-xs text-stone-500">
-            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-400 text-[9px] shrink-0">1</Badge> <span>Select any item in the file tree to view and edit it</span></div>
-            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-400 text-[9px] shrink-0">2</Badge> <span>Toggle active/published status — changes appear in the hub immediately</span></div>
-            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-400 text-[9px] shrink-0">3</Badge> <span>Designer campaigns open in the visual Campaign Builder</span></div>
-            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-400 text-[9px] shrink-0">4</Badge> <span>Use "Generate New Content" to create missions/labs from AI using curriculum context</span></div>
+          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">How It Works</h3>
+          <div className="space-y-2 text-xs text-muted-foreground">
+            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-800 text-[9px] shrink-0">1</Badge> <span>Select any item in the file tree to view and edit it</span></div>
+            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-800 text-[9px] shrink-0">2</Badge> <span>Toggle active/published status — changes appear in the hub immediately</span></div>
+            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-800 text-[9px] shrink-0">3</Badge> <span>Designer campaigns open in the visual Campaign Builder</span></div>
+            <div className="flex items-start gap-2"><Badge className="bg-amber-900/30 text-amber-800 text-[9px] shrink-0">4</Badge> <span>Use "Generate New Content" to create missions/labs from AI using curriculum context</span></div>
           </div>
         </CardContent>
       </Card>
@@ -377,18 +377,18 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
     <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-mono font-bold text-amber-500 flex items-center gap-2">
+          <h2 className="text-base font-mono font-bold text-amber-800 flex items-center gap-2">
             <span className="text-lg">{m.icon}</span> {m.name}
           </h2>
-          <p className="text-[10px] text-stone-600 font-mono mt-0.5">{m.moduleId}</p>
+          <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{m.moduleId}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <Switch checked={m.isActive} onCheckedChange={(v) => saveModuleMut.mutate({ moduleId: m.moduleId, isActive: v })} />
-            <span className="text-[10px] text-stone-500">{m.isActive ? "Active" : "Hidden"}</span>
+            <span className="text-[10px] text-muted-foreground">{m.isActive ? "Active" : "Hidden"}</span>
           </div>
           {!isEditing ? (
-            <Button size="sm" onClick={() => startEditModule(m)} className="bg-amber-900/30 text-amber-400 border border-amber-800/50" data-testid="btn-edit-module">
+            <Button size="sm" onClick={() => startEditModule(m)} className="bg-amber-900/30 text-amber-800 border border-amber-800/50" data-testid="btn-edit-module">
               <Edit3 className="w-3.5 h-3.5 mr-1" /> Edit
             </Button>
           ) : (
@@ -396,7 +396,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
               <Button size="sm" onClick={saveModuleEdit} disabled={saveModuleMut.isPending} className="bg-amber-600 text-black" data-testid="btn-save-module">
                 <Save className="w-3.5 h-3.5 mr-1" /> {saveModuleMut.isPending ? "..." : "Save"}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} className="border-stone-700 text-stone-400" data-testid="btn-cancel-edit">Cancel</Button>
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} className="border-border text-muted-foreground" data-testid="btn-cancel-edit">Cancel</Button>
             </div>
           )}
         </div>
@@ -406,137 +406,137 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline" className={diffColor(m.difficulty)}>{m.difficulty}</Badge>
-            <Badge variant="outline" className="border-stone-700 text-stone-400"><Clock className="w-3 h-3 mr-1" /> {m.estimatedTime}</Badge>
-            {m.tags?.map(t => <Badge key={t} variant="outline" className={t === "APT" ? "border-red-800 text-red-400" : "border-stone-700 text-stone-500"}>{t}</Badge>)}
+            <Badge variant="outline" className="border-border text-muted-foreground"><Clock className="w-3 h-3 mr-1" /> {m.estimatedTime}</Badge>
+            {m.tags?.map(t => <Badge key={t} variant="outline" className={t === "APT" ? "border-red-800 text-red-700" : "border-border text-muted-foreground"}>{t}</Badge>)}
           </div>
-          <p className="text-sm text-stone-400">{m.description}</p>
+          <p className="text-sm text-muted-foreground">{m.description}</p>
           {m.objectives?.length > 0 && (
             <div>
-              <Label className="text-amber-600 text-xs">Objectives ({m.objectives.length})</Label>
-              <ul className="list-disc list-inside text-stone-500 text-xs mt-1 space-y-0.5">
+              <Label className="text-amber-800 text-xs">Objectives ({m.objectives.length})</Label>
+              <ul className="list-disc list-inside text-muted-foreground text-xs mt-1 space-y-0.5">
                 {m.objectives.map((o, i) => <li key={i}>{o}</li>)}
               </ul>
             </div>
           )}
           {m.tools?.length > 0 && (
             <div>
-              <Label className="text-amber-600 text-xs">Tools</Label>
-              <div className="flex flex-wrap gap-1 mt-1">{m.tools.map(t => <Badge key={t} className="bg-teal-900/30 text-teal-400 text-[10px]">{t}</Badge>)}</div>
+              <Label className="text-amber-800 text-xs">Tools</Label>
+              <div className="flex flex-wrap gap-1 mt-1">{m.tools.map(t => <Badge key={t} className="bg-teal-900/30 text-teal-800 text-[10px]">{t}</Badge>)}</div>
             </div>
           )}
           {m.starterPrompt && (
             <div>
-              <Label className="text-amber-600 text-xs">Starter Prompt</Label>
-              <pre className="text-[10px] text-stone-500 font-mono bg-black/30 rounded p-2 mt-1 max-h-32 overflow-auto whitespace-pre-wrap">{m.starterPrompt}</pre>
+              <Label className="text-amber-800 text-xs">Starter Prompt</Label>
+              <pre className="text-[10px] text-muted-foreground font-mono bg-black/30 rounded p-2 mt-1 max-h-32 overflow-auto whitespace-pre-wrap">{m.starterPrompt}</pre>
             </div>
           )}
           {m.steps?.length > 0 && (
             <div>
-              <Label className="text-amber-600 text-xs">Steps ({m.steps.length})</Label>
+              <Label className="text-amber-800 text-xs">Steps ({m.steps.length})</Label>
               <div className="space-y-1 mt-1">
                 {m.steps.map((s, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs text-stone-500">
-                    <Badge className="bg-stone-800 text-stone-400 text-[9px] w-5 h-5 flex items-center justify-center p-0">{i+1}</Badge>
-                    <span className="font-medium text-stone-300">{s.title}</span>
-                    <span className="text-stone-600">— {s.description?.slice(0, 60)}</span>
+                  <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Badge className="bg-border text-muted-foreground text-[9px] w-5 h-5 flex items-center justify-center p-0">{i+1}</Badge>
+                    <span className="font-medium text-foreground">{s.title}</span>
+                    <span className="text-muted-foreground">— {s.description?.slice(0, 60)}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
-          <Button size="sm" variant="outline" onClick={() => { if (confirm(`Delete "${m.name}"?`)) deleteModuleMut.mutate(m.moduleId); }} className="border-red-900/50 text-red-500 hover:bg-red-950/30" data-testid="btn-delete-module">
+          <Button size="sm" variant="outline" onClick={() => { if (confirm(`Delete "${m.name}"?`)) deleteModuleMut.mutate(m.moduleId); }} className="border-red-900/50 text-red-700 hover:bg-red-950/30" data-testid="btn-delete-module">
             <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete Module
           </Button>
         </div>
       ) : (
         <Tabs defaultValue="basic" className="w-full">
           <TabsList className="bg-black/50 border-amber-900/30 mb-3">
-            <TabsTrigger value="basic" className="data-[state=active]:bg-amber-900/30 text-amber-500 text-xs">Basic</TabsTrigger>
-            <TabsTrigger value="content" className="data-[state=active]:bg-amber-900/30 text-amber-500 text-xs">Content</TabsTrigger>
-            <TabsTrigger value="workflow" className="data-[state=active]:bg-amber-900/30 text-amber-500 text-xs">Workflow</TabsTrigger>
-            <TabsTrigger value="advanced" className="data-[state=active]:bg-amber-900/30 text-amber-500 text-xs">Advanced</TabsTrigger>
+            <TabsTrigger value="basic" className="data-[state=active]:bg-amber-900/30 text-amber-800 text-xs">Basic</TabsTrigger>
+            <TabsTrigger value="content" className="data-[state=active]:bg-amber-900/30 text-amber-800 text-xs">Content</TabsTrigger>
+            <TabsTrigger value="workflow" className="data-[state=active]:bg-amber-900/30 text-amber-800 text-xs">Workflow</TabsTrigger>
+            <TabsTrigger value="advanced" className="data-[state=active]:bg-amber-900/30 text-amber-800 text-xs">Advanced</TabsTrigger>
           </TabsList>
 
           <TabsContent value="basic" className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-amber-600 text-[10px]">Name</Label>
-                <Input value={editForm.name || ""} onChange={e => setEditForm({ ...editForm, name: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs" />
+                <Label className="text-amber-800 text-[10px]">Name</Label>
+                <Input value={editForm.name || ""} onChange={e => setEditForm({ ...editForm, name: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs" />
               </div>
               <div className="space-y-1">
-                <Label className="text-amber-600 text-[10px]">Icon (emoji)</Label>
-                <Input value={editForm.icon || ""} onChange={e => setEditForm({ ...editForm, icon: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs" />
+                <Label className="text-amber-800 text-[10px]">Icon (emoji)</Label>
+                <Input value={editForm.icon || ""} onChange={e => setEditForm({ ...editForm, icon: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs" />
               </div>
             </div>
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Description</Label>
-              <Textarea value={editForm.description || ""} onChange={e => setEditForm({ ...editForm, description: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 text-xs min-h-[60px]" />
+              <Label className="text-amber-800 text-[10px]">Description</Label>
+              <Textarea value={editForm.description || ""} onChange={e => setEditForm({ ...editForm, description: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground text-xs min-h-[60px]" />
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label className="text-amber-600 text-[10px]">Difficulty</Label>
+                <Label className="text-amber-800 text-[10px]">Difficulty</Label>
                 <Select value={editForm.difficulty} onValueChange={v => setEditForm({ ...editForm, difficulty: v })}>
-                  <SelectTrigger className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent className="bg-[#0a0500] border-amber-900/50">{DIFFICULTY_OPTIONS.map(d => <SelectItem key={d} value={d} className="text-stone-300 text-xs">{d}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">{DIFFICULTY_OPTIONS.map(d => <SelectItem key={d} value={d} className="text-foreground text-xs">{d}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label className="text-amber-600 text-[10px]">Color</Label>
+                <Label className="text-amber-800 text-[10px]">Color</Label>
                 <Select value={editForm.color} onValueChange={v => setEditForm({ ...editForm, color: v })}>
-                  <SelectTrigger className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent className="bg-[#0a0500] border-amber-900/50">{COLOR_OPTIONS.map(c => <SelectItem key={c} value={c} className="text-stone-300 text-xs">{c}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">{COLOR_OPTIONS.map(c => <SelectItem key={c} value={c} className="text-foreground text-xs">{c}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label className="text-amber-600 text-[10px]">Est. Time</Label>
-                <Input value={editForm.estimatedTime || ""} onChange={e => setEditForm({ ...editForm, estimatedTime: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs" />
+                <Label className="text-amber-800 text-[10px]">Est. Time</Label>
+                <Input value={editForm.estimatedTime || ""} onChange={e => setEditForm({ ...editForm, estimatedTime: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs" />
               </div>
             </div>
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Tags (comma-separated)</Label>
-              <Input value={editForm.tags || ""} onChange={e => setEditForm({ ...editForm, tags: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs" />
+              <Label className="text-amber-800 text-[10px]">Tags (comma-separated)</Label>
+              <Input value={editForm.tags || ""} onChange={e => setEditForm({ ...editForm, tags: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs" />
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={editForm.isActive !== false} onCheckedChange={v => setEditForm({ ...editForm, isActive: v })} />
-              <Label className="text-stone-500 text-[10px]">Active (visible in hub)</Label>
+              <Label className="text-muted-foreground text-[10px]">Active (visible in hub)</Label>
             </div>
           </TabsContent>
 
           <TabsContent value="content" className="space-y-3">
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Starter Prompt</Label>
-              <Textarea value={editForm.starterPrompt || ""} onChange={e => setEditForm({ ...editForm, starterPrompt: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 text-xs font-mono min-h-[100px]" />
+              <Label className="text-amber-800 text-[10px]">Starter Prompt</Label>
+              <Textarea value={editForm.starterPrompt || ""} onChange={e => setEditForm({ ...editForm, starterPrompt: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground text-xs font-mono min-h-[100px]" />
             </div>
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Objectives (one per line)</Label>
-              <Textarea value={editForm.objectives || ""} onChange={e => setEditForm({ ...editForm, objectives: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 text-xs min-h-[80px]" />
+              <Label className="text-amber-800 text-[10px]">Objectives (one per line)</Label>
+              <Textarea value={editForm.objectives || ""} onChange={e => setEditForm({ ...editForm, objectives: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground text-xs min-h-[80px]" />
             </div>
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Tools (comma-separated)</Label>
-              <Input value={editForm.tools || ""} onChange={e => setEditForm({ ...editForm, tools: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs" />
+              <Label className="text-amber-800 text-[10px]">Tools (comma-separated)</Label>
+              <Input value={editForm.tools || ""} onChange={e => setEditForm({ ...editForm, tools: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs" />
             </div>
           </TabsContent>
 
           <TabsContent value="workflow" className="space-y-3">
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Target Fields (comma-separated)</Label>
-              <Input value={editForm.targetFields || ""} onChange={e => setEditForm({ ...editForm, targetFields: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 h-8 text-xs" />
+              <Label className="text-amber-800 text-[10px]">Target Fields (comma-separated)</Label>
+              <Input value={editForm.targetFields || ""} onChange={e => setEditForm({ ...editForm, targetFields: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground h-8 text-xs" />
             </div>
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Dummy Targets (JSON)</Label>
-              <Textarea value={editForm.dummyTargets || "{}"} onChange={e => setEditForm({ ...editForm, dummyTargets: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 text-xs font-mono min-h-[60px]" />
+              <Label className="text-amber-800 text-[10px]">Dummy Targets (JSON)</Label>
+              <Textarea value={editForm.dummyTargets || "{}"} onChange={e => setEditForm({ ...editForm, dummyTargets: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground text-xs font-mono min-h-[60px]" />
             </div>
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Steps (JSON array)</Label>
-              <Textarea value={editForm.steps || "[]"} onChange={e => setEditForm({ ...editForm, steps: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 text-xs font-mono min-h-[100px]" />
+              <Label className="text-amber-800 text-[10px]">Steps (JSON array)</Label>
+              <Textarea value={editForm.steps || "[]"} onChange={e => setEditForm({ ...editForm, steps: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground text-xs font-mono min-h-[100px]" />
             </div>
           </TabsContent>
 
           <TabsContent value="advanced" className="space-y-3">
             <div className="space-y-1">
-              <Label className="text-amber-600 text-[10px]">Adaptive Prompts (JSON array)</Label>
-              <Textarea value={editForm.adaptivePrompts || "[]"} onChange={e => setEditForm({ ...editForm, adaptivePrompts: e.target.value })} className="bg-black/50 border-amber-900/30 text-stone-300 text-xs font-mono min-h-[120px]" />
-              <p className="text-stone-600 text-[9px]">AI responses triggered by user discoveries during investigation</p>
+              <Label className="text-amber-800 text-[10px]">Adaptive Prompts (JSON array)</Label>
+              <Textarea value={editForm.adaptivePrompts || "[]"} onChange={e => setEditForm({ ...editForm, adaptivePrompts: e.target.value })} className="bg-black/50 border-amber-900/30 text-foreground text-xs font-mono min-h-[120px]" />
+              <p className="text-muted-foreground text-[9px]">AI responses triggered by user discoveries during investigation</p>
             </div>
           </TabsContent>
         </Tabs>
@@ -548,12 +548,12 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
     <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-mono font-bold text-purple-400">{c.name}</h2>
-          <p className="text-[10px] text-stone-600 font-mono mt-0.5">{c.campaignId}</p>
+          <h2 className="text-base font-mono font-bold text-purple-700">{c.name}</h2>
+          <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{c.campaignId}</p>
         </div>
         <div className="flex items-center gap-2">
           {!isEditing && (
-            <Button size="sm" variant="outline" className="border-stone-700 text-stone-400" onClick={() => {
+            <Button size="sm" variant="outline" className="border-border text-muted-foreground" onClick={() => {
               setDesignerEditForm({ name: c.name, description: c.description || "", difficulty: c.difficulty || "intermediate", category: c.category || "", tags: (c.tags || []).join(", ") });
               setIsEditing(true);
             }} data-testid="btn-edit-designer">
@@ -561,7 +561,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
             </Button>
           )}
           <Button size="sm" onClick={() => publishMut.mutate({ id: c.campaignId, action: c.isPublished ? "unpublish" : "publish" })}
-            className={c.isPublished ? "bg-emerald-900/30 text-emerald-400 border border-emerald-800/50" : "bg-stone-900/50 text-stone-400 border border-stone-700"}
+            className={c.isPublished ? "bg-emerald-900/30 text-emerald-400 border border-emerald-800/50" : "bg-card/50 text-muted-foreground border border-border"}
             data-testid="btn-toggle-publish"
           >
             {c.isPublished ? <><Eye className="w-3.5 h-3.5 mr-1" /> Published</> : <><EyeOff className="w-3.5 h-3.5 mr-1" /> Draft</>}
@@ -570,19 +570,19 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
       </div>
 
       {isEditing ? (
-        <div className="space-y-3 p-4 bg-stone-950 border border-purple-900/30 rounded-lg">
+        <div className="space-y-3 p-4 bg-card border border-purple-900/30 rounded-lg">
           <div className="space-y-1">
-            <Label className="text-purple-400 text-[10px]">Name</Label>
-            <Input value={designerEditForm.name || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, name: e.target.value })} className="bg-black/50 border-purple-900/30 text-stone-300 h-8 text-xs" />
+            <Label className="text-purple-700 text-[10px]">Name</Label>
+            <Input value={designerEditForm.name || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, name: e.target.value })} className="bg-black/50 border-purple-900/30 text-foreground h-8 text-xs" />
           </div>
           <div className="space-y-1">
-            <Label className="text-purple-400 text-[10px]">Description</Label>
-            <Textarea value={designerEditForm.description || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, description: e.target.value })} className="bg-black/50 border-purple-900/30 text-stone-300 text-xs min-h-[60px]" />
+            <Label className="text-purple-700 text-[10px]">Description</Label>
+            <Textarea value={designerEditForm.description || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, description: e.target.value })} className="bg-black/50 border-purple-900/30 text-foreground text-xs min-h-[60px]" />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <Label className="text-purple-400 text-[10px]">Difficulty</Label>
-              <select value={designerEditForm.difficulty || "intermediate"} onChange={e => setDesignerEditForm({ ...designerEditForm, difficulty: e.target.value })} className="w-full h-8 text-xs rounded-md border border-purple-900/30 bg-black/50 text-stone-300 px-2">
+              <Label className="text-purple-700 text-[10px]">Difficulty</Label>
+              <select value={designerEditForm.difficulty || "intermediate"} onChange={e => setDesignerEditForm({ ...designerEditForm, difficulty: e.target.value })} className="w-full h-8 text-xs rounded-md border border-purple-900/30 bg-black/50 text-foreground px-2">
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
@@ -590,58 +590,58 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
               </select>
             </div>
             <div className="space-y-1">
-              <Label className="text-purple-400 text-[10px]">Category</Label>
-              <Input value={designerEditForm.category || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, category: e.target.value })} className="bg-black/50 border-purple-900/30 text-stone-300 h-8 text-xs" />
+              <Label className="text-purple-700 text-[10px]">Category</Label>
+              <Input value={designerEditForm.category || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, category: e.target.value })} className="bg-black/50 border-purple-900/30 text-foreground h-8 text-xs" />
             </div>
           </div>
           <div className="space-y-1">
-            <Label className="text-purple-400 text-[10px]">Tags (comma-separated)</Label>
-            <Input value={designerEditForm.tags || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, tags: e.target.value })} className="bg-black/50 border-purple-900/30 text-stone-300 h-8 text-xs" />
+            <Label className="text-purple-700 text-[10px]">Tags (comma-separated)</Label>
+            <Input value={designerEditForm.tags || ""} onChange={e => setDesignerEditForm({ ...designerEditForm, tags: e.target.value })} className="bg-black/50 border-purple-900/30 text-foreground h-8 text-xs" />
           </div>
           <div className="flex gap-2">
-            <Button size="sm" className="bg-purple-900/30 text-purple-400 border border-purple-800/50" onClick={() => saveDesignerMut.mutate({ id: c.campaignId, name: designerEditForm.name, description: designerEditForm.description, difficulty: designerEditForm.difficulty, category: designerEditForm.category, tags: designerEditForm.tags.split(",").map((t: string) => t.trim()).filter(Boolean) })} data-testid="btn-save-designer">
+            <Button size="sm" className="bg-purple-900/30 text-purple-700 border border-purple-800/50" onClick={() => saveDesignerMut.mutate({ id: c.campaignId, name: designerEditForm.name, description: designerEditForm.description, difficulty: designerEditForm.difficulty, category: designerEditForm.category, tags: designerEditForm.tags.split(",").map((t: string) => t.trim()).filter(Boolean) })} data-testid="btn-save-designer">
               <Save className="w-3.5 h-3.5 mr-1" /> Save
             </Button>
-            <Button size="sm" variant="outline" className="border-stone-700 text-stone-400" onClick={() => setIsEditing(false)} data-testid="btn-cancel-designer">Cancel</Button>
+            <Button size="sm" variant="outline" className="border-border text-muted-foreground" onClick={() => setIsEditing(false)} data-testid="btn-cancel-designer">Cancel</Button>
           </div>
         </div>
       ) : (
         <>
-          <p className="text-sm text-stone-400">{c.description}</p>
+          <p className="text-sm text-muted-foreground">{c.description}</p>
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline" className={diffColor(c.difficulty || "intermediate")}>{c.difficulty || "intermediate"}</Badge>
-            <Badge variant="outline" className="border-stone-700 text-stone-400">{c.nodes?.length || 0} nodes</Badge>
-            <Badge variant="outline" className="border-stone-700 text-stone-400">{c.links?.length || 0} links</Badge>
-            <Badge variant="outline" className="border-stone-700 text-stone-400">{c.hiddenClues?.length || 0} clues</Badge>
-            {c.tags?.map(t => <Badge key={t} variant="outline" className="border-stone-700 text-stone-500">{t}</Badge>)}
+            <Badge variant="outline" className="border-border text-muted-foreground">{c.nodes?.length || 0} nodes</Badge>
+            <Badge variant="outline" className="border-border text-muted-foreground">{c.links?.length || 0} links</Badge>
+            <Badge variant="outline" className="border-border text-muted-foreground">{c.hiddenClues?.length || 0} clues</Badge>
+            {c.tags?.map(t => <Badge key={t} variant="outline" className="border-border text-muted-foreground">{t}</Badge>)}
           </div>
         </>
       )}
 
-      <Button onClick={() => onOpenBuilder(c.campaignId)} className="w-full bg-purple-900/30 text-purple-400 hover:bg-purple-900/50 border border-purple-800/50 py-6" data-testid="btn-open-builder">
+      <Button onClick={() => onOpenBuilder(c.campaignId)} className="w-full bg-purple-900/30 text-purple-700 hover:bg-purple-900/50 border border-purple-800/50 py-6" data-testid="btn-open-builder">
         <Layers className="w-5 h-5 mr-2" /> Open in Campaign Builder
       </Button>
 
       <div className="grid grid-cols-3 gap-3">
-        <Card className="bg-stone-950 border-stone-800/50">
+        <Card className="bg-card border-border/50">
           <CardContent className="p-3 text-center">
-            <FileText className="w-4 h-4 mx-auto mb-1 text-purple-400" />
-            <div className="text-sm font-bold text-stone-200">{c.nodes?.length || 0}</div>
-            <div className="text-[9px] text-stone-600">Nodes</div>
+            <FileText className="w-4 h-4 mx-auto mb-1 text-purple-700" />
+            <div className="text-sm font-bold text-foreground">{c.nodes?.length || 0}</div>
+            <div className="text-[9px] text-muted-foreground">Nodes</div>
           </CardContent>
         </Card>
-        <Card className="bg-stone-950 border-stone-800/50">
+        <Card className="bg-card border-border/50">
           <CardContent className="p-3 text-center">
             <Share2 className="w-4 h-4 mx-auto mb-1 text-cyan-400" />
-            <div className="text-sm font-bold text-stone-200">{c.links?.length || 0}</div>
-            <div className="text-[9px] text-stone-600">Links</div>
+            <div className="text-sm font-bold text-foreground">{c.links?.length || 0}</div>
+            <div className="text-[9px] text-muted-foreground">Links</div>
           </CardContent>
         </Card>
-        <Card className="bg-stone-950 border-stone-800/50">
+        <Card className="bg-card border-border/50">
           <CardContent className="p-3 text-center">
-            <Search className="w-4 h-4 mx-auto mb-1 text-amber-400" />
-            <div className="text-sm font-bold text-stone-200">{c.hiddenClues?.length || 0}</div>
-            <div className="text-[9px] text-stone-600">Clues</div>
+            <Search className="w-4 h-4 mx-auto mb-1 text-amber-800" />
+            <div className="text-sm font-bold text-foreground">{c.hiddenClues?.length || 0}</div>
+            <div className="text-[9px] text-muted-foreground">Clues</div>
           </CardContent>
         </Card>
       </div>
@@ -655,12 +655,12 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
           <h2 className="text-base font-mono font-bold text-emerald-400 flex items-center gap-2">
             <span className="text-lg">{t.icon}</span> {t.name}
           </h2>
-          <p className="text-[10px] text-stone-600 font-mono mt-0.5">{t.trackId} · {t.category}</p>
+          <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{t.trackId} · {t.category}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <Switch checked={t.isActive} onCheckedChange={(v) => saveCurriculumMut.mutate({ trackId: t.trackId, data: { isActive: v } })} />
-            <span className="text-[10px] text-stone-500">{t.isActive ? "Active" : "Hidden"}</span>
+            <span className="text-[10px] text-muted-foreground">{t.isActive ? "Active" : "Hidden"}</span>
           </div>
           {!isEditing ? (
             <Button size="sm" onClick={() => startEditTrack(t)} className="bg-emerald-900/30 text-emerald-400 border border-emerald-800/50" data-testid="btn-edit-track">
@@ -671,45 +671,45 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
               <Button size="sm" onClick={() => saveCurriculumMut.mutate({ trackId: t.trackId, data: trackEditForm })} disabled={saveCurriculumMut.isPending} className="bg-emerald-600 text-black" data-testid="btn-save-track">
                 <Save className="w-3.5 h-3.5 mr-1" /> Save
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} className="border-stone-700 text-stone-400">Cancel</Button>
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} className="border-border text-muted-foreground">Cancel</Button>
             </div>
           )}
         </div>
       </div>
 
       {isEditing && (
-        <div className="space-y-3 p-4 bg-stone-950 rounded-lg border border-emerald-900/30">
+        <div className="space-y-3 p-4 bg-card rounded-lg border border-emerald-900/30">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label className="text-emerald-600 text-[10px]">Name</Label>
-              <Input value={trackEditForm.name || ""} onChange={e => setTrackEditForm({ ...trackEditForm, name: e.target.value })} className="bg-black/50 border-emerald-900/30 text-stone-300 h-8 text-xs" />
+              <Input value={trackEditForm.name || ""} onChange={e => setTrackEditForm({ ...trackEditForm, name: e.target.value })} className="bg-black/50 border-emerald-900/30 text-foreground h-8 text-xs" />
             </div>
             <div className="space-y-1">
               <Label className="text-emerald-600 text-[10px]">Icon (emoji)</Label>
-              <Input value={trackEditForm.icon || ""} onChange={e => setTrackEditForm({ ...trackEditForm, icon: e.target.value })} className="bg-black/50 border-emerald-900/30 text-stone-300 h-8 text-xs" />
+              <Input value={trackEditForm.icon || ""} onChange={e => setTrackEditForm({ ...trackEditForm, icon: e.target.value })} className="bg-black/50 border-emerald-900/30 text-foreground h-8 text-xs" />
             </div>
           </div>
           <div className="space-y-1">
             <Label className="text-emerald-600 text-[10px]">Description</Label>
-            <Textarea value={trackEditForm.description || ""} onChange={e => setTrackEditForm({ ...trackEditForm, description: e.target.value })} className="bg-black/50 border-emerald-900/30 text-stone-300 text-xs min-h-[60px]" />
+            <Textarea value={trackEditForm.description || ""} onChange={e => setTrackEditForm({ ...trackEditForm, description: e.target.value })} className="bg-black/50 border-emerald-900/30 text-foreground text-xs min-h-[60px]" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label className="text-emerald-600 text-[10px]">Color</Label>
               <Select value={trackEditForm.color} onValueChange={v => setTrackEditForm({ ...trackEditForm, color: v })}>
-                <SelectTrigger className="bg-black/50 border-emerald-900/30 text-stone-300 h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-[#0a0500] border-emerald-900/50">{COLOR_OPTIONS.map(c => <SelectItem key={c} value={c} className="text-stone-300 text-xs">{c}</SelectItem>)}</SelectContent>
+                <SelectTrigger className="bg-black/50 border-emerald-900/30 text-foreground h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-[hsl(var(--card))] border-emerald-900/50">{COLOR_OPTIONS.map(c => <SelectItem key={c} value={c} className="text-foreground text-xs">{c}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="space-y-1">
               <Label className="text-emerald-600 text-[10px]">Order</Label>
-              <Input type="number" value={trackEditForm.order || 0} onChange={e => setTrackEditForm({ ...trackEditForm, order: parseInt(e.target.value) || 0 })} className="bg-black/50 border-emerald-900/30 text-stone-300 h-8 text-xs" />
+              <Input type="number" value={trackEditForm.order || 0} onChange={e => setTrackEditForm({ ...trackEditForm, order: parseInt(e.target.value) || 0 })} className="bg-black/50 border-emerald-900/30 text-foreground h-8 text-xs" />
             </div>
           </div>
         </div>
       )}
 
-      <p className="text-sm text-stone-400">{t.description}</p>
+      <p className="text-sm text-muted-foreground">{t.description}</p>
 
       <div className="flex items-center gap-2">
         <Button size="sm" variant="outline" onClick={() => { setGenForm(p => ({ ...p, targetTrackId: t.trackId })); setGenOpen(true); }} className="border-cyan-800/50 text-cyan-400" data-testid="btn-generate-for-track">
@@ -718,21 +718,21 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider">Missions ({t.missions?.length || 0})</h3>
+        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Missions ({t.missions?.length || 0})</h3>
         {t.missions?.map((m: any, i: number) => (
-          <Card key={m.id || i} className="bg-stone-950 border-stone-800/50 hover:border-emerald-800/40 transition-colors">
+          <Card key={m.id || i} className="bg-card border-border/50 hover:border-emerald-800/40 transition-colors">
             <CardContent className="p-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-stone-200 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <span>{m.icon || "📋"}</span> {m.name}
                 </span>
                 <div className="flex gap-1.5">
                   <Badge variant="outline" className={`text-[9px] ${diffColor(m.difficulty)}`}>{m.difficulty}</Badge>
-                  <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500"><Clock className="w-2.5 h-2.5 mr-0.5" /> {m.estimatedTime}</Badge>
+                  <Badge variant="outline" className="text-[9px] border-border text-muted-foreground"><Clock className="w-2.5 h-2.5 mr-0.5" /> {m.estimatedTime}</Badge>
                 </div>
               </div>
-              <p className="text-[10px] text-stone-500 line-clamp-2">{m.description}</p>
-              <div className="flex items-center gap-3 mt-1.5 text-[9px] text-stone-600">
+              <p className="text-[10px] text-muted-foreground line-clamp-2">{m.description}</p>
+              <div className="flex items-center gap-3 mt-1.5 text-[9px] text-muted-foreground">
                 <span>{m.objectives?.length || 0} objectives</span>
                 <span>{m.exercises?.length || 0} exercises</span>
                 <span>{m.xpReward || 0} XP</span>
@@ -752,11 +752,11 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
         </h2>
         <Badge className="bg-emerald-900/30 text-emerald-400 border border-emerald-800/50">Active</Badge>
       </div>
-      <p className="text-sm text-stone-400">AI failure mode exercises — test for hallucination, sycophancy, anchoring bias, and boundary violations. Learn to identify when AI breaks down.</p>
+      <p className="text-sm text-muted-foreground">AI failure mode exercises — test for hallucination, sycophancy, anchoring bias, and boundary violations. Learn to identify when AI breaks down.</p>
       <div className="flex flex-wrap gap-2">
         <Badge variant="outline" className="border-violet-800/50 text-violet-400">12 exercises</Badge>
-        <Badge variant="outline" className="border-stone-700 text-stone-400">30-60 min</Badge>
-        <Badge variant="outline" className="border-stone-700 text-stone-500">intermediate</Badge>
+        <Badge variant="outline" className="border-border text-muted-foreground">30-60 min</Badge>
+        <Badge variant="outline" className="border-border text-muted-foreground">intermediate</Badge>
       </div>
       <Button onClick={() => navigate("/decoherence")} className="bg-violet-900/30 text-violet-400 hover:bg-violet-900/50 border border-violet-800/50" data-testid="btn-open-lab">
         <Play className="w-4 h-4 mr-2" /> Open Lab
@@ -768,27 +768,27 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
     if (!selected) return renderOverview();
     if (selected.type === "module") {
       const m = getSelectedModule();
-      return m ? renderModuleEditor(m) : <p className="p-6 text-stone-500">Module not found</p>;
+      return m ? renderModuleEditor(m) : <p className="p-6 text-muted-foreground">Module not found</p>;
     }
     if (selected.type === "designer") {
       const c = getSelectedDesigner();
-      return c ? renderDesignerEditor(c) : <p className="p-6 text-stone-500">Campaign not found</p>;
+      return c ? renderDesignerEditor(c) : <p className="p-6 text-muted-foreground">Campaign not found</p>;
     }
     if (selected.type === "curriculum") {
       const t = getSelectedTrack();
-      return t ? renderTrackEditor(t) : <p className="p-6 text-stone-500">Track not found</p>;
+      return t ? renderTrackEditor(t) : <p className="p-6 text-muted-foreground">Track not found</p>;
     }
     if (selected.type === "lab") return renderLabEditor();
     return renderOverview();
   };
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] bg-[#0a0500] rounded-lg border border-stone-800/50 overflow-hidden" data-testid="content-manager">
+    <div className="flex h-[calc(100vh-7rem)] bg-[hsl(var(--card))] rounded-lg border border-border/50 overflow-hidden" data-testid="content-manager">
       {/* File Tree */}
-      <div className="w-72 border-r border-stone-800/50 flex flex-col shrink-0">
-        <div className="p-3 border-b border-stone-800/30">
-          <h3 className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Content Tree</h3>
-          <p className="text-[9px] text-stone-600 mt-0.5">{modules.length + designerCampaigns.length + curriculumTracks.length + 1} items</p>
+      <div className="w-72 border-r border-border/50 flex flex-col shrink-0">
+        <div className="p-3 border-b border-border/30">
+          <h3 className="text-[10px] font-bold text-amber-800 uppercase tracking-widest">Content Tree</h3>
+          <p className="text-[9px] text-muted-foreground mt-0.5">{modules.length + designerCampaigns.length + curriculumTracks.length + 1} items</p>
         </div>
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
@@ -802,7 +802,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
             />
 
             {/* APT Case Studies */}
-            <FolderHeader label="APT Case Studies" icon={<Skull className="w-3 h-3" />} count={aptModules.length} folderKey="apt" color="text-red-400" />
+            <FolderHeader label="APT Case Studies" icon={<Skull className="w-3 h-3" />} count={aptModules.length} folderKey="apt" color="text-red-700" />
             {expandedFolders.apt && aptModules.map(m => (
               <div key={m.moduleId} className="pl-4">
                 <TreeItem
@@ -817,7 +817,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
             ))}
 
             {/* Investigation Modules */}
-            <FolderHeader label="Investigation Modules" icon={<Target className="w-3 h-3" />} count={regularModules.length} folderKey="modules" color="text-amber-400" />
+            <FolderHeader label="Investigation Modules" icon={<Target className="w-3 h-3" />} count={regularModules.length} folderKey="modules" color="text-amber-800" />
             {expandedFolders.modules && regularModules.map(m => (
               <div key={m.moduleId} className="pl-4">
                 <TreeItem
@@ -832,7 +832,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
             ))}
 
             {/* Designer Campaigns */}
-            <FolderHeader label="Designer Campaigns" icon={<Layers className="w-3 h-3" />} count={designerCampaigns.length} folderKey="designer" color="text-purple-400" />
+            <FolderHeader label="Designer Campaigns" icon={<Layers className="w-3 h-3" />} count={designerCampaigns.length} folderKey="designer" color="text-purple-700" />
             {expandedFolders.designer && designerCampaigns.map(c => (
               <div key={c.campaignId} className="pl-4">
                 <TreeItem
@@ -842,7 +842,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
                   isSelected={selected?.type === "designer" && selected.id === c.campaignId}
                   onClick={() => selectItem({ type: "designer", id: c.campaignId })}
                   badge={c.isPublished ? "live" : "draft"}
-                  statusColor={c.isPublished ? "bg-emerald-500" : "bg-stone-600"}
+                  statusColor={c.isPublished ? "bg-emerald-500" : "bg-muted"}
                 />
               </div>
             ))}
@@ -880,8 +880,8 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
         </ScrollArea>
 
         {/* Bottom actions */}
-        <div className="p-2 border-t border-stone-800/30 space-y-1">
-          <Button size="sm" variant="ghost" onClick={() => onOpenBuilder()} className="w-full justify-start text-[10px] text-purple-400 hover:bg-purple-950/20 h-7" data-testid="btn-tree-new-campaign">
+        <div className="p-2 border-t border-border/30 space-y-1">
+          <Button size="sm" variant="ghost" onClick={() => onOpenBuilder()} className="w-full justify-start text-[10px] text-purple-700 hover:bg-purple-950/20 h-7" data-testid="btn-tree-new-campaign">
             <Plus className="w-3 h-3 mr-1.5" /> New Campaign
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setGenOpen(true)} className="w-full justify-start text-[10px] text-cyan-400 hover:bg-cyan-950/20 h-7" data-testid="btn-tree-generate">
@@ -897,7 +897,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
 
       {/* Generate Content Dialog */}
       <Dialog open={genOpen} onOpenChange={setGenOpen}>
-        <DialogContent className="bg-[#0a0500] border-stone-800 text-stone-300 max-w-xl">
+        <DialogContent className="bg-[hsl(var(--card))] border-border text-foreground max-w-xl">
           <DialogHeader>
             <DialogTitle className="text-cyan-400 font-mono flex items-center gap-2">
               <Sparkles className="w-5 h-5" /> Generate New Content
@@ -906,17 +906,17 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
 
           {!genDraft ? (
             <div className="space-y-4">
-              <p className="text-xs text-stone-500">Use AI to generate new missions, labs, or campaign flows from your curriculum context. The AI follows strict pedagogy rules (80/20 hands-on, Kolb's cycle, Bloom's taxonomy).</p>
+              <p className="text-xs text-muted-foreground">Use AI to generate new missions, labs, or campaign flows from your curriculum context. The AI follows strict pedagogy rules (80/20 hands-on, Kolb's cycle, Bloom's taxonomy).</p>
 
               <div className="space-y-3">
                 <div className="space-y-1">
                   <Label className="text-cyan-600 text-[10px]">Content Type</Label>
                   <Select value={genForm.contentType} onValueChange={v => setGenForm(p => ({ ...p, contentType: v }))}>
-                    <SelectTrigger className="bg-black/50 border-cyan-900/30 text-stone-300 h-9 text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-[#0a0500] border-cyan-900/50">
-                      <SelectItem value="mission" className="text-stone-300 text-xs">Mission (guided learning module)</SelectItem>
-                      <SelectItem value="lab" className="text-stone-300 text-xs">Lab (hands-on exercise set)</SelectItem>
-                      <SelectItem value="campaign_flow" className="text-stone-300 text-xs">Campaign Flow (multi-step investigation)</SelectItem>
+                    <SelectTrigger className="bg-black/50 border-cyan-900/30 text-foreground h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-[hsl(var(--card))] border-cyan-900/50">
+                      <SelectItem value="mission" className="text-foreground text-xs">Mission (guided learning module)</SelectItem>
+                      <SelectItem value="lab" className="text-foreground text-xs">Lab (hands-on exercise set)</SelectItem>
+                      <SelectItem value="campaign_flow" className="text-foreground text-xs">Campaign Flow (multi-step investigation)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -924,10 +924,10 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
                 <div className="space-y-1">
                   <Label className="text-cyan-600 text-[10px]">Target Track</Label>
                   <Select value={genForm.targetTrackId} onValueChange={v => setGenForm(p => ({ ...p, targetTrackId: v }))}>
-                    <SelectTrigger className="bg-black/50 border-cyan-900/30 text-stone-300 h-9 text-xs"><SelectValue placeholder="Select a curriculum track..." /></SelectTrigger>
-                    <SelectContent className="bg-[#0a0500] border-cyan-900/50">
+                    <SelectTrigger className="bg-black/50 border-cyan-900/30 text-foreground h-9 text-xs"><SelectValue placeholder="Select a curriculum track..." /></SelectTrigger>
+                    <SelectContent className="bg-[hsl(var(--card))] border-cyan-900/50">
                       {curriculumTracks.map(t => (
-                        <SelectItem key={t.trackId} value={t.trackId} className="text-stone-300 text-xs">
+                        <SelectItem key={t.trackId} value={t.trackId} className="text-foreground text-xs">
                           {t.icon} {t.name} ({t.missions?.length || 0} missions)
                         </SelectItem>
                       ))}
@@ -938,9 +938,9 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
                 <div className="space-y-1">
                   <Label className="text-cyan-600 text-[10px]">Difficulty</Label>
                   <Select value={genForm.difficulty} onValueChange={v => setGenForm(p => ({ ...p, difficulty: v }))}>
-                    <SelectTrigger className="bg-black/50 border-cyan-900/30 text-stone-300 h-9 text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-[#0a0500] border-cyan-900/50">
-                      {DIFFICULTY_OPTIONS.map(d => <SelectItem key={d} value={d} className="text-stone-300 text-xs">{d}</SelectItem>)}
+                    <SelectTrigger className="bg-black/50 border-cyan-900/30 text-foreground h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-[hsl(var(--card))] border-cyan-900/50">
+                      {DIFFICULTY_OPTIONS.map(d => <SelectItem key={d} value={d} className="text-foreground text-xs">{d}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -951,9 +951,9 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
                     value={genForm.painPoints}
                     onChange={e => setGenForm(p => ({ ...p, painPoints: e.target.value }))}
                     placeholder="Describe the topic, skill gap, or learning objective you want to address. E.g., 'Students struggle with WHOIS record analysis' or 'Need hands-on DNS enumeration practice'"
-                    className="bg-black/50 border-cyan-900/30 text-stone-300 text-xs min-h-[80px]"
+                    className="bg-black/50 border-cyan-900/30 text-foreground text-xs min-h-[80px]"
                   />
-                  <p className="text-[9px] text-stone-600">The more context you provide, the better the generated content will be.</p>
+                  <p className="text-[9px] text-muted-foreground">The more context you provide, the better the generated content will be.</p>
                 </div>
               </div>
 
@@ -983,7 +983,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
             <div className="space-y-4">
               <div className="bg-cyan-950/20 border border-cyan-800/30 rounded-lg p-4 space-y-3">
                 <h3 className="text-sm font-bold text-cyan-400">Generated Draft</h3>
-                <div className="space-y-2 text-xs text-stone-300">
+                <div className="space-y-2 text-xs text-foreground">
                   <div><span className="text-cyan-600">Name:</span> {genDraft.name}</div>
                   <div><span className="text-cyan-600">Type:</span> {genDraft.type || genForm.contentType}</div>
                   <div><span className="text-cyan-600">Difficulty:</span> {genDraft.difficulty}</div>
@@ -991,7 +991,7 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
                   {genDraft.objectives && (
                     <div>
                       <span className="text-cyan-600">Objectives:</span>
-                      <ul className="list-disc list-inside mt-1 text-stone-400">
+                      <ul className="list-disc list-inside mt-1 text-muted-foreground">
                         {genDraft.objectives.map((o: string, i: number) => <li key={i}>{o}</li>)}
                       </ul>
                     </div>
@@ -1001,8 +1001,8 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
                       <span className="text-cyan-600">Exercises ({genDraft.exercises.length}):</span>
                       {genDraft.exercises.map((ex: any, i: number) => (
                         <div key={i} className="ml-3 mt-1 p-2 bg-black/30 rounded">
-                          <div className="font-bold text-stone-200">{ex.title}</div>
-                          <div className="text-stone-500 text-[10px]">{ex.type} · {ex.instructions?.slice(0, 100)}...</div>
+                          <div className="font-bold text-foreground">{ex.title}</div>
+                          <div className="text-muted-foreground text-[10px]">{ex.type} · {ex.instructions?.slice(0, 100)}...</div>
                         </div>
                       ))}
                     </div>
@@ -1018,10 +1018,10 @@ export function ContentManagerPanel({ onOpenBuilder }: { onOpenBuilder: (campaig
                 })} disabled={approveDraftMut.isPending} className="flex-1 bg-emerald-700 hover:bg-emerald-600 text-black font-bold" data-testid="btn-approve-draft">
                   {approveDraftMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Approve & Publish"}
                 </Button>
-                <Button variant="outline" onClick={() => setGenDraft(null)} className="border-stone-700 text-stone-400" data-testid="btn-reject-draft">
+                <Button variant="outline" onClick={() => setGenDraft(null)} className="border-border text-muted-foreground" data-testid="btn-reject-draft">
                   Regenerate
                 </Button>
-                <Button variant="outline" onClick={() => { setGenDraft(null); setGenOpen(false); }} className="border-stone-700 text-stone-400">
+                <Button variant="outline" onClick={() => { setGenDraft(null); setGenOpen(false); }} className="border-border text-muted-foreground">
                   Cancel
                 </Button>
               </div>

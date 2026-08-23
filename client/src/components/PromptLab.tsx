@@ -212,30 +212,30 @@ export function PromptLab({
   const tokenBudgetPercent = Math.min(100, (estimatedTokens.total / config.maxTokens) * 100);
 
   return (
-    <div className={`bg-[#0a0500] border border-amber-900/30 rounded-lg overflow-hidden ${className}`}>
+    <div className={`bg-[hsl(var(--card))] border border-amber-900/30 rounded-lg overflow-hidden ${className}`}>
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
           <button className="w-full flex items-center justify-between px-3 py-2 hover:bg-amber-900/10 transition-colors">
             <div className="flex items-center gap-2">
-              <FlaskConical className="w-4 h-4 text-purple-500" />
-              <span className="text-xs font-bold text-purple-400">PROMPT LAB</span>
-              <Badge variant="outline" className="text-[9px] border-purple-800 text-purple-500">
+              <FlaskConical className="w-4 h-4 text-purple-700" />
+              <span className="text-xs font-bold text-purple-700">PROMPT LAB</span>
+              <Badge variant="outline" className="text-[9px] border-purple-800 text-purple-700">
                 {config.modules.length} modules
               </Badge>
               {isAdmin && (
-                <Badge className="text-[9px] bg-red-900/30 text-red-400 border-red-800">
+                <Badge className="text-[9px] bg-red-900/30 text-red-700 border-red-800">
                   ADMIN
                 </Badge>
               )}
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
-                <Gauge className="w-3 h-3 text-stone-600" />
-                <span className={`text-[10px] ${tokenBudgetPercent > 80 ? 'text-red-500' : 'text-stone-500'}`}>
+                <Gauge className="w-3 h-3 text-muted-foreground" />
+                <span className={`text-[10px] ${tokenBudgetPercent > 80 ? 'text-red-700' : 'text-muted-foreground'}`}>
                   ~{estimatedTokens.total} tokens
                 </span>
               </div>
-              {isExpanded ? <ChevronUp className="w-4 h-4 text-stone-500" /> : <ChevronDown className="w-4 h-4 text-stone-500" />}
+              {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
             </div>
           </button>
         </CollapsibleTrigger>
@@ -269,8 +269,8 @@ export function PromptLab({
                         onClick={() => toggleModule(mod)}
                         className={`px-2 py-1 rounded text-[10px] transition-all flex items-center gap-1 ${
                           config.modules.includes(mod)
-                            ? 'bg-purple-700/30 border border-purple-600/50 text-purple-400'
-                            : 'bg-black/30 border border-stone-800 text-stone-500 hover:border-stone-600'
+                            ? 'bg-purple-700/30 border border-purple-600/50 text-purple-700'
+                            : 'bg-black/30 border border-border text-muted-foreground hover:border-muted'
                         }`}
                         title={moduleInfo[mod].desc}
                       >
@@ -290,7 +290,7 @@ export function PromptLab({
                     value={config.userInstructions}
                     onChange={(e) => onConfigChange({ ...config, userInstructions: e.target.value })}
                     placeholder="Add custom instructions for the AI agent..."
-                    className="h-20 text-xs bg-black/30 border-purple-900/30 text-stone-300 resize-none"
+                    className="h-20 text-xs bg-black/30 border-purple-900/30 text-foreground resize-none"
                   />
                 </div>
 
@@ -298,7 +298,7 @@ export function PromptLab({
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-purple-700 text-[10px] uppercase">Token Budget</Label>
-                    <span className="text-[10px] text-stone-500">{estimatedTokens.total} / {config.maxTokens}</span>
+                    <span className="text-[10px] text-muted-foreground">{estimatedTokens.total} / {config.maxTokens}</span>
                   </div>
                   <div className="h-2 bg-black/50 rounded-full overflow-hidden">
                     <motion.div 
@@ -308,7 +308,7 @@ export function PromptLab({
                       transition={{ duration: 0.3 }}
                     />
                   </div>
-                  <div className="flex justify-between text-[9px] text-stone-600 mt-1">
+                  <div className="flex justify-between text-[9px] text-muted-foreground mt-1">
                     {isAdmin && <span>Master: {estimatedTokens.master}</span>}
                     <span>System: {estimatedTokens.system}</span>
                     <span>User: {estimatedTokens.user}</span>
@@ -323,7 +323,7 @@ export function PromptLab({
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-purple-700 text-[10px] uppercase">Temperature</Label>
-                    <span className="text-[10px] text-stone-500">{config.temperature.toFixed(1)}</span>
+                    <span className="text-[10px] text-muted-foreground">{config.temperature.toFixed(1)}</span>
                   </div>
                   <Slider
                     value={[config.temperature]}
@@ -333,7 +333,7 @@ export function PromptLab({
                     step={0.1}
                     className="py-2"
                   />
-                  <div className="flex justify-between text-[9px] text-stone-600">
+                  <div className="flex justify-between text-[9px] text-muted-foreground">
                     <span>Focused</span>
                     <span>Creative</span>
                   </div>
@@ -345,7 +345,7 @@ export function PromptLab({
                     size="sm"
                     variant="outline"
                     onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-                    className="flex-1 border-purple-800 text-purple-400 h-8 text-xs"
+                    className="flex-1 border-purple-800 text-purple-700 h-8 text-xs"
                   >
                     {showSystemPrompt ? <EyeOff className="w-3 h-3 mr-1" /> : <Eye className="w-3 h-3 mr-1" />}
                     {showSystemPrompt ? 'Hide' : 'Preview'} Prompt
@@ -354,7 +354,7 @@ export function PromptLab({
                     size="sm"
                     variant="outline"
                     onClick={copyFullPrompt}
-                    className="border-purple-800 text-purple-400 h-8"
+                    className="border-purple-800 text-purple-700 h-8"
                   >
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                   </Button>
@@ -364,7 +364,7 @@ export function PromptLab({
                   <div className="bg-black/50 border border-purple-900/30 rounded p-2">
                     <Label className="text-purple-600 text-[9px] uppercase mb-1 block">Full System Prompt</Label>
                     <ScrollArea className="h-32">
-                      <pre className="text-[10px] text-stone-400 whitespace-pre-wrap font-mono">
+                      <pre className="text-[10px] text-muted-foreground whitespace-pre-wrap font-mono">
                         {buildFullPrompt()}
                       </pre>
                     </ScrollArea>
@@ -376,7 +376,7 @@ export function PromptLab({
               <TabsContent value="compare" className="p-3 space-y-4 m-0">
                 <div className="flex items-center justify-between">
                   <Label className="text-purple-700 text-[10px] uppercase">Select Models (2-4)</Label>
-                  <Badge variant="outline" className="border-purple-700 text-purple-400 text-[9px]">
+                  <Badge variant="outline" className="border-purple-700 text-purple-700 text-[9px]">
                     {selectedModels.length}/4
                   </Badge>
                 </div>
@@ -389,10 +389,10 @@ export function PromptLab({
                       className={`p-2 rounded border text-left transition-all ${
                         selectedModels.includes(model.id)
                           ? 'border-purple-500 bg-purple-950/30'
-                          : 'border-stone-800 hover:border-stone-600'
+                          : 'border-border hover:border-muted'
                       }`}
                     >
-                      <p className="text-xs text-stone-300 truncate">{model.name}</p>
+                      <p className="text-xs text-foreground truncate">{model.name}</p>
                     </button>
                   ))}
                 </div>
@@ -403,7 +403,7 @@ export function PromptLab({
                     value={testPrompt}
                     onChange={(e) => setTestPrompt(e.target.value)}
                     placeholder="Enter a prompt to test across models..."
-                    className="h-16 text-xs bg-black/30 border-purple-900/30 text-stone-300 resize-none"
+                    className="h-16 text-xs bg-black/30 border-purple-900/30 text-foreground resize-none"
                   />
                 </div>
 
@@ -430,17 +430,17 @@ export function PromptLab({
                       if (!result) return null;
                       
                       return (
-                        <div key={modelId} className="bg-black/30 border border-stone-800 rounded p-3">
+                        <div key={modelId} className="bg-black/30 border border-border rounded p-3">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-purple-400 font-bold">
+                            <span className="text-xs text-purple-700 font-bold">
                               {availableModels.find(m => m.id === modelId)?.name || modelId}
                             </span>
-                            <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                            <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                               {result.latency}ms
                             </Badge>
                           </div>
                           <ScrollArea className="h-24">
-                            <p className="text-xs text-stone-400 whitespace-pre-wrap">
+                            <p className="text-xs text-muted-foreground whitespace-pre-wrap">
                               {result.response}
                             </p>
                           </ScrollArea>
@@ -455,14 +455,14 @@ export function PromptLab({
               {isAdmin && (
                 <TabsContent value="admin" className="p-3 space-y-4 m-0">
                   <div className="flex items-center gap-2 p-2 bg-red-950/20 border border-red-900/30 rounded">
-                    <Lock className="w-4 h-4 text-red-500" />
-                    <span className="text-xs text-red-400">Master System Prompt - applies to ALL agents</span>
+                    <Lock className="w-4 h-4 text-red-700" />
+                    <span className="text-xs text-red-700">Master System Prompt - applies to ALL agents</span>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <Label className="text-red-700 text-[10px] uppercase">Master Prompt (v{masterPrompt?.version || 1})</Label>
-                      <Badge variant="outline" className="text-[9px] border-red-800 text-red-400">
+                      <Badge variant="outline" className="text-[9px] border-red-800 text-red-700">
                         {Math.ceil((editingMaster?.length || 0) / 4)} tokens
                       </Badge>
                     </div>
@@ -470,7 +470,7 @@ export function PromptLab({
                       value={editingMaster}
                       onChange={(e) => setEditingMaster(e.target.value)}
                       placeholder="Enter the master system prompt that applies to all AI agents..."
-                      className="h-48 text-xs bg-black/30 border-red-900/30 text-stone-300 font-mono resize-none"
+                      className="h-48 text-xs bg-black/30 border-red-900/30 text-foreground font-mono resize-none"
                     />
                   </div>
 
@@ -490,7 +490,7 @@ export function PromptLab({
                     )}
                   </Button>
 
-                  <p className="text-[10px] text-stone-600">
+                  <p className="text-[10px] text-muted-foreground">
                     Users can add their own instructions, but they cannot see or modify this master prompt.
                     Changes take effect immediately for all new conversations.
                   </p>

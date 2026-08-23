@@ -162,28 +162,28 @@ export default function AgentConfigSection() {
             <Brain className="w-6 h-6 text-black" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-amber-400 font-orbitron">AI Agent Configuration</h2>
-            <p className="text-sm text-stone-400">Edit system prompts, models, and monitoring for all 6 security agents</p>
+            <h2 className="text-lg font-bold text-amber-800 font-orbitron">AI Agent Configuration</h2>
+            <p className="text-sm text-muted-foreground">Edit system prompts, models, and monitoring for all 6 security agents</p>
           </div>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <Card className="bg-stone-900/50 border-amber-700/50 ring-1 ring-amber-500/20">
+        <Card className="bg-card/50 border-amber-700/50 ring-1 ring-amber-500/20">
           <CardHeader className="bg-amber-950/20 border-b border-amber-900/30">
-            <CardTitle className="text-amber-400 flex items-center gap-2">
+            <CardTitle className="text-amber-800 flex items-center gap-2">
               <Bot className="w-5 h-5" /> Agent System Prompts
               <Badge className="bg-amber-500 text-black text-xs ml-2">EDITABLE</Badge>
             </CardTitle>
-            <CardDescription className="text-stone-400">
+            <CardDescription className="text-muted-foreground">
               Configure protected base instructions for each agent. Users can add to these but not override.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm text-stone-400 mb-2 block">Select Agent</label>
+              <label className="text-sm text-muted-foreground mb-2 block">Select Agent</label>
               <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-                <SelectTrigger className="bg-stone-800 border-stone-700">
+                <SelectTrigger className="bg-border border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -202,24 +202,24 @@ export default function AgentConfigSection() {
               </Select>
             </div>
             
-            <div className="p-3 rounded-lg bg-stone-800/50 border border-stone-700">
+            <div className="p-3 rounded-lg bg-border/50 border border-border">
               <div className="flex items-center gap-2 mb-2">
-                <Icon className="w-5 h-5 text-amber-500" />
+                <Icon className="w-5 h-5 text-amber-800" />
                 <span className="font-medium text-white">{selectedAgentInfo?.name}</span>
-                <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-400">
+                <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-800">
                   Admin Protected
                 </Badge>
               </div>
-              <p className="text-xs text-stone-400">{selectedAgentInfo?.description}</p>
+              <p className="text-xs text-muted-foreground">{selectedAgentInfo?.description}</p>
             </div>
             
             <div>
-              <label className="text-sm text-stone-400 mb-2 block">Model Override</label>
+              <label className="text-sm text-muted-foreground mb-2 block">Model Override</label>
               <Select 
                 value={localConfig.model || ''} 
                 onValueChange={(v) => setLocalConfig(prev => ({ ...prev, model: v === '__default__' ? undefined : v }))}
               >
-                <SelectTrigger className="bg-stone-800 border-stone-700">
+                <SelectTrigger className="bg-border border-border">
                   <SelectValue placeholder="Use default model" />
                 </SelectTrigger>
                 <SelectContent>
@@ -232,7 +232,7 @@ export default function AgentConfigSection() {
             </div>
             
             <div>
-              <label className="text-sm text-stone-400 mb-2 block">
+              <label className="text-sm text-muted-foreground mb-2 block">
                 Temperature: {localConfig.temperature?.toFixed(1) || '0.5'}
               </label>
               <Slider
@@ -246,17 +246,17 @@ export default function AgentConfigSection() {
             </div>
             
             <div>
-              <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
-                <Lock className="w-4 h-4 text-red-400" />
+              <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
+                <Lock className="w-4 h-4 text-red-700" />
                 Base Instructions (Protected)
               </label>
               <Textarea
                 value={localConfig.baseInstructions || ''}
                 onChange={(e) => setLocalConfig(prev => ({ ...prev, baseInstructions: e.target.value }))}
                 placeholder="Enter base instructions that users cannot override. These will be prepended to all agent prompts."
-                className="bg-stone-800 border-stone-700 min-h-[150px] font-mono text-sm"
+                className="bg-border border-border min-h-[150px] font-mono text-sm"
               />
-              <p className="text-xs text-stone-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 These instructions are always included first and cannot be removed by users.
               </p>
             </div>
@@ -274,7 +274,7 @@ export default function AgentConfigSection() {
             </Button>
             
             {localConfig.updatedAt && (
-              <p className="text-xs text-stone-500 text-center">
+              <p className="text-xs text-muted-foreground text-center">
                 Last updated: {new Date(localConfig.updatedAt).toLocaleString()}
               </p>
             )}
@@ -282,9 +282,9 @@ export default function AgentConfigSection() {
         </Card>
         
         <div className="space-y-6">
-          <Card className="bg-stone-900/50 border-amber-900/30">
+          <Card className="bg-card/50 border-amber-900/30">
             <CardHeader>
-              <CardTitle className="text-amber-500 flex items-center gap-2">
+              <CardTitle className="text-amber-800 flex items-center gap-2">
                 <Activity className="w-5 h-5" /> W&B Monitoring
                 {wandbConfig?.enabled && wandbConfig?.apiKeySet && (
                   <Badge className="bg-teal-500 text-black text-xs animate-pulse">LIVE</Badge>
@@ -297,7 +297,7 @@ export default function AgentConfigSection() {
             <CardContent className="space-y-4">
               {wandbLoading ? (
                 <div className="flex items-center justify-center py-4">
-                  <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
+                  <Loader2 className="w-6 h-6 animate-spin text-amber-800" />
                 </div>
               ) : (
                 <>
@@ -305,19 +305,19 @@ export default function AgentConfigSection() {
                   <div className={`p-3 rounded-lg border ${
                     wandbConfig?.enabled && wandbConfig?.apiKeySet 
                       ? 'bg-teal-950/30 border-teal-700' 
-                      : 'bg-stone-800/30 border-stone-700'
+                      : 'bg-border/30 border-border'
                   }`}>
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${
                         wandbConfig?.enabled && wandbConfig?.apiKeySet 
                           ? 'bg-teal-500 animate-pulse' 
-                          : 'bg-stone-600'
+                          : 'bg-muted'
                       }`} />
                       <div>
                         <p className={`text-sm font-medium ${
                           wandbConfig?.enabled && wandbConfig?.apiKeySet 
-                            ? 'text-teal-400' 
-                            : 'text-stone-400'
+                            ? 'text-teal-800' 
+                            : 'text-muted-foreground'
                         }`}>
                           {wandbConfig?.enabled && wandbConfig?.apiKeySet 
                             ? 'Connected to W&B' 
@@ -326,18 +326,18 @@ export default function AgentConfigSection() {
                               : 'W&B Disabled'}
                         </p>
                         {wandbConfig?.enabled && wandbConfig?.apiKeySet && wandbConfig?.project && (
-                          <p className="text-xs text-stone-500">
-                            Project: <span className="text-teal-400">{wandbConfig.project}</span>
-                            {wandbConfig.entity && <> | Entity: <span className="text-teal-400">{wandbConfig.entity}</span></>}
+                          <p className="text-xs text-muted-foreground">
+                            Project: <span className="text-teal-800">{wandbConfig.project}</span>
+                            {wandbConfig.entity && <> | Entity: <span className="text-teal-800">{wandbConfig.entity}</span></>}
                           </p>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-stone-800/50 border border-stone-700">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-border/50 border border-border">
                     <div className="flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5 text-teal-400" />
+                      <BarChart3 className="w-5 h-5 text-teal-800" />
                       <span className="text-sm text-white">Enable W&B Logging</span>
                     </div>
                     <Switch
@@ -349,7 +349,7 @@ export default function AgentConfigSection() {
                   </div>
                   
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block">Project Name</label>
+                    <label className="text-sm text-muted-foreground mb-2 block">Project Name</label>
                     <Input
                       value={wandbConfig?.project || 'nexus-agents'}
                       onChange={(e) => {
@@ -359,12 +359,12 @@ export default function AgentConfigSection() {
                         });
                       }}
                       placeholder="nexus-agents"
-                      className="bg-stone-800 border-stone-700"
+                      className="bg-border border-border"
                     />
                   </div>
                   
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block">Entity (Optional)</label>
+                    <label className="text-sm text-muted-foreground mb-2 block">Entity (Optional)</label>
                     <Input
                       value={wandbConfig?.entity || ''}
                       onChange={(e) => {
@@ -374,23 +374,23 @@ export default function AgentConfigSection() {
                         });
                       }}
                       placeholder="Your W&B username or team"
-                      className="bg-stone-800 border-stone-700"
+                      className="bg-border border-border"
                     />
                   </div>
                   
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-amber-400" />
-                      API Key {wandbConfig?.apiKeySet && <Badge className="bg-teal-500/20 text-teal-400 text-xs">Set</Badge>}
+                    <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-amber-800" />
+                      API Key {wandbConfig?.apiKeySet && <Badge className="bg-teal-500/20 text-teal-800 text-xs">Set</Badge>}
                     </label>
                     <Input
                       type="password"
                       value={wandbApiKey}
                       onChange={(e) => setWandbApiKey(e.target.value)}
                       placeholder={wandbConfig?.apiKeySet ? '••••••••••••' : 'Enter your W&B API key'}
-                      className="bg-stone-800 border-stone-700"
+                      className="bg-border border-border"
                     />
-                    <p className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Get your key from wandb.ai/authorize
                     </p>
                   </div>
@@ -411,9 +411,9 @@ export default function AgentConfigSection() {
             </CardContent>
           </Card>
           
-          <Card className="bg-stone-900/50 border-amber-900/30">
+          <Card className="bg-card/50 border-amber-900/30">
             <CardHeader>
-              <CardTitle className="text-amber-500 flex items-center gap-2">
+              <CardTitle className="text-amber-800 flex items-center gap-2">
                 <Settings className="w-5 h-5" /> Agent Status
               </CardTitle>
             </CardHeader>
@@ -425,20 +425,20 @@ export default function AgentConfigSection() {
                   return (
                     <div 
                       key={agent.id}
-                      className="flex items-center justify-between p-2 rounded bg-stone-800/50 border border-stone-700"
+                      className="flex items-center justify-between p-2 rounded bg-border/50 border border-border"
                     >
                       <div className="flex items-center gap-2">
-                        <AgentIcon className="w-4 h-4 text-stone-400" />
+                        <AgentIcon className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm text-white">{agent.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {hasCustomConfig ? (
-                          <Badge className="bg-amber-500/20 text-amber-400 text-xs">Custom</Badge>
+                          <Badge className="bg-amber-500/20 text-amber-800 text-xs">Custom</Badge>
                         ) : (
-                          <Badge variant="outline" className="text-xs border-stone-600 text-stone-500">Default</Badge>
+                          <Badge variant="outline" className="text-xs border-muted text-muted-foreground">Default</Badge>
                         )}
                         {agentConfigs[agent.id]?.model && (
-                          <Badge variant="outline" className="text-xs border-teal-600 text-teal-400">
+                          <Badge variant="outline" className="text-xs border-teal-600 text-teal-800">
                             Model Override
                           </Badge>
                         )}

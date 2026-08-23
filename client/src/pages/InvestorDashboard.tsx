@@ -6,8 +6,8 @@ export default function InvestorDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-stone-950 flex items-center justify-center">
-      <p className="text-stone-400">Redirecting to Business HQ...</p>
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <p className="text-muted-foreground">Redirecting to Business HQ...</p>
     </div>
   );
 }

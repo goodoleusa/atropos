@@ -57,19 +57,19 @@ export default function InvestigationWorkspace() {
   const selectedGoalDetails = goals.map(g => LEARNING_GOALS.find(lg => lg.id === g)).filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-[#0a0500] text-stone-300">
-      <header className="sticky top-0 z-50 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground">
+      <header className="sticky top-0 z-50 bg-[hsl(var(--card))]/95 backdrop-blur border-b border-amber-900/30">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link href="/">
-                <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
+                <Button variant="ghost" size="sm" className="text-amber-800 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <Bot className="w-6 h-6 text-teal-400" />
+                <Bot className="w-6 h-6 text-teal-800" />
                 <h1 className="text-lg font-bold bg-gradient-to-r from-amber-400 to-teal-400 bg-clip-text text-transparent" data-testid="hub-title">
                   Investigation Hub
                 </h1>
@@ -81,8 +81,8 @@ export default function InvestigationWorkspace() {
                 onClick={() => setShowOutputs(!showOutputs)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all min-h-[36px] ${
                   toolOutputs.length > 0
-                    ? 'bg-teal-900/30 border-teal-700 text-teal-400 hover:bg-teal-900/50'
-                    : 'bg-stone-900/30 border-stone-700 text-stone-500 hover:border-stone-600'
+                    ? 'bg-teal-900/30 border-teal-700 text-teal-800 hover:bg-teal-900/50'
+                    : 'bg-card/30 border-border text-muted-foreground hover:border-muted'
                 }`}
                 data-testid="toggle-outputs-btn"
               >
@@ -92,14 +92,14 @@ export default function InvestigationWorkspace() {
               </button>
               {pendingFindings.length > 0 && (
                 <Link href="/report">
-                  <Badge className="bg-amber-900/50 text-amber-400 border-amber-700 cursor-pointer hover:bg-amber-900/70" data-testid="findings-badge">
+                  <Badge className="bg-amber-900/50 text-amber-800 border-amber-700 cursor-pointer hover:bg-amber-900/70" data-testid="findings-badge">
                     <FileText className="w-3 h-3 mr-1" />
                     {pendingFindings.length} Findings
                   </Badge>
                 </Link>
               )}
               {currentSession && (
-                <Badge className="bg-teal-900/50 text-teal-400 border-teal-700" data-testid="session-badge">
+                <Badge className="bg-teal-900/50 text-teal-800 border-teal-700" data-testid="session-badge">
                   {currentSession.name}
                 </Badge>
               )}
@@ -107,17 +107,17 @@ export default function InvestigationWorkspace() {
           </div>
 
           {showOutputs && (
-            <div className="mt-3 bg-stone-950/80 rounded-lg border border-stone-800 overflow-hidden" data-testid="outputs-panel">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-stone-800">
-                <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">Tool Outputs Feed</span>
+            <div className="mt-3 bg-card/80 rounded-lg border border-border overflow-hidden" data-testid="outputs-panel">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Tool Outputs Feed</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-stone-500">{toolOutputs.length} total</span>
+                  <span className="text-[10px] text-muted-foreground">{toolOutputs.length} total</span>
                   {toolOutputs.length > 0 && (
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => { clearToolOutputs(); toast({ title: "Cleared", description: "All tool outputs cleared" }); }}
-                      className="h-6 text-xs text-stone-500 hover:text-red-400"
+                      className="h-6 text-xs text-muted-foreground hover:text-red-400"
                       data-testid="clear-outputs-btn"
                     >
                       <Trash2 className="w-3 h-3 mr-1" /> Clear
@@ -127,30 +127,30 @@ export default function InvestigationWorkspace() {
               </div>
               <ScrollArea className="max-h-[200px]">
                 {toolOutputs.length > 0 ? (
-                  <div className="divide-y divide-stone-800/50">
+                  <div className="divide-y divide-border/50">
                     {toolOutputs.slice().reverse().slice(0, 20).map(output => (
-                      <div key={output.id} className="px-3 py-2 hover:bg-stone-900/30 transition-colors">
+                      <div key={output.id} className="px-3 py-2 hover:bg-card/30 transition-colors">
                         <div className="flex items-center gap-2 mb-0.5">
                           <Badge variant="outline" className={`text-[9px] py-0 ${
-                            output.type === 'scan' ? 'border-orange-700 text-orange-400' :
-                            output.type === 'recon' ? 'border-teal-700 text-teal-400' :
-                            output.type === 'finding' ? 'border-red-700 text-red-400' :
-                            output.type === 'analysis' ? 'border-purple-700 text-purple-400' :
-                            'border-stone-700 text-stone-400'
+                            output.type === 'scan' ? 'border-orange-700 text-orange-800' :
+                            output.type === 'recon' ? 'border-teal-700 text-teal-800' :
+                            output.type === 'finding' ? 'border-red-700 text-red-700' :
+                            output.type === 'analysis' ? 'border-purple-700 text-purple-700' :
+                            'border-border text-muted-foreground'
                           }`}>
                             {output.type}
                           </Badge>
-                          <span className="text-[10px] text-stone-600">{output.source}</span>
-                          <span className="text-[10px] text-stone-700 ml-auto">
+                          <span className="text-[10px] text-muted-foreground">{output.source}</span>
+                          <span className="text-[10px] text-muted-foreground ml-auto">
                             {new Date(output.timestamp).toLocaleTimeString()}
                           </span>
                         </div>
-                        <p className="text-xs text-stone-400 line-clamp-2">{output.content}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">{output.content}</p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="px-3 py-6 text-center text-stone-600 text-xs">
+                  <div className="px-3 py-6 text-center text-muted-foreground text-xs">
                     No tool outputs yet. Run scans or use the agent to generate findings.
                   </div>
                 )}
@@ -162,7 +162,7 @@ export default function InvestigationWorkspace() {
 
       <main className="container mx-auto px-4 py-6 max-w-7xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-stone-900/50 border border-stone-800 p-1 overflow-x-auto overflow-y-hidden flex-nowrap whitespace-nowrap min-h-[52px] w-full justify-start scrollbar-thin scrollbar-thumb-stone-700" data-testid="hub-tabs">
+          <TabsList className="bg-card/50 border border-border p-1 overflow-x-auto overflow-y-hidden flex-nowrap whitespace-nowrap min-h-[52px] w-full justify-start scrollbar-thin scrollbar-thumb-border" data-testid="hub-tabs">
             <TabsTrigger 
               value="chat" 
               className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-400 min-h-[44px] gap-2"
@@ -220,15 +220,15 @@ export default function InvestigationWorkspace() {
           </TabsList>
 
           <TabsContent value="chat" className="space-y-4" data-testid="content-chat">
-            <Card className="bg-gradient-to-br from-stone-900/80 to-stone-950/80 border-teal-900/30">
+            <Card className="bg-gradient-to-br from-card/80 to-card/80 border-teal-900/30">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-teal-400">
+                <CardTitle className="flex items-center gap-2 text-teal-800">
                   <Bot className="w-5 h-5" />
                   NEXUS Agent
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-stone-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   Start an investigation with the AI agent. Your learning profile will be applied automatically.
                 </p>
                 <Button 
@@ -241,18 +241,18 @@ export default function InvestigationWorkspace() {
                 </Button>
                 
                 {currentSession && (
-                  <div className="mt-4 p-3 bg-stone-900/50 rounded-lg border border-stone-800">
-                    <p className="text-xs text-stone-500 mb-2">Active Session</p>
-                    <p className="text-sm text-stone-400">{currentSession.name}</p>
+                  <div className="mt-4 p-3 bg-card/50 rounded-lg border border-border">
+                    <p className="text-xs text-muted-foreground mb-2">Active Session</p>
+                    <p className="text-sm text-muted-foreground">{currentSession.name}</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <Card className="bg-stone-900/50 border-stone-800">
+              <Card className="bg-card/50 border-border">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-amber-400 flex items-center gap-2">
+                  <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                     <Target className="w-4 h-4" />
                     Active Learning Goals
                   </CardTitle>
@@ -263,21 +263,21 @@ export default function InvestigationWorkspace() {
                       {selectedGoalDetails.map(goal => goal && (
                         <Badge 
                           key={goal.id}
-                          className={CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-400'}
+                          className={CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-700'}
                         >
                           {goal.name}
                         </Badge>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-stone-500">No goals selected. Configure in Learning Profile tab.</p>
+                    <p className="text-xs text-muted-foreground">No goals selected. Configure in Learning Profile tab.</p>
                   )}
                 </CardContent>
               </Card>
 
-              <Card className="bg-stone-900/50 border-stone-800">
+              <Card className="bg-card/50 border-border">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-teal-400 flex items-center gap-2">
+                  <CardTitle className="text-sm text-teal-800 flex items-center gap-2">
                     <Zap className="w-4 h-4" />
                     Recommended Tools
                   </CardTitle>
@@ -286,18 +286,18 @@ export default function InvestigationWorkspace() {
                   {recommendedTools.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {recommendedTools.slice(0, 6).map(tool => (
-                        <Badge key={tool} variant="outline" className="text-teal-400 border-teal-800">
+                        <Badge key={tool} variant="outline" className="text-teal-800 border-teal-800">
                           {tool}
                         </Badge>
                       ))}
                       {recommendedTools.length > 6 && (
-                        <Badge variant="outline" className="text-stone-500 border-stone-700">
+                        <Badge variant="outline" className="text-muted-foreground border-border">
                           +{recommendedTools.length - 6} more
                         </Badge>
                       )}
                     </div>
                   ) : (
-                    <p className="text-xs text-stone-500">Select learning goals to see tool recommendations.</p>
+                    <p className="text-xs text-muted-foreground">Select learning goals to see tool recommendations.</p>
                   )}
                 </CardContent>
               </Card>
@@ -331,19 +331,19 @@ export default function InvestigationWorkspace() {
           </TabsContent>
 
           <TabsContent value="learning" className="space-y-4" data-testid="content-learning">
-            <Card className="bg-gradient-to-br from-stone-900/80 to-stone-950/80 border-amber-900/30">
+            <Card className="bg-gradient-to-br from-card/80 to-card/80 border-amber-900/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-400">
+                <CardTitle className="flex items-center gap-2 text-amber-800">
                   <GraduationCap className="w-5 h-5" />
                   Learning Profile
                 </CardTitle>
-                <p className="text-sm text-stone-400">
+                <p className="text-sm text-muted-foreground">
                   Configure how the AI adapts its teaching style and content to match your learning preferences.
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-bold text-stone-300 mb-3">Learning Style</h3>
+                  <h3 className="text-sm font-bold text-foreground mb-3">Learning Style</h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     {LEARNING_STYLES.map(styleOption => (
                       <button
@@ -351,8 +351,8 @@ export default function InvestigationWorkspace() {
                         onClick={() => setStyle(styleOption.id)}
                         className={`p-3 text-left rounded-lg border min-h-[80px] transition-all ${
                           style === styleOption.id
-                            ? 'bg-amber-900/30 border-amber-700 text-amber-400'
-                            : 'bg-stone-900/50 border-stone-700 text-stone-400 hover:border-amber-700/50'
+                            ? 'bg-amber-900/30 border-amber-700 text-amber-800'
+                            : 'bg-card/50 border-border text-muted-foreground hover:border-amber-700/50'
                         }`}
                         data-testid={`style-${styleOption.id}`}
                       >
@@ -360,14 +360,14 @@ export default function InvestigationWorkspace() {
                           <span className="text-lg">{styleOption.icon}</span>
                           <span className="font-bold text-sm">{styleOption.name}</span>
                         </div>
-                        <p className="text-xs text-stone-500">{styleOption.description}</p>
+                        <p className="text-xs text-muted-foreground">{styleOption.description}</p>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-bold text-stone-300 mb-3">Skill Level</h3>
+                  <h3 className="text-sm font-bold text-foreground mb-3">Skill Level</h3>
                   <div className="flex flex-wrap gap-2">
                     {SKILL_LEVELS.map(level => (
                       <button
@@ -375,8 +375,8 @@ export default function InvestigationWorkspace() {
                         onClick={() => setSkillLevel(level.id as any)}
                         className={`px-4 py-2 rounded-lg border min-h-[44px] transition-all ${
                           skillLevel === level.id
-                            ? 'bg-teal-900/30 border-teal-700 text-teal-400'
-                            : 'bg-stone-900/50 border-stone-700 text-stone-400 hover:border-teal-700/50'
+                            ? 'bg-teal-900/30 border-teal-700 text-teal-800'
+                            : 'bg-card/50 border-border text-muted-foreground hover:border-teal-700/50'
                         }`}
                         data-testid={`skill-${level.id}`}
                       >
@@ -387,8 +387,8 @@ export default function InvestigationWorkspace() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-bold text-stone-300 mb-3">Learning Goals</h3>
-                  <p className="text-xs text-stone-500 mb-3">Select the security domains you want to focus on:</p>
+                  <h3 className="text-sm font-bold text-foreground mb-3">Learning Goals</h3>
+                  <p className="text-xs text-muted-foreground mb-3">Select the security domains you want to focus on:</p>
                   <ScrollArea className="h-[300px] pr-4">
                     <div className="grid sm:grid-cols-2 gap-2">
                       {LEARNING_GOALS.map(goal => {
@@ -400,7 +400,7 @@ export default function InvestigationWorkspace() {
                             className={`p-3 text-left rounded-lg border min-h-[70px] transition-all ${
                               isSelected
                                 ? CATEGORY_COLORS[goal.category] || 'bg-purple-900/30 border-purple-700'
-                                : 'bg-stone-900/50 border-stone-700 text-stone-400 hover:border-purple-700/50'
+                                : 'bg-card/50 border-border text-muted-foreground hover:border-purple-700/50'
                             }`}
                             data-testid={`goal-${goal.id}`}
                           >
@@ -410,7 +410,7 @@ export default function InvestigationWorkspace() {
                                 {goal.category}
                               </Badge>
                             </div>
-                            <p className="text-xs text-stone-500">{goal.description}</p>
+                            <p className="text-xs text-muted-foreground">{goal.description}</p>
                           </button>
                         );
                       })}
@@ -419,13 +419,13 @@ export default function InvestigationWorkspace() {
                 </div>
 
                 {goals.length > 0 && (
-                  <div className="p-4 bg-stone-900/50 rounded-lg border border-stone-800">
-                    <h4 className="text-sm font-bold text-stone-300 mb-2">Profile Summary</h4>
-                    <div className="space-y-1 text-xs text-stone-400">
-                      <p><span className="text-amber-400">Style:</span> {currentStyle?.name}</p>
-                      <p><span className="text-teal-400">Level:</span> {SKILL_LEVELS.find(l => l.id === skillLevel)?.name}</p>
-                      <p><span className="text-purple-400">Goals:</span> {goals.length} selected</p>
-                      <p><span className="text-stone-300">Tools:</span> {recommendedTools.slice(0, 5).join(', ')}{recommendedTools.length > 5 ? '...' : ''}</p>
+                  <div className="p-4 bg-card/50 rounded-lg border border-border">
+                    <h4 className="text-sm font-bold text-foreground mb-2">Profile Summary</h4>
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      <p><span className="text-amber-800">Style:</span> {currentStyle?.name}</p>
+                      <p><span className="text-teal-800">Level:</span> {SKILL_LEVELS.find(l => l.id === skillLevel)?.name}</p>
+                      <p><span className="text-purple-700">Goals:</span> {goals.length} selected</p>
+                      <p><span className="text-foreground">Tools:</span> {recommendedTools.slice(0, 5).join(', ')}{recommendedTools.length > 5 ? '...' : ''}</p>
                     </div>
                   </div>
                 )}

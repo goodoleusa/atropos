@@ -77,37 +77,37 @@ interface RecStats {
 }
 
 const TYPE_CONFIG: Record<string, { icon: any; color: string; label: string; chartColor: string }> = {
-  bug: { icon: Bug, color: "text-red-400 bg-red-900/30 border-red-800/50", label: "Bug", chartColor: "#f87171" },
+  bug: { icon: Bug, color: "text-red-700 bg-red-900/30 border-red-800/50", label: "Bug", chartColor: "#f87171" },
   feature: { icon: Zap, color: "text-cyan-400 bg-cyan-900/30 border-cyan-800/50", label: "Feature", chartColor: "#22d3ee" },
-  idea: { icon: Lightbulb, color: "text-amber-400 bg-amber-900/30 border-amber-800/50", label: "Idea", chartColor: "#fbbf24" },
-  pain_point: { icon: AlertTriangle, color: "text-orange-400 bg-orange-900/30 border-orange-800/50", label: "Pain Point", chartColor: "#fb923c" },
+  idea: { icon: Lightbulb, color: "text-amber-800 bg-amber-900/30 border-amber-800/50", label: "Idea", chartColor: "#fbbf24" },
+  pain_point: { icon: AlertTriangle, color: "text-orange-800 bg-orange-900/30 border-orange-800/50", label: "Pain Point", chartColor: "#fb923c" },
 };
 
 const CAT_CONFIG: Record<string, { icon: any; color: string; label: string; chartColor: string }> = {
   code_snippet: { icon: Code, color: "text-cyan-400 bg-cyan-900/30 border-cyan-800/50", label: "Code Snippet", chartColor: "#22d3ee" },
-  file_edit: { icon: FileCode, color: "text-purple-400 bg-purple-900/30 border-purple-800/50", label: "File Edit", chartColor: "#c084fc" },
-  systemic: { icon: Settings, color: "text-amber-400 bg-amber-900/30 border-amber-800/50", label: "Systemic", chartColor: "#fbbf24" },
-  integration: { icon: Puzzle, color: "text-teal-400 bg-teal-900/30 border-teal-800/50", label: "Integration", chartColor: "#2dd4bf" },
-  new_tool: { icon: Wrench, color: "text-orange-400 bg-orange-900/30 border-orange-800/50", label: "New Tool", chartColor: "#fb923c" },
+  file_edit: { icon: FileCode, color: "text-purple-700 bg-purple-900/30 border-purple-800/50", label: "File Edit", chartColor: "#c084fc" },
+  systemic: { icon: Settings, color: "text-amber-800 bg-amber-900/30 border-amber-800/50", label: "Systemic", chartColor: "#fbbf24" },
+  integration: { icon: Puzzle, color: "text-teal-800 bg-teal-900/30 border-teal-800/50", label: "Integration", chartColor: "#2dd4bf" },
+  new_tool: { icon: Wrench, color: "text-orange-800 bg-orange-900/30 border-orange-800/50", label: "New Tool", chartColor: "#fb923c" },
 };
 
 const STATUS_CONFIG: Record<string, { icon: any; color: string; label: string; chartColor: string }> = {
-  open: { icon: Clock, color: "text-stone-400", label: "Open", chartColor: "#a8a29e" },
-  proposed: { icon: Lightbulb, color: "text-amber-400", label: "Proposed", chartColor: "#fbbf24" },
-  accepted: { icon: CheckCircle, color: "text-teal-400", label: "Accepted", chartColor: "#2dd4bf" },
-  in_progress: { icon: ArrowUpCircle, color: "text-amber-400", label: "In Progress", chartColor: "#fbbf24" },
+  open: { icon: Clock, color: "text-muted-foreground", label: "Open", chartColor: "#a8a29e" },
+  proposed: { icon: Lightbulb, color: "text-amber-800", label: "Proposed", chartColor: "#fbbf24" },
+  accepted: { icon: CheckCircle, color: "text-teal-800", label: "Accepted", chartColor: "#2dd4bf" },
+  in_progress: { icon: ArrowUpCircle, color: "text-amber-800", label: "In Progress", chartColor: "#fbbf24" },
   implemented: { icon: CheckCircle, color: "text-green-400", label: "Implemented", chartColor: "#4ade80" },
   resolved: { icon: CheckCircle, color: "text-green-400", label: "Resolved", chartColor: "#4ade80" },
   shipped: { icon: CheckCircle, color: "text-cyan-400", label: "Shipped", chartColor: "#22d3ee" },
-  rejected: { icon: XCircle, color: "text-stone-600", label: "Rejected", chartColor: "#57534e" },
-  dismissed: { icon: XCircle, color: "text-stone-600", label: "Dismissed", chartColor: "#57534e" },
+  rejected: { icon: XCircle, color: "text-muted-foreground", label: "Rejected", chartColor: "#57534e" },
+  dismissed: { icon: XCircle, color: "text-muted-foreground", label: "Dismissed", chartColor: "#57534e" },
 };
 
 const PRIORITY_CONFIG: Record<string, { color: string; chartColor: string }> = {
   critical: { color: "bg-red-600 text-white", chartColor: "#dc2626" },
   high: { color: "bg-orange-600 text-white", chartColor: "#ea580c" },
   medium: { color: "bg-amber-700 text-white", chartColor: "#b45309" },
-  low: { color: "bg-stone-700 text-stone-300", chartColor: "#78716c" },
+  low: { color: "bg-border text-foreground", chartColor: "#78716c" },
 };
 
 const CustomTooltipStyle = {
@@ -365,15 +365,15 @@ export default function SuggestionsPage() {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 p-4 md:p-8" data-testid="suggestions-page">
+    <div className="min-h-screen bg-background text-foreground p-4 md:p-8" data-testid="suggestions-page">
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="border-b border-amber-900/30 pb-4">
-          <div className="flex items-center gap-2 text-amber-500 mb-1 font-orbitron tracking-tighter">
+          <div className="flex items-center gap-2 text-amber-800 mb-1 font-orbitron tracking-tighter">
             <Bot className="w-5 h-5" />
             <span className="text-sm">AGENT INSIGHTS</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold molten-text" data-testid="page-title">RECS</h1>
-          <p className="text-stone-400 mt-1 text-sm max-w-3xl">
+          <p className="text-muted-foreground mt-1 text-sm max-w-3xl">
             Automated recs from NEXUS agents. Actionable code suggestions, new tool ideas,
             and improvement reports — ready to copy, export, or pipe into any coding agent.
           </p>
@@ -381,7 +381,7 @@ export default function SuggestionsPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
-            <TabsList className="bg-stone-900/50 border border-stone-800/50">
+            <TabsList className="bg-card/50 border border-border/50">
               <TabsTrigger value="recommendations" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-recommendations">
                 <Code className="w-4 h-4 mr-2" />
                 RECS ({recStats?.total || 0})
@@ -396,7 +396,7 @@ export default function SuggestionsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-stone-700 text-stone-400 hover:text-amber-400 hover:border-amber-700"
+                className="text-xs border-border text-muted-foreground hover:text-amber-400 hover:border-amber-700"
                 onClick={() => syncFiles.mutate()}
                 disabled={syncFiles.isPending}
                 data-testid="btn-sync-files"
@@ -407,7 +407,7 @@ export default function SuggestionsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-stone-700 text-stone-400 hover:text-cyan-400 hover:border-cyan-700"
+                className="text-xs border-border text-muted-foreground hover:text-cyan-400 hover:border-cyan-700"
                 onClick={() => window.open(`${baseUrl}/api/recs/export?format=json`, '_blank')}
                 data-testid="btn-export-json"
               >
@@ -417,7 +417,7 @@ export default function SuggestionsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-stone-700 text-stone-400 hover:text-purple-400 hover:border-purple-700"
+                className="text-xs border-border text-muted-foreground hover:text-purple-400 hover:border-purple-700"
                 onClick={() => window.open(`${baseUrl}/api/recs/export?format=markdown`, '_blank')}
                 data-testid="btn-export-md"
               >
@@ -430,48 +430,48 @@ export default function SuggestionsPage() {
           {/* RECOMMENDATIONS TAB */}
           <TabsContent value="recommendations" className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <Card className="bg-stone-900/40 border-stone-800/50" data-testid="rec-stat-total">
+              <Card className="bg-card/40 border-border/50" data-testid="rec-stat-total">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-amber-900/30 rounded-lg"><Code className="w-5 h-5 text-amber-400" /></div>
+                  <div className="p-2 bg-amber-900/30 rounded-lg"><Code className="w-5 h-5 text-amber-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-amber-400 font-orbitron">{recStats?.total || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">RECS</div>
+                    <div className="text-2xl font-bold text-amber-800 font-orbitron">{recStats?.total || 0}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">RECS</div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-orange-900/30 rounded-lg"><Wrench className="w-5 h-5 text-orange-400" /></div>
+                  <div className="p-2 bg-orange-900/30 rounded-lg"><Wrench className="w-5 h-5 text-orange-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-orange-400 font-orbitron">{recStats?.byCategory?.new_tool || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">New Tools</div>
+                    <div className="text-2xl font-bold text-orange-800 font-orbitron">{recStats?.byCategory?.new_tool || 0}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">New Tools</div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-teal-900/30 rounded-lg"><Puzzle className="w-5 h-5 text-teal-400" /></div>
+                  <div className="p-2 bg-teal-900/30 rounded-lg"><Puzzle className="w-5 h-5 text-teal-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-teal-400 font-orbitron">{recStats?.painPointsCovered?.length || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">Pain Points</div>
+                    <div className="text-2xl font-bold text-teal-800 font-orbitron">{recStats?.painPointsCovered?.length || 0}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">Pain Points</div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
                   <div className="p-2 bg-green-900/30 rounded-lg"><CheckCircle className="w-5 h-5 text-green-400" /></div>
                   <div>
                     <div className="text-2xl font-bold text-green-400 font-orbitron">{recStats?.byStatus?.implemented || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">Implemented</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">Implemented</div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
                   <div className="p-2 bg-cyan-900/30 rounded-lg"><FileCode className="w-5 h-5 text-cyan-400" /></div>
                   <div>
                     <div className="text-2xl font-bold text-cyan-400 font-orbitron">{recs.filter(r => r.codeSnippet).length}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">With Code</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">With Code</div>
                   </div>
                 </CardContent>
               </Card>
@@ -479,9 +479,9 @@ export default function SuggestionsPage() {
 
             {catChartData.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="bg-stone-900/30 border-stone-800/50">
+                <Card className="bg-card/30 border-border/50">
                   <CardHeader className="pb-2 pt-3 px-4">
-                    <CardTitle className="text-xs text-stone-500 uppercase font-orbitron tracking-widest flex items-center gap-2">
+                    <CardTitle className="text-xs text-muted-foreground uppercase font-orbitron tracking-widest flex items-center gap-2">
                       <BarChart3 className="w-3 h-3" /> By Category
                     </CardTitle>
                   </CardHeader>
@@ -498,9 +498,9 @@ export default function SuggestionsPage() {
                   </CardContent>
                 </Card>
                 {recStats?.painPointsCovered && recStats.painPointsCovered.length > 0 && (
-                  <Card className="bg-stone-900/30 border-stone-800/50">
+                  <Card className="bg-card/30 border-border/50">
                     <CardHeader className="pb-2 pt-3 px-4">
-                      <CardTitle className="text-xs text-stone-500 uppercase font-orbitron tracking-widest flex items-center gap-2">
+                      <CardTitle className="text-xs text-muted-foreground uppercase font-orbitron tracking-widest flex items-center gap-2">
                         <AlertTriangle className="w-3 h-3" /> Pain Points Addressed
                       </CardTitle>
                     </CardHeader>
@@ -508,7 +508,7 @@ export default function SuggestionsPage() {
                       <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-auto">
                         {recStats.painPointsCovered.map((p, i) => (
                           <Badge key={i} variant="outline"
-                            className={`text-[10px] cursor-pointer transition-all ${filterPainPoint === p ? 'text-amber-400 border-amber-600/60 bg-amber-900/30' : 'text-orange-400 border-orange-800/50 bg-orange-900/10 hover:border-orange-600/60'}`}
+                            className={`text-[10px] cursor-pointer transition-all ${filterPainPoint === p ? 'text-amber-800 border-amber-600/60 bg-amber-900/30' : 'text-orange-800 border-orange-800/50 bg-orange-900/10 hover:border-orange-600/60'}`}
                             onClick={() => setFilterPainPoint(filterPainPoint === p ? "all" : p)}
                             data-testid={`pain-point-badge-${i}`}
                           >{p}</Badge>
@@ -520,18 +520,18 @@ export default function SuggestionsPage() {
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-3 bg-stone-900/30 p-3 rounded-lg border border-stone-800/50">
-              <Filter className="w-4 h-4 text-stone-500" />
+            <div className="flex flex-wrap items-center gap-3 bg-card/30 p-3 rounded-lg border border-border/50">
+              <Filter className="w-4 h-4 text-muted-foreground" />
               <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-500" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                 <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search recs..." className="pl-8 h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-search-recs" />
+                  placeholder="Search recs..." className="pl-8 h-8 text-xs bg-muted border-border" data-testid="input-search-recs" />
               </div>
               <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger className="w-32 h-8 text-xs bg-stone-950 border-stone-800" data-testid="select-category">
+                <SelectTrigger className="w-32 h-8 text-xs bg-muted border-border" data-testid="select-category">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent className="bg-stone-900 border-stone-800">
+                <SelectContent className="bg-card border-border">
                   <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="code_snippet">Code Snippet</SelectItem>
                   <SelectItem value="file_edit">File Edit</SelectItem>
@@ -541,10 +541,10 @@ export default function SuggestionsPage() {
                 </SelectContent>
               </Select>
               <Select value={filterPriority} onValueChange={setFilterPriority}>
-                <SelectTrigger className="w-28 h-8 text-xs bg-stone-950 border-stone-800" data-testid="select-rec-priority">
+                <SelectTrigger className="w-28 h-8 text-xs bg-muted border-border" data-testid="select-rec-priority">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
-                <SelectContent className="bg-stone-900 border-stone-800">
+                <SelectContent className="bg-card border-border">
                   <SelectItem value="all">All Priority</SelectItem>
                   <SelectItem value="critical">Critical</SelectItem>
                   <SelectItem value="high">High</SelectItem>
@@ -554,10 +554,10 @@ export default function SuggestionsPage() {
               </Select>
               {recStats?.painPointsCovered && recStats.painPointsCovered.length > 0 && (
                 <Select value={filterPainPoint} onValueChange={setFilterPainPoint}>
-                  <SelectTrigger className="w-40 h-8 text-xs bg-stone-950 border-stone-800" data-testid="select-pain-point">
+                  <SelectTrigger className="w-40 h-8 text-xs bg-muted border-border" data-testid="select-pain-point">
                     <SelectValue placeholder="Pain Point" />
                   </SelectTrigger>
-                  <SelectContent className="bg-stone-900 border-stone-800 max-h-60">
+                  <SelectContent className="bg-card border-border max-h-60">
                     <SelectItem value="all">All Pain Points ({recStats.painPointsCovered.length})</SelectItem>
                     {recStats.painPointsCovered.map((p, i) => (
                       <SelectItem key={i} value={p} className="text-xs">{p.length > 35 ? p.slice(0, 35) + '...' : p}</SelectItem>
@@ -565,15 +565,15 @@ export default function SuggestionsPage() {
                   </SelectContent>
                 </Select>
               )}
-              <Badge variant="outline" className="text-[10px] text-stone-500 border-stone-700">
+              <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">
                 {filteredRecs.length} / {recs.length}
               </Badge>
             </div>
 
             {/* Agent batch action bar */}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-950/40 to-stone-900/40 p-3 rounded-lg border border-amber-900/30" data-testid="agent-action-bar">
-              <Rocket className="w-4 h-4 text-amber-400 shrink-0" />
-              <span className="text-xs text-amber-400 font-bold uppercase tracking-wide shrink-0">Agent</span>
+            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-950/40 to-card/40 p-3 rounded-lg border border-amber-900/30" data-testid="agent-action-bar">
+              <Rocket className="w-4 h-4 text-amber-800 shrink-0" />
+              <span className="text-xs text-amber-800 font-bold uppercase tracking-wide shrink-0">Agent</span>
               <div className="flex items-center gap-1.5 flex-wrap flex-1">
                 <Button
                   variant="outline" size="sm"
@@ -587,7 +587,7 @@ export default function SuggestionsPage() {
                 {checkedIds.size > 0 && (
                   <Button
                     variant="outline" size="sm"
-                    className="h-7 text-[10px] border-stone-700 text-stone-400 hover:bg-stone-800"
+                    className="h-7 text-[10px] border-border text-muted-foreground hover:bg-border"
                     onClick={clearChecked}
                     data-testid="btn-clear-selection"
                   >
@@ -626,14 +626,14 @@ export default function SuggestionsPage() {
               <div className="lg:col-span-2">
                 <ScrollArea className="h-[calc(100vh-700px)] min-h-[350px]">
                   {recsLoading ? (
-                    <div className="flex items-center justify-center h-48 text-stone-500">
+                    <div className="flex items-center justify-center h-48 text-muted-foreground">
                       <div className="animate-pulse">Scanning agent recs...</div>
                     </div>
                   ) : filteredRecs.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-48 text-stone-500">
+                    <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
                       <Code className="w-10 h-10 mb-3 opacity-20" />
                       <p className="text-sm">No recs yet.</p>
-                      <p className="text-xs text-stone-600 mt-1">Agents auto-generate actionable suggestions during conversations.</p>
+                      <p className="text-xs text-muted-foreground mt-1">Agents auto-generate actionable suggestions during conversations.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -643,7 +643,7 @@ export default function SuggestionsPage() {
                         const isChecked = checkedIds.has(rec.id);
                         return (
                           <Card key={rec.id}
-                            className={`bg-stone-900/20 border-stone-800/50 hover:border-amber-900/30 transition-all cursor-pointer ${selectedRec?.id === rec.id ? 'border-amber-600/50 bg-stone-900/40' : ''} ${isChecked ? 'border-amber-700/40 bg-amber-950/10' : ''}`}
+                            className={`bg-card/20 border-border/50 hover:border-amber-900/30 transition-all cursor-pointer ${selectedRec?.id === rec.id ? 'border-amber-600/50 bg-card/40' : ''} ${isChecked ? 'border-amber-700/40 bg-amber-950/10' : ''}`}
                             onClick={() => setSelectedRec(rec)} data-testid={`rec-item-${rec.id}`}>
                             <CardContent className="p-3">
                               <div className="flex items-start gap-3">
@@ -652,11 +652,11 @@ export default function SuggestionsPage() {
                                     checked={isChecked}
                                     onCheckedChange={() => toggleChecked(rec.id)}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="border-stone-600 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                                    className="border-muted data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
                                     data-testid={`check-rec-${rec.id}`}
                                   />
                                   <Button variant="ghost" size="sm"
-                                    className={`h-8 w-8 flex-col gap-0 border border-stone-800 hover:border-amber-500/50 hover:bg-amber-500/10 ${rec.votes > 1 ? 'text-amber-500 border-amber-500/20 bg-amber-500/5' : 'text-stone-500'}`}
+                                    className={`h-8 w-8 flex-col gap-0 border border-border hover:border-amber-500/50 hover:bg-amber-500/10 ${rec.votes > 1 ? 'text-amber-800 border-amber-500/20 bg-amber-500/5' : 'text-muted-foreground'}`}
                                     onClick={(e) => { e.stopPropagation(); voteRec.mutate(rec.id); }}
                                     data-testid={`vote-rec-${rec.id}`}>
                                     <ThumbsUp className="w-2.5 h-2.5" />
@@ -670,11 +670,11 @@ export default function SuggestionsPage() {
                                     </Badge>
                                     <Badge className={`text-[9px] px-1.5 py-0 ${PRIORITY_CONFIG[rec.priority]?.color || ''}`}>{rec.priority}</Badge>
                                     {rec.codeSnippet && <Badge className="text-[9px] px-1.5 py-0 bg-cyan-900/20 text-cyan-500 border-cyan-800/50"><Code className="w-2.5 h-2.5 mr-0.5" />code</Badge>}
-                                    {rec.painPointsAddressed.length >= 3 && <Badge className="text-[9px] px-1.5 py-0 bg-orange-900/20 text-orange-400 border-orange-800/50">{rec.painPointsAddressed.length} fixes</Badge>}
+                                    {rec.painPointsAddressed.length >= 3 && <Badge className="text-[9px] px-1.5 py-0 bg-orange-900/20 text-orange-800 border-orange-800/50">{rec.painPointsAddressed.length} fixes</Badge>}
                                   </div>
-                                  <h3 className="text-sm font-medium text-stone-200 truncate">{rec.title}</h3>
-                                  <p className="text-xs text-stone-500 line-clamp-1">{rec.description}</p>
-                                  <div className="flex items-center gap-3 text-[10px] text-stone-600">
+                                  <h3 className="text-sm font-medium text-foreground truncate">{rec.title}</h3>
+                                  <p className="text-xs text-muted-foreground line-clamp-1">{rec.description}</p>
+                                  <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                                     {rec.targetFiles.length > 0 && <span className="text-cyan-600">{rec.targetFiles.length} files</span>}
                                     <span>{rec.source}</span>
                                     <span>{new Date(rec.createdAt).toLocaleDateString()}</span>
@@ -693,11 +693,11 @@ export default function SuggestionsPage() {
               {/* Detail panel */}
               <div className="space-y-3">
                 {selectedRec ? (
-                  <Card className="bg-stone-900/40 border-amber-900/30 sticky top-4" data-testid="rec-detail-panel">
+                  <Card className="bg-card/40 border-amber-900/30 sticky top-4" data-testid="rec-detail-panel">
                     <CardHeader className="pb-2 pt-3 px-4">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-xs text-amber-500 uppercase font-orbitron tracking-widest">Rec #{selectedRec.id}</CardTitle>
-                        <Button variant="ghost" size="sm" className="h-6 px-2 text-stone-500" onClick={() => setSelectedRec(null)}><XCircle className="w-3 h-3" /></Button>
+                        <CardTitle className="text-xs text-amber-800 uppercase font-orbitron tracking-widest">Rec #{selectedRec.id}</CardTitle>
+                        <Button variant="ghost" size="sm" className="h-6 px-2 text-muted-foreground" onClick={() => setSelectedRec(null)}><XCircle className="w-3 h-3" /></Button>
                       </div>
                     </CardHeader>
                     <CardContent className="px-4 pb-4 space-y-3">
@@ -705,15 +705,15 @@ export default function SuggestionsPage() {
                         <Badge className={`text-[9px] uppercase font-orbitron ${CAT_CONFIG[selectedRec.category]?.color || ''}`}>{CAT_CONFIG[selectedRec.category]?.label || selectedRec.category}</Badge>
                         <Badge className={`text-[9px] ${PRIORITY_CONFIG[selectedRec.priority]?.color || ''}`}>{selectedRec.priority}</Badge>
                       </div>
-                      <h3 className="text-base font-semibold text-stone-200">{selectedRec.title}</h3>
-                      <p className="text-sm text-stone-400 leading-relaxed whitespace-pre-wrap">{selectedRec.description}</p>
+                      <h3 className="text-base font-semibold text-foreground">{selectedRec.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{selectedRec.description}</p>
 
                       {selectedRec.targetFiles.length > 0 && (
                         <div>
-                          <div className="text-[10px] text-stone-500 uppercase font-bold mb-1">Target Files</div>
+                          <div className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Target Files</div>
                           <div className="space-y-0.5">
                             {selectedRec.targetFiles.map((f, i) => (
-                              <div key={i} className="text-xs text-cyan-400 font-mono bg-stone-950 px-2 py-0.5 rounded">{f}</div>
+                              <div key={i} className="text-xs text-cyan-400 font-mono bg-muted px-2 py-0.5 rounded">{f}</div>
                             ))}
                           </div>
                         </div>
@@ -722,13 +722,13 @@ export default function SuggestionsPage() {
                       {selectedRec.codeSnippet && (
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <div className="text-[10px] text-stone-500 uppercase font-bold">Starter Code</div>
+                            <div className="text-[10px] text-muted-foreground uppercase font-bold">Starter Code</div>
                             <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] text-cyan-500 hover:text-cyan-300"
                               onClick={() => copyToClipboard(selectedRec.codeSnippet!, toast, "code snippet")} data-testid="btn-copy-code">
                               <Copy className="w-2.5 h-2.5 mr-1" />Copy
                             </Button>
                           </div>
-                          <pre className="bg-stone-950 p-3 rounded border border-stone-800 text-xs text-stone-300 font-mono whitespace-pre-wrap overflow-auto max-h-[200px]">
+                          <pre className="bg-muted p-3 rounded border border-border text-xs text-foreground font-mono whitespace-pre-wrap overflow-auto max-h-[200px]">
                             <code>{selectedRec.codeSnippet}</code>
                           </pre>
                         </div>
@@ -736,11 +736,11 @@ export default function SuggestionsPage() {
 
                       {selectedRec.painPointsAddressed.length > 0 && (
                         <div>
-                          <div className="text-[10px] text-stone-500 uppercase font-bold mb-1">Pain Points Addressed</div>
+                          <div className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Pain Points Addressed</div>
                           <div className="space-y-1">
                             {selectedRec.painPointsAddressed.map((p, i) => (
-                              <div key={i} className="flex items-start gap-1.5 text-xs text-orange-300">
-                                <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5 text-orange-500" />{p}
+                              <div key={i} className="flex items-start gap-1.5 text-xs text-orange-800">
+                                <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5 text-orange-800" />{p}
                               </div>
                             ))}
                           </div>
@@ -749,31 +749,31 @@ export default function SuggestionsPage() {
 
                       {selectedRec.estimatedImpact && (
                         <div className="bg-teal-950/20 p-2 rounded border border-teal-800/20">
-                          <div className="text-[10px] text-teal-500 uppercase font-bold mb-1">Impact</div>
+                          <div className="text-[10px] text-teal-800 uppercase font-bold mb-1">Impact</div>
                           <p className="text-xs text-teal-300">{selectedRec.estimatedImpact}</p>
                         </div>
                       )}
 
-                      <div className="border-t border-stone-800/50 pt-3">
-                        <div className="text-[10px] text-stone-500 uppercase font-bold mb-2">Push / Export</div>
+                      <div className="border-t border-border/50 pt-3">
+                        <div className="text-[10px] text-muted-foreground uppercase font-bold mb-2">Push / Export</div>
                         <div className="grid grid-cols-2 gap-1.5">
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-stone-700 text-amber-400 hover:bg-amber-900/20"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-amber-800 hover:bg-amber-900/20"
                             onClick={() => copyToClipboard(recToPrompt(selectedRec), toast, "AI prompt")} data-testid="btn-copy-prompt">
                             <Clipboard className="w-3 h-3 mr-1" />AI Prompt
                           </Button>
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-stone-700 text-cyan-400 hover:bg-cyan-900/20"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-cyan-400 hover:bg-cyan-900/20"
                             onClick={() => copyToClipboard(selectedRec.codeSnippet || '// No code', toast, "code")} data-testid="btn-copy-code-only">
                             <Code className="w-3 h-3 mr-1" />Code Only
                           </Button>
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-stone-700 text-purple-400 hover:bg-purple-900/20"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-purple-700 hover:bg-purple-900/20"
                             onClick={() => copyToClipboard(recToGitPatch(selectedRec), toast, "git patch")} data-testid="btn-copy-patch">
                             <GitBranch className="w-3 h-3 mr-1" />Git Patch
                           </Button>
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-stone-700 text-teal-400 hover:bg-teal-900/20"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-teal-800 hover:bg-teal-900/20"
                             onClick={() => copyToClipboard(recToCurl(selectedRec, baseUrl), toast, "curl command")} data-testid="btn-copy-curl">
                             <Terminal className="w-3 h-3 mr-1" />curl
                           </Button>
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-stone-700 text-stone-400 hover:bg-stone-800/50 col-span-2"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-muted-foreground hover:bg-border/50 col-span-2"
                             onClick={() => copyToClipboard(JSON.stringify(selectedRec, null, 2), toast, "JSON")} data-testid="btn-copy-json">
                             <FileJson className="w-3 h-3 mr-1" />Copy Full JSON
                           </Button>
@@ -782,51 +782,51 @@ export default function SuggestionsPage() {
                     </CardContent>
                   </Card>
                 ) : (
-                  <Card className="bg-stone-900/30 border-stone-800/50">
+                  <Card className="bg-card/30 border-border/50">
                     <CardContent className="p-6 text-center">
-                      <Eye className="w-8 h-8 mx-auto mb-3 text-stone-700" />
-                      <p className="text-xs text-stone-500">Select a rec to view details and export options</p>
+                      <Eye className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground">Select a rec to view details and export options</p>
                     </CardContent>
                   </Card>
                 )}
 
-                <Card className="bg-stone-900/30 border-stone-800/50">
+                <Card className="bg-card/30 border-border/50">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Download className="w-4 h-4 text-amber-500" />
-                      <span className="text-xs text-stone-400 font-bold uppercase">Bulk Export</span>
+                      <Download className="w-4 h-4 text-amber-800" />
+                      <span className="text-xs text-muted-foreground font-bold uppercase">Bulk Export</span>
                     </div>
                     <div className="space-y-1.5">
-                      <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-stone-700 text-stone-300 justify-start hover:border-amber-700"
+                      <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-border text-foreground justify-start hover:border-amber-700"
                         onClick={() => syncFiles.mutate()} disabled={syncFiles.isPending} data-testid="btn-sync-github">
-                        <GitBranch className="w-3 h-3 mr-2 text-amber-500" />
+                        <GitBranch className="w-3 h-3 mr-2 text-amber-800" />
                         Sync to .github/RECOMMENDATIONS.md
                       </Button>
-                      <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-stone-700 text-stone-300 justify-start hover:border-cyan-700"
+                      <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-border text-foreground justify-start hover:border-cyan-700"
                         onClick={() => window.open(`${baseUrl}/api/recs/export?format=prompt`, '_blank')} data-testid="btn-export-all-prompts">
                         <Clipboard className="w-3 h-3 mr-2 text-cyan-500" />
                         Export All as Agent Prompts
                       </Button>
-                      <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-stone-700 text-stone-300 justify-start hover:border-purple-700"
+                      <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-border text-foreground justify-start hover:border-purple-700"
                         onClick={() => copyToClipboard(`curl -s "${baseUrl}/api/recs/export?format=json" | jq .`, toast, "bulk curl")} data-testid="btn-bulk-curl">
-                        <Terminal className="w-3 h-3 mr-2 text-purple-500" />
+                        <Terminal className="w-3 h-3 mr-2 text-purple-700" />
                         Copy Bulk curl Command
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-stone-900/30 border-stone-800/50">
+                <Card className="bg-card/30 border-border/50">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="w-4 h-4 text-amber-500" />
-                      <span className="text-xs text-stone-400 font-bold uppercase">How it works</span>
+                      <Sparkles className="w-4 h-4 text-amber-800" />
+                      <span className="text-xs text-muted-foreground font-bold uppercase">How it works</span>
                     </div>
-                    <div className="space-y-2 text-[11px] text-stone-500">
-                      <p>NEXUS agents generate actionable code recs during conversations using <code className="text-amber-500/80 bg-stone-800 px-1 rounded">```recommendation</code> blocks.</p>
+                    <div className="space-y-2 text-[11px] text-muted-foreground">
+                      <p>NEXUS agents generate actionable code recs during conversations using <code className="text-amber-800/80 bg-border px-1 rounded">```recommendation</code> blocks.</p>
                       <p>Each rec includes starter code, target files, pain points addressed, and impact estimates.</p>
                       <p>Use the export buttons to pipe recs into Replit Agent, Cursor, Copilot, or any coding tool.</p>
-                      <p>Hit <strong className="text-amber-400">Sync to .github</strong> to write all recs as a markdown file any agent can discover in your repo.</p>
+                      <p>Hit <strong className="text-amber-800">Sync to .github</strong> to write all recs as a markdown file any agent can discover in your repo.</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -837,48 +837,48 @@ export default function SuggestionsPage() {
           {/* REPORTS TAB */}
           <TabsContent value="reports" className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-amber-900/30 rounded-lg"><Activity className="w-5 h-5 text-amber-400" /></div>
+                  <div className="p-2 bg-amber-900/30 rounded-lg"><Activity className="w-5 h-5 text-amber-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-amber-400 font-orbitron">{feedbackStats?.total || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">Reports</div>
+                    <div className="text-2xl font-bold text-amber-800 font-orbitron">{feedbackStats?.total || 0}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">Reports</div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-teal-900/30 rounded-lg"><Bot className="w-5 h-5 text-teal-400" /></div>
+                  <div className="p-2 bg-teal-900/30 rounded-lg"><Bot className="w-5 h-5 text-teal-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-teal-400 font-orbitron">{feedbackItems.filter(i => i.source.startsWith("agent:")).length}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">Agent-Found</div>
+                    <div className="text-2xl font-bold text-teal-800 font-orbitron">{feedbackItems.filter(i => i.source.startsWith("agent:")).length}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">Agent-Found</div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-red-900/30 rounded-lg"><Bug className="w-5 h-5 text-red-400" /></div>
+                  <div className="p-2 bg-red-900/30 rounded-lg"><Bug className="w-5 h-5 text-red-700" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-red-400 font-orbitron">{feedbackStats?.byType?.bug || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">Bugs</div>
+                    <div className="text-2xl font-bold text-red-700 font-orbitron">{feedbackStats?.byType?.bug || 0}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">Bugs</div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-stone-900/40 border-stone-800/50">
+              <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-red-900/30 rounded-lg"><AlertTriangle className="w-5 h-5 text-red-400" /></div>
+                  <div className="p-2 bg-red-900/30 rounded-lg"><AlertTriangle className="w-5 h-5 text-red-700" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-red-400 font-orbitron">{feedbackStats?.byPriority?.critical || 0}</div>
-                    <div className="text-[10px] text-stone-500 uppercase">Critical</div>
+                    <div className="text-2xl font-bold text-red-700 font-orbitron">{feedbackStats?.byPriority?.critical || 0}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase">Critical</div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
             {typeChartData.length > 0 && (
-              <Card className="bg-stone-900/30 border-stone-800/50">
+              <Card className="bg-card/30 border-border/50">
                 <CardHeader className="pb-2 pt-3 px-4">
-                  <CardTitle className="text-xs text-stone-500 uppercase font-orbitron tracking-widest flex items-center gap-2">
+                  <CardTitle className="text-xs text-muted-foreground uppercase font-orbitron tracking-widest flex items-center gap-2">
                     <BarChart3 className="w-3 h-3" /> Reports by Type
                   </CardTitle>
                 </CardHeader>
@@ -897,18 +897,18 @@ export default function SuggestionsPage() {
               </Card>
             )}
 
-            <div className="flex flex-wrap items-center gap-3 bg-stone-900/30 p-3 rounded-lg border border-stone-800/50">
-              <Filter className="w-4 h-4 text-stone-500" />
+            <div className="flex flex-wrap items-center gap-3 bg-card/30 p-3 rounded-lg border border-border/50">
+              <Filter className="w-4 h-4 text-muted-foreground" />
               <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-500" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                 <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search reports..." className="pl-8 h-8 text-xs bg-stone-950 border-stone-800" data-testid="input-search-reports" />
+                  placeholder="Search reports..." className="pl-8 h-8 text-xs bg-muted border-border" data-testid="input-search-reports" />
               </div>
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-28 h-8 text-xs bg-stone-950 border-stone-800" data-testid="select-type">
+                <SelectTrigger className="w-28 h-8 text-xs bg-muted border-border" data-testid="select-type">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
-                <SelectContent className="bg-stone-900 border-stone-800">
+                <SelectContent className="bg-card border-border">
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="bug">Bug</SelectItem>
                   <SelectItem value="feature">Feature</SelectItem>
@@ -917,10 +917,10 @@ export default function SuggestionsPage() {
                 </SelectContent>
               </Select>
               <Select value={filterPriority} onValueChange={setFilterPriority}>
-                <SelectTrigger className="w-28 h-8 text-xs bg-stone-950 border-stone-800">
+                <SelectTrigger className="w-28 h-8 text-xs bg-muted border-border">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
-                <SelectContent className="bg-stone-900 border-stone-800">
+                <SelectContent className="bg-card border-border">
                   <SelectItem value="all">All Priority</SelectItem>
                   <SelectItem value="critical">Critical</SelectItem>
                   <SelectItem value="high">High</SelectItem>
@@ -932,9 +932,9 @@ export default function SuggestionsPage() {
 
             <ScrollArea className="h-[calc(100vh-700px)] min-h-[300px]">
               {feedbackLoading ? (
-                <div className="flex items-center justify-center h-48 text-stone-500"><div className="animate-pulse">Scanning agent telemetry...</div></div>
+                <div className="flex items-center justify-center h-48 text-muted-foreground"><div className="animate-pulse">Scanning agent telemetry...</div></div>
               ) : filteredFeedback.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-48 text-stone-500">
+                <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
                   <Bot className="w-10 h-10 mb-3 opacity-20" />
                   <p className="text-sm">No reports match your filters.</p>
                 </div>
@@ -944,12 +944,12 @@ export default function SuggestionsPage() {
                     const typeCfg = TYPE_CONFIG[item.type] || TYPE_CONFIG.idea;
                     const TypeIcon = typeCfg.icon;
                     return (
-                      <Card key={item.id} className={`bg-stone-900/20 border-stone-800/50 hover:border-amber-900/30 transition-all cursor-pointer ${selectedFeedback?.id === item.id ? 'border-amber-600/50 bg-stone-900/40' : ''}`}
+                      <Card key={item.id} className={`bg-card/20 border-border/50 hover:border-amber-900/30 transition-all cursor-pointer ${selectedFeedback?.id === item.id ? 'border-amber-600/50 bg-card/40' : ''}`}
                         onClick={() => setSelectedFeedback(item)} data-testid={`feedback-item-${item.id}`}>
                         <CardContent className="p-3">
                           <div className="flex items-start gap-3">
                             <Button variant="ghost" size="sm"
-                              className={`h-10 w-10 flex-col gap-0.5 border border-stone-800 hover:border-amber-500/50 shrink-0 ${item.votes > 1 ? 'text-amber-500' : 'text-stone-500'}`}
+                              className={`h-10 w-10 flex-col gap-0.5 border border-border hover:border-amber-500/50 shrink-0 ${item.votes > 1 ? 'text-amber-800' : 'text-muted-foreground'}`}
                               onClick={(e) => { e.stopPropagation(); voteFeedback.mutate(item.id); }}
                               data-testid={`vote-${item.id}`}>
                               <ThumbsUp className="w-3 h-3" />
@@ -962,9 +962,9 @@ export default function SuggestionsPage() {
                                 </Badge>
                                 <Badge className={`text-[9px] px-1.5 py-0 ${PRIORITY_CONFIG[item.priority]?.color || ''}`}>{item.priority}</Badge>
                               </div>
-                              <h3 className="text-sm font-medium text-stone-200 truncate">{item.title}</h3>
-                              <p className="text-xs text-stone-500 line-clamp-1">{item.description}</p>
-                              <div className="flex items-center gap-3 text-[10px] text-stone-600">
+                              <h3 className="text-sm font-medium text-foreground truncate">{item.title}</h3>
+                              <p className="text-xs text-muted-foreground line-clamp-1">{item.description}</p>
+                              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                                 <span>{item.source}</span>
                                 <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                               </div>

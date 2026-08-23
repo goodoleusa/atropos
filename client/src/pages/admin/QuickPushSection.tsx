@@ -130,22 +130,22 @@ export function QuickPushSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-amber-400 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
           <Zap className="w-5 h-5" /> Quick Push Console
         </h3>
-        <Badge variant="outline" className="border-amber-600 text-amber-400">
+        <Badge variant="outline" className="border-amber-600 text-amber-800">
           {clues.length} Total Clues
         </Badge>
       </div>
 
       <ScrollArea className="h-[calc(100vh-280px)] pr-4">
         <div className="space-y-6">
-          <Card className="bg-[#0a0500] border-amber-900/30">
+          <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                 <Layers className="w-4 h-4" /> Clue Template
               </CardTitle>
-              <CardDescription className="text-stone-500 text-xs">
+              <CardDescription className="text-muted-foreground text-xs">
                 Select a pre-built template or customize
               </CardDescription>
             </CardHeader>
@@ -158,17 +158,17 @@ export function QuickPushSection() {
                     className={`p-3 rounded-lg border text-left transition-all ${
                       selectedTemplate?.id === template.id
                         ? 'border-amber-500 bg-amber-900/20'
-                        : 'border-stone-700 hover:border-stone-600'
+                        : 'border-border hover:border-muted'
                     }`}
                     data-testid={`template-${template.id}`}
                   >
-                    <p className="text-sm font-medium text-stone-300">{template.name}</p>
-                    <p className="text-xs text-stone-500">{template.description}</p>
+                    <p className="text-sm font-medium text-foreground">{template.name}</p>
+                    <p className="text-xs text-muted-foreground">{template.description}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-[10px] border-stone-600">
+                      <Badge variant="outline" className="text-[10px] border-muted">
                         {template.type}
                       </Badge>
-                      <span className="text-[10px] text-amber-500">★{template.difficulty}</span>
+                      <span className="text-[10px] text-amber-800">★{template.difficulty}</span>
                     </div>
                   </button>
                 ))}
@@ -176,22 +176,22 @@ export function QuickPushSection() {
 
               <div className="mt-4 space-y-3">
                 <div>
-                  <Label className="text-stone-400 text-xs">Custom Name (optional)</Label>
+                  <Label className="text-muted-foreground text-xs">Custom Name (optional)</Label>
                   <Input
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
                     placeholder="Override template name..."
-                    className="bg-black/50 border-stone-700 mt-1"
+                    className="bg-black/50 border-border mt-1"
                     data-testid="custom-name-input"
                   />
                 </div>
                 <div>
-                  <Label className="text-stone-400 text-xs">Custom Content</Label>
+                  <Label className="text-muted-foreground text-xs">Custom Content</Label>
                   <Textarea
                     value={customContent}
                     onChange={(e) => setCustomContent(e.target.value)}
                     placeholder="Clue content or message..."
-                    className="bg-black/50 border-stone-700 mt-1 min-h-[80px]"
+                    className="bg-black/50 border-border mt-1 min-h-[80px]"
                     data-testid="custom-content-input"
                   />
                 </div>
@@ -199,12 +199,12 @@ export function QuickPushSection() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0a0500] border-teal-900/30">
+          <Card className="bg-[hsl(var(--card))] border-teal-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
                 <Map className="w-4 h-4" /> Target Zones
               </CardTitle>
-              <CardDescription className="text-stone-500 text-xs">
+              <CardDescription className="text-muted-foreground text-xs">
                 Where should this clue appear?
               </CardDescription>
             </CardHeader>
@@ -217,40 +217,40 @@ export function QuickPushSection() {
                     className={`p-2 rounded-lg border flex items-center gap-2 transition-all ${
                       selectedZones.includes(zone.id)
                         ? 'border-teal-500 bg-teal-900/20'
-                        : 'border-stone-700 hover:border-stone-600'
+                        : 'border-border hover:border-muted'
                     }`}
                     data-testid={`zone-${zone.id}`}
                   >
                     <span className="text-lg">{zone.icon}</span>
-                    <span className="text-xs text-stone-300">{zone.name}</span>
+                    <span className="text-xs text-foreground">{zone.name}</span>
                   </button>
                 ))}
               </div>
               {selectedZones.length > 0 && (
-                <p className="text-xs text-teal-400 mt-2">
+                <p className="text-xs text-teal-800 mt-2">
                   Selected: {selectedZones.join(', ')}
                 </p>
               )}
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0a0500] border-purple-900/30">
+          <Card className="bg-[hsl(var(--card))] border-purple-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-purple-700 text-sm font-mono flex items-center gap-2">
                 <Target className="w-4 h-4" /> Link to Campaigns
               </CardTitle>
-              <CardDescription className="text-stone-500 text-xs">
+              <CardDescription className="text-muted-foreground text-xs">
                 Optional: Associate with investigation campaigns
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="relative mb-3">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   value={searchFilter}
                   onChange={(e) => setSearchFilter(e.target.value)}
                   placeholder="Filter campaigns..."
-                  className="pl-9 bg-black/50 border-stone-700"
+                  className="pl-9 bg-black/50 border-border"
                   data-testid="campaign-search"
                 />
               </div>
@@ -261,18 +261,18 @@ export function QuickPushSection() {
                     className={`flex items-center gap-3 p-2 rounded border cursor-pointer transition-all ${
                       selectedCampaigns.includes(campaign.id)
                         ? 'border-purple-500 bg-purple-900/20'
-                        : 'border-stone-700 hover:border-stone-600'
+                        : 'border-border hover:border-muted'
                     }`}
                     onClick={() => toggleCampaign(campaign.id)}
                     data-testid={`campaign-${campaign.id}`}
                   >
                     <Checkbox 
                       checked={selectedCampaigns.includes(campaign.id)}
-                      className="border-stone-600"
+                      className="border-muted"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-stone-300 truncate">{campaign.name}</p>
-                      <p className="text-xs text-stone-500">{campaign.tags.slice(0, 2).join(', ')}</p>
+                      <p className="text-sm text-foreground truncate">{campaign.name}</p>
+                      <p className="text-xs text-muted-foreground">{campaign.tags.slice(0, 2).join(', ')}</p>
                     </div>
                     <Badge variant="outline" className="text-[10px] shrink-0">
                       {campaign.difficulty}

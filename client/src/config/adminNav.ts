@@ -92,17 +92,17 @@ export const NAV_ICONS: Record<string, any> = {
 };
 
 export const GROUP_COLORS: Record<string, string> = {
-  amber: 'text-amber-500 border-amber-900/40',
-  teal: 'text-teal-500 border-teal-900/40',
+  amber: 'text-amber-800 border-amber-900/40',
+  teal: 'text-teal-800 border-teal-900/40',
   cyan: 'text-cyan-500 border-cyan-900/40',
-  purple: 'text-purple-500 border-purple-900/40',
-  orange: 'text-orange-500 border-orange-900/40',
+  purple: 'text-purple-700 border-purple-900/40',
+  orange: 'text-orange-800 border-orange-900/40',
 };
 
 export const ACTIVE_COLORS: Record<string, string> = {
-  amber: 'bg-amber-900/30 text-amber-400 border-amber-700/50',
-  teal: 'bg-teal-900/30 text-teal-400 border-teal-700/50',
+  amber: 'bg-amber-900/30 text-amber-800 border-amber-700/50',
+  teal: 'bg-teal-900/30 text-teal-800 border-teal-700/50',
   cyan: 'bg-cyan-900/30 text-cyan-400 border-cyan-700/50',
-  purple: 'bg-purple-900/30 text-purple-400 border-purple-700/50',
-  orange: 'bg-orange-900/30 text-orange-400 border-orange-700/50',
+  purple: 'bg-purple-900/30 text-purple-700 border-purple-700/50',
+  orange: 'bg-orange-900/30 text-orange-800 border-orange-700/50',
 };

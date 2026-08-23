@@ -30,33 +30,33 @@ interface UnifiedCampaign {
 }
 
 const CATEGORY_META: Record<string, { icon: any; label: string; color: string; bg: string }> = {
-  all: { icon: <Layers className="w-3.5 h-3.5" />, label: 'All', color: 'text-stone-300', bg: 'bg-stone-800 border-stone-600' },
-  civic: { icon: <Users className="w-3.5 h-3.5" />, label: 'Civic', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
-  movements: { icon: <Users className="w-3.5 h-3.5" />, label: 'Movements', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
-  organizing: { icon: <Users className="w-3.5 h-3.5" />, label: 'Organizing', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
-  apt: { icon: <Skull className="w-3.5 h-3.5" />, label: 'APT', color: 'text-red-400', bg: 'bg-red-900/30 border-red-800' },
-  osint: { icon: <Globe className="w-3.5 h-3.5" />, label: 'OSINT', color: 'text-teal-400', bg: 'bg-teal-900/30 border-teal-800' },
-  forensics: { icon: <Search className="w-3.5 h-3.5" />, label: 'Forensics', color: 'text-blue-400', bg: 'bg-blue-900/30 border-blue-800' },
-  exploit: { icon: <Bug className="w-3.5 h-3.5" />, label: 'Exploit', color: 'text-red-400', bg: 'bg-red-900/30 border-red-800' },
-  defense: { icon: <Shield className="w-3.5 h-3.5" />, label: 'Defense', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
-  recon: { icon: <Network className="w-3.5 h-3.5" />, label: 'Recon', color: 'text-cyan-400', bg: 'bg-cyan-900/30 border-cyan-800' },
-  social: { icon: <Users className="w-3.5 h-3.5" />, label: 'Social', color: 'text-purple-400', bg: 'bg-purple-900/30 border-purple-800' },
-  curriculum: { icon: <BookOpen className="w-3.5 h-3.5" />, label: 'Learning', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
-  lab: { icon: <FlaskConical className="w-3.5 h-3.5" />, label: 'Labs', color: 'text-violet-400', bg: 'bg-violet-900/30 border-violet-800' },
+  all: { icon: <Layers className="w-3.5 h-3.5" />, label: 'All', color: 'text-foreground', bg: 'bg-border border-muted' },
+  civic: { icon: <Users className="w-3.5 h-3.5" />, label: 'Civic', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
+  movements: { icon: <Users className="w-3.5 h-3.5" />, label: 'Movements', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
+  organizing: { icon: <Users className="w-3.5 h-3.5" />, label: 'Organizing', color: 'text-emerald-800', bg: 'bg-emerald-900/30 border-emerald-800' },
+  apt: { icon: <Skull className="w-3.5 h-3.5" />, label: 'APT', color: 'text-red-700', bg: 'bg-red-900/30 border-red-800' },
+  osint: { icon: <Globe className="w-3.5 h-3.5" />, label: 'OSINT', color: 'text-teal-800', bg: 'bg-teal-900/30 border-teal-800' },
+  forensics: { icon: <Search className="w-3.5 h-3.5" />, label: 'Forensics', color: 'text-blue-800', bg: 'bg-blue-900/30 border-blue-800' },
+  exploit: { icon: <Bug className="w-3.5 h-3.5" />, label: 'Exploit', color: 'text-red-700', bg: 'bg-red-900/30 border-red-800' },
+  defense: { icon: <Shield className="w-3.5 h-3.5" />, label: 'Defense', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
+  recon: { icon: <Network className="w-3.5 h-3.5" />, label: 'Recon', color: 'text-cyan-800', bg: 'bg-cyan-900/30 border-cyan-800' },
+  social: { icon: <Users className="w-3.5 h-3.5" />, label: 'Social', color: 'text-purple-700', bg: 'bg-purple-900/30 border-purple-800' },
+  curriculum: { icon: <BookOpen className="w-3.5 h-3.5" />, label: 'Learning', color: 'text-emerald-800', bg: 'bg-emerald-900/30 border-emerald-800' },
+  lab: { icon: <FlaskConical className="w-3.5 h-3.5" />, label: 'Labs', color: 'text-violet-800', bg: 'bg-violet-900/30 border-violet-800' },
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: 'border-emerald-700/60 text-emerald-400 bg-emerald-950/30',
-  intermediate: 'border-amber-700/60 text-amber-400 bg-amber-950/30',
-  advanced: 'border-red-700/60 text-red-400 bg-red-950/30',
-  expert: 'border-purple-700/60 text-purple-400 bg-purple-950/30',
+  beginner: 'border-emerald-700/60 text-emerald-800 bg-emerald-950/30',
+  intermediate: 'border-amber-700/60 text-amber-800 bg-amber-950/30',
+  advanced: 'border-red-700/60 text-red-700 bg-red-950/30',
+  expert: 'border-purple-700/60 text-purple-700 bg-purple-950/30',
 };
 
 const NATION_STATE_FLAGS: Record<string, { label: string; color: string }> = {
-  Russia: { label: 'RUS', color: 'text-red-400' },
-  China: { label: 'CHN', color: 'text-orange-400' },
-  DPRK: { label: 'DPRK', color: 'text-yellow-400' },
-  Iran: { label: 'IRN', color: 'text-emerald-400' },
+  Russia: { label: 'RUS', color: 'text-red-700' },
+  China: { label: 'CHN', color: 'text-orange-800' },
+  DPRK: { label: 'DPRK', color: 'text-yellow-800' },
+  Iran: { label: 'IRN', color: 'text-emerald-800' },
 };
 
 const getAptInfo = (tags: string[]) => {
@@ -105,7 +105,7 @@ export default function CampaignsHub() {
           nodeCount: 12,
           tags: ['AI', 'prompt-engineering', 'bias', 'hallucination', 'lab'],
           source: 'lab' as const,
-          icon: '🧪',
+          icon: '',
           color: 'violet',
           route: '/decoherence',
         };
@@ -154,17 +154,17 @@ export default function CampaignsHub() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0500] text-stone-300" data-testid="campaigns-hub">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground" data-testid="campaigns-hub">
       <div className="max-w-6xl mx-auto px-4 pt-6 pb-16">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-mono font-bold text-amber-500" data-testid="hub-title">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-mono font-bold text-amber-800" data-testid="hub-title">
             Missions & Labs
           </h1>
-          <p className="text-stone-500 text-xs sm:text-sm mt-1">
+          <p className="text-muted-foreground text-xs sm:text-sm mt-1">
             Investigations, APT case studies, curriculum tracks, and hands-on labs — all in one place.
           </p>
-          <div className="flex items-center gap-3 mt-2 text-[10px] text-stone-600 font-mono">
+          <div className="flex items-center gap-3 mt-2 text-[10px] text-muted-foreground font-mono">
             <span>{campaigns.length} total</span>
             <span>·</span>
             <span>{filtered.length} shown</span>
@@ -173,18 +173,18 @@ export default function CampaignsHub() {
 
         {/* Search — full width, mobile friendly */}
         <div className="relative mb-4">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-600" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search campaigns, labs, tracks..."
-            className="pl-10 pr-10 bg-stone-950 border-stone-700 text-stone-300 h-11 text-sm rounded-lg"
+            className="pl-10 pr-10 bg-card border-border text-foreground h-11 text-sm rounded-lg"
             data-testid="search-campaigns"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-600 hover:text-stone-300"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               data-testid="clear-search"
             >
               <X className="w-4 h-4" />
@@ -207,7 +207,7 @@ export default function CampaignsHub() {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono whitespace-nowrap border transition-all shrink-0 ${
                   isActive
                     ? `${meta.bg} ${meta.color} border-current`
-                    : 'bg-stone-950 border-stone-800 text-stone-500 hover:text-stone-300 hover:border-stone-600'
+                    : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-muted'
                 }`}
                 data-testid={`filter-category-${cat}`}
               >
@@ -227,7 +227,7 @@ export default function CampaignsHub() {
               className={`px-3 py-1 rounded-full text-[11px] font-mono whitespace-nowrap border transition-all shrink-0 capitalize ${
                 activeDifficulty === d
                   ? DIFFICULTY_COLORS[d]
-                  : 'bg-stone-950 border-stone-800 text-stone-600 hover:text-stone-400'
+                  : 'bg-card border-border text-muted-foreground hover:text-muted-foreground'
               }`}
               data-testid={`filter-difficulty-${d}`}
             >
@@ -237,7 +237,7 @@ export default function CampaignsHub() {
           {activeDifficulty && (
             <button
               onClick={() => setActiveDifficulty(null)}
-              className="px-2 py-1 text-[11px] text-stone-600 hover:text-stone-400"
+              className="px-2 py-1 text-[11px] text-muted-foreground hover:text-muted-foreground"
             >
               clear
             </button>
@@ -248,17 +248,17 @@ export default function CampaignsHub() {
         {loading ? (
           <div className="text-center py-20">
             <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-stone-500 font-mono text-sm">Loading missions...</p>
+            <p className="text-muted-foreground font-mono text-sm">Loading missions...</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
-            <Terminal className="w-12 h-12 text-stone-700 mx-auto mb-4" />
-            <h3 className="text-stone-400 font-mono mb-2">No Matches</h3>
-            <p className="text-stone-600 text-sm mb-4">Try adjusting your filters or search terms.</p>
+            <Terminal className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-muted-foreground font-mono mb-2">No Matches</h3>
+            <p className="text-muted-foreground text-sm mb-4">Try adjusting your filters or search terms.</p>
             <Button
               onClick={() => { setSearchQuery(''); setActiveCategory('all'); setActiveDifficulty(null); }}
               variant="outline"
-              className="border-stone-700 text-stone-400"
+              className="border-border text-muted-foreground"
               data-testid="button-clear-filters"
             >
               Clear Filters
@@ -279,7 +279,7 @@ export default function CampaignsHub() {
                   transition={{ delay: Math.min(index * 0.03, 0.5) }}
                 >
                   <Card
-                    className={`bg-stone-950 border-stone-800/80 hover:border-amber-800/60 transition-all cursor-pointer group active:scale-[0.98] ${
+                    className={`bg-card border-border/80 hover:border-amber-800/60 transition-all cursor-pointer group active:scale-[0.98] ${
                       aptInfo.isApt ? 'ring-1 ring-red-900/15' : ''
                     }`}
                     onClick={() => handleCardClick(campaign)}
@@ -295,9 +295,9 @@ export default function CampaignsHub() {
                             campaign.source === 'curriculum' ? 'bg-emerald-950/30 border-emerald-800/40' :
                             catMeta.bg
                           }`}>
-                            {campaign.icon || (aptInfo.isApt ? <Skull className="w-3.5 h-3.5 text-red-400" /> :
-                              campaign.source === 'lab' ? <FlaskConical className="w-3.5 h-3.5 text-violet-400" /> :
-                              campaign.source === 'curriculum' ? <BookOpen className="w-3.5 h-3.5 text-emerald-400" /> :
+                            {campaign.icon || (aptInfo.isApt ? <Skull className="w-3.5 h-3.5 text-red-700" /> :
+                              campaign.source === 'lab' ? <FlaskConical className="w-3.5 h-3.5 text-violet-700" /> :
+                              campaign.source === 'curriculum' ? <BookOpen className="w-3.5 h-3.5 text-emerald-700" /> :
                               catMeta.icon)}
                           </div>
                           <div className="flex items-center gap-1.5">
@@ -311,22 +311,22 @@ export default function CampaignsHub() {
                             )}
                           </div>
                         </div>
-                        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${DIFFICULTY_COLORS[campaign.difficulty] || 'border-stone-700 text-stone-500'}`}>
+                        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${DIFFICULTY_COLORS[campaign.difficulty] || 'border-border text-muted-foreground'}`}>
                           {campaign.difficulty}
                         </Badge>
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-mono text-sm font-bold text-stone-200 group-hover:text-amber-400 transition-colors mb-1.5 line-clamp-1" data-testid={`campaign-name-${campaign.campaignId}`}>
+                      <h3 className="font-mono text-sm font-bold text-foreground group-hover:text-amber-600 transition-colors mb-1.5 line-clamp-1" data-testid={`campaign-name-${campaign.campaignId}`}>
                         {campaign.name}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-stone-500 text-xs line-clamp-2 mb-3 leading-relaxed">{campaign.description}</p>
+                      <p className="text-muted-foreground text-xs line-clamp-2 mb-3 leading-relaxed">{campaign.description}</p>
 
                       {/* Footer: stats + arrow */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 text-stone-600 text-[10px]">
+                        <div className="flex items-center gap-3 text-muted-foreground text-[10px]">
                           <span className="flex items-center gap-1">
                             <FileText className="w-3 h-3" /> {campaign.nodeCount} {campaign.source === 'curriculum' ? 'missions' : 'steps'}
                           </span>
@@ -334,21 +334,21 @@ export default function CampaignsHub() {
                             <Clock className="w-3 h-3" /> {campaign.estimatedTime}
                           </span>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-stone-700 group-hover:text-amber-500 transition-colors" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />
                       </div>
 
                       {/* Tags */}
                       {campaign.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-stone-800/40">
+                        <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-border/40">
                           {campaign.tags.slice(0, 4).map(tag => (
                             <span
                               key={tag}
                               className={`text-[9px] px-1.5 py-0.5 rounded ${
-                                tag === 'APT' ? 'text-red-400 bg-red-950/40' :
-                                NATION_STATE_FLAGS[tag] ? `${NATION_STATE_FLAGS[tag].color} bg-stone-900/60` :
-                                tag === 'curriculum' ? 'text-emerald-400 bg-emerald-950/30' :
-                                tag === 'lab' ? 'text-violet-400 bg-violet-950/30' :
-                                'text-stone-600 bg-stone-900/50'
+                                tag === 'APT' ? 'text-red-700 bg-red-950/40' :
+                                NATION_STATE_FLAGS[tag] ? `${NATION_STATE_FLAGS[tag].color} bg-card/60` :
+                                tag === 'curriculum' ? 'text-emerald-800 bg-emerald-950/30' :
+                                tag === 'lab' ? 'text-violet-800 bg-violet-950/30' :
+                                'text-muted-foreground bg-card/50'
                               }`}
                             >
                               {tag}

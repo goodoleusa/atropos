@@ -109,7 +109,7 @@ export function GlobalAttackMap() {
   }, []);
 
   return (
-    <div className="relative w-full aspect-[2/1] max-h-[500px] overflow-hidden rounded-lg border border-teal-900/30 bg-gradient-to-br from-[#0a0500] via-[#0d0805] to-[#0a0a0f]">
+    <div className="relative w-full aspect-[2/1] max-h-[500px] overflow-hidden rounded-lg border border-teal-900/30 bg-gradient-to-br from-[hsl(var(--card))] via-[hsl(var(--muted))] to-[hsl(var(--card))]">
       {/* Retro grid overlay */}
       <div
         className="absolute inset-0 opacity-20"
@@ -240,13 +240,13 @@ export function GlobalAttackMap() {
         {Object.entries(ATTACK_TYPES).map(([key, { color, label }]) => (
           <div
             key={key}
-            className="flex items-center gap-1.5 text-[10px] font-mono bg-black/50 px-2 py-1 rounded border border-stone-800/50"
+            className="flex items-center gap-1.5 text-[10px] font-mono bg-black/50 px-2 py-1 rounded border border-border/50"
           >
             <div
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: color }}
             />
-            <span className="text-stone-400">{label}</span>
+            <span className="text-muted-foreground">{label}</span>
           </div>
         ))}
       </div>
@@ -265,7 +265,7 @@ export function GlobalAttackMap() {
                   : stat.value}
                 {stat.suffix}
               </div>
-              <div className="text-[10px] md:text-xs text-stone-500 font-mono uppercase tracking-wider">
+              <div className="text-[10px] md:text-xs text-muted-foreground font-mono uppercase tracking-wider">
                 {stat.label}
               </div>
             </div>
@@ -276,7 +276,7 @@ export function GlobalAttackMap() {
       {/* Live indicator */}
       <div className="absolute top-3 right-3 flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-full border border-red-900/30">
         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-        <span className="text-xs font-mono text-red-400">LIVE</span>
+        <span className="text-xs font-mono text-red-700">LIVE</span>
       </div>
 
       {/* Cassette futurism decorative elements */}

@@ -167,7 +167,7 @@ export function EffectsPlaygroundSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-purple-400 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-purple-700 flex items-center gap-2">
           <Sparkles className="w-5 h-5" /> Effects Playground
         </h3>
         <div className="flex gap-2">
@@ -175,7 +175,7 @@ export function EffectsPlaygroundSection() {
             variant="outline" 
             size="sm" 
             onClick={() => setConfig(DEFAULT_CONFIG)}
-            className="border-stone-600"
+            className="border-muted"
           >
             <RotateCcw className="w-4 h-4 mr-1" /> Reset
           </Button>
@@ -183,7 +183,7 @@ export function EffectsPlaygroundSection() {
             variant="outline" 
             size="sm" 
             onClick={copyConfigCode}
-            className="border-purple-600 text-purple-400"
+            className="border-purple-600 text-purple-700"
           >
             {copied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
             {copied ? 'Copied!' : 'Copy Config'}
@@ -192,7 +192,7 @@ export function EffectsPlaygroundSection() {
       </div>
 
       <Tabs defaultValue="configure" className="space-y-4">
-        <TabsList className="bg-[#0a0500] border border-purple-900/30">
+        <TabsList className="bg-[hsl(var(--card))] border border-purple-900/30">
           <TabsTrigger value="configure" className="data-[state=active]:bg-purple-900/30">
             <Wand2 className="w-4 h-4 mr-2" /> Configure
           </TabsTrigger>
@@ -213,9 +213,9 @@ export function EffectsPlaygroundSection() {
         <TabsContent value="configure">
           <ScrollArea className="h-[calc(100vh-340px)]">
             <div className="space-y-4 pr-4">
-              <Card className="bg-[#0a0500] border-purple-900/30">
+              <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono">Reveal Type</CardTitle>
+                  <CardTitle className="text-purple-700 text-sm font-mono">Reveal Type</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -226,25 +226,25 @@ export function EffectsPlaygroundSection() {
                         className={`p-3 rounded-lg border text-left transition-all ${
                           config.revealType === type.id
                             ? 'border-purple-500 bg-purple-900/20'
-                            : 'border-stone-700 hover:border-stone-600'
+                            : 'border-border hover:border-muted'
                         }`}
                       >
-                        <p className="text-sm font-medium text-stone-300">{type.name}</p>
-                        <p className="text-[10px] text-stone-500 mt-1">{type.desc}</p>
+                        <p className="text-sm font-medium text-foreground">{type.name}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">{type.desc}</p>
                       </button>
                     ))}
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-amber-900/30">
+              <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono">Visual Parameters</CardTitle>
+                  <CardTitle className="text-amber-800 text-sm font-mono">Visual Parameters</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Intensity</Label>
+                      <Label className="text-muted-foreground text-xs">Intensity</Label>
                       <Badge variant="outline" className="text-[10px]">{config.intensity}</Badge>
                     </div>
                     <div className="flex gap-2">
@@ -254,7 +254,7 @@ export function EffectsPlaygroundSection() {
                           size="sm"
                           variant={config.intensity === level ? 'default' : 'outline'}
                           onClick={() => updateConfig('intensity', level)}
-                          className={config.intensity === level ? 'bg-amber-700' : 'border-stone-600'}
+                          className={config.intensity === level ? 'bg-amber-700' : 'border-muted'}
                         >
                           {level}
                         </Button>
@@ -264,28 +264,28 @@ export function EffectsPlaygroundSection() {
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Glow Color</Label>
-                      <span className="text-xs text-stone-500">{config.glowColor}</span>
+                      <Label className="text-muted-foreground text-xs">Glow Color</Label>
+                      <span className="text-xs text-muted-foreground">{config.glowColor}</span>
                     </div>
                     <div className="flex gap-2 items-center">
                       <input
                         type="color"
                         value={config.glowColor}
                         onChange={(e) => updateConfig('glowColor', e.target.value)}
-                        className="w-10 h-10 rounded border border-stone-700 bg-transparent cursor-pointer"
+                        className="w-10 h-10 rounded border border-border bg-transparent cursor-pointer"
                       />
                       <Input
                         value={config.glowColor}
                         onChange={(e) => updateConfig('glowColor', e.target.value)}
-                        className="flex-1 bg-black/50 border-stone-700 font-mono text-xs"
+                        className="flex-1 bg-black/50 border-border font-mono text-xs"
                       />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Parallax Depth</Label>
-                      <span className="text-xs text-amber-400">{config.parallaxDepth}px</span>
+                      <Label className="text-muted-foreground text-xs">Parallax Depth</Label>
+                      <span className="text-xs text-amber-800">{config.parallaxDepth}px</span>
                     </div>
                     <Slider
                       value={[config.parallaxDepth]}
@@ -299,8 +299,8 @@ export function EffectsPlaygroundSection() {
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Animation Speed</Label>
-                      <span className="text-xs text-amber-400">{config.animationSpeed}s</span>
+                      <Label className="text-muted-foreground text-xs">Animation Speed</Label>
+                      <span className="text-xs text-amber-800">{config.animationSpeed}s</span>
                     </div>
                     <Slider
                       value={[config.animationSpeed]}
@@ -314,8 +314,8 @@ export function EffectsPlaygroundSection() {
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Blur Amount</Label>
-                      <span className="text-xs text-amber-400">{config.blurAmount}px</span>
+                      <Label className="text-muted-foreground text-xs">Blur Amount</Label>
+                      <span className="text-xs text-amber-800">{config.blurAmount}px</span>
                     </div>
                     <Slider
                       value={[config.blurAmount]}
@@ -329,14 +329,14 @@ export function EffectsPlaygroundSection() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Pulse Effect</Label>
+                      <Label className="text-muted-foreground text-xs">Pulse Effect</Label>
                       <Switch
                         checked={config.pulseEnabled}
                         onCheckedChange={(v) => updateConfig('pulseEnabled', v)}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <Label className="text-stone-400 text-xs">Particles</Label>
+                      <Label className="text-muted-foreground text-xs">Particles</Label>
                       <Switch
                         checked={config.particlesEnabled}
                         onCheckedChange={(v) => updateConfig('particlesEnabled', v)}
@@ -346,15 +346,15 @@ export function EffectsPlaygroundSection() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-teal-900/30">
+              <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-teal-500 text-sm font-mono">Advanced Effects</CardTitle>
+                  <CardTitle className="text-teal-800 text-sm font-mono">Advanced Effects</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Distortion Level</Label>
-                      <span className="text-xs text-teal-400">{(config.distortionLevel * 100).toFixed(0)}%</span>
+                      <Label className="text-muted-foreground text-xs">Distortion Level</Label>
+                      <span className="text-xs text-teal-800">{(config.distortionLevel * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[config.distortionLevel]}
@@ -368,8 +368,8 @@ export function EffectsPlaygroundSection() {
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Scanline Opacity</Label>
-                      <span className="text-xs text-teal-400">{(config.scanlineOpacity * 100).toFixed(0)}%</span>
+                      <Label className="text-muted-foreground text-xs">Scanline Opacity</Label>
+                      <span className="text-xs text-teal-800">{(config.scanlineOpacity * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[config.scanlineOpacity]}
@@ -383,8 +383,8 @@ export function EffectsPlaygroundSection() {
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Chromatic Offset</Label>
-                      <span className="text-xs text-teal-400">{config.chromaticOffset}px</span>
+                      <Label className="text-muted-foreground text-xs">Chromatic Offset</Label>
+                      <span className="text-xs text-teal-800">{config.chromaticOffset}px</span>
                     </div>
                     <Slider
                       value={[config.chromaticOffset]}
@@ -404,53 +404,53 @@ export function EffectsPlaygroundSection() {
         <TabsContent value="preview">
           <ScrollArea className="h-[calc(100vh-340px)]">
             <div className="space-y-4 pr-4">
-              <Card className="bg-[#0a0500] border-purple-900/30">
+              <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+                  <CardTitle className="text-purple-700 text-sm font-mono flex items-center gap-2">
                     <Eye className="w-4 h-4" /> Live Preview
                     <Badge className="bg-green-900/50 text-green-400 text-[10px]">LIVE</Badge>
                   </CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">
+                  <CardDescription className="text-muted-foreground text-xs">
                     Hover/interact with the preview to see the effect
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mb-4">
-                    <Label className="text-stone-400 text-xs">Preview Text</Label>
+                    <Label className="text-muted-foreground text-xs">Preview Text</Label>
                     <Input
                       value={previewText}
                       onChange={(e) => setPreviewText(e.target.value)}
-                      className="mt-1 bg-black/50 border-stone-700"
+                      className="mt-1 bg-black/50 border-border"
                     />
                   </div>
 
-                  <div className="relative min-h-[200px] bg-black/50 rounded-lg border border-stone-700 flex items-center justify-center overflow-hidden">
+                  <div className="relative min-h-[200px] bg-black/50 rounded-lg border border-border flex items-center justify-center overflow-hidden">
                     <LivePreviewCard config={config} text={previewText} intensityMultiplier={intensityMultiplier} />
                   </div>
                 </CardContent>
               </Card>
 
               <div className="grid grid-cols-2 gap-4">
-                <Card className="bg-[#0a0500] border-stone-700">
+                <Card className="bg-[hsl(var(--card))] border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-stone-400 text-xs font-mono">Current Config</CardTitle>
+                    <CardTitle className="text-muted-foreground text-xs font-mono">Current Config</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <pre className="text-[10px] text-stone-500 overflow-auto max-h-32">
+                    <pre className="text-[10px] text-muted-foreground overflow-auto max-h-32">
                       {JSON.stringify(config, null, 2)}
                     </pre>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-[#0a0500] border-stone-700">
+                <Card className="bg-[hsl(var(--card))] border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-stone-400 text-xs font-mono">Save Preset</CardTitle>
+                    <CardTitle className="text-muted-foreground text-xs font-mono">Save Preset</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex gap-2">
                       <Input
                         placeholder="Preset name..."
-                        className="bg-black/50 border-stone-600 text-xs"
+                        className="bg-black/50 border-muted text-xs"
                         id="preset-name"
                       />
                       <Button 
@@ -488,12 +488,12 @@ export function EffectsPlaygroundSection() {
         <TabsContent value="apply">
           <ScrollArea className="h-[calc(100vh-340px)]">
             <div className="space-y-4 pr-4">
-              <Card className="bg-[#0a0500] border-amber-900/30">
+              <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+                  <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                     <Layers className="w-4 h-4" /> Select Clue Types
                   </CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">
+                  <CardDescription className="text-muted-foreground text-xs">
                     Choose which clue types should use this effect configuration
                   </CardDescription>
                 </CardHeader>
@@ -506,38 +506,38 @@ export function EffectsPlaygroundSection() {
                         className={`p-3 rounded-lg border flex items-center gap-2 transition-all ${
                           selectedClueTypes.includes(type.id)
                             ? 'border-amber-500 bg-amber-900/20'
-                            : 'border-stone-700 hover:border-stone-600'
+                            : 'border-border hover:border-muted'
                         }`}
                       >
                         <span className="text-xl">{type.icon}</span>
-                        <span className="text-sm text-stone-300">{type.name}</span>
+                        <span className="text-sm text-foreground">{type.name}</span>
                       </button>
                     ))}
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-purple-900/30">
+              <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono">Effect Summary</CardTitle>
+                  <CardTitle className="text-purple-700 text-sm font-mono">Effect Summary</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="flex justify-between p-2 bg-black/30 rounded">
-                      <span className="text-stone-500">Reveal Type:</span>
-                      <span className="text-purple-400">{config.revealType}</span>
+                      <span className="text-muted-foreground">Reveal Type:</span>
+                      <span className="text-purple-700">{config.revealType}</span>
                     </div>
                     <div className="flex justify-between p-2 bg-black/30 rounded">
-                      <span className="text-stone-500">Intensity:</span>
-                      <span className="text-amber-400">{config.intensity}</span>
+                      <span className="text-muted-foreground">Intensity:</span>
+                      <span className="text-amber-800">{config.intensity}</span>
                     </div>
                     <div className="flex justify-between p-2 bg-black/30 rounded">
-                      <span className="text-stone-500">Parallax:</span>
-                      <span className="text-teal-400">{config.parallaxDepth}px</span>
+                      <span className="text-muted-foreground">Parallax:</span>
+                      <span className="text-teal-800">{config.parallaxDepth}px</span>
                     </div>
                     <div className="flex justify-between p-2 bg-black/30 rounded">
-                      <span className="text-stone-500">Animation:</span>
-                      <span className="text-teal-400">{config.animationSpeed}s</span>
+                      <span className="text-muted-foreground">Animation:</span>
+                      <span className="text-teal-800">{config.animationSpeed}s</span>
                     </div>
                   </div>
                 </CardContent>
@@ -558,10 +558,10 @@ export function EffectsPlaygroundSection() {
         <TabsContent value="molten">
           <ScrollArea className="h-[calc(100vh-340px)]">
             <div className="space-y-6 pr-4">
-              <Card className="bg-[#0a0500] border-amber-900/30">
+              <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono">Border & Container Effects</CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">Apply to cards, buttons, and containers</CardDescription>
+                  <CardTitle className="text-amber-800 text-sm font-mono">Border & Container Effects</CardTitle>
+                  <CardDescription className="text-muted-foreground text-xs">Apply to cards, buttons, and containers</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -572,18 +572,18 @@ export function EffectsPlaygroundSection() {
                         className={`p-3 rounded-lg border text-left transition-all ${
                           moltenEffect === effect
                             ? 'border-amber-500 bg-amber-900/20'
-                            : 'border-stone-700 hover:border-stone-600'
+                            : 'border-border hover:border-muted'
                         }`}
                       >
-                        <p className="text-xs font-medium text-stone-300 capitalize">{effect.replace("-", " ")}</p>
+                        <p className="text-xs font-medium text-foreground capitalize">{effect.replace("-", " ")}</p>
                       </button>
                     ))}
                   </div>
                   
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Intensity</Label>
-                      <span className="text-xs text-amber-400">{(moltenIntensity * 100).toFixed(0)}%</span>
+                      <Label className="text-muted-foreground text-xs">Intensity</Label>
+                      <span className="text-xs text-amber-800">{(moltenIntensity * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[moltenIntensity]}
@@ -596,27 +596,27 @@ export function EffectsPlaygroundSection() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-stone-400 text-xs">Slag Particles</Label>
+                    <Label className="text-muted-foreground text-xs">Slag Particles</Label>
                     <Switch checked={showParticles} onCheckedChange={setShowParticles} />
                   </div>
 
                   <div className="pt-4">
-                    <p className="text-stone-500 text-xs mb-2">Preview:</p>
+                    <p className="text-muted-foreground text-xs mb-2">Preview:</p>
                     <MoltenWrapper effect={moltenEffect} intensity={moltenIntensity} className="rounded-lg">
-                      <div className="bg-[#0a0500] border border-stone-800 rounded-lg p-6 text-center relative">
+                      <div className="bg-[hsl(var(--card))] border border-border rounded-lg p-6 text-center relative">
                         {showParticles && <SlagParticles count={6} />}
-                        <p className="text-amber-500 font-mono">Sample Container</p>
-                        <p className="text-stone-500 text-xs mt-1">With {moltenEffect} effect</p>
+                        <p className="text-amber-800 font-mono">Sample Container</p>
+                        <p className="text-muted-foreground text-xs mt-1">With {moltenEffect} effect</p>
                       </div>
                     </MoltenWrapper>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-amber-900/30">
+              <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono">Text Effects</CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">Apply to headings and labels</CardDescription>
+                  <CardTitle className="text-amber-800 text-sm font-mono">Text Effects</CardTitle>
+                  <CardDescription className="text-muted-foreground text-xs">Apply to headings and labels</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
@@ -627,26 +627,26 @@ export function EffectsPlaygroundSection() {
                         className={`p-3 rounded-lg border text-center transition-all ${
                           moltenTextEffect === effect
                             ? 'border-amber-500 bg-amber-900/20'
-                            : 'border-stone-700 hover:border-stone-600'
+                            : 'border-border hover:border-muted'
                         }`}
                       >
-                        <p className="text-xs font-medium text-stone-300 capitalize">{effect.replace("-", " ")}</p>
+                        <p className="text-xs font-medium text-foreground capitalize">{effect.replace("-", " ")}</p>
                       </button>
                     ))}
                   </div>
 
                   <div className="pt-4 text-center">
-                    <MoltenText effect={moltenTextEffect} intensity={moltenIntensity} as="h2" className="text-2xl font-orbitron text-amber-500">
+                    <MoltenText effect={moltenTextEffect} intensity={moltenIntensity} as="h2" className="text-2xl font-orbitron text-amber-800">
                       MOLTEN HEADER
                     </MoltenText>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-purple-900/30">
+              <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono">Subliminal Overlay</CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">Global page effects - glitches, scanlines, messages</CardDescription>
+                  <CardTitle className="text-purple-700 text-sm font-mono">Subliminal Overlay</CardTitle>
+                  <CardDescription className="text-muted-foreground text-xs">Global page effects - glitches, scanlines, messages</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -657,21 +657,21 @@ export function EffectsPlaygroundSection() {
                         className={`p-3 rounded-lg border text-center transition-all ${
                           subliminalMode === mode
                             ? 'border-purple-500 bg-purple-900/20'
-                            : 'border-stone-700 hover:border-stone-600'
+                            : 'border-border hover:border-muted'
                         }`}
                       >
-                        <p className="text-xs font-medium text-stone-300 capitalize">{mode}</p>
+                        <p className="text-xs font-medium text-foreground capitalize">{mode}</p>
                       </button>
                     ))}
                   </div>
-                  <p className="text-[10px] text-stone-600">Adds occasional glitch frames and subliminal text flashes</p>
+                  <p className="text-[10px] text-muted-foreground">Adds occasional glitch frames and subliminal text flashes</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-teal-900/30">
+              <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-teal-500 text-sm font-mono">Video Overlay</CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">For hero video sections</CardDescription>
+                  <CardTitle className="text-teal-800 text-sm font-mono">Video Overlay</CardTitle>
+                  <CardDescription className="text-muted-foreground text-xs">For hero video sections</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -682,18 +682,18 @@ export function EffectsPlaygroundSection() {
                         className={`p-3 rounded-lg border text-center transition-all ${
                           videoOverlay === variant
                             ? 'border-teal-500 bg-teal-900/20'
-                            : 'border-stone-700 hover:border-stone-600'
+                            : 'border-border hover:border-muted'
                         }`}
                       >
-                        <p className="text-xs font-medium text-stone-300 capitalize">{variant}</p>
+                        <p className="text-xs font-medium text-foreground capitalize">{variant}</p>
                       </button>
                     ))}
                   </div>
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Intensity</Label>
-                      <span className="text-xs text-teal-400">{(videoIntensity * 100).toFixed(0)}%</span>
+                      <Label className="text-muted-foreground text-xs">Intensity</Label>
+                      <span className="text-xs text-teal-800">{(videoIntensity * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[videoIntensity]}
@@ -705,17 +705,17 @@ export function EffectsPlaygroundSection() {
                     />
                   </div>
 
-                  <div className="pt-4 relative h-32 bg-gradient-to-br from-stone-900 to-stone-800 rounded-lg overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center text-stone-600 text-xs">Video Preview Area</div>
+                  <div className="pt-4 relative h-32 bg-gradient-to-br from-card to-border rounded-lg overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">Video Preview Area</div>
                     <VideoOverlay variant={videoOverlay} intensity={videoIntensity} />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-stone-700">
+              <Card className="bg-[hsl(var(--card))] border-border">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-stone-400 text-sm font-mono">Light Filters</CardTitle>
-                  <CardDescription className="text-stone-500 text-xs">Global page filters</CardDescription>
+                  <CardTitle className="text-muted-foreground text-sm font-mono">Light Filters</CardTitle>
+                  <CardDescription className="text-muted-foreground text-xs">Global page filters</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -725,19 +725,19 @@ export function EffectsPlaygroundSection() {
                         onClick={() => setLightFilter(filter)}
                         className={`p-3 rounded-lg border text-center transition-all ${
                           lightFilter === filter
-                            ? 'border-stone-400 bg-stone-800/50'
-                            : 'border-stone-700 hover:border-stone-600'
+                            ? 'border-muted bg-border/50'
+                            : 'border-border hover:border-muted'
                         }`}
                       >
-                        <p className="text-xs font-medium text-stone-300 capitalize">{filter.replace("-", " ")}</p>
+                        <p className="text-xs font-medium text-foreground capitalize">{filter.replace("-", " ")}</p>
                       </button>
                     ))}
                   </div>
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <Label className="text-stone-400 text-xs">Intensity</Label>
-                      <span className="text-xs text-stone-400">{(lightIntensity * 100).toFixed(0)}%</span>
+                      <Label className="text-muted-foreground text-xs">Intensity</Label>
+                      <span className="text-xs text-muted-foreground">{(lightIntensity * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[lightIntensity]}
@@ -752,8 +752,8 @@ export function EffectsPlaygroundSection() {
               </Card>
 
               <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-4">
-                <h4 className="text-amber-500 font-mono text-sm mb-2">Usage Examples</h4>
-                <pre className="text-[10px] text-stone-400 overflow-x-auto">
+                <h4 className="text-amber-800 font-mono text-sm mb-2">Usage Examples</h4>
+                <pre className="text-[10px] text-muted-foreground overflow-x-auto">
 {`// Border effect on a card
 <MoltenWrapper effect="${moltenEffect}" intensity={${moltenIntensity}}>
   <Card>...</Card>
@@ -786,24 +786,24 @@ export function EffectsPlaygroundSection() {
 
 function EffectPreviewBox({ children, label, active }: { children: React.ReactNode; label: string; active: boolean }) {
   return (
-    <div className={`relative rounded-lg border overflow-hidden h-24 ${active ? 'border-amber-700/60' : 'border-stone-800'}`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-stone-900 to-stone-950">
+    <div className={`relative rounded-lg border overflow-hidden h-24 ${active ? 'border-amber-700/60' : 'border-border'}`}>
+      <div className="absolute inset-0 bg-gradient-to-br from-card to-card">
         <div className="absolute inset-0 flex items-center justify-center gap-3 p-3">
-          <div className="w-10 h-10 rounded border border-stone-700 bg-stone-800/50" />
+          <div className="w-10 h-10 rounded border border-border bg-border/50" />
           <div className="flex-1 space-y-1.5">
-            <div className="h-2 bg-stone-700/50 rounded w-3/4" />
-            <div className="h-2 bg-stone-700/30 rounded w-1/2" />
-            <div className="h-1.5 bg-stone-700/20 rounded w-2/3" />
+            <div className="h-2 bg-border/50 rounded w-3/4" />
+            <div className="h-2 bg-border/30 rounded w-1/2" />
+            <div className="h-1.5 bg-border/20 rounded w-2/3" />
           </div>
         </div>
       </div>
       {active && children}
       <div className="absolute bottom-1 left-2">
-        <span className={`text-[9px] font-mono ${active ? 'text-amber-500' : 'text-stone-600'}`}>{label}</span>
+        <span className={`text-[9px] font-mono ${active ? 'text-amber-800' : 'text-muted-foreground'}`}>{label}</span>
       </div>
       {!active && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-          <span className="text-[10px] text-stone-600 font-mono">OFF</span>
+          <span className="text-[10px] text-muted-foreground font-mono">OFF</span>
         </div>
       )}
     </div>
@@ -816,8 +816,8 @@ function TimingSlider({ label, value, onChange, min, max, step, unit }: {
   return (
     <div>
       <div className="flex justify-between mb-1">
-        <Label className="text-stone-500 text-[10px]">{label}</Label>
-        <span className="text-[10px] text-stone-400 font-mono">{value}{unit}</span>
+        <Label className="text-muted-foreground text-[10px]">{label}</Label>
+        <span className="text-[10px] text-muted-foreground font-mono">{value}{unit}</span>
       </div>
       <Slider value={[value]} onValueChange={([v]) => onChange(v)} min={min} max={max} step={step} className="py-1" />
     </div>
@@ -886,7 +886,7 @@ function GlobalSiteFXTab() {
               checked={gfx.enabled}
               onCheckedChange={(v) => setGfx({ enabled: v })}
             />
-            <span className={`text-sm font-mono ${gfx.enabled ? "text-teal-400" : "text-stone-500"}`}>
+            <span className={`text-sm font-mono ${gfx.enabled ? "text-teal-800" : "text-muted-foreground"}`}>
               {gfx.enabled ? "ACTIVE" : "DISABLED"}
             </span>
           </div>
@@ -901,9 +901,9 @@ function GlobalSiteFXTab() {
           </Button>
         </div>
 
-        <Card className="bg-[#0a0500] border-teal-900/30">
+        <Card className="bg-[hsl(var(--card))] border-teal-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
               <Paintbrush className="w-4 h-4" /> Presets
             </CardTitle>
           </CardHeader>
@@ -917,10 +917,10 @@ function GlobalSiteFXTab() {
                   className={`p-3 rounded-lg border text-center transition-all ${
                     gfx.preset === name
                       ? "border-teal-500 bg-teal-900/20"
-                      : "border-stone-700 hover:border-stone-600"
+                      : "border-border hover:border-muted"
                   }`}
                 >
-                  <p className="text-xs font-medium text-stone-300 capitalize">
+                  <p className="text-xs font-medium text-foreground capitalize">
                     {name.replace(/_/g, " ")}
                   </p>
                 </button>
@@ -929,12 +929,12 @@ function GlobalSiteFXTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0a0500] border-amber-900/30">
+        <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
               <Monitor className="w-4 h-4" /> Screen Overlays
             </CardTitle>
-            <CardDescription className="text-stone-600 text-[10px]">These effects layer over the entire page. Previews below show each one in isolation.</CardDescription>
+            <CardDescription className="text-muted-foreground text-[10px]">These effects layer over the entire page. Previews below show each one in isolation.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
@@ -989,37 +989,37 @@ function GlobalSiteFXTab() {
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Scanlines</Label>
+                <Label className="text-muted-foreground text-xs">Scanlines</Label>
                 <Switch checked={gfx.scanlines} onCheckedChange={(v) => setGfx({ scanlines: v })} />
               </div>
               <TimingSlider label="Opacity" value={gfx.scanlineOpacity} onChange={(v) => setGfx({ scanlineOpacity: v })} min={0.01} max={0.15} step={0.01} unit="" />
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Vignette</Label>
+                <Label className="text-muted-foreground text-xs">Vignette</Label>
                 <Switch checked={gfx.vignette} onCheckedChange={(v) => setGfx({ vignette: v })} />
               </div>
               <TimingSlider label="Intensity" value={gfx.vignetteIntensity} onChange={(v) => setGfx({ vignetteIntensity: v })} min={0.1} max={0.8} step={0.05} unit="" />
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">CRT Curvature</Label>
+                <Label className="text-muted-foreground text-xs">CRT Curvature</Label>
                 <Switch checked={gfx.crt} onCheckedChange={(v) => setGfx({ crt: v })} />
               </div>
               <TimingSlider label="Curvature" value={gfx.crtCurvature} onChange={(v) => setGfx({ crtCurvature: v })} min={1} max={10} step={1} unit="px" />
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Chromatic Aberration</Label>
+                <Label className="text-muted-foreground text-xs">Chromatic Aberration</Label>
                 <Switch checked={gfx.chromaticAberration} onCheckedChange={(v) => setGfx({ chromaticAberration: v })} />
               </div>
               <TimingSlider label="Offset" value={gfx.chromaticOffset} onChange={(v) => setGfx({ chromaticOffset: v })} min={0.5} max={5} step={0.5} unit="px" />
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Warm Glow</Label>
+                <Label className="text-muted-foreground text-xs">Warm Glow</Label>
                 <Switch checked={gfx.warmGlow} onCheckedChange={(v) => setGfx({ warmGlow: v })} />
               </div>
               <TimingSlider label="Intensity" value={gfx.warmGlowIntensity} onChange={(v) => setGfx({ warmGlowIntensity: v })} min={0.05} max={0.4} step={0.05} unit="" />
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Film Noise</Label>
+                <Label className="text-muted-foreground text-xs">Film Noise</Label>
                 <Switch checked={gfx.noise} onCheckedChange={(v) => setGfx({ noise: v })} />
               </div>
               <TimingSlider label="Opacity" value={gfx.noiseOpacity} onChange={(v) => setGfx({ noiseOpacity: v })} min={0.005} max={0.08} step={0.005} unit="" />
@@ -1027,19 +1027,19 @@ function GlobalSiteFXTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0a0500] border-red-900/30">
+        <Card className="bg-[hsl(var(--card))] border-red-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-red-400 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-red-700 text-sm font-mono flex items-center gap-2">
               <Zap className="w-4 h-4" /> Timed Effects
             </CardTitle>
-            <CardDescription className="text-stone-600 text-[10px]">
+            <CardDescription className="text-muted-foreground text-[10px]">
               These effects fire on timers. Adjust interval (how often), duration (how long each burst lasts), and probability.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="border border-stone-800 rounded-lg p-3 space-y-3">
+            <div className="border border-border rounded-lg p-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-300 text-xs font-mono">Glitch Effects</Label>
+                <Label className="text-foreground text-xs font-mono">Glitch Effects</Label>
                 <Switch checked={gfx.glitch} onCheckedChange={(v) => setGfx({ glitch: v })} />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -1048,9 +1048,9 @@ function GlobalSiteFXTab() {
                 <TimingSlider label="Probability" value={gfx.glitchFrequency} onChange={(v) => setGfx({ glitchFrequency: v })} min={0.01} max={0.2} step={0.01} unit="" />
                 <TimingSlider label="Intensity" value={gfx.glitchIntensity} onChange={(v) => setGfx({ glitchIntensity: v })} min={0.1} max={1} step={0.1} unit="" />
               </div>
-              <div className="relative h-12 rounded border border-stone-800 overflow-hidden bg-gradient-to-r from-stone-900 to-stone-950">
+              <div className="relative h-12 rounded border border-border overflow-hidden bg-gradient-to-r from-card to-card">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[10px] text-stone-600 font-mono">
+                  <span className="text-[10px] text-muted-foreground font-mono">
                     fires every {gfx.glitchIntervalMs || 2000}ms for {gfx.glitchDurationMs || 100}ms
                   </span>
                 </div>
@@ -1064,47 +1064,47 @@ function GlobalSiteFXTab() {
               </div>
             </div>
 
-            <div className="border border-stone-800 rounded-lg p-3 space-y-3">
+            <div className="border border-border rounded-lg p-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-300 text-xs font-mono">Subliminal Flashes</Label>
+                <Label className="text-foreground text-xs font-mono">Subliminal Flashes</Label>
                 <Switch checked={gfx.subliminalFlashes} onCheckedChange={(v) => setGfx({ subliminalFlashes: v })} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <TimingSlider label="Flash Interval" value={gfx.subliminalIntervalMs || 5000} onChange={(v) => setGfx({ subliminalIntervalMs: v })} min={1000} max={30000} step={500} unit="ms" />
                 <TimingSlider label="Flash Duration" value={gfx.subliminalDurationMs || 100} onChange={(v) => setGfx({ subliminalDurationMs: v })} min={30} max={500} step={10} unit="ms" />
               </div>
-              <div className="relative h-12 rounded border border-stone-800 overflow-hidden bg-gradient-to-r from-stone-900 to-stone-950">
+              <div className="relative h-12 rounded border border-border overflow-hidden bg-gradient-to-r from-card to-card">
                 <div className="absolute inset-0 flex items-center justify-center">
                   {previewFlash ? (
-                    <span className="text-lg font-black text-amber-500/30 tracking-widest font-mono blur-[0.5px]">{previewFlash}</span>
+                    <span className="text-lg font-black text-amber-800/30 tracking-widest font-mono blur-[0.5px]">{previewFlash}</span>
                   ) : (
-                    <span className="text-[10px] text-stone-600 font-mono">flash every {gfx.subliminalIntervalMs || 5000}ms for {gfx.subliminalDurationMs || 100}ms</span>
+                    <span className="text-[10px] text-muted-foreground font-mono">flash every {gfx.subliminalIntervalMs || 5000}ms for {gfx.subliminalDurationMs || 100}ms</span>
                   )}
                 </div>
               </div>
               <div>
-                <Label className="text-stone-500 text-[10px] mb-1 block">Messages (comma-separated)</Label>
+                <Label className="text-muted-foreground text-[10px] mb-1 block">Messages (comma-separated)</Label>
                 <Input
                   value={gfx.subliminalMessages.join(", ")}
                   onChange={(e) => setGfx({ subliminalMessages: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
-                  className="bg-black/30 border-stone-700 text-xs text-stone-300"
+                  className="bg-black/30 border-border text-xs text-foreground"
                   placeholder="LOOK CLOSER, 0xDEAD, THE SIGNAL"
                 />
               </div>
             </div>
 
-            <div className="border border-stone-800 rounded-lg p-3 space-y-3">
+            <div className="border border-border rounded-lg p-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-300 text-xs font-mono">Screen Flicker</Label>
+                <Label className="text-foreground text-xs font-mono">Screen Flicker</Label>
                 <Switch checked={gfx.flickerEnabled} onCheckedChange={(v) => setGfx({ flickerEnabled: v })} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <TimingSlider label="Flicker Interval" value={gfx.flickerIntervalMs || 800} onChange={(v) => setGfx({ flickerIntervalMs: v })} min={100} max={5000} step={50} unit="ms" />
                 <TimingSlider label="Dim Duration" value={gfx.flickerDurationMs || 50} onChange={(v) => setGfx({ flickerDurationMs: v })} min={10} max={200} step={5} unit="ms" />
               </div>
-              <div className="relative h-12 rounded border border-stone-800 overflow-hidden bg-gradient-to-r from-stone-900 to-stone-950">
+              <div className="relative h-12 rounded border border-border overflow-hidden bg-gradient-to-r from-card to-card">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[10px] text-stone-600 font-mono">dims every {gfx.flickerIntervalMs || 800}ms for {gfx.flickerDurationMs || 50}ms</span>
+                  <span className="text-[10px] text-muted-foreground font-mono">dims every {gfx.flickerIntervalMs || 800}ms for {gfx.flickerDurationMs || 50}ms</span>
                 </div>
                 {previewFlicker && <div className="absolute inset-0 bg-black/30 pointer-events-none" />}
               </div>
@@ -1112,39 +1112,39 @@ function GlobalSiteFXTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0a0500] border-purple-900/30">
+        <Card className="bg-[hsl(var(--card))] border-purple-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-purple-700 text-sm font-mono flex items-center gap-2">
               <MousePointer className="w-4 h-4" /> Cursor Effects
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-x-6 gap-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Cursor Glow</Label>
+                <Label className="text-muted-foreground text-xs">Cursor Glow</Label>
                 <Switch checked={gfx.cursorGlow} onCheckedChange={(v) => setGfx({ cursorGlow: v })} />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Label className="text-muted-foreground text-[10px]">Color</Label>
                   <Input
                     type="color"
                     value={gfx.cursorGlowColor}
                     onChange={(e) => setGfx({ cursorGlowColor: e.target.value })}
                     className="w-8 h-6 p-0 border-0"
                   />
-                  <span className="text-[10px] text-stone-500">{gfx.cursorGlowColor}</span>
+                  <span className="text-[10px] text-muted-foreground">{gfx.cursorGlowColor}</span>
                 </div>
                 <TimingSlider label="Size" value={gfx.cursorGlowSize} onChange={(v) => setGfx({ cursorGlowSize: v })} min={50} max={400} step={10} unit="px" />
               </div>
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Cursor Trail</Label>
+                <Label className="text-muted-foreground text-xs">Cursor Trail</Label>
                 <Switch checked={gfx.cursorTrail} onCheckedChange={(v) => setGfx({ cursorTrail: v })} />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Label className="text-muted-foreground text-[10px]">Color</Label>
                   <Input
                     type="color"
                     value={gfx.cursorTrailColor}
@@ -1156,7 +1156,7 @@ function GlobalSiteFXTab() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Click Ripples</Label>
+                <Label className="text-muted-foreground text-xs">Click Ripples</Label>
                 <Switch checked={gfx.cursorRipple} onCheckedChange={(v) => setGfx({ cursorRipple: v })} />
               </div>
               <TimingSlider label="Ripple Duration" value={gfx.cursorRippleDurationMs || 800} onChange={(v) => setGfx({ cursorRippleDurationMs: v })} min={200} max={2000} step={50} unit="ms" />
@@ -1164,21 +1164,21 @@ function GlobalSiteFXTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0a0500] border-teal-900/30">
+        <Card className="bg-[hsl(var(--card))] border-teal-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
               <Sparkles className="w-4 h-4" /> Background Effects
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-x-6 gap-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Particles</Label>
+                <Label className="text-muted-foreground text-xs">Particles</Label>
                 <Switch checked={gfx.bgParticles} onCheckedChange={(v) => setGfx({ bgParticles: v })} />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Label className="text-muted-foreground text-[10px]">Color</Label>
                   <Input
                     type="color"
                     value={gfx.bgParticleColor}
@@ -1191,12 +1191,12 @@ function GlobalSiteFXTab() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Matrix Rain</Label>
+                <Label className="text-muted-foreground text-xs">Matrix Rain</Label>
                 <Switch checked={gfx.bgMatrixRain} onCheckedChange={(v) => setGfx({ bgMatrixRain: v })} />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Label className="text-muted-foreground text-[10px]">Color</Label>
                   <Input
                     type="color"
                     value={gfx.bgMatrixColor}
@@ -1208,12 +1208,12 @@ function GlobalSiteFXTab() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Grid Pulse</Label>
+                <Label className="text-muted-foreground text-xs">Grid Pulse</Label>
                 <Switch checked={gfx.bgGridPulse} onCheckedChange={(v) => setGfx({ bgGridPulse: v })} />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-stone-500 text-[10px]">Color</Label>
+                  <Label className="text-muted-foreground text-[10px]">Color</Label>
                   <Input
                     type="color"
                     value={gfx.bgGridColor}
@@ -1226,7 +1226,7 @@ function GlobalSiteFXTab() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label className="text-stone-400 text-xs">Floating Orbs</Label>
+                <Label className="text-muted-foreground text-xs">Floating Orbs</Label>
                 <Switch checked={gfx.bgFloatingOrbs} onCheckedChange={(v) => setGfx({ bgFloatingOrbs: v })} />
               </div>
               <div className="space-y-2">
@@ -1237,10 +1237,10 @@ function GlobalSiteFXTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0a0500] border-stone-700">
+        <Card className="bg-[hsl(var(--card))] border-border">
           <CardHeader className="pb-3">
-            <CardTitle className="text-stone-400 text-sm font-mono">Page Exclusions</CardTitle>
-            <CardDescription className="text-stone-500 text-xs">
+            <CardTitle className="text-muted-foreground text-sm font-mono">Page Exclusions</CardTitle>
+            <CardDescription className="text-muted-foreground text-xs">
               Pages where effects are disabled (e.g. /admin)
             </CardDescription>
           </CardHeader>
@@ -1250,7 +1250,7 @@ function GlobalSiteFXTab() {
                 <Badge
                   key={page}
                   variant="outline"
-                  className="border-stone-600 text-stone-400 cursor-pointer hover:border-red-500 hover:text-red-400"
+                  className="border-muted text-muted-foreground cursor-pointer hover:border-red-500 hover:text-red-400"
                   onClick={() => setGfx({ excludedPages: gfx.excludedPages.filter((p) => p !== page) })}
                 >
                   {page} x
@@ -1258,7 +1258,7 @@ function GlobalSiteFXTab() {
               ))}
               <Input
                 placeholder="Add path..."
-                className="w-32 h-7 text-xs bg-black/30 border-stone-700"
+                className="w-32 h-7 text-xs bg-black/30 border-border"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const val = (e.target as HTMLInputElement).value.trim();
@@ -1364,7 +1364,7 @@ function LivePreviewCard({ config, text, intensityMultiplier }: { config: Effect
       )}
 
       {config.revealType === 'hold' && (
-        <div className="absolute bottom-2 left-2 right-2 h-1 bg-stone-800 rounded overflow-hidden">
+        <div className="absolute bottom-2 left-2 right-2 h-1 bg-border rounded overflow-hidden">
           <motion.div 
             className="h-full bg-amber-500"
             animate={{ width: `${holdProgress}%` }}
@@ -1385,7 +1385,7 @@ function LivePreviewCard({ config, text, intensityMultiplier }: { config: Effect
           {config.revealType === 'glitch' && isHovered ? (
             <div className="relative">
               <span 
-                className="absolute text-red-500 font-mono text-lg font-bold"
+                className="absolute text-red-700 font-mono text-lg font-bold"
                 style={{ transform: `translate(${config.chromaticOffset}px, 0)` }}
               >
                 {text}

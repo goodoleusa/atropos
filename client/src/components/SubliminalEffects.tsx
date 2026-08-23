@@ -187,7 +187,7 @@ export const SubliminalOverlay = ({ config: propConfig, children }: SubliminalOv
               exit={{ opacity: 0 }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <span className="text-6xl md:text-9xl font-black text-amber-500/20 tracking-widest font-mono blur-[1px]">
+              <span className="text-6xl md:text-9xl font-black text-amber-800/20 tracking-widest font-mono blur-[1px]">
                 {flashMessage}
               </span>
             </motion.div>

@@ -7,14 +7,15 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { QrCode, Trophy, Server } from 'lucide-react';
+import { QrCode, Trophy, Server, Sun, Moon } from 'lucide-react';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
 import { Switch } from '@/components/ui/switch';
+import { useTheme } from '@/hooks/useTheme';
 import { USER_NAV, ADMIN_NAV, type NavItem } from '@/config/navConfig';
 
 const NAV_STYLES = {
-  amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
-  teal: { active: 'bg-teal-900/30 text-teal-400', icon: 'text-teal-500' },
+  amber: { active: 'bg-amber-900/30 text-amber-800', icon: 'text-amber-800' },
+  teal: { active: 'bg-teal-900/30 text-teal-800', icon: 'text-teal-800' },
 } as const;
 
 function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean }) {
@@ -30,7 +31,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
           className={`w-full justify-start min-h-[44px] relative group overflow-hidden mb-1 border ${
             isActive
               ? 'bg-amber-900/40 text-amber-300 border-amber-600/60 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
-              : 'text-amber-400 border-amber-800/40 hover:border-amber-700/60 hover:bg-amber-950/40'
+              : 'text-amber-800 border-amber-800/40 hover:border-amber-700/60 hover:bg-amber-950/40'
           }`}
           data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
         >
@@ -43,8 +44,8 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
             />
           )}
           <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/8 transition-colors duration-300" />
-          <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? 'text-amber-400 scale-110' : 'text-amber-500 group-hover:text-amber-400'}`} />
-          <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest font-bold">
+          <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? 'text-amber-800 scale-110' : 'text-amber-800 group-hover:text-amber-400'}`} />
+          <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-nav text-[10px] tracking-widest font-bold">
             {item.label}
           </span>
         </Button>
@@ -58,7 +59,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
         variant="ghost"
         size="sm"
         className={`w-full justify-start min-h-[44px] relative group overflow-hidden ${
-          isActive ? styles.active : 'text-stone-400 hover:text-stone-200'
+          isActive ? styles.active : 'text-muted-foreground hover:text-foreground'
         }`}
         data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
       >
@@ -72,7 +73,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
         )}
         <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/5 transition-colors duration-300" />
         <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? styles.icon + ' scale-110' : 'group-hover:text-amber-400'}`} />
-        <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest">
+        <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-nav text-[10px] tracking-widest">
           {item.label}
         </span>
       </Button>
@@ -85,6 +86,7 @@ export default function QuickNav() {
   const [location] = useLocation();
   const { gameState, toggleDevMode } = useGame();
   const { pendingFindings, currentSession, targets } = useReportContext();
+  const { theme, toggleTheme } = useTheme();
 
   const handleToggle = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -127,45 +129,45 @@ export default function QuickNav() {
       onTouchMove={(e) => e.stopPropagation()}
     >
       {expanded && (
-        <div className="bg-black border border-stone-800 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar shadow-2xl">
+        <div className="bg-card border border-border rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar shadow-2xl">
           {progression && (
-            <div className="px-3 py-2 border-b border-stone-800 mb-2">
+            <div className="px-3 py-2 border-b border-border mb-2">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <Trophy className="w-3 h-3 text-amber-500" />
-                  <span className="text-xs font-bold text-amber-400">Level {progression.level}</span>
+                  <Trophy className="w-3 h-3 text-amber-800" />
+                  <span className="text-xs font-bold text-amber-800">Level {progression.level}</span>
                 </div>
-                <Badge variant="outline" className="text-[9px] border-amber-600 text-amber-400">
+                <Badge variant="outline" className="text-[9px] border-amber-600 text-amber-800">
                   {progression.xp} / {progression.level * 100} XP
                 </Badge>
               </div>
               <Progress
                 value={(progression.xp / (progression.level * 100)) * 100}
-                className="h-1.5 bg-stone-900"
+                className="h-1.5 bg-card"
               />
             </div>
           )}
 
           {currentSession && (
-            <div className="px-3 py-2 border-b border-stone-800 mb-2">
-              <p className="text-[10px] text-stone-500 uppercase">Active Session</p>
-              <p className="text-xs text-amber-400 font-bold truncate max-w-[150px]">{currentSession.name}</p>
+            <div className="px-3 py-2 border-b border-border mb-2">
+              <p className="text-[10px] text-muted-foreground uppercase">Active Session</p>
+              <p className="text-xs text-amber-800 font-bold truncate max-w-[150px]">{currentSession.name}</p>
               <div className="flex gap-2 mt-1 text-[10px]">
-                <span className="text-amber-500">{targets.length} targets</span>
-                <span className="text-amber-400">{pendingFindings.length} findings</span>
+                <span className="text-amber-800">{targets.length} targets</span>
+                <span className="text-amber-800">{pendingFindings.length} findings</span>
               </div>
             </div>
           )}
 
           <div className="pb-2">
-            <p className="text-[9px] text-stone-600 uppercase px-3 mb-1 font-orbitron tracking-widest">{USER_NAV.title}</p>
+            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-nav tracking-widest">{USER_NAV.title}</p>
             {USER_NAV.items.map(item => (
               <NavItemButton key={item.path} item={item} isActive={location === item.path} />
             ))}
           </div>
 
-          <div className="border-t border-stone-800 pt-2 pb-2">
-            <p className="text-[9px] text-stone-600 uppercase px-3 mb-1 font-orbitron tracking-widest">{ADMIN_NAV.title}</p>
+          <div className="border-t border-border pt-2 pb-2">
+            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-nav tracking-widest">{ADMIN_NAV.title}</p>
             {ADMIN_NAV.items.map(item => (
               <NavItemButton key={item.path} item={item} isActive={location === item.path} />
             ))}
@@ -175,30 +177,30 @@ export default function QuickNav() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start bg-amber-900/10 text-amber-500/80 hover:bg-amber-900/20 min-h-[44px] border border-amber-900/20"
+              className="w-full justify-start bg-amber-900/10 text-amber-800/80 hover:bg-amber-900/20 min-h-[44px] border border-amber-900/20"
               onClick={() => window.dispatchEvent(new CustomEvent('open-qr-modal'))}
               data-testid="quicknav-qr-tool"
             >
               <QrCode className="w-4 h-4 mr-2" />
-              <span className="uppercase font-orbitron text-[10px] tracking-widest">QR Tool</span>
+              <span className="uppercase font-nav text-[10px] tracking-widest">QR Tool</span>
             </Button>
           </div>
 
-          <div className="border-t border-stone-800 pt-2 mt-2">
+          <div className="border-t border-border pt-2 mt-2">
             <div className="px-3 py-1">
-              <p className="text-[10px] text-stone-500 uppercase">Progress</p>
+              <p className="text-[10px] text-muted-foreground uppercase">Progress</p>
               <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
                   <div
                     className="h-full bg-amber-600 rounded-full transition-all"
                     style={{ width: `${Math.min(100, (gameState.inventory?.length || 0) * 5)}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-amber-400">{gameState.inventory?.length || 0} clues</span>
+                <span className="text-[10px] text-amber-800">{gameState.inventory?.length || 0} clues</span>
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] text-stone-500">Lv.{gameState.level || 1}</span>
-                <span className="text-[10px] text-amber-500">{(gameState.xp || 0).toLocaleString()} XP</span>
+                <span className="text-[10px] text-muted-foreground">Lv.{gameState.level || 1}</span>
+                <span className="text-[10px] text-amber-800">{(gameState.xp || 0).toLocaleString()} XP</span>
               </div>
             </div>
             <div className="px-1 mt-1">
@@ -206,13 +208,27 @@ export default function QuickNav() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2 border-t border-stone-800 mt-2">
-            <span className="text-[10px] text-stone-500 uppercase font-orbitron tracking-tighter">Dev Mode</span>
+          <div className="flex items-center justify-between px-3 py-2 border-t border-border">
+            <span className="text-[10px] text-muted-foreground uppercase font-nav tracking-tighter">Dev Mode</span>
             <Switch
               checked={gameState.devMode}
               onCheckedChange={toggleDevMode}
               className="scale-75 data-[state=checked]:bg-amber-600"
             />
+          </div>
+
+          <div className="flex items-center justify-between px-3 py-2 border-t border-border mt-2">
+            <span className="text-[10px] text-muted-foreground uppercase font-nav tracking-tighter">Display Mode</span>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 rounded border border-border px-2 py-1 text-[10px] font-nav uppercase tracking-widest text-foreground hover:border-amber-700/60 hover:text-amber-800 transition-colors min-h-[32px]"
+              data-testid="theme-toggle"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
+              {theme === 'dark' ? 'Dark' : 'Light'}
+            </button>
           </div>
         </div>
       )}
@@ -234,10 +250,10 @@ export default function QuickNav() {
         )}
         <Button
           onClick={handleToggle}
-          className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/30 relative z-10 hover:bg-stone-900 ${
+          className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/30 relative z-10 hover:bg-card ${
             expanded
-              ? 'bg-stone-900 rotate-180 shadow-xl'
-              : 'bg-stone-950 shadow-[0_0_15px_rgba(180,83,9,0.2)]'
+              ? 'bg-card rotate-180 shadow-xl'
+              : 'bg-card shadow-[0_0_15px_rgba(180,83,9,0.2)]'
           }`}
           data-testid="quick-nav-toggle"
         >
@@ -250,7 +266,7 @@ export default function QuickNav() {
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <Server className="w-5 h-5 text-amber-500/80" />
+                <Server className="w-5 h-5 text-amber-800/80" />
               </motion.div>
             </div>
           </div>

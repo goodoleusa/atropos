@@ -35,44 +35,113 @@
   --font-mono: "JetBrains Mono", monospace;
   --font-display: "Exo 2", sans-serif;
   --font-sans: "Inter", sans-serif;
+  /* Nav/menu label face — deliberately distinct from the Exo 2 display
+     font used for marketing headings. Share Tech Mono reads as early-
+     web/BBS-terminal rather than generic-AI-SaaS, matching the retro-
+     techy-but-polished direction for chrome the player is in constantly
+     (nav items, section labels) rather than body copy. */
+  --font-nav: "Share Tech Mono", monospace;
 
   --radius: 0rem;
 }
 
 :root {
+  color-scheme: light;
   --font-heading: "Exo 2", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-scale: 1;
   --font-heading-weight: 600;
 
-  /* Molten Bronze Palette */
-  --background: 20 10% 4%;     /* Deep warm black */
-  --foreground: 30 20% 90%;    /* Warm white */
-  
-  --card: 20 15% 7%;           /* Dark bronze-black */
-  --card-foreground: 30 60% 70%; /* Muted Bronze */
-  
-  --popover: 20 15% 5%;
-  --popover-foreground: 30 60% 70%;
-  
-  --primary: 30 80% 55%;       /* Molten Bronze/Gold */
-  --primary-foreground: 20 10% 5%;
-  
-  --secondary: 15 40% 30%;     /* Dark Rust */
-  --secondary-foreground: 30 20% 90%;
-  
-  --muted: 25 10% 15%;
-  --muted-foreground: 25 10% 50%;
-  
-  --accent: 25 60% 45%;        /* Deep Bronze accent */
-  --accent-foreground: 30 20% 95%;
-  
-  --destructive: 0 60% 40%;    /* Deep Red */
-  --destructive-foreground: 0 0% 100%;
+  /* Annealed Bronze Palette — light, cassette-futurism-on-paper.
+     Same structural family as Reckon's mermaid-jewel (cream ground,
+     dark ink, one strong accent + jewel secondaries) but with atropos's
+     own bronze/amber + teal hue identity instead of emerald. */
+  --background: 35 38% 97%;      /* Warm parchment paper */
+  --foreground: 20 30% 12%;      /* Bronze-black ink */
 
-  --border: 30 30% 20%;
-  --input: 30 30% 10%;
-  --ring: 30 80% 55%;
+  --card: 35 45% 99%;            /* Near-white warm card */
+  --card-foreground: 20 30% 14%;
+
+  --popover: 35 45% 99%;
+  --popover-foreground: 20 30% 14%;
+
+  --primary: 30 80% 32%;         /* Annealed Bronze/Amber — 5.75:1 on paper */
+  --primary-foreground: 35 45% 98%;
+
+  --secondary: 178 45% 26%;      /* Deep Teal (atropos's other identity hue) — 6.8:1 on paper */
+  --secondary-foreground: 35 45% 98%;
+
+  --muted: 32 25% 92%;
+  --muted-foreground: 25 20% 32%;  /* darkened from 40% lightness — 6.3:1 on paper */
+
+  --accent: 178 58% 24%;         /* Teal accent, mirrors old vapor-teal identity — 6.9:1 on paper */
+  --accent-foreground: 35 45% 98%;
+
+  --destructive: 5 65% 38%;      /* Deep Red — 6.7:1 on paper */
+  --destructive-foreground: 35 45% 98%;
+
+  --border: 30 22% 50%;          /* darkened from 84% — 3.5:1 non-text contrast on paper */
+  --input: 30 22% 50%;
+  --ring: 30 80% 32%;
+}
+
+/* Dark mode — same Annealed Bronze family (bronze/amber + teal hues,
+   font stack, radius), leaning back toward the original Molten Bronze
+   identity for the dark ground. Toggled via .dark on <html> (see
+   useTheme.ts); Tailwind's `@custom-variant dark (&:is(.dark *))`
+   above reads this. All ratios below are computed against the dark
+   background/card, not eyeballed. */
+:root.dark {
+  color-scheme: dark;
+  --background: 20 10% 6%;        /* Deep warm black, like the original Molten Bronze ground */
+  --foreground: 35 35% 90%;
+
+  --card: 20 13% 9%;
+  --card-foreground: 35 35% 90%;
+
+  --popover: 20 13% 9%;
+  --popover-foreground: 35 35% 90%;
+
+  --primary: 32 85% 60%;          /* Bright bronze/gold — 8.9:1 on dark ground */
+  --primary-foreground: 20 15% 8%;
+
+  --secondary: 175 55% 58%;       /* Bright teal — 10.2:1 on dark ground */
+  --secondary-foreground: 20 15% 8%;
+
+  --muted: 25 12% 16%;
+  --muted-foreground: 30 15% 68%;
+
+  --accent: 175 60% 55%;
+  --accent-foreground: 20 15% 8%;
+
+  --destructive: 5 75% 64%;
+  --destructive-foreground: 20 15% 8%;
+
+  --border: 30 20% 38%;           /* 3.2:1 non-text contrast on dark ground */
+  --input: 30 20% 38%;
+  --ring: 32 85% 60%;
+}
+
+/* Scoped dark terminal/console treatment. The overall app is light, but a
+   genuine terminal, scan/log output, or code-console widget still needs to
+   read like a terminal. Re-declaring the same semantic var names locally
+   means every Tailwind class that already reads them (bg-card, bg-muted,
+   text-foreground, text-muted-foreground, border-border, bg-background)
+   automatically renders dark for anything nested inside .terminal-panel,
+   without needing a separate class vocabulary. Apply to the terminal/
+   console/log-output surface itself, not the whole page it lives on. */
+.terminal-panel {
+  color-scheme: dark;
+  --background: 20 12% 7%;
+  --foreground: 35 40% 85%;
+  --card: 20 14% 9%;
+  --card-foreground: 35 40% 85%;
+  --popover: 20 14% 9%;
+  --popover-foreground: 35 40% 85%;
+  --muted: 25 12% 15%;
+  --muted-foreground: 30 15% 60%;
+  --border: 30 30% 22%;
+  --input: 30 30% 14%;
 }
 
 @layer base {
@@ -83,32 +152,13 @@
     @apply font-sans antialiased bg-background text-foreground;
     font-family: var(--font-body);
     font-size: calc(1rem * var(--font-scale));
-    background-image: 
-      linear-gradient(135deg, rgba(20, 184, 166, 0.03) 0%, transparent 50%, rgba(249, 115, 22, 0.05) 100%),
-      radial-gradient(ellipse at 80% 20%, rgba(217, 119, 6, 0.08), transparent 50%),
-      radial-gradient(ellipse at 20% 80%, rgba(20, 184, 166, 0.06), transparent 50%),
-      linear-gradient(to bottom, #0a0500 0%, #050208 100%);
+    background-image:
+      radial-gradient(ellipse at 80% 0%, rgba(180, 120, 40, 0.06), transparent 55%),
+      radial-gradient(ellipse at 10% 100%, rgba(15, 118, 110, 0.05), transparent 55%);
+    background-color: hsl(var(--background));
     background-size: 100% 100%;
     background-attachment: fixed;
     overflow-x: hidden;
-  }
-  
-  /* Cassette Futurism Scanline Effect - Bronze with Teal hints */
-  body::after {
-    content: " ";
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: 
-        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(10, 5, 15, 0.08) 50%), 
-        linear-gradient(90deg, rgba(20, 184, 166, 0.02), rgba(249, 115, 22, 0.02), rgba(20, 184, 166, 0.02));
-    z-index: 9999;
-    background-size: 100% 2px, 3px 100%;
-    pointer-events: none;
-    mix-blend-mode: overlay;
   }
 }
 
@@ -117,7 +167,7 @@
   .torch-border {
     position: relative;
     border: 2px solid transparent;
-    background: linear-gradient(#0a0500, #0a0500) padding-box,
+    background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
                 linear-gradient(135deg, #CD7F32, #8B4513, #DAA520, #B87333, #CD7F32) border-box;
     border-radius: 4px;
   }
@@ -173,18 +223,17 @@
     pointer-events: none;
   }
   
-  /* Molten edge glow for borders */
+  /* Molten edge glow for borders — softened for a light ground */
   .molten-edge {
-    box-shadow: 
-      0 0 20px rgba(205, 127, 50, 0.3),
-      0 0 40px rgba(218, 165, 32, 0.15),
-      inset 0 1px 0 rgba(255, 215, 0, 0.1);
+    box-shadow:
+      0 2px 10px rgba(150, 90, 20, 0.12),
+      0 1px 3px rgba(150, 90, 20, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
-  
-  /* Retro vaporwave teal accent */
+
+  /* Teal accent text */
   .vapor-teal {
-    color: #14b8a6;
-    text-shadow: 0 0 10px rgba(20, 184, 166, 0.5);
+    color: #0f6b63;
   }
   
   /* Mobile touch optimization */
@@ -291,24 +340,38 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
+  .font-nav {
+    font-family: var(--font-nav);
+  }
+
+  /* font-orbitron was used across Home.tsx (section headers, stat numbers)
+     with no matching font-face ever loaded or defined -- silently falling
+     back to the browser default sans this whole time. Orbitron is a real
+     angular sci-fi/cyberpunk-HUD display face, loaded in index.html
+     alongside the rest of the type system; this class actually resolves
+     to it now instead of being a dead class name. */
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+  }
+
   h1, h2, h3 {
     font-family: var(--font-heading);
     font-weight: var(--font-heading-weight);
   }
 }
 
-/* Molten Steel Border Components */
+/* Annealed Bronze Border Components — light ground, bronze border accents */
 .molten-box {
   position: relative;
-  background: linear-gradient(135deg, rgba(15, 10, 5, 0.95) 0%, rgba(10, 8, 5, 0.98) 100%);
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(35, 30%, 97%) 100%);
   border: 1px solid transparent;
   border-image: linear-gradient(
     135deg,
-    hsl(30, 80%, 45%) 0%,
-    hsl(25, 70%, 35%) 25%,
-    hsl(20, 60%, 25%) 50%,
-    hsl(25, 70%, 35%) 75%,
-    hsl(30, 80%, 45%) 100%
+    hsl(30, 70%, 55%) 0%,
+    hsl(25, 60%, 45%) 25%,
+    hsl(20, 50%, 38%) 50%,
+    hsl(25, 60%, 45%) 75%,
+    hsl(30, 70%, 55%) 100%
   ) 1;
 }
 
@@ -321,14 +384,14 @@
   bottom: -1px;
   background: linear-gradient(
     135deg,
-    hsl(35, 90%, 55%) 0%,
-    hsl(30, 80%, 40%) 20%,
-    hsl(25, 60%, 20%) 50%,
-    hsl(30, 80%, 40%) 80%,
-    hsl(35, 90%, 55%) 100%
+    hsl(35, 70%, 65%) 0%,
+    hsl(30, 65%, 55%) 20%,
+    hsl(25, 55%, 45%) 50%,
+    hsl(30, 65%, 55%) 80%,
+    hsl(35, 70%, 65%) 100%
   );
   z-index: -1;
-  opacity: 0.8;
+  opacity: 0.35;
 }
 
 .molten-box::after {
@@ -338,37 +401,39 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(10, 8, 5, 0.97);
+  background: hsl(var(--card));
   z-index: -1;
 }
 
-/* Cutting torch edge effect */
+/* Cutting torch edge effect (in-utility .molten-edge above is the one Tailwind
+   consumers actually see; this later definition matches it for anywhere the
+   un-layered selector wins the cascade). */
 .molten-edge {
   position: relative;
   border: 2px solid transparent;
-  background: 
-    linear-gradient(rgba(10, 8, 5, 0.98), rgba(10, 8, 5, 0.98)) padding-box,
+  background:
+    linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
     linear-gradient(
       90deg,
-      hsl(35, 100%, 60%) 0%,
-      hsl(30, 90%, 50%) 5%,
-      hsl(25, 70%, 30%) 15%,
-      hsl(20, 50%, 15%) 30%,
-      hsl(20, 50%, 15%) 70%,
-      hsl(25, 70%, 30%) 85%,
-      hsl(30, 90%, 50%) 95%,
-      hsl(35, 100%, 60%) 100%
+      hsl(35, 80%, 55%) 0%,
+      hsl(30, 70%, 48%) 5%,
+      hsl(25, 55%, 42%) 15%,
+      hsl(30, 20%, 85%) 30%,
+      hsl(30, 20%, 85%) 70%,
+      hsl(25, 55%, 42%) 85%,
+      hsl(30, 70%, 48%) 95%,
+      hsl(35, 80%, 55%) 100%
     ) border-box;
-  box-shadow: 
-    0 0 15px rgba(217, 119, 6, 0.15),
-    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 2px 10px rgba(150, 90, 20, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 /* Glowing cut line - top edge only */
 .molten-cut-top {
   position: relative;
-  background: rgba(10, 8, 5, 0.95);
-  border: 1px solid hsl(25, 50%, 20%);
+  background: hsl(var(--card));
+  border: 1px solid hsl(30, 25%, 82%);
 }
 
 .molten-cut-top::before {
@@ -381,23 +446,20 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    hsl(35, 100%, 55%) 10%,
-    hsl(40, 100%, 65%) 50%,
-    hsl(35, 100%, 55%) 90%,
+    hsl(30, 75%, 50%) 10%,
+    hsl(35, 80%, 55%) 50%,
+    hsl(30, 75%, 50%) 90%,
     transparent 100%
   );
-  box-shadow: 
-    0 0 10px hsl(35, 100%, 50%),
-    0 0 20px hsl(30, 90%, 45%),
-    0 0 30px hsl(25, 80%, 35%);
+  box-shadow: 0 1px 6px rgba(180, 110, 30, 0.35);
   animation: molten-pulse 3s ease-in-out infinite;
 }
 
 /* Spark drip effect on corners */
 .molten-corner {
   position: relative;
-  background: rgba(10, 8, 5, 0.95);
-  border: 1px solid hsl(25, 40%, 18%);
+  background: hsl(var(--card));
+  border: 1px solid hsl(30, 20%, 84%);
 }
 
 .molten-corner::before,
@@ -406,11 +468,9 @@
   position: absolute;
   width: 4px;
   height: 4px;
-  background: hsl(40, 100%, 60%);
+  background: hsl(32, 80%, 48%);
   border-radius: 50%;
-  box-shadow: 
-    0 0 6px hsl(35, 100%, 55%),
-    0 0 12px hsl(30, 90%, 45%);
+  box-shadow: 0 0 4px rgba(180, 110, 30, 0.5);
 }
 
 .molten-corner::before {
@@ -432,13 +492,13 @@
 .content-panel {
   background: linear-gradient(
     180deg,
-    rgba(15, 12, 8, 0.95) 0%,
-    rgba(10, 8, 5, 0.98) 100%
+    hsl(var(--card)) 0%,
+    hsl(35, 30%, 97%) 100%
   );
-  border: 1px solid hsl(30, 40%, 22%);
-  border-left: 3px solid hsl(30, 70%, 45%);
+  border: 1px solid hsl(30, 25%, 84%);
+  border-left: 3px solid hsl(30, 60%, 45%);
   padding: 1.5rem;
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(217, 119, 6, 0.1);
+  box-shadow:
+    0 4px 20px rgba(60, 40, 10, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }

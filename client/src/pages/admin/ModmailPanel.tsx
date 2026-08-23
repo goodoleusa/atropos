@@ -39,7 +39,7 @@ export function ModmailPanel() {
   };
 
   if (isLoading) {
-    return <div className="text-stone-500 p-4">Loading modmail...</div>;
+    return <div className="text-muted-foreground p-4">Loading modmail...</div>;
   }
 
   const openTickets = tickets?.filter(t => t.status === 'open' || t.status === 'in_progress') || [];
@@ -48,23 +48,23 @@ export function ModmailPanel() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
           <MessageSquare className="w-5 h-5" /> Modmail Inbox
         </h3>
         <div className="flex gap-2">
-          <Badge className="bg-amber-900/50 text-amber-400">{openTickets.length} Open</Badge>
-          <Badge className="bg-stone-800 text-stone-400">{closedTickets.length} Closed</Badge>
+          <Badge className="bg-amber-900/50 text-amber-800">{openTickets.length} Open</Badge>
+          <Badge className="bg-border text-muted-foreground">{closedTickets.length} Closed</Badge>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="bg-[#0a0500] border-amber-900/30">
+        <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader>
-            <CardTitle className="text-amber-400 text-sm">Tickets</CardTitle>
+            <CardTitle className="text-amber-800 text-sm">Tickets</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 max-h-[400px] overflow-y-auto">
             {tickets?.length === 0 && (
-              <p className="text-stone-500 text-sm text-center py-4">No tickets yet</p>
+              <p className="text-muted-foreground text-sm text-center py-4">No tickets yet</p>
             )}
             {tickets?.map(ticket => (
               <div
@@ -73,23 +73,23 @@ export function ModmailPanel() {
                 className={`p-3 rounded-md cursor-pointer border transition-colors ${
                   selectedTicket?.ticketId === ticket.ticketId
                     ? 'bg-amber-900/30 border-amber-600/50'
-                    : 'bg-black/30 border-stone-800 hover:border-stone-700'
+                    : 'bg-black/30 border-border hover:border-border'
                 }`}
                 data-testid={`admin-ticket-${ticket.ticketId}`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-mono text-stone-500">{ticket.ticketId}</span>
+                  <span className="text-xs font-mono text-muted-foreground">{ticket.ticketId}</span>
                   <Badge variant="outline" className={`text-[10px] ${
-                    ticket.status === 'open' ? 'border-amber-600 text-amber-400' :
+                    ticket.status === 'open' ? 'border-amber-600 text-amber-800' :
                     ticket.status === 'in_progress' ? 'border-blue-600 text-blue-400' :
-                    'border-stone-600 text-stone-400'
+                    'border-muted text-muted-foreground'
                   }`}>
                     {ticket.status}
                   </Badge>
                 </div>
-                <h4 className="text-sm font-medium text-stone-200 truncate">{ticket.subject}</h4>
-                <p className="text-xs text-stone-500">From: {ticket.username}</p>
-                <p className="text-[10px] text-stone-600 mt-1">
+                <h4 className="text-sm font-medium text-foreground truncate">{ticket.subject}</h4>
+                <p className="text-xs text-muted-foreground">From: {ticket.username}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">
                   {new Date(ticket.createdAt).toLocaleString()}
                 </p>
               </div>
@@ -97,9 +97,9 @@ export function ModmailPanel() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0a0500] border-amber-900/30">
+        <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader>
-            <CardTitle className="text-amber-400 text-sm">
+            <CardTitle className="text-amber-800 text-sm">
               {selectedTicket ? `Ticket: ${selectedTicket.ticketId}` : 'Select a ticket'}
             </CardTitle>
           </CardHeader>
@@ -107,25 +107,25 @@ export function ModmailPanel() {
             {selectedTicket ? (
               <div className="space-y-3">
                 <div>
-                  <Label className="text-[10px] text-stone-500 uppercase">Subject</Label>
-                  <p className="text-sm text-stone-200">{selectedTicket.subject}</p>
+                  <Label className="text-[10px] text-muted-foreground uppercase">Subject</Label>
+                  <p className="text-sm text-foreground">{selectedTicket.subject}</p>
                 </div>
                 <div>
-                  <Label className="text-[10px] text-stone-500 uppercase">Message</Label>
-                  <p className="text-sm text-stone-300 bg-black/30 p-2 rounded">{selectedTicket.message}</p>
+                  <Label className="text-[10px] text-muted-foreground uppercase">Message</Label>
+                  <p className="text-sm text-foreground bg-black/30 p-2 rounded">{selectedTicket.message}</p>
                 </div>
                 <div>
-                  <Label className="text-[10px] text-stone-500 uppercase">Category</Label>
+                  <Label className="text-[10px] text-muted-foreground uppercase">Category</Label>
                   <Badge variant="outline" className="ml-2">{selectedTicket.category}</Badge>
                 </div>
 
-                <div className="border-t border-stone-800 pt-3">
-                  <Label className="text-[10px] text-stone-500 uppercase">Your Response</Label>
+                <div className="border-t border-border pt-3">
+                  <Label className="text-[10px] text-muted-foreground uppercase">Your Response</Label>
                   <Textarea
                     value={response}
                     onChange={(e) => setResponse(e.target.value)}
                     placeholder="Type your response..."
-                    className="bg-black/50 border-stone-700 min-h-[80px] mt-1"
+                    className="bg-black/50 border-border min-h-[80px] mt-1"
                     data-testid="input-admin-response"
                   />
                 </div>
@@ -134,7 +134,7 @@ export function ModmailPanel() {
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="bg-black/50 border border-stone-700 rounded px-2 py-1 text-sm text-stone-300"
+                    className="bg-black/50 border border-border rounded px-2 py-1 text-sm text-foreground"
                     data-testid="select-ticket-status"
                   >
                     <option value="open">Open</option>
@@ -152,7 +152,7 @@ export function ModmailPanel() {
                 </div>
               </div>
             ) : (
-              <p className="text-stone-500 text-sm text-center py-8">
+              <p className="text-muted-foreground text-sm text-center py-8">
                 Click on a ticket to view details and respond
               </p>
             )}

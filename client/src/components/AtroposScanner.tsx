@@ -61,11 +61,11 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: "bg-red-500/20 text-red-400 border-red-500/30",
-  high: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  medium: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  low: "bg-teal-500/20 text-teal-400 border-teal-500/30",
-  info: "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
+  critical: "bg-red-500/20 text-red-700 border-red-500/30",
+  high: "bg-orange-500/20 text-orange-800 border-orange-500/30",
+  medium: "bg-amber-500/20 text-amber-800 border-amber-500/30",
+  low: "bg-teal-500/20 text-teal-800 border-teal-500/30",
+  info: "bg-muted/20 text-muted-foreground border-muted/30",
 };
 
 interface AtroposScannerProps {
@@ -227,7 +227,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
   return (
     <div className="space-y-4" data-testid="atropos-scanner">
       <Tabs defaultValue="simulate" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-zinc-900/50">
+        <TabsList className="grid w-full grid-cols-3 bg-card/50">
           <TabsTrigger value="simulate" className="data-[state=active]:bg-amber-900/30" data-testid="tab-simulate">
             <Play className="w-4 h-4 mr-2" /> Simulate
           </TabsTrigger>
@@ -240,7 +240,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         </TabsList>
 
         <TabsContent value="simulate" className="space-y-4">
-          <Card className="bg-zinc-900/50 border-amber-900/30">
+          <Card className="bg-card/50 border-amber-900/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-amber-200 flex items-center gap-2">
                 <Terminal className="w-5 h-5" /> Simulated Scan
@@ -256,14 +256,14 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                     placeholder="example.com"
                     value={target}
                     onChange={(e) => setTarget(e.target.value)}
-                    className="bg-zinc-800/50 border-amber-900/30"
+                    className="bg-border/50 border-amber-900/30"
                     data-testid="input-target"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="script">Script</Label>
                   <Select value={selectedScript} onValueChange={setSelectedScript}>
-                    <SelectTrigger className="bg-zinc-800/50 border-amber-900/30" data-testid="select-script">
+                    <SelectTrigger className="bg-border/50 border-amber-900/30" data-testid="select-script">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="max-h-80">
@@ -273,7 +273,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                             {CATEGORY_ICONS[script.category] || <Terminal className="w-4 h-4" />}
                             <div className="flex flex-col items-start">
                               <span className="font-medium text-sm">{script.name}</span>
-                              <span className="text-xs text-zinc-500">{script.description}</span>
+                              <span className="text-xs text-muted-foreground">{script.description}</span>
                             </div>
                           </div>
                         </SelectItem>
@@ -299,7 +299,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         </TabsContent>
 
         <TabsContent value="import" className="space-y-4">
-          <Card className="bg-zinc-900/50 border-amber-900/30">
+          <Card className="bg-card/50 border-amber-900/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-amber-200 flex items-center gap-2">
                 <FileJson className="w-5 h-5" /> Import Scan Results
@@ -310,7 +310,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
               <div className="space-y-2">
                 <Label htmlFor="format">Format</Label>
                 <Select value={importFormat} onValueChange={(v: any) => setImportFormat(v)}>
-                  <SelectTrigger className="bg-zinc-800/50 border-amber-900/30" data-testid="select-format">
+                  <SelectTrigger className="bg-border/50 border-amber-900/30" data-testid="select-format">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -327,7 +327,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                   placeholder='{"target": "example.com", "findings": [...], ...}'
                   value={importData}
                   onChange={(e) => setImportData(e.target.value)}
-                  className="bg-zinc-800/50 border-amber-900/30 h-40 font-mono text-sm"
+                  className="bg-border/50 border-amber-900/30 h-40 font-mono text-sm"
                   data-testid="textarea-import"
                 />
               </div>
@@ -344,7 +344,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         </TabsContent>
 
         <TabsContent value="remote" className="space-y-4">
-          <Card className="bg-zinc-900/50 border-amber-900/30">
+          <Card className="bg-card/50 border-amber-900/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-amber-200 flex items-center gap-2">
                 <Server className="w-5 h-5" /> Remote Atropos Server
@@ -360,7 +360,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                     placeholder="https://atropos.example.com"
                     value={remoteUrl}
                     onChange={(e) => setRemoteUrl(e.target.value)}
-                    className="bg-zinc-800/50 border-amber-900/30 flex-1"
+                    className="bg-border/50 border-amber-900/30 flex-1"
                     data-testid="input-remote-url"
                   />
                   <Button 
@@ -373,14 +373,14 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                   </Button>
                 </div>
                 {remoteStatus !== "unknown" && (
-                  <Badge className={remoteStatus === "online" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                  <Badge className={remoteStatus === "online" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-700"}>
                     {remoteStatus === "online" ? "Connected" : "Offline"}
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-muted-foreground">
                 Deploy Atropos to Railway, Render, or your VPS using{" "}
-                <code className="text-amber-400">atropos serve</code>
+                <code className="text-amber-800">atropos serve</code>
               </p>
               <Button 
                 variant="outline"
@@ -395,7 +395,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
       </Tabs>
 
       {scanResult && (
-        <Card className="bg-zinc-900/50 border-amber-900/30">
+        <Card className="terminal-panel bg-card/50 border-amber-900/30">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-amber-200 flex items-center gap-2">
@@ -411,37 +411,37 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-4 gap-2 text-center">
-              <div className="bg-zinc-800/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-amber-300">{scanResult.summary.subdomains}</div>
-                <div className="text-xs text-zinc-400">Subdomains</div>
+              <div className="bg-border/50 rounded-lg p-2">
+                <div className="text-xl font-bold text-amber-700">{scanResult.summary.subdomains}</div>
+                <div className="text-xs text-muted-foreground">Subdomains</div>
               </div>
-              <div className="bg-zinc-800/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-teal-300">{scanResult.summary.openPorts}</div>
-                <div className="text-xs text-zinc-400">Open Ports</div>
+              <div className="bg-border/50 rounded-lg p-2">
+                <div className="text-xl font-bold text-teal-700">{scanResult.summary.openPorts}</div>
+                <div className="text-xs text-muted-foreground">Open Ports</div>
               </div>
-              <div className="bg-zinc-800/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-blue-300">{scanResult.summary.technologies}</div>
-                <div className="text-xs text-zinc-400">Technologies</div>
+              <div className="bg-border/50 rounded-lg p-2">
+                <div className="text-xl font-bold text-blue-700">{scanResult.summary.technologies}</div>
+                <div className="text-xs text-muted-foreground">Technologies</div>
               </div>
-              <div className="bg-zinc-800/50 rounded-lg p-2">
-                <div className="text-xl font-bold text-red-300">{scanResult.summary.vulnerabilities}</div>
-                <div className="text-xs text-zinc-400">Vulns</div>
+              <div className="bg-border/50 rounded-lg p-2">
+                <div className="text-xl font-bold text-red-700">{scanResult.summary.vulnerabilities}</div>
+                <div className="text-xs text-muted-foreground">Vulns</div>
               </div>
             </div>
 
-            <ScrollArea className="h-48 rounded-lg border border-amber-900/30 bg-zinc-800/30 p-3">
+            <ScrollArea className="h-48 rounded-lg border border-amber-900/30 bg-border/30 p-3">
               <div className="space-y-2">
                 {scanResult.findings.slice(0, 30).map((finding, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-sm">
                     <Badge variant="outline" className={`text-xs ${SEVERITY_COLORS[finding.severity || "info"]}`}>
                       {finding.type}
                     </Badge>
-                    <span className="text-zinc-300 truncate flex-1">{finding.value}</span>
-                    {finding.source && <span className="text-zinc-500 text-xs">{finding.source}</span>}
+                    <span className="text-foreground truncate flex-1">{finding.value}</span>
+                    {finding.source && <span className="text-muted-foreground text-xs">{finding.source}</span>}
                   </div>
                 ))}
                 {scanResult.findings.length > 30 && (
-                  <div className="text-xs text-zinc-500 text-center pt-2">
+                  <div className="text-xs text-muted-foreground text-center pt-2">
                     +{scanResult.findings.length - 30} more findings...
                   </div>
                 )}

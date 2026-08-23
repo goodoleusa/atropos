@@ -285,32 +285,32 @@ export default function CampaignBuilder() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#0d0d0d] text-stone-300 selection:bg-amber-500/30 overflow-hidden">
+    <div className="flex flex-col h-screen bg-background text-foreground selection:bg-amber-500/30 overflow-hidden">
       {/* Header */}
-      <header className="h-14 border-b border-stone-800 bg-stone-950 flex items-center justify-between px-3 z-50 gap-2">
+      <header className="h-14 border-b border-border bg-card flex items-center justify-between px-3 z-50 gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <Button data-testid="toggle-sidebar" variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-amber-500 shrink-0">
+          <Button data-testid="toggle-sidebar" variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-amber-800 shrink-0">
             <Menu className="w-5 h-5" />
           </Button>
-          <Shield className="w-5 h-5 text-amber-500 shrink-0 hidden sm:block" />
-          <h1 className="font-bold tracking-tighter text-amber-500 hidden md:block uppercase text-sm">Nexus Architect</h1>
-          <Separator orientation="vertical" className="h-6 bg-stone-800 hidden sm:block" />
+          <Shield className="w-5 h-5 text-amber-800 shrink-0 hidden sm:block" />
+          <h1 className="font-bold tracking-tighter text-amber-800 hidden md:block uppercase text-sm">Nexus Architect</h1>
+          <Separator orientation="vertical" className="h-6 bg-border hidden sm:block" />
           <div className="relative hidden sm:block">
-            <Button data-testid="select-campaign" variant="outline" size="sm" className="border-stone-800 text-stone-400 h-8 text-xs max-w-[180px] truncate" onClick={() => setCampaignSelectorOpen(true)}>
+            <Button data-testid="select-campaign" variant="outline" size="sm" className="border-border text-muted-foreground h-8 text-xs max-w-[180px] truncate" onClick={() => setCampaignSelectorOpen(true)}>
               <ChevronDown className="w-3 h-3 mr-1 shrink-0" />{campaign.name}
             </Button>
           </div>
-          <Button data-testid="new-campaign" variant="ghost" size="sm" className="text-stone-500 h-8 text-xs hidden sm:flex" onClick={() => { setCampaign(emptyCampaign()); setSelectedNodeId(null); dirtyRef.current = false; }}>
+          <Button data-testid="new-campaign" variant="ghost" size="sm" className="text-muted-foreground h-8 text-xs hidden sm:flex" onClick={() => { setCampaign(emptyCampaign()); setSelectedNodeId(null); dirtyRef.current = false; }}>
             <Plus className="w-3.5 h-3.5 mr-1" />New
           </Button>
           {lastSaved && (
-            <span className="text-[9px] text-stone-600 hidden lg:flex items-center gap-1">
+            <span className="text-[9px] text-muted-foreground hidden lg:flex items-center gap-1">
               <Clock className="w-3 h-3" />{lastSaved.toLocaleTimeString()}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-1 bg-stone-900/50 p-0.5 rounded-md border border-stone-800">
+        <div className="flex items-center gap-1 bg-card/50 p-0.5 rounded-md border border-border">
           {(['canvas', 'editor', 'preview'] as const).map(m => (
             <Button key={m} data-testid={`view-${m}`} variant={viewMode === m ? 'secondary' : 'ghost'} size="sm" onClick={() => setViewMode(m)} className="h-7 text-[10px] uppercase font-bold px-2">
               {m === 'canvas' ? <Network className="w-3.5 h-3.5 sm:mr-1" /> : m === 'editor' ? <Code className="w-3.5 h-3.5 sm:mr-1" /> : <Eye className="w-3.5 h-3.5 sm:mr-1" />}
@@ -322,7 +322,7 @@ export default function CampaignBuilder() {
         <div className="flex items-center gap-1.5">
           <select
             data-testid="export-dropdown"
-            className="hidden sm:block bg-stone-900 border border-stone-800 text-stone-400 text-xs h-8 px-2 rounded-md"
+            className="hidden sm:block bg-card border border-border text-muted-foreground text-xs h-8 px-2 rounded-md"
             value=""
             onChange={e => { if (e.target.value) { handleExport(e.target.value); e.target.value = ''; } }}
           >
@@ -330,7 +330,7 @@ export default function CampaignBuilder() {
             <option value="json">JSON</option>
             <option value="obsidian">Obsidian</option>
           </select>
-          <Button data-testid="publish-campaign" variant="outline" size="sm" className={`hidden sm:flex border-stone-800 h-8 text-xs ${campaign.isPublished ? 'text-green-400 border-green-900/50' : 'text-stone-400'}`} onClick={publishToggle} disabled={isPublishing}>
+          <Button data-testid="publish-campaign" variant="outline" size="sm" className={`hidden sm:flex border-border h-8 text-xs ${campaign.isPublished ? 'text-green-400 border-green-900/50' : 'text-muted-foreground'}`} onClick={publishToggle} disabled={isPublishing}>
             <Share2 className="w-3.5 h-3.5 mr-1" />{campaign.isPublished ? 'Live' : 'Publish'}
           </Button>
           <Button data-testid="save-campaign" className="bg-amber-600 hover:bg-amber-500 text-black h-8 font-bold px-3 text-xs" onClick={saveCampaign} disabled={isSaving}>
@@ -341,16 +341,16 @@ export default function CampaignBuilder() {
 
       {/* Campaign Selector Dialog */}
       <Dialog open={campaignSelectorOpen} onOpenChange={setCampaignSelectorOpen}>
-        <DialogContent className="bg-stone-950 border-stone-800 max-w-md">
-          <DialogHeader><DialogTitle className="text-amber-500">Load Campaign</DialogTitle></DialogHeader>
+        <DialogContent className="bg-card border-border max-w-md">
+          <DialogHeader><DialogTitle className="text-amber-800">Load Campaign</DialogTitle></DialogHeader>
           <ScrollArea className="max-h-[400px]">
             <div className="space-y-1">
               {savedCampaigns.map(c => (
-                <Button key={c.id} data-testid={`load-campaign-${c.id}`} variant="ghost" className="w-full justify-start text-xs text-stone-300 h-9" onClick={() => { loadCampaign(c.id); setCampaignSelectorOpen(false); }}>
-                  <FileText className="w-3.5 h-3.5 mr-2 text-amber-500/50" />{c.name}
+                <Button key={c.id} data-testid={`load-campaign-${c.id}`} variant="ghost" className="w-full justify-start text-xs text-foreground h-9" onClick={() => { loadCampaign(c.id); setCampaignSelectorOpen(false); }}>
+                  <FileText className="w-3.5 h-3.5 mr-2 text-amber-800/50" />{c.name}
                 </Button>
               ))}
-              {savedCampaigns.length === 0 && <p className="text-xs text-stone-600 p-4 text-center">No saved campaigns yet.</p>}
+              {savedCampaigns.length === 0 && <p className="text-xs text-muted-foreground p-4 text-center">No saved campaigns yet.</p>}
             </div>
           </ScrollArea>
         </DialogContent>
@@ -389,7 +389,7 @@ export default function CampaignBuilder() {
         </AnimatePresence>
 
         {/* Main Content */}
-        <main className="flex-1 relative bg-stone-950 flex flex-col overflow-hidden">
+        <main className="flex-1 relative bg-card flex flex-col overflow-hidden">
           {viewMode === 'canvas' && (
             <BuilderCanvas
               campaign={campaign}

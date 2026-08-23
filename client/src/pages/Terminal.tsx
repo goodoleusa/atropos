@@ -13,7 +13,7 @@ export default function TerminalPage() {
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   
   return (
-    <div className="min-h-screen bg-[#050301] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 pt-16 sm:pt-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 pt-16 sm:pt-4 relative overflow-hidden">
       {/* Background Matrix Rain Effect (Simulated with simple CSS for now, could be canvas later) */}
       <div className="absolute inset-0 bg-[url('/assets/grid-noise.png')] opacity-10 pointer-events-none mix-blend-color-dodge"></div>
       
@@ -37,7 +37,7 @@ export default function TerminalPage() {
         <CustomTerminal />
         
         <div className="mt-4 sm:mt-8 text-center hidden sm:block">
-             <p className="text-stone-700 text-xs font-mono max-w-md mx-auto">
+             <p className="text-muted-foreground text-xs font-mono max-w-md mx-auto">
                 "The metal remembers what the code forgets."
              </p>
         </div>
@@ -68,7 +68,7 @@ export default function TerminalPage() {
         {/* Agent Chat Button */}
         <Button
           onClick={() => setAgentChatOpen(true)}
-          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-stone-800 hover:bg-stone-700 text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50 touch-manipulation active:scale-95 transition-transform"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-border hover:bg-border text-amber-800 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50 touch-manipulation active:scale-95 transition-transform"
           data-testid="terminal-agent-button"
         >
           <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -82,7 +82,7 @@ export default function TerminalPage() {
         >
           <QrCode className="w-5 h-5 sm:w-6 sm:h-6" />
         </Button>
-        <span className="hidden sm:block absolute -bottom-6 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
+        <span className="hidden sm:block absolute -bottom-6 right-0 text-xs text-amber-800/70 font-mono whitespace-nowrap">
           QR | Agent
         </span>
       </motion.div>

@@ -20,10 +20,10 @@ interface AchievementNotificationProps {
 
 const rarityColors: Record<string, { border: string; bg: string; text: string; glow: string }> = {
   common: { 
-    border: 'border-stone-600', 
-    bg: 'bg-stone-900/95', 
-    text: 'text-stone-300',
-    glow: 'shadow-stone-600/50'
+    border: 'border-muted', 
+    bg: 'bg-card/95', 
+    text: 'text-foreground',
+    glow: 'shadow-border/50'
   },
   rare: { 
     border: 'border-blue-600', 
@@ -106,14 +106,14 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
               onClick={() => { setVisible(false); setTimeout(onClose, 300); }}
               className="absolute top-2 right-2 p-1 rounded hover:bg-white/10 transition-colors"
             >
-              <X className="w-4 h-4 text-stone-400" />
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
 
             {/* Content */}
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <Trophy className={`w-5 h-5 ${colors.text}`} />
-                <p className="text-sm font-bold text-stone-400 uppercase tracking-wider">Achievement Unlocked!</p>
+                <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Achievement Unlocked!</p>
               </div>
 
               <div className="flex items-start gap-4 mb-4">
@@ -137,22 +137,22 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
                       {achievement.rarity}
                     </Badge>
                   </div>
-                  <p className="text-sm text-stone-400">{achievement.description}</p>
+                  <p className="text-sm text-muted-foreground">{achievement.description}</p>
                 </div>
               </div>
 
               {/* Rewards */}
-              <div className="flex gap-3 pt-3 border-t border-stone-800">
+              <div className="flex gap-3 pt-3 border-t border-border">
                 {achievement.xpReward > 0 && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-amber-900/20 rounded border border-amber-900/30">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
-                    <span className="text-sm font-bold text-amber-400">+{achievement.xpReward} XP</span>
+                    <Sparkles className="w-4 h-4 text-amber-800" />
+                    <span className="text-sm font-bold text-amber-800">+{achievement.xpReward} XP</span>
                   </div>
                 )}
                 {achievement.currencyReward > 0 && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-orange-900/20 rounded border border-orange-900/30">
-                    <Zap className="w-4 h-4 text-orange-500" />
-                    <span className="text-sm font-bold text-orange-400">+{achievement.currencyReward} Credits</span>
+                    <Zap className="w-4 h-4 text-orange-800" />
+                    <span className="text-sm font-bold text-orange-800">+{achievement.currencyReward} Credits</span>
                   </div>
                 )}
               </div>

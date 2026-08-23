@@ -50,18 +50,18 @@ interface ModelEntry {
 const COST_TIER_META: Record<CostTier, { label: string; color: string; bg: string; border: string; description: string }> = {
   free:    { label: 'FREE',    color: 'text-emerald-400', bg: 'bg-emerald-900/20', border: 'border-emerald-800/40', description: '$0 — no cost at all' },
   budget:  { label: 'BUDGET',  color: 'text-sky-400',     bg: 'bg-sky-900/20',     border: 'border-sky-800/40',     description: 'Under $1/M output — cheap even with heavy output' },
-  mid:     { label: 'MID',     color: 'text-amber-400',   bg: 'bg-amber-900/20',   border: 'border-amber-800/40',   description: '$1-10/M output — solid quality, watch output volume' },
+  mid:     { label: 'MID',     color: 'text-amber-800',   bg: 'bg-amber-900/20',   border: 'border-amber-800/40',   description: '$1-10/M output — solid quality, watch output volume' },
   premium: { label: 'PREMIUM', color: 'text-rose-400',    bg: 'bg-rose-900/20',     border: 'border-rose-800/40',    description: '$10+/M output — top quality, burns fast on long outputs' },
 };
 
 const CATEGORY_META: Record<ModelCategory, { label: string; icon: any; color: string }> = {
-  all:       { label: 'All Models',   icon: Globe,    color: 'text-stone-400' },
-  free:      { label: 'Free',         icon: Zap,      color: 'text-emerald-400' },
-  coding:    { label: 'Coding',       icon: Code,     color: 'text-sky-400' },
-  reasoning: { label: 'Reasoning',    icon: Brain,    color: 'text-purple-400' },
-  speed:     { label: 'Speed',        icon: Zap,      color: 'text-yellow-400' },
-  trending:  { label: 'Trending',     icon: Flame,    color: 'text-orange-400' },
-  security:  { label: 'Security',     icon: Shield,   color: 'text-red-400' },
+  all:       { label: 'All Models',   icon: Globe,    color: 'text-muted-foreground' },
+  free:      { label: 'Free',         icon: Zap,      color: 'text-emerald-700' },
+  coding:    { label: 'Coding',       icon: Code,     color: 'text-sky-700' },
+  reasoning: { label: 'Reasoning',    icon: Brain,    color: 'text-purple-700' },
+  speed:     { label: 'Speed',        icon: Zap,      color: 'text-yellow-800' },
+  trending:  { label: 'Trending',     icon: Flame,    color: 'text-orange-800' },
+  security:  { label: 'Security',     icon: Shield,   color: 'text-red-700' },
 };
 
 const OPENROUTER_MODELS: ModelEntry[] = [
@@ -121,24 +121,24 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-stone-950 border border-amber-900/40 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-stone-800">
-          <h3 className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+      <div className="bg-card border border-amber-900/40 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h3 className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
             <Cpu className="w-4 h-4" /> Choose Model (OpenRouter)
           </h3>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6 text-stone-500 hover:text-white">
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6 text-muted-foreground hover:text-white">
             <X className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="p-3 border-b border-stone-800 space-y-2">
+        <div className="p-3 border-b border-border space-y-2">
           <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-600" />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <Input
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search models..."
-              className="pl-8 h-8 bg-stone-900/50 border-stone-700 text-white text-xs"
+              className="pl-8 h-8 bg-card/50 border-border text-white text-xs"
               autoFocus
             />
           </div>
@@ -152,8 +152,8 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
                   onClick={() => setFilterCat(cat)}
                   className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-all border ${
                     filterCat === cat
-                      ? `${meta.color} bg-stone-800 border-stone-600`
-                      : 'text-stone-500 border-transparent hover:border-stone-700 hover:text-stone-300'
+                      ? `${meta.color} bg-border border-muted`
+                      : 'text-muted-foreground border-transparent hover:border-border hover:text-foreground'
                   }`}
                 >
                   <CatIcon className="w-3 h-3" /> {meta.label}
@@ -173,7 +173,7 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
                 <div key={tier}>
                   <div className={`flex items-center gap-2 mb-2 px-2 py-1 rounded ${tierMeta.bg} ${tierMeta.border} border`}>
                     <Badge className={`${tierMeta.color} bg-transparent border-0 text-[10px] font-bold p-0`}>{tierMeta.label}</Badge>
-                    <span className="text-[10px] text-stone-500">{tierMeta.description}</span>
+                    <span className="text-[10px] text-muted-foreground">{tierMeta.description}</span>
                   </div>
                   <div className="space-y-1">
                     {models.map(m => {
@@ -186,44 +186,44 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
                           className={`w-full text-left p-2.5 rounded-lg border transition-all ${
                             isSelected
                               ? 'border-amber-600 bg-amber-900/20'
-                              : 'border-stone-800 hover:border-stone-600 bg-stone-900/30 hover:bg-stone-900/60'
+                              : 'border-border hover:border-muted bg-card/30 hover:bg-card/60'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span className="text-xs font-medium text-white">{m.name}</span>
-                                <span className="text-[9px] text-stone-600">{m.provider}</span>
-                                {isSelected && <Check className="w-3 h-3 text-amber-500" />}
+                                <span className="text-[9px] text-muted-foreground">{m.provider}</span>
+                                {isSelected && <Check className="w-3 h-3 text-amber-800" />}
                               </div>
-                              <p className="text-[10px] text-stone-500 mt-0.5">{m.strength}</p>
-                              <p className="text-[10px] text-stone-600 italic mt-0.5">{m.note}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">{m.strength}</p>
+                              <p className="text-[10px] text-muted-foreground italic mt-0.5">{m.note}</p>
                             </div>
                             <div className="text-right shrink-0 space-y-0.5">
                               {m.costTier === 'free' ? (
                                 <Badge className="bg-emerald-900/30 text-emerald-400 text-[9px] border-0">FREE</Badge>
                               ) : (
                                 <>
-                                  <div className="text-[9px] text-stone-500">
-                                    <span className="text-stone-600">in:</span> <span className={tierMeta.color}>${m.inputPer1M}</span>/M
+                                  <div className="text-[9px] text-muted-foreground">
+                                    <span className="text-muted-foreground">in:</span> <span className={tierMeta.color}>${m.inputPer1M}</span>/M
                                   </div>
-                                  <div className="text-[9px] text-stone-500">
-                                    <span className="text-stone-600">out:</span> <span className={`${tierMeta.color} font-bold`}>${m.outputPer1M}</span>/M
+                                  <div className="text-[9px] text-muted-foreground">
+                                    <span className="text-muted-foreground">out:</span> <span className={`${tierMeta.color} font-bold`}>${m.outputPer1M}</span>/M
                                   </div>
-                                  <div className="text-[9px] text-stone-600 mt-0.5">
+                                  <div className="text-[9px] text-muted-foreground mt-0.5">
                                     ~${estRun.toFixed(3)}/run
                                   </div>
                                 </>
                               )}
-                              <div className="flex items-center gap-1 justify-end text-[9px] text-stone-600">
+                              <div className="flex items-center gap-1 justify-end text-[9px] text-muted-foreground">
                                 <Clock className="w-2.5 h-2.5" /> {m.speed}
                               </div>
-                              <div className="text-[9px] text-stone-700">{m.contextWindow} ctx</div>
+                              <div className="text-[9px] text-muted-foreground">{m.contextWindow} ctx</div>
                             </div>
                           </div>
                           <div className="flex gap-1 mt-1.5">
                             {m.categories.map(cat => (
-                              <span key={cat} className={`text-[8px] px-1 py-0.5 rounded ${CATEGORY_META[cat]?.color || 'text-stone-500'} bg-stone-800/50`}>
+                              <span key={cat} className={`text-[8px] px-1 py-0.5 rounded ${CATEGORY_META[cat]?.color || 'text-muted-foreground'} bg-border/50`}>
                                 {CATEGORY_META[cat]?.label || cat}
                               </span>
                             ))}
@@ -238,8 +238,8 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
           </div>
         </ScrollArea>
 
-        <div className="p-3 border-t border-stone-800 text-center">
-          <p className="text-[10px] text-stone-600">
+        <div className="p-3 border-t border-border text-center">
+          <p className="text-[10px] text-muted-foreground">
             Output tokens cost the most — a 2K-token report at $15/M output = $0.03. A 10K report = $0.15. Security analysis generates heavy output.
           </p>
         </div>
@@ -593,34 +593,34 @@ print(result)`,
   const totalEstCost = estimateCost();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950">
+    <div className="min-h-screen bg-gradient-to-br from-card via-card to-card">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Link href="/">
-              <Button variant="ghost" size="icon" className="text-stone-400 hover:text-amber-500" data-testid="back-button">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-amber-500" data-testid="back-button">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-orbitron font-bold text-amber-500 flex items-center gap-2" data-testid="crew-builder-title">
+              <h1 className="text-2xl font-orbitron font-bold text-amber-800 flex items-center gap-2" data-testid="crew-builder-title">
                 <Layers className="w-6 h-6" /> Crew Builder
               </h1>
-              <p className="text-stone-400 text-sm">Design, test, and evaluate AI agent teams</p>
+              <p className="text-muted-foreground text-sm">Design, test, and evaluate AI agent teams</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="border-stone-700 text-stone-400" onClick={handleExportCrewAI} data-testid="export-crewai">
+            <Button variant="outline" size="sm" className="border-border text-muted-foreground" onClick={handleExportCrewAI} data-testid="export-crewai">
               <Download className="w-4 h-4 mr-1" /> {copied ? 'Copied!' : 'CrewAI Export'}
             </Button>
-            <Button variant="outline" size="sm" className="border-stone-700 text-stone-400" onClick={handleExportLangChain} data-testid="export-langchain">
+            <Button variant="outline" size="sm" className="border-border text-muted-foreground" onClick={handleExportLangChain} data-testid="export-langchain">
               <Download className="w-4 h-4 mr-1" /> LangChain
             </Button>
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-stone-900/50 border border-amber-900/30 mb-6">
+          <TabsList className="bg-card/50 border border-amber-900/30 mb-6">
             <TabsTrigger value="build" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-build">
               <Settings2 className="w-4 h-4 mr-2" /> Build Crew
             </TabsTrigger>
@@ -641,10 +641,10 @@ print(result)`,
           <TabsContent value="build" className="space-y-6">
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
-                <Card className="bg-[#0a0500] border-amber-900/30">
+                <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+                      <CardTitle className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
                         <Target className="w-4 h-4" /> Crew Objective
                       </CardTitle>
                     </div>
@@ -654,7 +654,7 @@ print(result)`,
                       value={objective}
                       onChange={(e) => setObjective(e.target.value)}
                       placeholder="What should this crew accomplish?"
-                      className="bg-stone-900/50 border-stone-700 text-white"
+                      className="bg-card/50 border-border text-white"
                       data-testid="crew-objective-input"
                     />
                   </CardContent>
@@ -667,9 +667,9 @@ print(result)`,
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Switch checked={includeSynthesis} onCheckedChange={setIncludeSynthesis} className="data-[state=checked]:bg-amber-600" />
-                      <span className="text-xs text-stone-500">Auto-Synthesis</span>
+                      <span className="text-xs text-muted-foreground">Auto-Synthesis</span>
                     </div>
-                    <Button size="sm" variant="outline" className="border-teal-700 text-teal-400" onClick={addMember} disabled={crewMembers.length >= 6} data-testid="add-agent-btn">
+                    <Button size="sm" variant="outline" className="border-teal-700 text-teal-800" onClick={addMember} disabled={crewMembers.length >= 6} data-testid="add-agent-btn">
                       <Plus className="w-4 h-4 mr-1" /> Add Agent
                     </Button>
                   </div>
@@ -680,7 +680,7 @@ print(result)`,
                   const modelInfo = getModelInfo(member.model);
                   const Icon = info?.icon || Bot;
                   return (
-                    <Card key={idx} className={`bg-[#0a0500] border-stone-800 hover:border-amber-800/40 transition-colors`} data-testid={`crew-member-${idx}`}>
+                    <Card key={idx} className={`bg-[hsl(var(--card))] border-border hover:border-amber-800/40 transition-colors`} data-testid={`crew-member-${idx}`}>
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
                           <div className={`p-2 rounded-lg bg-${info?.color || 'stone'}-900/30 mt-1`}>
@@ -690,32 +690,32 @@ print(result)`,
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <Select value={member.agentId} onValueChange={(v) => updateMember(idx, { agentId: v })}>
-                                  <SelectTrigger className="w-48 bg-stone-900/50 border-stone-700 text-white h-8" data-testid={`agent-select-${idx}`}>
+                                  <SelectTrigger className="w-48 bg-card/50 border-border text-white h-8" data-testid={`agent-select-${idx}`}>
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-stone-900 border-stone-700">
+                                  <SelectContent className="bg-card border-border">
                                     {AVAILABLE_AGENTS.map(a => (
-                                      <SelectItem key={a.id} value={a.id} className="text-stone-300">
+                                      <SelectItem key={a.id} value={a.id} className="text-foreground">
                                         {a.name} — {a.role}
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
-                                <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                                <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                                   Agent {idx + 1}
                                 </Badge>
                               </div>
-                              <Button variant="ghost" size="sm" className="text-stone-600 hover:text-red-400 h-6 w-6 p-0" onClick={() => removeMember(idx)} disabled={crewMembers.length <= 1}>
+                              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-400 h-6 w-6 p-0" onClick={() => removeMember(idx)} disabled={crewMembers.length <= 1}>
                                 <Minus className="w-3 h-3" />
                               </Button>
                             </div>
 
                             <div className="grid sm:grid-cols-2 gap-3">
                               <div>
-                                <Label className="text-[10px] text-stone-500 uppercase">Model (OpenRouter)</Label>
+                                <Label className="text-[10px] text-muted-foreground uppercase">Model (OpenRouter)</Label>
                                 <button
                                   onClick={() => setModelPickerIdx(idx)}
-                                  className="w-full flex items-center justify-between gap-2 bg-stone-900/50 border border-stone-700 rounded-md px-3 h-8 text-xs text-white hover:border-amber-700 transition-colors"
+                                  className="w-full flex items-center justify-between gap-2 bg-card/50 border border-border rounded-md px-3 h-8 text-xs text-white hover:border-amber-700 transition-colors"
                                   data-testid={`model-select-${idx}`}
                                 >
                                   <div className="flex items-center gap-2 min-w-0">
@@ -726,34 +726,34 @@ print(result)`,
                                     )}
                                     <span className="truncate">{modelInfo?.name || 'Select model...'}</span>
                                   </div>
-                                  <ChevronRight className="w-3 h-3 text-stone-600 shrink-0" />
+                                  <ChevronRight className="w-3 h-3 text-muted-foreground shrink-0" />
                                 </button>
                               </div>
                               <div>
-                                <Label className="text-[10px] text-stone-500 uppercase">Temperature: {member.temperature}</Label>
+                                <Label className="text-[10px] text-muted-foreground uppercase">Temperature: {member.temperature}</Label>
                                 <Slider
                                   value={[member.temperature]}
                                   onValueChange={([v]) => updateMember(idx, { temperature: v })}
                                   min={0} max={1.5} step={0.1}
                                   className="mt-2"
                                 />
-                                <div className="flex justify-between text-[9px] text-stone-600 mt-0.5">
+                                <div className="flex justify-between text-[9px] text-muted-foreground mt-0.5">
                                   <span>Precise</span><span>Creative</span>
                                 </div>
                               </div>
                             </div>
 
                             <div>
-                              <Label className="text-[10px] text-stone-500 uppercase">Custom Instructions (optional)</Label>
+                              <Label className="text-[10px] text-muted-foreground uppercase">Custom Instructions (optional)</Label>
                               <Input
                                 value={member.customPromptAddition}
                                 onChange={(e) => updateMember(idx, { customPromptAddition: e.target.value })}
                                 placeholder="Additional focus instructions for this agent..."
-                                className="bg-stone-900/50 border-stone-700 text-white h-8 text-xs"
+                                className="bg-card/50 border-border text-white h-8 text-xs"
                               />
                             </div>
 
-                            <div className="flex items-center gap-4 text-[10px] text-stone-600">
+                            <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <DollarSign className="w-3 h-3" />
                                 {modelInfo?.costTier === 'free' ? (
@@ -782,49 +782,49 @@ print(result)`,
               </div>
 
               <div className="space-y-4">
-                <Card className="bg-[#0a0500] border-amber-900/30">
+                <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-orbitron text-amber-400">Crew Summary</CardTitle>
+                    <CardTitle className="text-sm font-orbitron text-amber-800">Crew Summary</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-stone-900/50 rounded p-2 text-center">
-                        <p className="text-xl font-bold text-amber-400" data-testid="crew-size">{crewMembers.length}</p>
-                        <p className="text-[9px] text-stone-500 uppercase">Agents</p>
+                      <div className="bg-card/50 rounded p-2 text-center">
+                        <p className="text-xl font-bold text-amber-800" data-testid="crew-size">{crewMembers.length}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Agents</p>
                       </div>
-                      <div className="bg-stone-900/50 rounded p-2 text-center">
-                        <p className="text-xl font-bold text-teal-400">${totalEstCost.toFixed(2)}</p>
-                        <p className="text-[9px] text-stone-500 uppercase">Est. Cost</p>
+                      <div className="bg-card/50 rounded p-2 text-center">
+                        <p className="text-xl font-bold text-teal-800">${totalEstCost.toFixed(2)}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Est. Cost</p>
                       </div>
                     </div>
 
                     {CREW_SIZE_GUIDANCE[crewMembers.length] && (
-                      <div className="bg-stone-900/30 rounded p-3 border border-stone-800">
-                        <p className="text-xs text-amber-400 font-medium">{CREW_SIZE_GUIDANCE[crewMembers.length].label}</p>
-                        <p className="text-[10px] text-stone-400 mt-1">{CREW_SIZE_GUIDANCE[crewMembers.length].quality}</p>
-                        <p className="text-[10px] text-stone-600 mt-0.5">{CREW_SIZE_GUIDANCE[crewMembers.length].tradeoff}</p>
+                      <div className="bg-card/30 rounded p-3 border border-border">
+                        <p className="text-xs text-amber-800 font-medium">{CREW_SIZE_GUIDANCE[crewMembers.length].label}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">{CREW_SIZE_GUIDANCE[crewMembers.length].quality}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{CREW_SIZE_GUIDANCE[crewMembers.length].tradeoff}</p>
                       </div>
                     )}
 
                     {crewMembers.length > 4 && (
                       <div className="flex items-start gap-2 bg-amber-900/10 border border-amber-900/30 rounded p-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                        <p className="text-[10px] text-amber-400">Past 4 agents, quality often decreases due to role overlap and synthesis overload. Consider removing agents unless each has a unique contribution.</p>
+                        <AlertTriangle className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
+                        <p className="text-[10px] text-amber-800">Past 4 agents, quality often decreases due to role overlap and synthesis overload. Consider removing agents unless each has a unique contribution.</p>
                       </div>
                     )}
 
-                    <Separator className="bg-stone-800" />
+                    <Separator className="bg-border" />
 
                     <div>
-                      <Label className="text-[10px] text-stone-500 uppercase">Agent Model Mix</Label>
+                      <Label className="text-[10px] text-muted-foreground uppercase">Agent Model Mix</Label>
                       <div className="space-y-1 mt-1">
                         {crewMembers.map((m, i) => {
                           const info = getAgentInfo(m.agentId);
                           const modelInfo = getModelInfo(m.model);
                           return (
                             <div key={i} className="flex items-center justify-between text-[10px]">
-                              <span className="text-stone-400 truncate max-w-[100px]">{info?.name}</span>
-                              <span className="text-stone-600">{modelInfo?.name || 'Unknown'}</span>
+                              <span className="text-muted-foreground truncate max-w-[100px]">{info?.name}</span>
+                              <span className="text-muted-foreground">{modelInfo?.name || 'Unknown'}</span>
                             </div>
                           );
                         })}
@@ -833,16 +833,16 @@ print(result)`,
                   </CardContent>
                 </Card>
 
-                <Card className="bg-[#0a0500] border-teal-900/30">
+                <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-orbitron text-teal-400">Task Input</CardTitle>
+                    <CardTitle className="text-sm font-orbitron text-teal-800">Task Input</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <Textarea
                       value={taskInput}
                       onChange={(e) => setTaskInput(e.target.value)}
                       placeholder="Paste scan results, investigation data, or describe the scenario to analyze..."
-                      className="bg-stone-900/50 border-stone-700 text-white min-h-[200px] text-xs font-mono"
+                      className="bg-card/50 border-border text-white min-h-[200px] text-xs font-mono"
                       data-testid="task-input"
                     />
                     <Button
@@ -865,8 +865,8 @@ print(result)`,
                     </Button>
                     {isRunning && (
                       <div>
-                        <Progress value={runProgress} className="h-1.5 bg-stone-900" />
-                        <p className="text-[10px] text-stone-500 mt-1 text-center">{runningAgent} analyzing...</p>
+                        <Progress value={runProgress} className="h-1.5 bg-card" />
+                        <p className="text-[10px] text-muted-foreground mt-1 text-center">{runningAgent} analyzing...</p>
                       </div>
                     )}
                   </CardContent>
@@ -877,58 +877,58 @@ print(result)`,
 
           <TabsContent value="results" className="space-y-4">
             {currentResults.length === 0 && !isRunning ? (
-              <Card className="bg-[#0a0500] border-stone-800">
+              <Card className="bg-[hsl(var(--card))] border-border">
                 <CardContent className="py-12 text-center">
-                  <Bot className="w-12 h-12 text-stone-700 mx-auto mb-3" />
-                  <p className="text-stone-500">No results yet. Build a crew and run it.</p>
+                  <Bot className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">No results yet. Build a crew and run it.</p>
                 </CardContent>
               </Card>
             ) : (
               <>
                 {isRunning && (
-                  <Card className="bg-[#0a0500] border-amber-900/30">
+                  <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
-                        <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
+                        <Loader2 className="w-5 h-5 animate-spin text-amber-800" />
                         <div className="flex-1">
-                          <p className="text-sm text-amber-400">{runningAgent} analyzing...</p>
-                          <Progress value={runProgress} className="h-1 bg-stone-900 mt-1" />
+                          <p className="text-sm text-amber-800">{runningAgent} analyzing...</p>
+                          <Progress value={runProgress} className="h-1 bg-card mt-1" />
                         </div>
-                        <span className="text-xs text-stone-500">{Math.round(runProgress)}%</span>
+                        <span className="text-xs text-muted-foreground">{Math.round(runProgress)}%</span>
                       </div>
                     </CardContent>
                   </Card>
                 )}
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <Card className="bg-[#0a0500] border-stone-800">
+                  <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-amber-400">{currentResults.length}</p>
-                      <p className="text-[9px] text-stone-500 uppercase">Agents Run</p>
+                      <p className="text-xl font-bold text-amber-800">{currentResults.length}</p>
+                      <p className="text-[9px] text-muted-foreground uppercase">Agents Run</p>
                     </CardContent>
                   </Card>
-                  <Card className="bg-[#0a0500] border-stone-800">
+                  <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-teal-400">
+                      <p className="text-xl font-bold text-teal-800">
                         {(currentResults.reduce((s, r) => s + r.latencyMs, 0) / 1000).toFixed(1)}s
                       </p>
-                      <p className="text-[9px] text-stone-500 uppercase">Total Time</p>
+                      <p className="text-[9px] text-muted-foreground uppercase">Total Time</p>
                     </CardContent>
                   </Card>
-                  <Card className="bg-[#0a0500] border-stone-800">
+                  <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-purple-400">
+                      <p className="text-xl font-bold text-purple-700">
                         {currentResults.reduce((s, r) => s + (r.tokenUsage?.total || 0), 0).toLocaleString()}
                       </p>
-                      <p className="text-[9px] text-stone-500 uppercase">Tokens</p>
+                      <p className="text-[9px] text-muted-foreground uppercase">Tokens</p>
                     </CardContent>
                   </Card>
-                  <Card className="bg-[#0a0500] border-stone-800">
+                  <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
                       <p className="text-xl font-bold text-green-400">
                         ${currentResults.reduce((s, r) => s + r.costEstimate, 0).toFixed(3)}
                       </p>
-                      <p className="text-[9px] text-stone-500 uppercase">Est. Cost</p>
+                      <p className="text-[9px] text-muted-foreground uppercase">Est. Cost</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -939,18 +939,18 @@ print(result)`,
                     const modelInfo = getModelInfo(result.model);
                     const Icon = info?.icon || Bot;
                     return (
-                      <Card key={idx} className="bg-[#0a0500] border-stone-800" data-testid={`result-card-${result.agentId}`}>
+                      <Card key={idx} className="bg-[hsl(var(--card))] border-border" data-testid={`result-card-${result.agentId}`}>
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-sm text-white flex items-center gap-2">
-                              <Icon className="w-4 h-4 text-amber-500" />
+                              <Icon className="w-4 h-4 text-amber-800" />
                               {result.agentName}
                             </CardTitle>
                             <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                              <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                                 {modelInfo?.name || 'Unknown'}
                               </Badge>
-                              <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                              <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                                 <Clock className="w-3 h-3 mr-1" />
                                 {(result.latencyMs / 1000).toFixed(1)}s
                               </Badge>
@@ -965,15 +965,15 @@ print(result)`,
                         </CardHeader>
                         <CardContent>
                           <ScrollArea className="h-64">
-                            <pre className="text-xs text-stone-300 whitespace-pre-wrap font-mono leading-relaxed">{result.output}</pre>
+                            <pre className="text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed">{result.output}</pre>
                           </ScrollArea>
                           <div className="flex gap-2 mt-3">
-                            <Button size="sm" variant="ghost" className="text-stone-500 hover:text-white text-[10px] h-6"
+                            <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-white text-[10px] h-6"
                               onClick={() => { navigator.clipboard.writeText(result.output); toast({ title: 'Copied' }); }}>
                               <Copy className="w-3 h-3 mr-1" /> Copy
                             </Button>
                             {result.tokenUsage && (
-                              <span className="text-[10px] text-stone-600 ml-auto flex items-center">
+                              <span className="text-[10px] text-muted-foreground ml-auto flex items-center">
                                 {result.tokenUsage.prompt}p + {result.tokenUsage.completion}c = {result.tokenUsage.total} tokens
                               </span>
                             )}
@@ -985,17 +985,17 @@ print(result)`,
                 </div>
 
                 {synthesisResult && (
-                  <Card className="bg-[#0a0500] border-amber-900/40" data-testid="synthesis-result">
+                  <Card className="bg-[hsl(var(--card))] border-amber-900/40" data-testid="synthesis-result">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm text-amber-400 flex items-center gap-2">
+                        <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                           <Brain className="w-4 h-4" /> Synthesis Report
                         </CardTitle>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-[9px] border-amber-700 text-amber-400">
+                          <Badge variant="outline" className="text-[9px] border-amber-700 text-amber-800">
                             {getModelInfo(synthesisResult.model)?.name}
                           </Badge>
-                          <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                          <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                             <Clock className="w-3 h-3 mr-1" />
                             {(synthesisResult.latencyMs / 1000).toFixed(1)}s
                           </Badge>
@@ -1004,7 +1004,7 @@ print(result)`,
                     </CardHeader>
                     <CardContent>
                       <ScrollArea className="h-80">
-                        <pre className="text-xs text-stone-300 whitespace-pre-wrap font-mono leading-relaxed">{synthesisResult.output}</pre>
+                        <pre className="text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed">{synthesisResult.output}</pre>
                       </ScrollArea>
                     </CardContent>
                   </Card>
@@ -1015,35 +1015,35 @@ print(result)`,
 
           <TabsContent value="eval" className="space-y-4">
             {evalHistory.length === 0 ? (
-              <Card className="bg-[#0a0500] border-stone-800">
+              <Card className="bg-[hsl(var(--card))] border-border">
                 <CardContent className="py-12 text-center">
-                  <BarChart3 className="w-12 h-12 text-stone-700 mx-auto mb-3" />
-                  <p className="text-stone-500">No eval runs yet. Run your crew to start collecting data.</p>
-                  <p className="text-[10px] text-stone-600 mt-1">Tip: Run the same task with different crew sizes to compare performance.</p>
+                  <BarChart3 className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">No eval runs yet. Run your crew to start collecting data.</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Tip: Run the same task with different crew sizes to compare performance.</p>
                 </CardContent>
               </Card>
             ) : (
               <>
-                <Card className="bg-[#0a0500] border-purple-900/30">
+                <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-orbitron text-purple-400 flex items-center gap-2">
+                    <CardTitle className="text-sm font-orbitron text-purple-700 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4" /> Price vs Performance
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       {evalHistory.map((run, idx) => (
-                        <div key={run.id} className="flex items-center gap-3 p-3 rounded border border-stone-800 bg-stone-950/50" data-testid={`eval-run-${idx}`}>
-                          <div className="w-8 h-8 rounded-full bg-purple-900/30 flex items-center justify-center text-purple-400 text-xs font-bold">
+                        <div key={run.id} className="flex items-center gap-3 p-3 rounded border border-border bg-card/50" data-testid={`eval-run-${idx}`}>
+                          <div className="w-8 h-8 rounded-full bg-purple-900/30 flex items-center justify-center text-purple-700 text-xs font-bold">
                             {run.crewSize}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-stone-300">
+                              <span className="text-xs text-foreground">
                                 {run.members.map(m => getAgentInfo(m.agentId)?.name || m.agentId).join(' + ')}
                               </span>
                             </div>
-                            <div className="flex items-center gap-3 mt-1 text-[10px] text-stone-500">
+                            <div className="flex items-center gap-3 mt-1 text-[10px] text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {(run.totalLatencyMs / 1000).toFixed(1)}s
@@ -1059,12 +1059,12 @@ print(result)`,
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-[10px] text-stone-500">{new Date(run.timestamp).toLocaleTimeString()}</p>
+                            <p className="text-[10px] text-muted-foreground">{new Date(run.timestamp).toLocaleTimeString()}</p>
                             <div className="flex gap-1 mt-1">
                               {run.members.map((m, mi) => {
                                 const mInfo = getModelInfo(m.model);
                                 return (
-                                  <Badge key={mi} variant="outline" className="text-[8px] border-stone-700 text-stone-600 px-1">
+                                  <Badge key={mi} variant="outline" className="text-[8px] border-border text-muted-foreground px-1">
                                     {mInfo?.name?.split(' ')[0] || '?'}
                                   </Badge>
                                 );
@@ -1078,15 +1078,15 @@ print(result)`,
                 </Card>
 
                 {evalHistory.length >= 2 && (
-                  <Card className="bg-[#0a0500] border-amber-900/30">
+                  <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+                      <CardTitle className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
                         <BarChart3 className="w-4 h-4" /> Comparison
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        <div className="grid grid-cols-4 gap-2 text-[10px] text-stone-500 uppercase border-b border-stone-800 pb-2">
+                        <div className="grid grid-cols-4 gap-2 text-[10px] text-muted-foreground uppercase border-b border-border pb-2">
                           <span>Run</span><span>Time</span><span>Tokens</span><span>Cost</span>
                         </div>
                         {evalHistory.slice(0, 10).map((run, idx) => {
@@ -1094,12 +1094,12 @@ print(result)`,
                           const bestCost = Math.min(...evalHistory.map(r => r.totalCost));
                           return (
                             <div key={run.id} className="grid grid-cols-4 gap-2 text-xs items-center">
-                              <span className="text-stone-400">{run.crewSize} agents</span>
-                              <span className={run.totalLatencyMs === bestTime ? 'text-teal-400 font-bold' : 'text-stone-400'}>
+                              <span className="text-muted-foreground">{run.crewSize} agents</span>
+                              <span className={run.totalLatencyMs === bestTime ? 'text-teal-800 font-bold' : 'text-muted-foreground'}>
                                 {(run.totalLatencyMs / 1000).toFixed(1)}s
                               </span>
-                              <span className="text-stone-400">{run.totalTokens.toLocaleString()}</span>
-                              <span className={run.totalCost === bestCost ? 'text-green-400 font-bold' : 'text-stone-400'}>
+                              <span className="text-muted-foreground">{run.totalTokens.toLocaleString()}</span>
+                              <span className={run.totalCost === bestCost ? 'text-green-400 font-bold' : 'text-muted-foreground'}>
                                 ${run.totalCost.toFixed(3)}
                               </span>
                             </div>

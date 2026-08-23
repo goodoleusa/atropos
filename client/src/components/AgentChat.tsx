@@ -68,9 +68,9 @@ const MODELS = {
 };
 
 const TIER_COLORS: Record<string, { header: string; item: string; tag: string }> = {
-  premium: { header: 'text-red-400', item: 'text-red-400', tag: '💎' },
-  budget:  { header: 'text-amber-400', item: 'text-amber-400', tag: '⚡' },
-  free:    { header: 'text-emerald-400', item: 'text-emerald-400', tag: '' },
+  premium: { header: 'text-red-700', item: 'text-red-700', tag: '💎' },
+  budget:  { header: 'text-amber-800', item: 'text-amber-800', tag: '⚡' },
+  free:    { header: 'text-emerald-700', item: 'text-emerald-700', tag: '' },
 };
 
 const MODEL_LIST = [
@@ -951,14 +951,14 @@ ${learningProfile}`;
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono w-[95vw] max-w-2xl h-[90vh] md:h-[80vh] flex flex-col p-3 md:p-6">
+      <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono w-[95vw] max-w-2xl h-[90vh] md:h-[80vh] flex flex-col p-3 md:p-6">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-amber-600 font-orbitron flex items-center gap-2 text-sm md:text-base">
+            <DialogTitle className="text-amber-800 font-orbitron flex items-center gap-2 text-sm md:text-base">
               <Bot className="w-4 h-4 md:w-5 md:h-5" />
               NEXUS AGENT
               {activeCampaign && (
-                <span className="text-xs text-teal-400 ml-2 hidden md:inline">
+                <span className="text-xs text-teal-800 ml-2 hidden md:inline">
                   [{activeCampaign.name}]
                 </span>
               )}
@@ -970,7 +970,7 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={copySession}
                   title="Copy Transcript"
-                  className="text-stone-500 hover:text-amber-500 h-7 w-7 p-0"
+                  className="text-muted-foreground hover:text-amber-500 h-7 w-7 p-0"
                 >
                   <Copy className="w-3.5 h-3.5" />
                 </Button>
@@ -979,7 +979,7 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={exportPrompt}
                   title="Export Config"
-                  className="text-stone-500 hover:text-amber-500 h-7 w-7 p-0"
+                  className="text-muted-foreground hover:text-amber-500 h-7 w-7 p-0"
                 >
                   <Download className="w-3.5 h-3.5" />
                 </Button>
@@ -988,7 +988,7 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={sendToOptimizer}
                   title="Send to Prompt Optimizer"
-                  className="text-stone-500 hover:text-teal-500 h-7 w-7 p-0"
+                  className="text-muted-foreground hover:text-teal-500 h-7 w-7 p-0"
                 >
                   <Rocket className="w-3.5 h-3.5 text-teal-600" />
                 </Button>
@@ -997,10 +997,10 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={exportToReport}
                   title="Export Investigation Report (70% auto-filled)"
-                  className="text-stone-500 hover:text-purple-500 h-7 px-1"
+                  className="text-muted-foreground hover:text-purple-500 h-7 px-1"
                   data-testid="export-report"
                 >
-                  <Save className="w-3.5 h-3.5 text-purple-500" />
+                  <Save className="w-3.5 h-3.5 text-purple-700" />
                   <span className="text-[9px] ml-0.5 hidden md:inline">Report</span>
                 </Button>
                 <div className="w-px h-4 bg-amber-900/20 mx-1" />
@@ -1010,7 +1010,7 @@ ${learningProfile}`;
                   onClick={compressContext}
                   disabled={isCompressing || messages.length < 3}
                   title={promptConfig.compressedContext ? 'Re-compress context' : 'Compress context to save memory'}
-                  className={`h-7 px-1 ${promptConfig.compressedContext ? 'text-teal-500' : 'text-stone-500 hover:text-teal-500'}`}
+                  className={`h-7 px-1 ${promptConfig.compressedContext ? 'text-teal-800' : 'text-muted-foreground hover:text-teal-500'}`}
                   data-testid="compress-context-btn"
                 >
                   {isCompressing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
@@ -1021,7 +1021,7 @@ ${learningProfile}`;
                   variant="ghost" 
                   size="sm" 
                   onClick={resetChat}
-                  className="text-stone-500 hover:text-amber-500 h-7 text-xs"
+                  className="text-muted-foreground hover:text-amber-500 h-7 text-xs"
                 >
                   <ArrowLeft className="w-3 h-3 mr-1" /> New Session
                 </Button>
@@ -1032,10 +1032,10 @@ ${learningProfile}`;
           {/* Model Selector - mobile optimized */}
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
+              <SelectTrigger className="bg-muted border-amber-900/30 text-amber-800 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50 max-h-72">
+              <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50 max-h-72">
                 {MODEL_LIST.map((model: any) => {
                   const tc = TIER_COLORS[model.tier] || TIER_COLORS.free;
                   return model.disabled ? (
@@ -1048,13 +1048,13 @@ ${learningProfile}`;
                       value={model.id}
                       className={`${tc.item} focus:bg-amber-900/30 text-xs`}
                     >
-                      <span className="font-mono opacity-60">[{model.short}]</span> {model.name} <span className="text-stone-600 text-[9px]">{model.desc}</span>
+                      <span className="font-mono opacity-60">[{model.short}]</span> {model.name} <span className="text-muted-foreground text-[9px]">{model.desc}</span>
                     </SelectItem>
                   );
                 })}
               </SelectContent>
             </Select>
-            <span className="text-[9px] md:text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
+            <span className="text-[9px] md:text-[10px] text-muted-foreground bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
               /kimi /devs /nemo3 /llama
             </span>
             <LearningStyleBadge />
@@ -1062,7 +1062,7 @@ ${learningProfile}`;
               variant="outline"
               size="sm"
               onClick={() => { setShowMissionBriefing(!showMissionBriefing); if (!showMissionBriefing) setShowPromptStudio(false); }}
-              className={`h-7 px-2 text-xs border-amber-900/30 ${showMissionBriefing ? 'bg-teal-900/30 text-teal-400 border-teal-900/30' : 'text-stone-500'}`}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showMissionBriefing ? 'bg-teal-900/30 text-teal-800 border-teal-900/30' : 'text-muted-foreground'}`}
               data-testid="toggle-mission-briefing"
             >
               <GraduationCap className="w-3 h-3 mr-1" />
@@ -1072,7 +1072,7 @@ ${learningProfile}`;
               variant="outline"
               size="sm"
               onClick={() => { setShowPromptStudio(!showPromptStudio); if (!showPromptStudio) setShowMissionBriefing(false); }}
-              className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-400' : 'text-stone-500'}`}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-800' : 'text-muted-foreground'}`}
               data-testid="toggle-prompt-studio"
             >
               <Settings2 className="w-3 h-3 mr-1" />
@@ -1082,7 +1082,7 @@ ${learningProfile}`;
           
           {/* Mission Briefing Panel */}
           {showMissionBriefing && (
-            <div className="mt-1.5 md:mt-2 max-h-[50vh] md:max-h-[40vh] overflow-y-auto bg-stone-950/50 rounded-lg border border-teal-900/30 p-2 md:p-3">
+            <div className="mt-1.5 md:mt-2 max-h-[50vh] md:max-h-[40vh] overflow-y-auto bg-card/50 rounded-lg border border-teal-900/30 p-2 md:p-3">
               <MissionBriefing
                 onStartMission={startAIMission}
                 onSuggestionChip={(text) => { setInput(text); setShowMissionBriefing(false); }}
@@ -1108,23 +1108,23 @@ ${learningProfile}`;
 
         {/* Context Memory Bar */}
         {messages.length > 0 && (
-          <div className="flex-shrink-0 flex items-center gap-2 px-2 py-1 bg-stone-950/50 border-b border-stone-800/30" data-testid="memory-status-bar">
-            <Zap className={`w-3 h-3 ${promptConfig.compressedContext ? 'text-teal-400' : 'text-stone-600'}`} />
-            <span className="text-[9px] text-stone-500">
+          <div className="flex-shrink-0 flex items-center gap-2 px-2 py-1 bg-card/50 border-b border-border/30" data-testid="memory-status-bar">
+            <Zap className={`w-3 h-3 ${promptConfig.compressedContext ? 'text-teal-800' : 'text-muted-foreground'}`} />
+            <span className="text-[9px] text-muted-foreground">
               {messages.length} msgs · ~{estimateTokens(messages.map(m => m.content).join(' ')).toLocaleString()} tokens
             </span>
             {promptConfig.compressedContext && (
-              <Badge variant="outline" className="text-[7px] border-teal-900/30 text-teal-500 px-1 py-0 h-3.5" data-testid="compressed-badge">
+              <Badge variant="outline" className="text-[7px] border-teal-900/30 text-teal-800 px-1 py-0 h-3.5" data-testid="compressed-badge">
                 COMPRESSED
               </Badge>
             )}
             {isCompressing && (
-              <Badge className="text-[7px] bg-amber-500/20 text-amber-400 border-amber-500/30 px-1 py-0 h-3.5 animate-pulse">
+              <Badge className="text-[7px] bg-amber-500/20 text-amber-800 border-amber-500/30 px-1 py-0 h-3.5 animate-pulse">
                 COMPRESSING...
               </Badge>
             )}
             {missionBusSummary && missionBusSummary.recentFindings.length > 0 && (
-              <Badge variant="outline" className="text-[7px] border-amber-900/30 text-amber-500 px-1 py-0 h-3.5 ml-auto" data-testid="bus-findings-badge">
+              <Badge variant="outline" className="text-[7px] border-amber-900/30 text-amber-800 px-1 py-0 h-3.5 ml-auto" data-testid="bus-findings-badge">
                 {missionBusSummary.recentFindings.length} bus findings
               </Badge>
             )}
@@ -1144,17 +1144,17 @@ ${learningProfile}`;
             <div className="flex-shrink-0 bg-teal-950/40 border-b border-teal-900/20 px-2 py-1 md:px-3 md:py-1" data-testid="mission-status-bar">
               <div className="flex items-center gap-1.5 min-h-[24px] md:min-h-[26px]">
                 <span className="text-xs">{mission.icon}</span>
-                <span className="text-[9px] md:text-[10px] font-medium text-teal-400 truncate max-w-[80px] md:max-w-[160px]">{mission.name}</span>
-                <span className="text-[8px] md:text-[9px] text-stone-600">·</span>
+                <span className="text-[9px] md:text-[10px] font-medium text-teal-800 truncate max-w-[80px] md:max-w-[160px]">{mission.name}</span>
+                <span className="text-[8px] md:text-[9px] text-muted-foreground">·</span>
                 {exercise ? (
-                  <span className="text-[8px] md:text-[9px] text-stone-400 truncate max-w-[100px] md:max-w-[200px]">
+                  <span className="text-[8px] md:text-[9px] text-muted-foreground truncate max-w-[100px] md:max-w-[200px]">
                     Step {currentExerciseIdx + 1}/{totalEx}: {exercise.title}
                   </span>
                 ) : (
-                  <span className="text-[8px] md:text-[9px] text-stone-500">{doneCount}/{totalEx}</span>
+                  <span className="text-[8px] md:text-[9px] text-muted-foreground">{doneCount}/{totalEx}</span>
                 )}
                 {progress > 0 && (
-                  <div className="hidden sm:block w-12 md:w-16 h-1 bg-stone-800 rounded-full overflow-hidden flex-shrink-0">
+                  <div className="hidden sm:block w-12 md:w-16 h-1 bg-border rounded-full overflow-hidden flex-shrink-0">
                     <div className="h-full bg-teal-600 rounded-full transition-all" style={{ width: `${progress}%` }} />
                   </div>
                 )}
@@ -1162,7 +1162,7 @@ ${learningProfile}`;
                   {exercise && !completedExerciseIds.includes(exercise.id) && (
                     <button
                       onClick={() => markExerciseDone(exercise.id)}
-                      className="p-1 rounded text-emerald-600 hover:text-emerald-400 hover:bg-emerald-900/20 transition-colors"
+                      className="p-1 rounded text-emerald-600 hover:text-emerald-800 hover:bg-emerald-900/20 transition-colors"
                       title="Mark step done"
                       data-testid="mark-exercise-done"
                     >
@@ -1172,7 +1172,7 @@ ${learningProfile}`;
                   {currentExerciseIdx < totalEx - 1 && (
                     <button
                       onClick={goToNextExercise}
-                      className="p-1 rounded text-teal-600 hover:text-teal-400 hover:bg-teal-900/20 transition-colors"
+                      className="p-1 rounded text-teal-600 hover:text-teal-800 hover:bg-teal-900/20 transition-colors"
                       title="Next step"
                       data-testid="next-exercise-btn"
                     >
@@ -1181,7 +1181,7 @@ ${learningProfile}`;
                   )}
                   <button
                     onClick={() => setShowMissionBriefing(!showMissionBriefing)}
-                    className="p-1 rounded text-stone-600 hover:text-amber-400 hover:bg-amber-900/20 transition-colors"
+                    className="p-1 rounded text-muted-foreground hover:text-amber-700 hover:bg-amber-900/20 transition-colors"
                     title="Mission briefing"
                     data-testid="open-briefing-btn"
                   >
@@ -1189,7 +1189,7 @@ ${learningProfile}`;
                   </button>
                   <button
                     onClick={() => { setActiveMissionId(null); setCurrentExerciseIdx(0); }}
-                    className="p-1 rounded text-stone-700 hover:text-stone-400 hover:bg-stone-800/40 transition-colors"
+                    className="p-1 rounded text-muted-foreground hover:text-muted-foreground hover:bg-border/40 transition-colors"
                     title="Dismiss"
                     data-testid="dismiss-mission-bar"
                   >
@@ -1208,9 +1208,9 @@ ${learningProfile}`;
               <div className="space-y-4">
                 {/* Module Header */}
                 <div className="text-center py-2">
-                  <Rocket className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 text-teal-500 opacity-70" />
-                  <p className="text-sm md:text-base text-amber-500 font-bold">Choose an Agent Module</p>
-                  <p className="text-[10px] md:text-xs text-stone-500 mt-1">Select a skill module or start a freeform session</p>
+                  <Rocket className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 text-teal-800 opacity-70" />
+                  <p className="text-sm md:text-base text-amber-800 font-bold">Choose an Agent Module</p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Select a skill module or start a freeform session</p>
                 </div>
 
                 {/* Module Grid - Mobile Optimized */}
@@ -1219,23 +1219,23 @@ ${learningProfile}`;
                     <button
                       key={campaign.id}
                       onClick={() => startCampaign(campaign)}
-                      className="text-left p-3 bg-black/50 border border-amber-900/20 rounded-lg hover:border-amber-600/50 hover:bg-amber-900/10 transition-all group"
+                      className="text-left p-3 bg-muted border border-amber-900/20 rounded-lg hover:border-amber-600/50 hover:bg-amber-900/10 transition-all group"
                       data-testid={`campaign-${campaign.id}`}
                     >
                       <div className="flex items-start gap-2">
                         <span className="text-xl md:text-2xl">{campaign.icon}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-amber-500 font-bold text-xs md:text-sm truncate group-hover:text-amber-400">
+                          <p className="text-amber-800 font-bold text-xs md:text-sm truncate group-hover:text-amber-600">
                             {campaign.name}
                           </p>
-                          <p className="text-stone-500 text-[10px] md:text-xs line-clamp-2 mt-0.5">
+                          <p className="text-muted-foreground text-[10px] md:text-xs line-clamp-2 mt-0.5">
                             {campaign.description}
                           </p>
                           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                             <span className={`text-[9px] md:text-[10px] ${getDifficultyColor(campaign.difficulty)}`}>
                               {campaign.difficulty.toUpperCase()}
                             </span>
-                            <span className="text-[9px] md:text-[10px] text-stone-600 flex items-center gap-0.5">
+                            <span className="text-[9px] md:text-[10px] text-muted-foreground flex items-center gap-0.5">
                               <Clock className="w-2.5 h-2.5" /> {campaign.estimatedTime}
                             </span>
                           </div>
@@ -1257,16 +1257,16 @@ ${learningProfile}`;
                     className="w-full p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg hover:bg-amber-900/30 transition-all text-center"
                     data-testid="freeform-session"
                   >
-                    <Terminal className="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-amber-600" />
-                    <p className="text-amber-500 font-bold text-xs md:text-sm">Freeform Session</p>
-                    <p className="text-stone-500 text-[10px] md:text-xs">Start without a module template</p>
+                    <Terminal className="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-amber-800" />
+                    <p className="text-amber-800 font-bold text-xs md:text-sm">Freeform Session</p>
+                    <p className="text-muted-foreground text-[10px] md:text-xs">Start without a module template</p>
                   </button>
                 </div>
               </div>
             )}
 
             {messages.length === 0 && !showCampaigns && (
-              <div className="text-center text-stone-600 py-4 md:py-8">
+              <div className="text-center text-muted-foreground py-4 md:py-8">
                 <Bot className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 opacity-30" />
                 <p className="text-xs md:text-sm">NEXUS agent ready.</p>
                 <p className="text-[10px] md:text-xs mt-1">Send commands, payloads, or ask questions.</p>
@@ -1279,7 +1279,7 @@ ${learningProfile}`;
                       variant="outline"
                       size="sm"
                       onClick={() => setInput(action.payload)}
-                      className="border-amber-900/30 text-amber-600 text-[10px] md:text-xs h-6 md:h-7 px-2"
+                      className="border-amber-900/30 text-amber-800 text-[10px] md:text-xs h-6 md:h-7 px-2"
                     >
                       {action.label}
                     </Button>
@@ -1295,7 +1295,7 @@ ${learningProfile}`;
                     setCaptureEnabled(false);
                     setContextCampaign('');
                   }}
-                  className="mt-3 text-stone-500 hover:text-teal-400 text-[10px] md:text-xs"
+                  className="mt-3 text-muted-foreground hover:text-teal-800 text-[10px] md:text-xs"
                 >
                   <ArrowLeft className="w-3 h-3 mr-1" /> Back to Modules
                 </Button>
@@ -1310,12 +1310,12 @@ ${learningProfile}`;
                 <div
                   className={`max-w-[80%] rounded-lg px-4 py-2 ${
                     msg.role === 'user'
-                      ? 'bg-amber-900/30 text-amber-400'
-                      : 'bg-black/50 border border-amber-900/20 text-stone-300'
+                      ? 'bg-amber-900/30 text-amber-800'
+                      : 'bg-muted border border-amber-900/20 text-foreground'
                   }`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="flex items-center gap-1 text-amber-600 text-xs mb-1">
+                    <div className="flex items-center gap-1 text-amber-800 text-xs mb-1">
                       <Bot className="w-3 h-3" /> NEXUS
                     </div>
                   )}
@@ -1336,7 +1336,7 @@ ${learningProfile}`;
                   {/* Atropos Scan Suggestions */}
                   {msg.scanSuggestions && msg.scanSuggestions.length > 0 && (
                     <div className="mt-3 p-3 bg-orange-900/20 border border-orange-900/50 rounded-lg">
-                      <div className="text-xs text-orange-400 mb-2 flex items-center gap-1">
+                      <div className="text-xs text-orange-800 mb-2 flex items-center gap-1">
                         <Zap className="w-3 h-3" />
                         <span>Atropos Scan Suggestions</span>
                       </div>
@@ -1346,7 +1346,7 @@ ${learningProfile}`;
                             key={idx}
                             size="sm"
                             variant="outline"
-                            className="w-full text-xs bg-orange-900/30 border-orange-700/50 text-orange-300 hover:bg-orange-900/50 hover:text-orange-200 h-auto py-2"
+                            className="w-full text-xs bg-orange-900/30 border-orange-700/50 text-orange-800 hover:bg-orange-900/50 hover:text-orange-900 h-auto py-2"
                             onClick={async () => {
                               setLoading(true);
                               const result = await executeAtroposScan(suggestion.script, suggestion.target);
@@ -1370,8 +1370,8 @@ ${learningProfile}`;
 
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-black/50 border border-amber-900/20 rounded-lg px-4 py-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+                <div className="bg-muted border border-amber-900/20 rounded-lg px-4 py-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-800" />
                 </div>
               </div>
             )}
@@ -1391,7 +1391,7 @@ ${learningProfile}`;
                 }
               }}
               placeholder="Enter command, payload, or question..."
-              className="bg-black/50 border-amber-900/30 text-amber-500 font-mono resize-none h-16 md:h-20 text-xs md:text-sm"
+              className="bg-muted border-amber-900/30 text-amber-800 font-mono resize-none h-16 md:h-20 text-xs md:text-sm"
             />
             <Button
               onClick={sendMessage}
@@ -1420,16 +1420,16 @@ ${learningProfile}`;
         }
       }}
     >
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-lg">
+      <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-amber-500 font-orbitron text-sm">Module Target Setup</DialogTitle>
+          <DialogTitle className="text-amber-800 font-orbitron text-sm">Module Target Setup</DialogTitle>
         </DialogHeader>
         {pendingCampaign ? (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-stone-500">Agent Module</p>
-                <p className="text-sm text-amber-400 font-bold">{pendingCampaign.name}</p>
+                <p className="text-xs text-muted-foreground">Agent Module</p>
+                <p className="text-sm text-amber-800 font-bold">{pendingCampaign.name}</p>
               </div>
               <Button
                 size="sm"
@@ -1440,7 +1440,7 @@ ${learningProfile}`;
                     setUseDummyTargets(true);
                   }
                 }}
-                className="border-amber-700 text-amber-400"
+                className="border-amber-700 text-amber-800"
               >
                 Use Dummy Data
               </Button>
@@ -1450,10 +1450,10 @@ ${learningProfile}`;
               {(pendingCampaign.targetFields || []).map((field) => (
                 <div key={field.key}>
                   <div className="flex items-center justify-between">
-                    <Label className="text-[10px] text-stone-500 uppercase">
+                    <Label className="text-[10px] text-muted-foreground uppercase">
                       {field.label}
                     </Label>
-                    {field.required && <Badge variant="outline" className="text-[8px] border-red-700 text-red-400">Required</Badge>}
+                    {field.required && <Badge variant="outline" className="text-[8px] border-red-700 text-red-700">Required</Badge>}
                   </div>
                   <Input
                     value={targetValues[field.key] || ''}
@@ -1462,23 +1462,23 @@ ${learningProfile}`;
                       setUseDummyTargets(false);
                       setTargetValues((prev) => ({ ...prev, [field.key]: e.target.value }));
                     }}
-                    className="bg-black/50 border-amber-900/30 text-amber-300 text-sm"
+                    className="bg-muted border-amber-900/30 text-amber-800 text-sm"
                   />
                   {field.helpText && (
-                    <p className="text-[10px] text-stone-600 mt-1">{field.helpText}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{field.helpText}</p>
                   )}
                 </div>
               ))}
             </div>
 
             {useDummyTargets && (
-              <p className="text-[10px] text-teal-400">Dummy data loaded. You can edit any field.</p>
+              <p className="text-[10px] text-teal-800">Dummy data loaded. You can edit any field.</p>
             )}
 
             <div className="flex gap-2 pt-2">
               <Button
                 variant="outline"
-                className="border-stone-700 text-stone-400 w-full"
+                className="border-border text-muted-foreground w-full"
                 onClick={() => setTargetModalOpen(false)}
               >
                 Cancel
@@ -1504,7 +1504,7 @@ ${learningProfile}`;
             </div>
           </div>
         ) : (
-          <p className="text-sm text-stone-500">No module selected.</p>
+          <p className="text-sm text-muted-foreground">No module selected.</p>
         )}
       </DialogContent>
     </Dialog>

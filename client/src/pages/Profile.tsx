@@ -123,8 +123,8 @@ export default function Profile() {
 
   if (loadingProgression) {
     return (
-      <div className="min-h-screen bg-[#050200] flex items-center justify-center">
-        <div className="text-amber-500 font-mono">Loading profile...</div>
+      <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center">
+        <div className="text-amber-800 font-mono">Loading profile...</div>
       </div>
     );
   }
@@ -148,10 +148,10 @@ export default function Profile() {
   );
 
   const rarityColors: Record<string, string> = {
-    common: 'border-stone-600 text-stone-400',
+    common: 'border-muted text-muted-foreground',
     rare: 'border-blue-600 text-blue-400',
-    epic: 'border-purple-600 text-purple-400',
-    legendary: 'border-amber-600 text-amber-400'
+    epic: 'border-purple-600 text-purple-700',
+    legendary: 'border-amber-600 text-amber-800'
   };
 
   const categoryIcons: Record<string, any> = {
@@ -163,20 +163,20 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050200] text-stone-300">
-      <header className="border-b border-amber-900/30 bg-[#0a0500] sticky top-0 z-50">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground">
+      <header className="border-b border-amber-900/30 bg-[hsl(var(--card))] sticky top-0 z-50">
         <div className="px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="text-stone-500 hover:text-amber-500">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-amber-500">
                 <ArrowLeft className="w-4 h-4 mr-1" /> Back
               </Button>
             </Link>
             <h1 className="font-orbitron text-xl font-bold">
-              <span className="text-amber-600">MISSION</span> <span className="text-stone-400">CONTROL</span>
+              <span className="text-amber-800">MISSION</span> <span className="text-muted-foreground">CONTROL</span>
             </h1>
           </div>
-          <Badge variant="outline" className="border-teal-600 text-teal-400">
+          <Badge variant="outline" className="border-teal-600 text-teal-800">
             {gameState.username || 'Guest'}
           </Badge>
         </div>
@@ -186,15 +186,15 @@ export default function Profile() {
         
         {/* Level & XP Overview */}
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
-          <Card className="lg:col-span-2 bg-[#0a0500] border-amber-900/30 torch-border">
+          <Card className="lg:col-span-2 bg-[hsl(var(--card))] border-amber-900/30 torch-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-2xl font-orbitron text-amber-500 flex items-center gap-2">
+                  <CardTitle className="text-2xl font-orbitron text-amber-800 flex items-center gap-2">
                     <Trophy className="w-6 h-6" />
                     Level {progression?.level || 1}
                   </CardTitle>
-                  <CardDescription className="text-stone-500 mt-1">
+                  <CardDescription className="text-muted-foreground mt-1">
                     {progression?.xp || 0} / {xpForNextLevel} XP to next level
                   </CardDescription>
                 </div>
@@ -208,8 +208,8 @@ export default function Profile() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Progress value={xpProgress} className="h-3 bg-stone-900" />
-                <div className="flex justify-between mt-2 text-xs text-stone-500">
+                <Progress value={xpProgress} className="h-3 bg-card" />
+                <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                   <span>{progression?.xp || 0} XP</span>
                   <span>{xpForNextLevel - (progression?.xp || 0)} XP needed</span>
                 </div>
@@ -217,28 +217,28 @@ export default function Profile() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-teal-950/20 rounded border border-teal-900/30">
-                  <p className="text-2xl font-bold text-teal-400">{progression?.stats?.campaignsCompleted || 0}</p>
-                  <p className="text-xs text-stone-500">Campaigns</p>
+                  <p className="text-2xl font-bold text-teal-800">{progression?.stats?.campaignsCompleted || 0}</p>
+                  <p className="text-xs text-muted-foreground">Campaigns</p>
                 </div>
                 <div className="text-center p-3 bg-amber-950/20 rounded border border-amber-900/30">
-                  <p className="text-2xl font-bold text-amber-400">{progression?.stats?.cluesFound || 0}</p>
-                  <p className="text-xs text-stone-500">Clues</p>
+                  <p className="text-2xl font-bold text-amber-800">{progression?.stats?.cluesFound || 0}</p>
+                  <p className="text-xs text-muted-foreground">Clues</p>
                 </div>
                 <div className="text-center p-3 bg-purple-950/20 rounded border border-purple-900/30">
-                  <p className="text-2xl font-bold text-purple-400">{progression?.stats?.questsCompleted || 0}</p>
-                  <p className="text-xs text-stone-500">Quests</p>
+                  <p className="text-2xl font-bold text-purple-700">{progression?.stats?.questsCompleted || 0}</p>
+                  <p className="text-xs text-muted-foreground">Quests</p>
                 </div>
                 <div className="text-center p-3 bg-orange-950/20 rounded border border-orange-900/30">
-                  <p className="text-2xl font-bold text-orange-400">{progression?.currency || 0}</p>
-                  <p className="text-xs text-stone-500">Credits</p>
+                  <p className="text-2xl font-bold text-orange-800">{progression?.currency || 0}</p>
+                  <p className="text-xs text-muted-foreground">Credits</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0a0500] border-teal-900/30">
+          <Card className="bg-[hsl(var(--card))] border-teal-900/30">
             <CardHeader>
-              <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
                 Global Ranking
               </CardTitle>
@@ -247,18 +247,18 @@ export default function Profile() {
               {globalRank ? (
                 <div className="space-y-4">
                   <div className="text-center">
-                    <p className="text-4xl font-bold text-teal-400">#{globalRank.rank}</p>
-                    <p className="text-xs text-stone-500 mt-1">out of all players</p>
+                    <p className="text-4xl font-bold text-teal-800">#{globalRank.rank}</p>
+                    <p className="text-xs text-muted-foreground mt-1">out of all players</p>
                   </div>
                   <div className="text-center p-2 bg-teal-950/20 rounded">
-                    <p className="text-sm text-stone-400">Total XP</p>
+                    <p className="text-sm text-muted-foreground">Total XP</p>
                     <p className="text-xl font-bold text-teal-300">{progression?.totalXp || 0}</p>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-stone-600 text-sm">Not ranked yet</p>
-                  <p className="text-stone-700 text-xs mt-1">Complete campaigns to rank</p>
+                  <p className="text-muted-foreground text-sm">Not ranked yet</p>
+                  <p className="text-muted-foreground text-xs mt-1">Complete campaigns to rank</p>
                 </div>
               )}
             </CardContent>
@@ -266,13 +266,13 @@ export default function Profile() {
         </div>
 
         {/* Skills Breakdown */}
-        <Card className="mb-8 bg-[#0a0500] border-amber-900/30">
+        <Card className="mb-8 bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader>
-            <CardTitle className="text-amber-500 font-orbitron flex items-center gap-2">
+            <CardTitle className="text-amber-800 font-orbitron flex items-center gap-2">
               <Brain className="w-5 h-5" />
               Skill Specializations
             </CardTitle>
-            <CardDescription className="text-stone-500">
+            <CardDescription className="text-muted-foreground">
               Develop expertise in different security domains
             </CardDescription>
           </CardHeader>
@@ -285,14 +285,14 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Icon className={`w-4 h-4 text-${skill.color}-500`} />
-                        <span className="text-sm font-medium text-stone-300">{skill.name}</span>
+                        <span className="text-sm font-medium text-foreground">{skill.name}</span>
                       </div>
                       <Badge variant="outline" className={`border-${skill.color}-900 text-${skill.color}-400 text-xs`}>
                         {skill.value}
                       </Badge>
                     </div>
-                    <Progress value={Math.min(100, (skill.value / 100) * 100)} className={`h-2 bg-stone-900`} />
-                    <p className="text-xs text-stone-600">{skill.value} / 100 points</p>
+                    <Progress value={Math.min(100, (skill.value / 100) * 100)} className={`h-2 bg-card`} />
+                    <p className="text-xs text-muted-foreground">{skill.value} / 100 points</p>
                   </div>
                 );
               })}
@@ -302,7 +302,7 @@ export default function Profile() {
 
         {/* Tabs: Achievements, Stats, Activity */}
         <Tabs defaultValue="missions" className="space-y-6">
-          <TabsList className="bg-stone-900/50 border border-amber-900/30 flex-wrap">
+          <TabsList className="bg-card/50 border border-amber-900/30 flex-wrap">
             <TabsTrigger value="missions" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-400" data-testid="missions-tab">
               <Crosshair className="w-4 h-4 mr-2" />
               Mission Control
@@ -338,7 +338,7 @@ export default function Profile() {
           {/* Achievements Tab */}
           <TabsContent value="achievements" className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-orbitron text-amber-500">
+              <h3 className="text-lg font-orbitron text-amber-800">
                 {unlockedAchievements.length} / {achievements.length} Unlocked
               </h3>
               <div className="flex gap-2">
@@ -361,16 +361,16 @@ export default function Profile() {
                 return (
                   <Card 
                     key={achievement.achievementId} 
-                    className={`bg-[#0a0500] border transition-all hover:scale-[1.02] ${rarityColors[achievement.rarity]}`}
+                    className={`bg-[hsl(var(--card))] border transition-all hover:scale-[1.02] ${rarityColors[achievement.rarity]}`}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div className="text-3xl">{achievement.icon}</div>
                         <div className="flex-1">
-                          <h4 className="font-bold text-stone-200 text-sm mb-1">{achievement.name}</h4>
-                          <p className="text-xs text-stone-500 mb-2">{achievement.description}</p>
+                          <h4 className="font-bold text-foreground text-sm mb-1">{achievement.name}</h4>
+                          <p className="text-xs text-muted-foreground mb-2">{achievement.description}</p>
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-[9px] border-stone-700">
+                            <Badge variant="outline" className="text-[9px] border-border">
                               <CategoryIcon className="w-3 h-3 mr-1" />
                               {achievement.category}
                             </Badge>
@@ -379,12 +379,12 @@ export default function Profile() {
                             </Badge>
                           </div>
                           {unlockData && (
-                            <p className="text-[10px] text-stone-600 mt-2">
+                            <p className="text-[10px] text-muted-foreground mt-2">
                               Unlocked {new Date(unlockData.unlockedAt).toLocaleDateString()}
                             </p>
                           )}
                         </div>
-                        <Unlock className="w-4 h-4 text-amber-500" />
+                        <Unlock className="w-4 h-4 text-amber-800" />
                       </div>
                     </CardContent>
                   </Card>
@@ -397,22 +397,22 @@ export default function Profile() {
                 return (
                   <Card 
                     key={achievement.achievementId} 
-                    className="bg-[#0a0500] border-stone-800 opacity-50"
+                    className="bg-[hsl(var(--card))] border-border opacity-50"
                   >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div className="text-3xl grayscale">🔒</div>
                         <div className="flex-1">
-                          <h4 className="font-bold text-stone-500 text-sm mb-1">???</h4>
-                          <p className="text-xs text-stone-700 mb-2">Locked</p>
+                          <h4 className="font-bold text-muted-foreground text-sm mb-1">???</h4>
+                          <p className="text-xs text-muted-foreground mb-2">Locked</p>
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-[9px] border-stone-800 text-stone-700">
+                            <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                               <CategoryIcon className="w-3 h-3 mr-1" />
                               {achievement.category}
                             </Badge>
                           </div>
                         </div>
-                        <Lock className="w-4 h-4 text-stone-700" />
+                        <Lock className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </CardContent>
                   </Card>
@@ -424,83 +424,83 @@ export default function Profile() {
           {/* Statistics Tab */}
           <TabsContent value="stats" className="space-y-4">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Card className="bg-[#0a0500] border-amber-900/30">
+              <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-amber-500 text-sm flex items-center gap-2">
+                  <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
                     <Target className="w-4 h-4" />
                     Investigation Stats
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Campaigns Completed</span>
-                    <span className="text-amber-400 font-bold">{progression?.stats?.campaignsCompleted || 0}</span>
+                    <span className="text-muted-foreground">Campaigns Completed</span>
+                    <span className="text-amber-800 font-bold">{progression?.stats?.campaignsCompleted || 0}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Clues Found</span>
-                    <span className="text-teal-400 font-bold">{progression?.stats?.cluesFound || 0}</span>
+                    <span className="text-muted-foreground">Clues Found</span>
+                    <span className="text-teal-800 font-bold">{progression?.stats?.cluesFound || 0}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Hidden Clues</span>
-                    <span className="text-purple-400 font-bold">{progression?.stats?.hiddenCluesFound || 0}</span>
+                    <span className="text-muted-foreground">Hidden Clues</span>
+                    <span className="text-purple-700 font-bold">{progression?.stats?.hiddenCluesFound || 0}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Quests Completed</span>
-                    <span className="text-orange-400 font-bold">{progression?.stats?.questsCompleted || 0}</span>
+                    <span className="text-muted-foreground">Quests Completed</span>
+                    <span className="text-orange-800 font-bold">{progression?.stats?.questsCompleted || 0}</span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-teal-900/30">
+              <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-teal-500 text-sm flex items-center gap-2">
+                  <CardTitle className="text-teal-800 text-sm flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     Time Stats
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Total Playtime</span>
-                    <span className="text-teal-400 font-bold">
+                    <span className="text-muted-foreground">Total Playtime</span>
+                    <span className="text-teal-800 font-bold">
                       {Math.floor((progression?.stats?.totalPlayTimeMinutes || 0) / 60)}h {(progression?.stats?.totalPlayTimeMinutes || 0) % 60}m
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Fastest Campaign</span>
-                    <span className="text-amber-400 font-bold">
+                    <span className="text-muted-foreground">Fastest Campaign</span>
+                    <span className="text-amber-800 font-bold">
                       {progression?.stats?.fastestCampaignTime ? `${progression.stats.fastestCampaignTime}m` : 'N/A'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Tools Mastered</span>
-                    <span className="text-purple-400 font-bold">{progression?.stats?.toolsUsed || 0}</span>
+                    <span className="text-muted-foreground">Tools Mastered</span>
+                    <span className="text-purple-700 font-bold">{progression?.stats?.toolsUsed || 0}</span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-orange-900/30">
+              <Card className="bg-[hsl(var(--card))] border-orange-900/30">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-orange-500 text-sm flex items-center gap-2">
+                  <CardTitle className="text-orange-800 text-sm flex items-center gap-2">
                     <Flame className="w-4 h-4" />
                     Streak
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div className="text-center py-2">
-                    <p className="text-4xl font-bold text-orange-400">{progression?.stats?.currentStreak || 0}</p>
-                    <p className="text-xs text-stone-500">day streak</p>
+                    <p className="text-4xl font-bold text-orange-800">{progression?.stats?.currentStreak || 0}</p>
+                    <p className="text-xs text-muted-foreground">day streak</p>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Longest Streak</span>
-                    <span className="text-orange-400 font-bold">{progression?.stats?.longestStreak || 0} days</span>
+                    <span className="text-muted-foreground">Longest Streak</span>
+                    <span className="text-orange-800 font-bold">{progression?.stats?.longestStreak || 0} days</span>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            <Card className="bg-[#0a0500] border-amber-900/30">
+            <Card className="bg-[hsl(var(--card))] border-amber-900/30">
               <CardHeader>
-                <CardTitle className="text-amber-500 text-sm flex items-center gap-2">
+                <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
                   <Unlock className="w-4 h-4" />
                   Unlocked Content
                 </CardTitle>
@@ -508,32 +508,32 @@ export default function Profile() {
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="text-xs text-stone-500 uppercase mb-2">Tools</h4>
+                    <h4 className="text-xs text-muted-foreground uppercase mb-2">Tools</h4>
                     <div className="space-y-1">
                       {progression?.unlockedTools && progression.unlockedTools.length > 0 ? (
                         progression.unlockedTools.map((tool, i) => (
                           <div key={i} className="flex items-center gap-2 text-sm">
-                            <Zap className="w-3 h-3 text-amber-500" />
-                            <span className="text-stone-400">{tool}</span>
+                            <Zap className="w-3 h-3 text-amber-800" />
+                            <span className="text-muted-foreground">{tool}</span>
                           </div>
                         ))
                       ) : (
-                        <p className="text-stone-600 text-sm">No special tools unlocked yet</p>
+                        <p className="text-muted-foreground text-sm">No special tools unlocked yet</p>
                       )}
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-xs text-stone-500 uppercase mb-2">Campaigns</h4>
+                    <h4 className="text-xs text-muted-foreground uppercase mb-2">Campaigns</h4>
                     <div className="space-y-1">
                       {progression?.unlockedCampaigns && progression.unlockedCampaigns.length > 0 ? (
                         progression.unlockedCampaigns.map((campaign, i) => (
                           <div key={i} className="flex items-center gap-2 text-sm">
-                            <Target className="w-3 h-3 text-teal-500" />
-                            <span className="text-stone-400">{campaign}</span>
+                            <Target className="w-3 h-3 text-teal-800" />
+                            <span className="text-muted-foreground">{campaign}</span>
                           </div>
                         ))
                       ) : (
-                        <p className="text-stone-600 text-sm">All campaigns available</p>
+                        <p className="text-muted-foreground text-sm">All campaigns available</p>
                       )}
                     </div>
                   </div>
@@ -545,10 +545,10 @@ export default function Profile() {
           {/* Daily Challenge Tab */}
           <TabsContent value="challenge" className="space-y-4">
             {todayChallenge ? (
-              <Card className="bg-[#0a0500] border-purple-900/30">
+              <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-purple-500 font-orbitron">Today's Challenge</CardTitle>
+                    <CardTitle className="text-purple-700 font-orbitron">Today's Challenge</CardTitle>
                     <Badge variant="outline" className={`border-${
                       todayChallenge.difficulty === 'easy' ? 'teal' : 
                       todayChallenge.difficulty === 'medium' ? 'amber' : 'red'
@@ -559,33 +559,33 @@ export default function Profile() {
                       {todayChallenge.difficulty}
                     </Badge>
                   </div>
-                  <CardDescription className="text-stone-500">
+                  <CardDescription className="text-muted-foreground">
                     Expires in {Math.floor((new Date(todayChallenge.expiresAt).getTime() - Date.now()) / 1000 / 60 / 60)} hours
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-bold text-stone-200 mb-2">{todayChallenge.title}</h3>
-                    <p className="text-stone-400">{todayChallenge.description}</p>
+                    <h3 className="text-lg font-bold text-foreground mb-2">{todayChallenge.title}</h3>
+                    <p className="text-muted-foreground">{todayChallenge.description}</p>
                   </div>
 
                   <div className="flex items-center gap-4 p-3 bg-purple-950/20 rounded border border-purple-900/30">
                     <div className="text-center">
-                      <p className="text-sm text-stone-500">Reward</p>
-                      <p className="text-lg font-bold text-amber-400">+{todayChallenge.xpReward} XP</p>
+                      <p className="text-sm text-muted-foreground">Reward</p>
+                      <p className="text-lg font-bold text-amber-800">+{todayChallenge.xpReward} XP</p>
                     </div>
-                    <div className="w-px h-10 bg-stone-800" />
+                    <div className="w-px h-10 bg-border" />
                     <div className="text-center">
-                      <p className="text-sm text-stone-500">Credits</p>
-                      <p className="text-lg font-bold text-orange-400">+{todayChallenge.currencyReward}</p>
+                      <p className="text-sm text-muted-foreground">Credits</p>
+                      <p className="text-lg font-bold text-orange-800">+{todayChallenge.currencyReward}</p>
                     </div>
                   </div>
 
                   {challengeCompletions.some(c => c.challengeId === todayChallenge.challengeId) ? (
                     <div className="p-4 bg-teal-950/20 border border-teal-900/30 rounded text-center">
-                      <Award className="w-8 h-8 text-teal-400 mx-auto mb-2" />
-                      <p className="text-teal-400 font-bold">Challenge Completed!</p>
-                      <p className="text-xs text-stone-500 mt-1">Come back tomorrow for a new challenge</p>
+                      <Award className="w-8 h-8 text-teal-800 mx-auto mb-2" />
+                      <p className="text-teal-800 font-bold">Challenge Completed!</p>
+                      <p className="text-xs text-muted-foreground mt-1">Come back tomorrow for a new challenge</p>
                     </div>
                   ) : (
                     <Link href="/terminal">
@@ -599,33 +599,33 @@ export default function Profile() {
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-[#0a0500] border-stone-800">
+              <Card className="bg-[hsl(var(--card))] border-border">
                 <CardContent className="p-8 text-center">
-                  <Calendar className="w-12 h-12 text-stone-700 mx-auto mb-4" />
-                  <p className="text-stone-500">No challenge available today</p>
-                  <p className="text-xs text-stone-700 mt-1">Check back tomorrow!</p>
+                  <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No challenge available today</p>
+                  <p className="text-xs text-muted-foreground mt-1">Check back tomorrow!</p>
                 </CardContent>
               </Card>
             )}
 
-            <Card className="bg-[#0a0500] border-stone-800">
+            <Card className="bg-[hsl(var(--card))] border-border">
               <CardHeader>
-                <CardTitle className="text-stone-400 text-sm">Challenge History</CardTitle>
+                <CardTitle className="text-muted-foreground text-sm">Challenge History</CardTitle>
               </CardHeader>
               <CardContent>
                 {challengeCompletions.length > 0 ? (
                   <div className="space-y-2">
                     {challengeCompletions.slice(0, 10).map((completion, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-stone-900/30 rounded">
+                      <div key={i} className="flex items-center justify-between p-2 bg-card/30 rounded">
                         <div className="flex items-center gap-2">
-                          <Award className="w-4 h-4 text-amber-500" />
-                          <span className="text-sm text-stone-400">{completion.challengeId}</span>
+                          <Award className="w-4 h-4 text-amber-800" />
+                          <span className="text-sm text-muted-foreground">{completion.challengeId}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="text-[10px]">
                             {completion.score} pts
                           </Badge>
-                          <span className="text-xs text-stone-600">
+                          <span className="text-xs text-muted-foreground">
                             {new Date(completion.completedAt).toLocaleDateString()}
                           </span>
                         </div>
@@ -633,7 +633,7 @@ export default function Profile() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-stone-600 text-sm text-center py-4">No challenges completed yet</p>
+                  <p className="text-muted-foreground text-sm text-center py-4">No challenges completed yet</p>
                 )}
               </CardContent>
             </Card>
@@ -642,45 +642,45 @@ export default function Profile() {
           {/* Stats Tab */}
           <TabsContent value="stats" className="space-y-4">
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="bg-[#0a0500] border-amber-900/30">
+              <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-amber-500 text-sm">Progression</CardTitle>
+                  <CardTitle className="text-amber-800 text-sm">Progression</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <p className="text-xs text-stone-500">Level</p>
-                    <p className="text-3xl font-bold text-amber-400">{progression?.level || 1}</p>
+                    <p className="text-xs text-muted-foreground">Level</p>
+                    <p className="text-3xl font-bold text-amber-800">{progression?.level || 1}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-stone-500">Total XP Earned</p>
-                    <p className="text-2xl font-bold text-stone-300">{progression?.totalXp || 0}</p>
+                    <p className="text-xs text-muted-foreground">Total XP Earned</p>
+                    <p className="text-2xl font-bold text-foreground">{progression?.totalXp || 0}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-stone-500">Currency</p>
-                    <p className="text-xl font-bold text-orange-400">{progression?.currency || 0} credits</p>
+                    <p className="text-xs text-muted-foreground">Currency</p>
+                    <p className="text-xl font-bold text-orange-800">{progression?.currency || 0} credits</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-teal-900/30">
+              <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-teal-500 text-sm">Activity</CardTitle>
+                  <CardTitle className="text-teal-800 text-sm">Activity</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <p className="text-xs text-stone-500">Current Streak</p>
+                    <p className="text-xs text-muted-foreground">Current Streak</p>
                     <div className="flex items-center gap-2">
-                      <Flame className="w-5 h-5 text-orange-500" />
-                      <p className="text-2xl font-bold text-orange-400">{progression?.stats?.currentStreak || 0}</p>
+                      <Flame className="w-5 h-5 text-orange-800" />
+                      <p className="text-2xl font-bold text-orange-800">{progression?.stats?.currentStreak || 0}</p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs text-stone-500">Best Streak</p>
-                    <p className="text-xl font-bold text-stone-300">{progression?.stats?.longestStreak || 0} days</p>
+                    <p className="text-xs text-muted-foreground">Best Streak</p>
+                    <p className="text-xl font-bold text-foreground">{progression?.stats?.longestStreak || 0} days</p>
                   </div>
                   <div>
-                    <p className="text-xs text-stone-500">Last Active</p>
-                    <p className="text-sm text-stone-400">
+                    <p className="text-xs text-muted-foreground">Last Active</p>
+                    <p className="text-sm text-muted-foreground">
                       {progression?.stats?.lastLoginDate 
                         ? new Date(progression.stats.lastLoginDate).toLocaleDateString()
                         : 'Today'}
@@ -689,20 +689,20 @@ export default function Profile() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#0a0500] border-purple-900/30">
+              <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-purple-500 text-sm">Performance</CardTitle>
+                  <CardTitle className="text-purple-700 text-sm">Performance</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <p className="text-xs text-stone-500">Fastest Campaign</p>
-                    <p className="text-2xl font-bold text-purple-400">
+                    <p className="text-xs text-muted-foreground">Fastest Campaign</p>
+                    <p className="text-2xl font-bold text-purple-700">
                       {progression?.stats?.fastestCampaignTime ? `${progression.stats.fastestCampaignTime}m` : '--'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-stone-500">Avg. Playtime</p>
-                    <p className="text-xl font-bold text-stone-300">
+                    <p className="text-xs text-muted-foreground">Avg. Playtime</p>
+                    <p className="text-xl font-bold text-foreground">
                       {progression?.stats?.campaignsCompleted 
                         ? Math.round((progression.stats.totalPlayTimeMinutes || 0) / progression.stats.campaignsCompleted) 
                         : 0}m / campaign
@@ -717,31 +717,31 @@ export default function Profile() {
         {/* Quick Actions */}
         <div className="mt-8 grid md:grid-cols-3 gap-4">
           <Link href="/terminal">
-            <Card className="bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-all cursor-pointer">
+            <Card className="bg-[hsl(var(--card))] border-amber-900/30 hover:border-amber-600/50 transition-all cursor-pointer">
               <CardContent className="p-6 text-center">
-                <Target className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                <h3 className="font-bold text-stone-200 mb-1">Start Investigation</h3>
-                <p className="text-xs text-stone-500">Launch the terminal</p>
+                <Target className="w-8 h-8 text-amber-800 mx-auto mb-2" />
+                <h3 className="font-bold text-foreground mb-1">Start Investigation</h3>
+                <p className="text-xs text-muted-foreground">Launch the terminal</p>
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/leaderboards">
-            <Card className="bg-[#0a0500] border-teal-900/30 hover:border-teal-600/50 transition-all cursor-pointer">
+            <Card className="bg-[hsl(var(--card))] border-teal-900/30 hover:border-teal-600/50 transition-all cursor-pointer">
               <CardContent className="p-6 text-center">
-                <TrendingUp className="w-8 h-8 text-teal-500 mx-auto mb-2" />
-                <h3 className="font-bold text-stone-200 mb-1">View Leaderboards</h3>
-                <p className="text-xs text-stone-500">Compare with others</p>
+                <TrendingUp className="w-8 h-8 text-teal-800 mx-auto mb-2" />
+                <h3 className="font-bold text-foreground mb-1">View Leaderboards</h3>
+                <p className="text-xs text-muted-foreground">Compare with others</p>
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/investigate">
-            <Card className="bg-[#0a0500] border-purple-900/30 hover:border-purple-600/50 transition-all cursor-pointer">
+            <Card className="bg-[hsl(var(--card))] border-purple-900/30 hover:border-purple-600/50 transition-all cursor-pointer">
               <CardContent className="p-6 text-center">
-                <Brain className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                <h3 className="font-bold text-stone-200 mb-1">AI Workspace</h3>
-                <p className="text-xs text-stone-500">Guided investigations</p>
+                <Brain className="w-8 h-8 text-purple-700 mx-auto mb-2" />
+                <h3 className="font-bold text-foreground mb-1">AI Workspace</h3>
+                <p className="text-xs text-muted-foreground">Guided investigations</p>
               </CardContent>
             </Card>
           </Link>

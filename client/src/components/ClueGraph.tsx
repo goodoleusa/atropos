@@ -117,7 +117,7 @@ export function ClueGraph({
           variant="ghost"
           size="sm"
           onClick={() => setZoom(z => Math.min(3, z * 1.2))}
-          className="h-7 w-7 p-0 bg-black/50 text-amber-500 hover:bg-amber-900/30"
+          className="h-7 w-7 p-0 bg-black/50 text-amber-800 hover:bg-amber-900/30"
         >
           <ZoomIn className="w-4 h-4" />
         </Button>
@@ -125,7 +125,7 @@ export function ClueGraph({
           variant="ghost"
           size="sm"
           onClick={() => setZoom(z => Math.max(0.3, z * 0.8))}
-          className="h-7 w-7 p-0 bg-black/50 text-amber-500 hover:bg-amber-900/30"
+          className="h-7 w-7 p-0 bg-black/50 text-amber-800 hover:bg-amber-900/30"
         >
           <ZoomOut className="w-4 h-4" />
         </Button>
@@ -133,13 +133,13 @@ export function ClueGraph({
           variant="ghost"
           size="sm"
           onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
-          className="h-7 w-7 p-0 bg-black/50 text-amber-500 hover:bg-amber-900/30"
+          className="h-7 w-7 p-0 bg-black/50 text-amber-800 hover:bg-amber-900/30"
         >
           <Maximize2 className="w-4 h-4" />
         </Button>
       </div>
 
-      <div className="absolute top-2 left-2 z-10 text-[10px] text-stone-600 bg-black/50 px-2 py-1 rounded">
+      <div className="absolute top-2 left-2 z-10 text-[10px] text-muted-foreground bg-black/50 px-2 py-1 rounded">
         {filteredClues.length} nodes · {edges.length} connections
       </div>
 
@@ -258,19 +258,19 @@ export function ClueGraph({
       <div className="absolute bottom-2 left-2 flex items-center gap-3 text-[9px]">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-amber-600" />
-          <span className="text-stone-500">Common</span>
+          <span className="text-muted-foreground">Common</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-teal-500" />
-          <span className="text-stone-500">Uncommon</span>
+          <span className="text-muted-foreground">Uncommon</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-stone-500">Rare</span>
+          <span className="text-muted-foreground">Rare</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-purple-500" />
-          <span className="text-stone-500">Legendary</span>
+          <span className="text-muted-foreground">Legendary</span>
         </div>
       </div>
     </div>

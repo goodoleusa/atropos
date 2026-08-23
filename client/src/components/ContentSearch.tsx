@@ -54,11 +54,11 @@ interface ContentSearchProps {
 }
 
 const typeConfig: Record<ContentType, { icon: typeof FileText; color: string; label: string }> = {
-  clue: { icon: FileText, color: 'text-amber-500', label: 'Clues' },
-  quest: { icon: Trophy, color: 'text-purple-500', label: 'Quests' },
-  message: { icon: MessageSquare, color: 'text-teal-500', label: 'Messages' },
+  clue: { icon: FileText, color: 'text-amber-800', label: 'Clues' },
+  quest: { icon: Trophy, color: 'text-purple-700', label: 'Quests' },
+  message: { icon: MessageSquare, color: 'text-teal-800', label: 'Messages' },
   location: { icon: MapPin, color: 'text-blue-500', label: 'Locations' },
-  route: { icon: Hash, color: 'text-orange-500', label: 'Routes' },
+  route: { icon: Hash, color: 'text-orange-800', label: 'Routes' },
   mystical: { icon: Sparkles, color: 'text-pink-500', label: 'Mystical' }
 };
 
@@ -203,7 +203,7 @@ export function ContentSearch({
     <div className="relative w-full">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             ref={inputRef}
             value={query}
@@ -215,13 +215,13 @@ export function ContentSearch({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             autoFocus={autoFocus}
-            className="pl-10 pr-10 bg-black/50 border-amber-900/30 text-stone-300 placeholder:text-stone-600 focus:border-amber-600/50"
+            className="pl-10 pr-10 bg-black/50 border-amber-900/30 text-foreground placeholder:text-muted-foreground focus:border-amber-600/50"
             data-testid="content-search-input"
           />
           {query && (
             <button
               onClick={() => { setQuery(''); inputRef.current?.focus(); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-amber-500"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-amber-500"
             >
               <X className="w-4 h-4" />
             </button>
@@ -233,7 +233,7 @@ export function ContentSearch({
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
-                className="border-amber-900/30 text-amber-600 hover:bg-amber-900/20"
+                className="border-amber-900/30 text-amber-800 hover:bg-amber-900/20"
                 data-testid="filter-dropdown"
               >
                 <Filter className="w-4 h-4 mr-2" />
@@ -241,15 +241,15 @@ export function ContentSearch({
                 <ChevronDown className="w-3 h-3 ml-1" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#0a0500] border-amber-900/30" align="end">
-              <DropdownMenuLabel className="text-amber-600 text-xs">Filter by Type</DropdownMenuLabel>
+            <DropdownMenuContent className="bg-[hsl(var(--card))] border-amber-900/30" align="end">
+              <DropdownMenuLabel className="text-amber-800 text-xs">Filter by Type</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-amber-900/30" />
               {(Object.keys(typeConfig) as ContentType[]).map(type => (
                 <DropdownMenuCheckboxItem
                   key={type}
                   checked={activeTypes.has(type)}
                   onCheckedChange={() => toggleType(type)}
-                  className="text-stone-400 focus:bg-amber-900/20 focus:text-amber-500"
+                  className="text-muted-foreground focus:bg-amber-900/20 focus:text-amber-500"
                 >
                   <TypeIcon type={type} />
                   <span className="ml-2">{typeConfig[type].label}</span>
@@ -268,12 +268,12 @@ export function ContentSearch({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-2 bg-[#0a0500] border border-amber-900/30 rounded-lg shadow-xl overflow-hidden"
+            className="absolute z-50 w-full mt-2 bg-[hsl(var(--card))] border border-amber-900/30 rounded-lg shadow-xl overflow-hidden"
           >
             <ScrollArea className="max-h-[400px]">
               {!query && recentSearches.length > 0 && (
                 <div className="p-2 border-b border-amber-900/20">
-                  <p className="text-[10px] text-stone-600 uppercase font-bold mb-2 flex items-center gap-1">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold mb-2 flex items-center gap-1">
                     <Clock className="w-3 h-3" /> Recent Searches
                   </p>
                   <div className="flex flex-wrap gap-1">
@@ -281,7 +281,7 @@ export function ContentSearch({
                       <button
                         key={i}
                         onClick={() => setQuery(search)}
-                        className="px-2 py-1 text-xs bg-amber-900/20 text-amber-500 rounded hover:bg-amber-900/40 transition-colors"
+                        className="px-2 py-1 text-xs bg-amber-900/20 text-amber-800 rounded hover:bg-amber-900/40 transition-colors"
                       >
                         {search}
                       </button>
@@ -292,9 +292,9 @@ export function ContentSearch({
 
               {query && filteredItems.length === 0 && (
                 <div className="p-8 text-center">
-                  <Search className="w-8 h-8 text-stone-700 mx-auto mb-2" />
-                  <p className="text-stone-500 text-sm">No results found for "{query}"</p>
-                  <p className="text-stone-700 text-xs mt-1">Try different keywords or filters</p>
+                  <Search className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-muted-foreground text-sm">No results found for "{query}"</p>
+                  <p className="text-muted-foreground text-xs mt-1">Try different keywords or filters</p>
                 </div>
               )}
 
@@ -317,30 +317,30 @@ export function ContentSearch({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-amber-500 font-bold truncate">
+                          <span className="text-sm text-amber-800 font-bold truncate">
                             {highlightMatch(item.name, query)}
                           </span>
                           {item.rarity && (
                             <Badge 
                               variant="outline" 
                               className={`text-[9px] py-0 ${
-                                item.rarity === 'legendary' ? 'border-purple-500 text-purple-400' :
+                                item.rarity === 'legendary' ? 'border-purple-500 text-purple-700' :
                                 item.rarity === 'rare' ? 'border-blue-500 text-blue-400' :
-                                item.rarity === 'uncommon' ? 'border-teal-500 text-teal-400' :
-                                'border-stone-700 text-stone-500'
+                                item.rarity === 'uncommon' ? 'border-teal-500 text-teal-800' :
+                                'border-border text-muted-foreground'
                               }`}
                             >
                               {item.rarity}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-stone-500 truncate">
+                        <p className="text-xs text-muted-foreground truncate">
                           {highlightMatch(item.description || item.content || '', query)}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[10px] text-stone-700">{item.id}</span>
+                          <span className="text-[10px] text-muted-foreground">{item.id}</span>
                           {item.location && (
-                            <span className="text-[10px] text-stone-600 flex items-center gap-1">
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                               <MapPin className="w-2 h-2" /> {item.location}
                             </span>
                           )}
@@ -356,7 +356,7 @@ export function ContentSearch({
                         </div>
                       </div>
                       {item.matchScore && query && (
-                        <div className="text-[9px] text-stone-700">
+                        <div className="text-[9px] text-muted-foreground">
                           {Math.round(item.matchScore)}%
                         </div>
                       )}
@@ -366,7 +366,7 @@ export function ContentSearch({
               )}
             </ScrollArea>
 
-            <div className="px-3 py-2 border-t border-amber-900/20 flex items-center justify-between text-[10px] text-stone-600">
+            <div className="px-3 py-2 border-t border-amber-900/20 flex items-center justify-between text-[10px] text-muted-foreground">
               <div className="flex items-center gap-3">
                 <span><kbd className="px-1 py-0.5 bg-amber-900/30 rounded">↑↓</kbd> Navigate</span>
                 <span><kbd className="px-1 py-0.5 bg-amber-900/30 rounded">Enter</kbd> Select</span>

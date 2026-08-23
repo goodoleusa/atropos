@@ -701,22 +701,22 @@ ${modelRankings.slice(0, 3).map(m => {
   return (
     <div className="space-y-6">
       <div className="flex gap-2 justify-end">
-        <Button onClick={() => setShowCrewAIExporter(true)} variant="outline" className="border-purple-800 text-purple-400 min-h-[44px] px-2" title="Export to CrewAI" data-testid="export-crewai-btn">
+        <Button onClick={() => setShowCrewAIExporter(true)} variant="outline" className="border-purple-800 text-purple-700 min-h-[44px] px-2" title="Export to CrewAI" data-testid="export-crewai-btn">
           <Bot className="w-4 h-4" />
         </Button>
-        <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-400 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
+        <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-800 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
           <FileText className="w-4 h-4" />
         </Button>
-        <Button onClick={() => exportSessionReport('json')} variant="outline" className="border-teal-800 text-teal-400 min-h-[44px] px-2" title="Export JSON" data-testid="export-json-btn">
+        <Button onClick={() => exportSessionReport('json')} variant="outline" className="border-teal-800 text-teal-800 min-h-[44px] px-2" title="Export JSON" data-testid="export-json-btn">
           <Download className="w-4 h-4" />
         </Button>
       </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border-amber-900/50 bg-stone-900/50">
+          <Card className="border-amber-900/50 bg-card/50">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-amber-500 text-lg sm:text-xl">Model Selection</CardTitle>
-              <CardDescription className="text-stone-400">Choose the AI intelligence layer</CardDescription>
+              <CardTitle className="text-amber-800 text-lg sm:text-xl">Model Selection</CardTitle>
+              <CardDescription className="text-muted-foreground">Choose the AI intelligence layer</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 p-4 sm:p-6">
               <div className="flex flex-wrap gap-2 mb-4 max-h-40 overflow-y-auto">
@@ -727,7 +727,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     className={`cursor-pointer px-3 py-1 text-xs sm:text-sm transition-all ${
                       selectedModel === model.id 
                         ? 'bg-amber-600 text-white shadow-[0_0_10px_rgba(217,119,6,0.5)]' 
-                        : 'bg-stone-800 text-stone-300 hover:border-amber-500 hover:text-amber-400'
+                        : 'bg-border text-foreground hover:border-amber-500 hover:text-amber-700'
                     }`}
                     onClick={() => setSelectedModel(model.id)}
                   >
@@ -737,7 +737,7 @@ ${modelRankings.slice(0, 3).map(m => {
               </div>
               
               <div className="space-y-2">
-                <Label className="text-stone-300 text-sm">System Prompt Modules</Label>
+                <Label className="text-foreground text-sm">System Prompt Modules</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(Object.keys(moduleDescriptions) as ModuleKey[]).map((mod) => (
                     <Badge
@@ -745,8 +745,8 @@ ${modelRankings.slice(0, 3).map(m => {
                       variant={enabledModules.includes(mod) ? 'default' : 'outline'}
                       className={`cursor-pointer justify-start gap-2 py-2 px-3 transition-all ${
                         enabledModules.includes(mod)
-                          ? 'bg-teal-900/50 text-teal-400 border-teal-500/50 shadow-[0_0_8px_rgba(20,184,166,0.3)]'
-                          : 'bg-stone-800/50 text-stone-500 border-stone-700 hover:border-teal-500/30'
+                          ? 'bg-teal-900/50 text-teal-800 border-teal-500/50 shadow-[0_0_8px_rgba(20,184,166,0.3)]'
+                          : 'bg-border/50 text-muted-foreground border-border hover:border-teal-500/30'
                       }`}
                       onClick={() => toggleModule(mod)}
                     >
@@ -762,10 +762,10 @@ ${modelRankings.slice(0, 3).map(m => {
 
         <Card className="bg-black/50 border-amber-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-base flex items-center gap-2">
               <Cpu className="w-5 h-5" /> Module Selection
             </CardTitle>
-            <CardDescription className="text-stone-500 text-sm">
+            <CardDescription className="text-muted-foreground text-sm">
               Tap to enable/disable capabilities
             </CardDescription>
           </CardHeader>
@@ -778,17 +778,17 @@ ${modelRankings.slice(0, 3).map(m => {
                   className={`p-4 rounded-lg border-2 transition-all text-left min-h-[60px] active:scale-[0.98] ${
                     enabledModules.includes(mod) 
                       ? 'border-amber-600 bg-amber-900/20' 
-                      : 'border-stone-800 bg-stone-900/20'
+                      : 'border-border bg-card/20'
                   }`}
                   data-testid={`module-${mod}`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{moduleDescriptions[mod].icon}</span>
                     <div className="flex-1">
-                      <p className={`font-bold ${enabledModules.includes(mod) ? 'text-amber-400' : 'text-stone-400'}`}>
+                      <p className={`font-bold ${enabledModules.includes(mod) ? 'text-amber-800' : 'text-muted-foreground'}`}>
                         {moduleDescriptions[mod].name}
                       </p>
-                      <p className="text-xs text-stone-600">{moduleDescriptions[mod].desc}</p>
+                      <p className="text-xs text-muted-foreground">{moduleDescriptions[mod].desc}</p>
                     </div>
                     {enabledModules.includes(mod) && (
                       <Badge className="bg-amber-700 text-black">ON</Badge>
@@ -800,7 +800,7 @@ ${modelRankings.slice(0, 3).map(m => {
             
             <button
               onClick={() => setShowPromptPreview(!showPromptPreview)}
-              className="w-full p-3 rounded border border-stone-700 text-stone-400 text-sm flex items-center justify-between min-h-[48px]"
+              className="w-full p-3 rounded border border-border text-muted-foreground text-sm flex items-center justify-between min-h-[48px]"
             >
               <span className="flex items-center gap-2">
                 <Eye className="w-4 h-4" />
@@ -811,7 +811,7 @@ ${modelRankings.slice(0, 3).map(m => {
 
             {showPromptPreview && (
               <div className="relative">
-                <pre className="text-xs text-stone-400 whitespace-pre-wrap font-mono bg-black/50 p-4 rounded border border-stone-800 max-h-64 overflow-y-auto">
+                <pre className="text-xs text-muted-foreground whitespace-pre-wrap font-mono bg-black/50 p-4 rounded border border-border max-h-64 overflow-y-auto">
                   {generatedPrompt}
                 </pre>
                 <Button size="sm" variant="ghost" onClick={copyPrompt} className="absolute top-2 right-2 min-h-[44px] min-w-[44px]">
@@ -825,7 +825,7 @@ ${modelRankings.slice(0, 3).map(m => {
         <Card className="bg-black/50 border-amber-900/30">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-base flex items-center gap-2">
                 <Play className="w-5 h-5" /> {battleMode ? 'Model Battle' : 'Test Arena'}
               </CardTitle>
               <div className="flex gap-2">
@@ -833,7 +833,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   size="sm"
                   variant={showPentestLab ? 'default' : 'outline'}
                   onClick={() => setShowPentestLab(!showPentestLab)}
-                  className={`min-h-[40px] ${showPentestLab ? 'bg-teal-700 text-white' : 'border-teal-700 text-teal-400'}`}
+                  className={`min-h-[40px] ${showPentestLab ? 'bg-teal-700 text-white' : 'border-teal-700 text-teal-800'}`}
                   data-testid="toggle-pentest-lab"
                 >
                   <Shield className="w-4 h-4 mr-1" /> AI Pentest
@@ -842,7 +842,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   size="sm"
                   variant={battleMode ? 'default' : 'outline'}
                   onClick={() => setBattleMode(!battleMode)}
-                  className={`min-h-[40px] ${battleMode ? 'bg-purple-700 text-white' : 'border-purple-700 text-purple-400'}`}
+                  className={`min-h-[40px] ${battleMode ? 'bg-purple-700 text-white' : 'border-purple-700 text-purple-700'}`}
                   data-testid="toggle-battle-mode"
                 >
                   ⚔️ Battle
@@ -850,7 +850,7 @@ ${modelRankings.slice(0, 3).map(m => {
               </div>
             </div>
             {battleMode && (
-              <p className="text-xs text-stone-500 mt-2">Compare two models side-by-side and vote for the winner</p>
+              <p className="text-xs text-muted-foreground mt-2">Compare two models side-by-side and vote for the winner</p>
             )}
           </CardHeader>
           <CardContent className="space-y-4">
@@ -858,14 +858,14 @@ ${modelRankings.slice(0, 3).map(m => {
             {showPentestLab && (
               <div className="space-y-4 border-b border-teal-900/30 pb-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-teal-400 font-bold text-sm flex items-center gap-2">
+                  <h3 className="text-teal-800 font-bold text-sm flex items-center gap-2">
                     <Shield className="w-4 h-4" /> AI Pentesting Challenges (2025 Research)
                   </h3>
                   <Select value={challengeFilter} onValueChange={setChallengeFilter}>
-                    <SelectTrigger className="w-[120px] bg-black/50 border-teal-800 text-teal-400 min-h-[36px] text-xs">
+                    <SelectTrigger className="w-[120px] bg-black/50 border-teal-800 text-teal-800 min-h-[36px] text-xs">
                       <SelectValue placeholder="Filter" />
                     </SelectTrigger>
-                    <SelectContent className="bg-stone-900 border-stone-700">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="all">All Levels</SelectItem>
                       <SelectItem value="beginner">Beginner</SelectItem>
                       <SelectItem value="intermediate">Intermediate</SelectItem>
@@ -891,14 +891,14 @@ ${modelRankings.slice(0, 3).map(m => {
                       className={`p-3 rounded-lg border text-left transition-all min-h-[60px] ${
                         selectedChallenge?.id === challenge.id
                           ? 'border-teal-500 bg-teal-900/30'
-                          : 'border-stone-800 bg-stone-900/30 hover:border-teal-700'
+                          : 'border-border bg-card/30 hover:border-teal-700'
                       }`}
                       data-testid={`challenge-${challenge.id}`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <p className="text-teal-400 font-bold text-sm">{challenge.name}</p>
-                          <p className="text-stone-500 text-xs mt-1 line-clamp-2">{challenge.description}</p>
+                          <p className="text-teal-800 font-bold text-sm">{challenge.name}</p>
+                          <p className="text-muted-foreground text-xs mt-1 line-clamp-2">{challenge.description}</p>
                         </div>
                         <div className="flex flex-col items-end gap-1">
                           <Badge className={`text-[9px] ${
@@ -909,7 +909,7 @@ ${modelRankings.slice(0, 3).map(m => {
                           }`}>
                             {challenge.difficulty.toUpperCase()}
                           </Badge>
-                          <span className="text-[9px] text-stone-600">{challenge.source}</span>
+                          <span className="text-[9px] text-muted-foreground">{challenge.source}</span>
                         </div>
                       </div>
                     </button>
@@ -917,14 +917,14 @@ ${modelRankings.slice(0, 3).map(m => {
                 </div>
                 {selectedChallenge && (
                   <div className="p-3 bg-teal-900/20 rounded-lg border border-teal-800">
-                    <p className="text-xs text-teal-300 flex items-center gap-2">
+                    <p className="text-xs text-teal-800 flex items-center gap-2">
                       <Target className="w-4 h-4" />
                       <span className="font-bold">Learning Goal:</span> {selectedChallenge.learningGoal}
                     </p>
                   </div>
                 )}
-                <div className="border-t border-stone-800 pt-3">
-                  <p className="text-xs text-stone-500 mb-2 flex items-center gap-1">
+                <div className="border-t border-border pt-3">
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                     <Lightbulb className="w-3 h-3" /> Prompt Optimization Tips:
                   </p>
                   <div className="flex flex-wrap gap-1">
@@ -935,7 +935,7 @@ ${modelRankings.slice(0, 3).map(m => {
                           setTestPrompt(prev => tip.prefix + ' ' + prev);
                           toast({ title: `Applied: ${tip.technique}`, description: tip.benefit });
                         }}
-                        className="px-2 py-1 text-[10px] bg-stone-800 hover:bg-stone-700 rounded border border-stone-700 text-stone-400"
+                        className="px-2 py-1 text-[10px] bg-border hover:bg-border rounded border border-border text-muted-foreground"
                       >
                         + {tip.technique}
                       </button>
@@ -947,30 +947,30 @@ ${modelRankings.slice(0, 3).map(m => {
 
             {/* Model A selector */}
             <div>
-              <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+              <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
                 {battleMode && <Badge className="bg-amber-700 text-black text-[10px]">A</Badge>}
                 Model {battleMode ? 'A' : ''}
               </label>
               <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger className="bg-black/50 border-stone-700 min-h-[48px]" data-testid="model-a-select">
+                <SelectTrigger className="bg-black/50 border-border min-h-[48px]" data-testid="model-a-select">
                   <SelectValue>
                     {MODELS.find(m => m.id === selectedModel)?.name || 'Select model'}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
+                <SelectContent className="bg-card border-border max-h-[300px]">
                   {(Object.keys(MODEL_CATEGORIES) as Array<keyof typeof MODEL_CATEGORIES>).map(cat => {
                     const catInfo = MODEL_CATEGORIES[cat];
                     const catModels = MODELS.filter(m => m.category === cat);
                     return (
                       <div key={cat}>
-                        <div className="px-2 py-1 text-[10px] text-stone-500 uppercase flex items-center gap-1">
+                        <div className="px-2 py-1 text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                           <span>{catInfo.icon}</span> {catInfo.label}
                         </div>
                         {catModels.map(m => (
                           <SelectItem key={m.id} value={m.id} className="min-h-[40px]">
                             <span className="flex items-center gap-2">
                               {m.name}
-                              <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
+                              <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-800' : 'border-amber-600 text-amber-800'}`}>
                                 {m.tier.toUpperCase()}
                               </Badge>
                             </span>
@@ -986,33 +986,33 @@ ${modelRankings.slice(0, 3).map(m => {
             {/* Model B selector (battle mode only) */}
             {battleMode && (
               <div>
-                <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
                   <Badge className="bg-teal-700 text-black text-[10px]">B</Badge>
                   Model B
                 </label>
                 <Select value={selectedModelB} onValueChange={setSelectedModelB}>
-                  <SelectTrigger className="bg-black/50 border-stone-700 min-h-[48px]" data-testid="model-b-select">
+                  <SelectTrigger className="bg-black/50 border-border min-h-[48px]" data-testid="model-b-select">
                     <SelectValue>
                       {MODELS.find(m => m.id === selectedModelB)?.name || 'Select model'}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
+                  <SelectContent className="bg-card border-border max-h-[300px]">
                     {(Object.keys(MODEL_CATEGORIES) as Array<keyof typeof MODEL_CATEGORIES>).map(cat => {
                       const catInfo = MODEL_CATEGORIES[cat];
                       const catModels = MODELS.filter(m => m.category === cat);
                       return (
                         <div key={cat}>
-                          <div className="px-2 py-1 text-[10px] text-stone-500 uppercase flex items-center gap-1">
+                          <div className="px-2 py-1 text-[10px] text-muted-foreground uppercase flex items-center gap-1">
                             <span>{catInfo.icon}</span> {catInfo.label}
                           </div>
                           {catModels.map(m => (
                             <SelectItem key={m.id} value={m.id} className="min-h-[40px]" disabled={m.id === selectedModel}>
                               <span className="flex items-center gap-2">
                                 {m.name}
-                                <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
+                                <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-800' : 'border-amber-600 text-amber-800'}`}>
                                   {m.tier.toUpperCase()}
                                 </Badge>
-                                {m.id === selectedModel && <span className="text-stone-500">(Model A)</span>}
+                                {m.id === selectedModel && <span className="text-muted-foreground">(Model A)</span>}
                               </span>
                             </SelectItem>
                           ))}
@@ -1025,7 +1025,7 @@ ${modelRankings.slice(0, 3).map(m => {
             )}
 
             <div>
-              <label className="text-sm text-stone-400 mb-2 block">Quick Scenarios</label>
+              <label className="text-sm text-muted-foreground mb-2 block">Quick Scenarios</label>
               <div className="flex flex-wrap gap-2">
                 {TEST_SCENARIOS.map(s => (
                   <Button
@@ -1033,7 +1033,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     size="sm"
                     variant="outline"
                     onClick={() => setTestPrompt(s.prompt)}
-                    className="text-xs min-h-[44px] border-stone-700 text-stone-400"
+                    className="text-xs min-h-[44px] border-border text-muted-foreground"
                   >
                     {s.name}
                   </Button>
@@ -1042,14 +1042,14 @@ ${modelRankings.slice(0, 3).map(m => {
             </div>
 
             <div>
-              <label className="text-sm text-stone-400 mb-2 block">Test Prompt</label>
+              <label className="text-sm text-muted-foreground mb-2 block">Test Prompt</label>
               <Textarea
                 value={testPrompt}
                 onChange={e => setTestPrompt(e.target.value)}
-                className="min-h-[100px] text-base bg-black/50 border-stone-700"
+                className="min-h-[100px] text-base bg-black/50 border-border"
                 placeholder="Enter your test prompt..."
               />
-              <div className="text-xs text-stone-600 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 ~{estimatedTokens.prompt} prompt + {estimatedTokens.system} system = {estimatedTokens.total} total
               </div>
             </div>
@@ -1073,7 +1073,7 @@ ${modelRankings.slice(0, 3).map(m => {
         {(response || responseB) && (
           <Card className="bg-black/50 border-teal-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-teal-500 text-base">
+              <CardTitle className="text-teal-800 text-base">
                 {battleMode && currentBattle ? 'Battle Results' : 'Response'}
               </CardTitle>
             </CardHeader>
@@ -1086,11 +1086,11 @@ ${modelRankings.slice(0, 3).map(m => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Badge className="bg-amber-700 text-black">A</Badge>
-                        <span className="text-sm font-bold text-amber-400">{currentBattle.modelA.name}</span>
+                        <span className="text-sm font-bold text-amber-800">{currentBattle.modelA.name}</span>
                       </div>
-                      <span className="text-xs text-stone-500">{currentBattle.modelA.latency}ms • {currentBattle.modelA.tokens} tok</span>
+                      <span className="text-xs text-muted-foreground">{currentBattle.modelA.latency}ms • {currentBattle.modelA.tokens} tok</span>
                     </div>
-                    <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
+                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
                       {currentBattle.modelA.response}
                     </pre>
                   </div>
@@ -1100,18 +1100,18 @@ ${modelRankings.slice(0, 3).map(m => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Badge className="bg-teal-700 text-black">B</Badge>
-                        <span className="text-sm font-bold text-teal-400">{currentBattle.modelB.name}</span>
+                        <span className="text-sm font-bold text-teal-800">{currentBattle.modelB.name}</span>
                       </div>
-                      <span className="text-xs text-stone-500">{currentBattle.modelB.latency}ms • {currentBattle.modelB.tokens} tok</span>
+                      <span className="text-xs text-muted-foreground">{currentBattle.modelB.latency}ms • {currentBattle.modelB.tokens} tok</span>
                     </div>
-                    <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
+                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
                       {currentBattle.modelB.response}
                     </pre>
                   </div>
 
                   {/* Vote buttons */}
-                  <div className="pt-4 border-t border-stone-800">
-                    <p className="text-sm text-stone-400 font-bold mb-3 text-center">🏆 Which response is better?</p>
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground font-bold mb-3 text-center">🏆 Which response is better?</p>
                     <div className="grid grid-cols-3 gap-3">
                       <Button
                         onClick={() => voteWinner('A')}
@@ -1123,7 +1123,7 @@ ${modelRankings.slice(0, 3).map(m => {
                       <Button
                         onClick={() => voteWinner('tie')}
                         variant="outline"
-                        className="min-h-[52px] border-stone-600 text-stone-400"
+                        className="min-h-[52px] border-muted text-muted-foreground"
                         data-testid="vote-tie"
                       >
                         Tie
@@ -1140,16 +1140,16 @@ ${modelRankings.slice(0, 3).map(m => {
                 </div>
               ) : (
                 <>
-                  <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono bg-black/50 p-4 rounded border border-stone-800 max-h-64 overflow-y-auto">
+                  <pre className="text-sm text-foreground whitespace-pre-wrap font-mono bg-black/50 p-4 rounded border border-border max-h-64 overflow-y-auto">
                     {response}
                   </pre>
 
-                  <div className="space-y-4 pt-4 border-t border-stone-800">
-                    <p className="text-sm text-stone-400 font-bold">Rate this response:</p>
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground font-bold">Rate this response:</p>
                     <div>
-                      <div className="flex justify-between text-sm text-stone-400 mb-2">
+                      <div className="flex justify-between text-sm text-muted-foreground mb-2">
                         <span>Task Completion</span>
-                        <span className="text-amber-400">{taskCompletionRating}%</span>
+                        <span className="text-amber-800">{taskCompletionRating}%</span>
                       </div>
                       <Slider
                         value={[taskCompletionRating]}
@@ -1159,9 +1159,9 @@ ${modelRankings.slice(0, 3).map(m => {
                       />
                     </div>
                     <div>
-                      <div className="flex justify-between text-sm text-stone-400 mb-2">
+                      <div className="flex justify-between text-sm text-muted-foreground mb-2">
                         <span>Coherence</span>
-                        <span className="text-teal-400">{coherenceRating}%</span>
+                        <span className="text-teal-800">{coherenceRating}%</span>
                       </div>
                       <Slider
                         value={[coherenceRating]}
@@ -1171,9 +1171,9 @@ ${modelRankings.slice(0, 3).map(m => {
                       />
                     </div>
                     <div>
-                      <div className="flex justify-between text-sm text-stone-400 mb-2">
+                      <div className="flex justify-between text-sm text-muted-foreground mb-2">
                         <span>Context Awareness</span>
-                        <span className="text-purple-400">{contextRating}%</span>
+                        <span className="text-purple-700">{contextRating}%</span>
                       </div>
                       <Slider
                         value={[contextRating]}
@@ -1194,10 +1194,10 @@ ${modelRankings.slice(0, 3).map(m => {
           <Card className="bg-black/50 border-purple-900/30">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-purple-500 text-base flex items-center gap-2">
+                <CardTitle className="text-purple-700 text-base flex items-center gap-2">
                   ⚔️ Battle History ({battleResults.length})
                 </CardTitle>
-                <Button size="sm" variant="ghost" onClick={() => setBattleResults([])} className="text-red-400 min-h-[44px]">
+                <Button size="sm" variant="ghost" onClick={() => setBattleResults([])} className="text-red-700 min-h-[44px]">
                   Clear
                 </Button>
               </div>
@@ -1205,22 +1205,22 @@ ${modelRankings.slice(0, 3).map(m => {
             <CardContent>
               <div className="space-y-3">
                 {battleResults.slice(-5).reverse().map((battle, i) => (
-                  <div key={battle.id} className="p-3 bg-stone-900/30 rounded-lg border border-stone-800">
+                  <div key={battle.id} className="p-3 bg-card/30 rounded-lg border border-border">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2 text-xs">
-                        <span className={battle.winner === 'A' ? 'text-amber-400 font-bold' : 'text-stone-500'}>{battle.modelA.name}</span>
-                        <span className="text-stone-600">vs</span>
-                        <span className={battle.winner === 'B' ? 'text-teal-400 font-bold' : 'text-stone-500'}>{battle.modelB.name}</span>
+                        <span className={battle.winner === 'A' ? 'text-amber-800 font-bold' : 'text-muted-foreground'}>{battle.modelA.name}</span>
+                        <span className="text-muted-foreground">vs</span>
+                        <span className={battle.winner === 'B' ? 'text-teal-800 font-bold' : 'text-muted-foreground'}>{battle.modelB.name}</span>
                       </div>
                       <Badge className={
                         battle.winner === 'A' ? 'bg-amber-700 text-black' :
                         battle.winner === 'B' ? 'bg-teal-700 text-black' :
-                        'bg-stone-700 text-stone-300'
+                        'bg-border text-foreground'
                       }>
                         {battle.winner === 'tie' ? 'TIE' : `${battle.winner} WINS`}
                       </Badge>
                     </div>
-                    <p className="text-xs text-stone-500 line-clamp-1">{battle.prompt}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-1">{battle.prompt}</p>
                   </div>
                 ))}
               </div>
@@ -1232,10 +1232,10 @@ ${modelRankings.slice(0, 3).map(m => {
           <Card className="bg-black/50 border-amber-900/30">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+                <CardTitle className="text-amber-800 text-base flex items-center gap-2">
                   <BarChart3 className="w-5 h-5" /> Run History ({runs.length})
                 </CardTitle>
-                <Button size="sm" variant="ghost" onClick={() => setRuns([])} className="text-red-400 min-h-[44px]">
+                <Button size="sm" variant="ghost" onClick={() => setRuns([])} className="text-red-700 min-h-[44px]">
                   <RefreshCw className="w-4 h-4 mr-1" /> Clear
                 </Button>
               </div>
@@ -1243,18 +1243,18 @@ ${modelRankings.slice(0, 3).map(m => {
             <CardContent>
               <div className="space-y-3">
                 {runs.slice(-5).reverse().map((run, i) => (
-                  <div key={run.id} className="p-4 bg-stone-900/30 rounded-lg border border-stone-800">
+                  <div key={run.id} className="p-4 bg-card/30 rounded-lg border border-border">
                     <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline" className="border-amber-600 text-amber-400">
+                      <Badge variant="outline" className="border-amber-600 text-amber-800">
                         #{runs.length - i}
                       </Badge>
-                      <span className="text-xs text-stone-400">{run.model.split('/')[1]}</span>
+                      <span className="text-xs text-muted-foreground">{run.model.split('/')[1]}</span>
                     </div>
-                    <p className="text-sm text-stone-500 mb-2 line-clamp-2">{run.prompt}</p>
+                    <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{run.prompt}</p>
                     <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="text-green-400">${run.costUsd.toFixed(4)}</span>
-                      <span className="text-purple-400">{run.latencyMs}ms</span>
-                      <span className="text-teal-400">{run.totalTokens} tok</span>
+                      <span className="text-green-800">${run.costUsd.toFixed(4)}</span>
+                      <span className="text-purple-700">{run.latencyMs}ms</span>
+                      <span className="text-teal-800">{run.totalTokens} tok</span>
                     </div>
                     <div className="flex gap-2 mt-2">
                       <Badge className={`text-[10px] ${run.taskCompletion > 70 ? 'bg-green-900' : run.taskCompletion > 40 ? 'bg-amber-900' : 'bg-red-900'}`}>
@@ -1274,15 +1274,15 @@ ${modelRankings.slice(0, 3).map(m => {
         {sessionSummary.recommendations.length > 0 && (
           <Card className="bg-black/50 border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-base flex items-center gap-2">
                 <Lightbulb className="w-5 h-5" /> Recommendations
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
                 {sessionSummary.recommendations.map((rec, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-stone-300 p-3 bg-stone-900/30 rounded">
-                    <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-3 text-sm text-foreground p-3 bg-card/30 rounded">
+                    <AlertTriangle className="w-5 h-5 text-amber-800 shrink-0 mt-0.5" />
                     {rec}
                   </li>
                 ))}
@@ -1293,10 +1293,10 @@ ${modelRankings.slice(0, 3).map(m => {
 
         <Card className="bg-black/50 border-purple-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-purple-400 text-base flex items-center gap-2">
+            <CardTitle className="text-purple-700 text-base flex items-center gap-2">
               <Lightbulb className="w-5 h-5" /> Prompt Engineering Guide
             </CardTitle>
-            <CardDescription className="text-stone-500">Master prompt crafting for security investigations</CardDescription>
+            <CardDescription className="text-muted-foreground">Master prompt crafting for security investigations</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {[
@@ -1337,19 +1337,19 @@ ${modelRankings.slice(0, 3).map(m => {
                 color: 'teal',
               },
             ].map((guide, i) => (
-              <div key={i} className={`rounded-lg p-3 bg-stone-950/50 ${
+              <div key={i} className={`rounded-lg p-3 bg-card/50 ${
                 guide.color === 'amber' ? 'border border-amber-900/30' :
                 guide.color === 'teal' ? 'border border-teal-900/30' :
                 guide.color === 'purple' ? 'border border-purple-900/30' :
                 'border border-red-900/30'
               }`}>
-                <h4 className="text-sm font-bold text-stone-200 mb-1">{guide.title}</h4>
-                <p className="text-xs text-stone-400 mb-2">{guide.tip}</p>
-                <pre className="text-[11px] text-stone-500 bg-black/40 rounded p-2 overflow-x-auto whitespace-pre-wrap font-mono border border-stone-800/50">{guide.example}</pre>
+                <h4 className="text-sm font-bold text-foreground mb-1">{guide.title}</h4>
+                <p className="text-xs text-muted-foreground mb-2">{guide.tip}</p>
+                <pre className="text-[11px] text-muted-foreground bg-black/40 rounded p-2 overflow-x-auto whitespace-pre-wrap font-mono border border-border/50">{guide.example}</pre>
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="mt-2 h-6 text-[10px] text-stone-600 hover:text-amber-400"
+                  className="mt-2 h-6 text-[10px] text-muted-foreground hover:text-amber-700"
                   onClick={() => {
                     navigator.clipboard.writeText(guide.example);
                     toast({ title: 'Copied', description: `${guide.title} example copied to clipboard` });
@@ -1365,7 +1365,7 @@ ${modelRankings.slice(0, 3).map(m => {
 
         <Card className="bg-black/50 border-red-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-red-500 text-base flex items-center gap-2">
+            <CardTitle className="text-red-700 text-base flex items-center gap-2">
               <Bug className="w-5 h-5" /> Report Issue
             </CardTitle>
           </CardHeader>
@@ -1373,7 +1373,7 @@ ${modelRankings.slice(0, 3).map(m => {
             <Textarea
               value={bugReport}
               onChange={e => setBugReport(e.target.value)}
-              className="min-h-[80px] text-base bg-black/50 border-stone-700"
+              className="min-h-[80px] text-base bg-black/50 border-border"
               placeholder="Describe any bugs or issues..."
             />
             <Button
@@ -1393,14 +1393,14 @@ ${modelRankings.slice(0, 3).map(m => {
       <Card className={`border-amber-900/30 bg-black/50 ${showCacheSimulator ? '' : 'cursor-pointer hover:border-amber-700/50 transition-colors'}`}>
         <CardHeader className="pb-3" onClick={() => setShowCacheSimulator(!showCacheSimulator)}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-base flex items-center gap-2">
               <DollarSign className="w-5 h-5" /> Cache Cost Simulator
             </CardTitle>
-            <Badge variant="outline" className={`text-xs ${showCacheSimulator ? 'border-amber-500 text-amber-400' : 'border-stone-700 text-stone-500'}`}>
+            <Badge variant="outline" className={`text-xs ${showCacheSimulator ? 'border-amber-500 text-amber-800' : 'border-border text-muted-foreground'}`}>
               {showCacheSimulator ? 'Collapse' : 'Expand'}
             </Badge>
           </div>
-          <CardDescription className="text-stone-500 text-xs">
+          <CardDescription className="text-muted-foreground text-xs">
             Compare cached vs uncached token costs across models — see how much you save with context caching
           </CardDescription>
         </CardHeader>
@@ -1408,48 +1408,48 @@ ${modelRankings.slice(0, 3).map(m => {
           <CardContent className="space-y-4" data-testid="cache-simulator-panel">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <Label className="text-xs text-stone-400">System Prompt Tokens</Label>
+                <Label className="text-xs text-muted-foreground">System Prompt Tokens</Label>
                 <Input
                   type="number"
                   value={cacheSimSystemTokens}
                   onChange={e => setCacheSimSystemTokens(Math.max(100, parseInt(e.target.value) || 100))}
-                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-system-tokens"
                 />
-                <p className="text-[10px] text-stone-600 mt-1">Cached between requests</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Cached between requests</p>
               </div>
               <div>
-                <Label className="text-xs text-stone-400">User Prompt Tokens</Label>
+                <Label className="text-xs text-muted-foreground">User Prompt Tokens</Label>
                 <Input
                   type="number"
                   value={cacheSimUserTokens}
                   onChange={e => setCacheSimUserTokens(Math.max(10, parseInt(e.target.value) || 10))}
-                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-user-tokens"
                 />
-                <p className="text-[10px] text-stone-600 mt-1">Changes each request</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Changes each request</p>
               </div>
               <div>
-                <Label className="text-xs text-stone-400">Output Tokens (avg)</Label>
+                <Label className="text-xs text-muted-foreground">Output Tokens (avg)</Label>
                 <Input
                   type="number"
                   value={cacheSimOutputTokens}
                   onChange={e => setCacheSimOutputTokens(Math.max(50, parseInt(e.target.value) || 50))}
-                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-output-tokens"
                 />
-                <p className="text-[10px] text-stone-600 mt-1">Model response size</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Model response size</p>
               </div>
               <div>
-                <Label className="text-xs text-stone-400">Requests per Session</Label>
+                <Label className="text-xs text-muted-foreground">Requests per Session</Label>
                 <Input
                   type="number"
                   value={cacheSimRequests}
                   onChange={e => setCacheSimRequests(Math.max(2, Math.min(500, parseInt(e.target.value) || 2)))}
-                  className="bg-black/50 border-stone-700 text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-requests"
                 />
-                <p className="text-[10px] text-stone-600 mt-1">2-500 requests</p>
+                <p className="text-[10px] text-muted-foreground mt-1">2-500 requests</p>
               </div>
             </div>
 
@@ -1458,7 +1458,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(2000); setCacheSimUserTokens(200); setCacheSimOutputTokens(500); setCacheSimRequests(20); }}
-                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-light"
               >
                 Light Chat (2K sys)
@@ -1467,7 +1467,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(5000); setCacheSimUserTokens(500); setCacheSimOutputTokens(1000); setCacheSimRequests(50); }}
-                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-agent"
               >
                 NEXUS Agent (5K sys)
@@ -1476,7 +1476,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(15000); setCacheSimUserTokens(2000); setCacheSimOutputTokens(2000); setCacheSimRequests(100); }}
-                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-codebase"
               >
                 Codebase Review (15K sys)
@@ -1485,7 +1485,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(50000); setCacheSimUserTokens(5000); setCacheSimOutputTokens(4000); setCacheSimRequests(200); }}
-                className="text-xs min-h-[36px] border-stone-700 text-stone-400 hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-heavy"
               >
                 Heavy Analysis (50K sys)
@@ -1501,33 +1501,33 @@ ${modelRankings.slice(0, 3).map(m => {
                 const barWidthCached = (result.cachedCost / maxCost) * 100;
 
                 return (
-                  <div key={modelId} className="p-3 rounded-lg border border-stone-800 bg-stone-900/50 space-y-2" data-testid={`cache-sim-result-${result.modelName.toLowerCase().replace(/\s+/g, '-')}`}>
+                  <div key={modelId} className="p-3 rounded-lg border border-border bg-card/50 space-y-2" data-testid={`cache-sim-result-${result.modelName.toLowerCase().replace(/\s+/g, '-')}`}>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-stone-300">{result.modelName}</span>
-                      <Badge className={`text-xs ${result.savingsPercent > 50 ? 'bg-teal-900 text-teal-300 border-teal-700' : result.savingsPercent > 20 ? 'bg-amber-900 text-amber-300 border-amber-700' : 'bg-stone-800 text-stone-400 border-stone-700'}`}>
+                      <span className="text-sm font-medium text-foreground">{result.modelName}</span>
+                      <Badge className={`text-xs ${result.savingsPercent > 50 ? 'bg-teal-900 text-teal-300 border-teal-700' : result.savingsPercent > 20 ? 'bg-amber-900 text-amber-300 border-amber-700' : 'bg-border text-muted-foreground border-border'}`}>
                         {result.savingsPercent > 0 ? `${result.savingsPercent.toFixed(1)}% saved` : 'No caching'}
                       </Badge>
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-stone-500 w-16 shrink-0">No cache</span>
-                        <div className="flex-1 h-5 bg-stone-800 rounded-sm overflow-hidden relative">
+                        <span className="text-[10px] text-muted-foreground w-16 shrink-0">No cache</span>
+                        <div className="flex-1 h-5 bg-border rounded-sm overflow-hidden relative">
                           <div className="h-full bg-red-700/80 rounded-sm" style={{ width: `${barWidthNormal}%` }} />
                           <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-mono">${result.noCacheCost.toFixed(4)}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-stone-500 w-16 shrink-0">Cached</span>
-                        <div className="flex-1 h-5 bg-stone-800 rounded-sm overflow-hidden relative">
+                        <span className="text-[10px] text-muted-foreground w-16 shrink-0">Cached</span>
+                        <div className="flex-1 h-5 bg-border rounded-sm overflow-hidden relative">
                           <div className="h-full bg-teal-700/80 rounded-sm transition-all duration-500" style={{ width: `${Math.max(barWidthCached, 2)}%` }} />
                           <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-mono">${result.cachedCost.toFixed(4)}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex justify-between text-[10px] text-stone-500">
-                      <span>Saved: <span className="text-teal-400 font-medium">${result.savings.toFixed(4)}</span></span>
+                    <div className="flex justify-between text-[10px] text-muted-foreground">
+                      <span>Saved: <span className="text-teal-800 font-medium">${result.savings.toFixed(4)}</span></span>
                       <span>Per request: ${(result.noCacheCost / result.requests).toFixed(5)} → ${(result.cachedCost / result.requests).toFixed(5)}</span>
                     </div>
 
@@ -1544,7 +1544,7 @@ ${modelRankings.slice(0, 3).map(m => {
                         );
                       })}
                     </div>
-                    <div className="flex justify-between text-[10px] text-stone-600">
+                    <div className="flex justify-between text-[10px] text-muted-foreground">
                       <span>Request 1 (cache write)</span>
                       <span>Request {Math.min(result.requests, 50)}{result.requests > 50 ? ` (of ${result.requests})` : ''}</span>
                     </div>
@@ -1564,24 +1564,24 @@ ${modelRankings.slice(0, 3).map(m => {
 
               return (
                 <div className="p-3 rounded-lg border border-amber-900/30 bg-amber-950/20 space-y-2">
-                  <h4 className="text-amber-400 text-xs font-bold flex items-center gap-1">
+                  <h4 className="text-amber-800 text-xs font-bold flex items-center gap-1">
                     <Lightbulb className="w-3 h-3" /> Key Insights
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                    <div className="p-2 bg-black/30 rounded border border-stone-800">
-                      <p className="text-stone-500">Highest Cache Savings</p>
-                      <p className="text-teal-400 font-bold">{bestSaver?.modelName} ({bestSaver?.savingsPercent.toFixed(1)}%)</p>
+                    <div className="p-2 bg-black/30 rounded border border-border">
+                      <p className="text-muted-foreground">Highest Cache Savings</p>
+                      <p className="text-teal-800 font-bold">{bestSaver?.modelName} ({bestSaver?.savingsPercent.toFixed(1)}%)</p>
                     </div>
-                    <div className="p-2 bg-black/30 rounded border border-stone-800">
-                      <p className="text-stone-500">Cheapest with Caching</p>
-                      <p className="text-amber-400 font-bold">{cheapestCached?.modelName} (${cheapestCached?.cachedCost.toFixed(4)}/session)</p>
+                    <div className="p-2 bg-black/30 rounded border border-border">
+                      <p className="text-muted-foreground">Cheapest with Caching</p>
+                      <p className="text-amber-800 font-bold">{cheapestCached?.modelName} (${cheapestCached?.cachedCost.toFixed(4)}/session)</p>
                     </div>
-                    <div className="p-2 bg-black/30 rounded border border-stone-800">
-                      <p className="text-stone-500">Monthly Savings (daily use)</p>
-                      <p className="text-teal-400 font-bold">${(monthlyNoCacheBest - monthlyCachedBest).toFixed(2)}/month</p>
+                    <div className="p-2 bg-black/30 rounded border border-border">
+                      <p className="text-muted-foreground">Monthly Savings (daily use)</p>
+                      <p className="text-teal-800 font-bold">${(monthlyNoCacheBest - monthlyCachedBest).toFixed(2)}/month</p>
                     </div>
                   </div>
-                  <p className="text-[10px] text-stone-600 italic">
+                  <p className="text-[10px] text-muted-foreground italic">
                     Tip: Larger system prompts benefit more from caching. A 50K token prompt cached 100 times saves up to {bestSaver?.savingsPercent.toFixed(0)}% vs no caching.
                     Cache key strategy matters — group by agent/feature to maximize hits.
                   </p>
@@ -1592,7 +1592,7 @@ ${modelRankings.slice(0, 3).map(m => {
         )}
       </Card>
 
-      <Card className="border-red-900/30 bg-stone-900/50">
+      <Card className="border-red-900/30 bg-card/50">
         <CardContent className="p-4 sm:p-6">
           <DecoherenceLab />
         </CardContent>
@@ -1613,9 +1613,9 @@ export default function AILab() {
     window.location.replace('/investigate?tab=ai-lab');
   }, []);
   return (
-    <div className="min-h-screen bg-[#0a0500] flex items-center justify-center text-stone-500">
+    <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center text-muted-foreground">
       <div className="text-center space-y-2">
-        <Brain className="w-8 h-8 mx-auto text-amber-500 animate-pulse" />
+        <Brain className="w-8 h-8 mx-auto text-amber-800 animate-pulse" />
         <p className="text-sm">Redirecting to Investigation Hub...</p>
       </div>
     </div>

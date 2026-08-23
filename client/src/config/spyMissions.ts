@@ -105,25 +105,25 @@ export const MISSION_PHASES: Record<MissionPhase, { name: string; icon: string; 
   access: {
     name: 'Initial Access',
     icon: '🚪',
-    color: 'text-amber-400',
+    color: 'text-amber-800',
     description: 'Exploit vulnerabilities to gain foothold. Break through defenses.'
   },
   persist: {
     name: 'Persistence & Escalation',
     icon: '🔒',
-    color: 'text-purple-400',
+    color: 'text-purple-700',
     description: 'Establish persistence, escalate privileges, move laterally.'
   },
   c2: {
     name: 'Command & Control',
     icon: '📡',
-    color: 'text-red-400',
+    color: 'text-red-700',
     description: 'Establish covert communication channel with home base.'
   },
   exfil: {
     name: 'Exfiltration',
     icon: '📤',
-    color: 'text-teal-400',
+    color: 'text-teal-800',
     description: 'Extract valuable data while avoiding detection.'
   }
 };

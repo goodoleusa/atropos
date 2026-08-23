@@ -1286,14 +1286,14 @@ export const CustomTerminal = () => {
 
   return (
     <div 
-      className="w-full h-[50vh] sm:h-[60vh] md:h-[600px] max-h-[80vh] bg-[#0a0500]/95 border border-amber-900/50 rounded-lg p-2 sm:p-4 font-mono text-xs sm:text-sm shadow-[0_0_30px_rgba(184,115,51,0.1)] relative overflow-hidden backdrop-blur-md flex flex-col"
+      className="terminal-panel w-full h-[50vh] sm:h-[60vh] md:h-[600px] max-h-[80vh] bg-[hsl(var(--card))]/95 border border-amber-900/50 rounded-lg p-2 sm:p-4 font-mono text-xs sm:text-sm shadow-[0_0_30px_rgba(184,115,51,0.1)] relative overflow-hidden backdrop-blur-md flex flex-col"
       onClick={() => inputRef.current?.focus()}
       data-testid="terminal-container"
     >
       <div className="absolute top-0 left-0 w-full h-8 bg-amber-950/40 border-b border-amber-900/30 flex items-center px-2 sm:px-4 space-x-1 sm:space-x-2 z-10">
         <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-800/50"></div>
         <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-amber-600/50"></div>
-        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-stone-600/50"></div>
+        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-muted/50"></div>
         <span className="ml-2 sm:ml-4 text-[10px] sm:text-xs text-amber-700 truncate max-w-[100px] sm:max-w-none">guest@molten:{currentDir}</span>
         <div className="ml-auto flex items-center gap-1 sm:gap-3">
           {beaconActive && (
@@ -1307,35 +1307,35 @@ export const CustomTerminal = () => {
             </span>
           )}
           {activeMinigame && <span className="text-[10px] sm:text-xs text-amber-500">[{activeMinigame.toUpperCase()}]</span>}
-          <span className="hidden sm:flex items-center gap-1.5 text-[8px] text-stone-600">
-            <kbd className="px-1 py-0.5 bg-stone-800/60 rounded text-stone-500">^K</kbd>
-            <kbd className="px-1 py-0.5 bg-stone-800/60 rounded text-stone-500">^L</kbd>
-            <kbd className="px-1 py-0.5 bg-stone-800/60 rounded text-stone-500">^R</kbd>
+          <span className="hidden sm:flex items-center gap-1.5 text-[8px] text-muted-foreground">
+            <kbd className="px-1 py-0.5 bg-border/60 rounded text-muted-foreground">^K</kbd>
+            <kbd className="px-1 py-0.5 bg-border/60 rounded text-muted-foreground">^L</kbd>
+            <kbd className="px-1 py-0.5 bg-border/60 rounded text-muted-foreground">^R</kbd>
           </span>
         </div>
       </div>
 
       {showCommandPalette && (
-        <div className="absolute top-10 left-0 w-full z-20 bg-stone-950/95 border-b border-amber-900/40 p-3 backdrop-blur-md" data-testid="command-palette">
+        <div className="absolute top-10 left-0 w-full z-20 bg-card/95 border-b border-amber-900/40 p-3 backdrop-blur-md" data-testid="command-palette">
           <div className="text-[9px] text-amber-500/70 font-bold uppercase mb-2">Command Palette (Ctrl+K)</div>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-1 max-h-[200px] overflow-y-auto">
             {ALL_COMMANDS.filter(c => !input || c.includes(input.toLowerCase())).map(cmd => (
               <button
                 key={cmd}
                 onClick={() => { setInput(cmd); setShowCommandPalette(false); inputRef.current?.focus(); }}
-                className="px-2 py-1.5 bg-stone-900/80 hover:bg-amber-900/40 text-amber-400 rounded text-[10px] font-mono text-left transition-colors border border-stone-800/50 hover:border-amber-800/50"
+                className="px-2 py-1.5 bg-card/80 hover:bg-amber-900/40 text-amber-400 rounded text-[10px] font-mono text-left transition-colors border border-border/50 hover:border-amber-800/50"
                 data-testid={`palette-${cmd}`}
               >
                 {cmd}
               </button>
             ))}
           </div>
-          <div className="text-[8px] text-stone-600 mt-2">Press Escape to close</div>
+          <div className="text-[8px] text-muted-foreground mt-2">Press Escape to close</div>
         </div>
       )}
 
       {historySearchMode && (
-        <div className="absolute top-10 left-0 w-full z-20 bg-stone-950/95 border-b border-amber-900/40 p-3 backdrop-blur-md" data-testid="history-search">
+        <div className="absolute top-10 left-0 w-full z-20 bg-card/95 border-b border-amber-900/40 p-3 backdrop-blur-md" data-testid="history-search">
           <div className="text-[9px] text-amber-500/70 font-bold uppercase mb-2">History Search (Ctrl+R)</div>
           <input
             autoFocus
@@ -1343,13 +1343,13 @@ export const CustomTerminal = () => {
             value={historySearchTerm}
             onChange={e => setHistorySearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full bg-stone-900 border border-stone-800 rounded px-2 py-1.5 text-xs text-amber-500 font-mono placeholder-stone-600 outline-none focus:border-amber-800"
+            className="w-full bg-card border border-border rounded px-2 py-1.5 text-xs text-amber-500 font-mono placeholder-muted-foreground outline-none focus:border-amber-800"
             placeholder="Search command history..."
             data-testid="history-search-input"
           />
           <div className="mt-2 space-y-0.5 max-h-[150px] overflow-y-auto">
             {filteredHistory.length === 0 && (
-              <div className="text-[10px] text-stone-600">No matching commands</div>
+              <div className="text-[10px] text-muted-foreground">No matching commands</div>
             )}
             {filteredHistory.slice(0, 10).map((cmd, i) => (
               <button
@@ -1357,15 +1357,15 @@ export const CustomTerminal = () => {
                 onClick={() => { setInput(cmd); setHistorySearchMode(false); setHistorySearchTerm(''); inputRef.current?.focus(); }}
                 className={cn(
                   "w-full text-left px-2 py-1 rounded text-[10px] font-mono transition-colors",
-                  i === 0 ? "bg-amber-900/30 text-amber-400" : "text-stone-400 hover:bg-stone-800/50"
+                  i === 0 ? "bg-amber-900/30 text-amber-400" : "text-muted-foreground hover:bg-border/50"
                 )}
               >
-                <span className="text-stone-600 mr-2">{commandHistory.length - commandHistory.indexOf(cmd)}</span>
+                <span className="text-muted-foreground mr-2">{commandHistory.length - commandHistory.indexOf(cmd)}</span>
                 {cmd}
               </button>
             ))}
           </div>
-          <div className="text-[8px] text-stone-600 mt-2">Enter to select, Escape to close</div>
+          <div className="text-[8px] text-muted-foreground mt-2">Enter to select, Escape to close</div>
         </div>
       )}
       
@@ -1374,10 +1374,10 @@ export const CustomTerminal = () => {
           {history.map((line, i) => (
             <div key={i} className={cn(
               "break-words whitespace-pre-wrap text-xs sm:text-sm",
-              line.type === 'input' && "text-stone-300 font-bold mt-3",
+              line.type === 'input' && "text-foreground font-bold mt-3",
               line.type === 'output' && "text-amber-600 pl-1 sm:pl-2",
               line.type === 'error' && "text-red-600 pl-1 sm:pl-2",
-              line.type === 'system' && "text-stone-500 italic",
+              line.type === 'system' && "text-muted-foreground italic",
               line.type === 'clue' && "text-amber-400 font-bold pl-1 sm:pl-2",
               line.type === 'ascii' && "text-amber-700/70 text-[8px] sm:text-xs leading-none hidden sm:block",
               line.type === 'success' && "text-amber-500 pl-1 sm:pl-2 font-bold",
@@ -1386,7 +1386,7 @@ export const CustomTerminal = () => {
               {line.content}
             </div>
           ))}
-          <div className="flex items-center text-stone-300 font-bold mt-2">
+          <div className="flex items-center text-foreground font-bold mt-2">
             <span className="mr-1 sm:mr-2 text-amber-700 text-xs sm:text-sm">$</span>
             <input
               ref={inputRef}
@@ -1409,7 +1409,7 @@ export const CustomTerminal = () => {
       </ScrollArea>
       
       {(showSuggestions || suggestions.length > 0) && input.length > 0 && (
-        <div className="border-t border-amber-900/30 bg-stone-900/90 p-2 flex gap-1 sm:gap-2 flex-wrap max-h-[80px] overflow-y-auto" data-testid="suggestions-bar">
+        <div className="border-t border-amber-900/30 bg-card/90 p-2 flex gap-1 sm:gap-2 flex-wrap max-h-[80px] overflow-y-auto" data-testid="suggestions-bar">
           {suggestions.map(cmd => (
             <button
               key={cmd}
@@ -1421,7 +1421,7 @@ export const CustomTerminal = () => {
             </button>
           ))}
           {suggestions.length === 0 && input.length > 0 && (
-            <span className="text-stone-500 text-xs">No matching commands</span>
+            <span className="text-muted-foreground text-xs">No matching commands</span>
           )}
         </div>
       )}

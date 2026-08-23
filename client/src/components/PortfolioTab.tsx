@@ -166,7 +166,7 @@ function RadarChart({ skills, size: sizeProp }: { skills: { name: string; value:
             y={labelP.y}
             textAnchor="middle"
             dominantBaseline="middle"
-            className="fill-stone-400 text-[10px] font-mono"
+            className="fill-muted-foreground text-[10px] font-mono"
           >
             {s.name}
           </text>
@@ -181,10 +181,10 @@ function StatBar({ label, value, max, color }: { label: string; value: number; m
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs">
-        <span className="text-stone-500">{label}</span>
+        <span className="text-muted-foreground">{label}</span>
         <span className={`text-${color}-400 font-mono`}>{value}</span>
       </div>
-      <div className="h-2 bg-stone-900 rounded-full overflow-hidden">
+      <div className="h-2 bg-card rounded-full overflow-hidden">
         <div
           className={`h-full bg-gradient-to-r from-${color}-600 to-${color}-400 rounded-full transition-all duration-1000`}
           style={{ width: `${pct}%` }}
@@ -206,14 +206,14 @@ function SeverityChart({ vulns }: { vulns: any[] }) {
 
   return (
     <div className="space-y-1.5">
-      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1"><BarChart3 className="w-3 h-3" /> Severity Distribution</h5>
+      <h5 className="text-[10px] text-muted-foreground uppercase flex items-center gap-1"><BarChart3 className="w-3 h-3" /> Severity Distribution</h5>
       {Object.entries(counts).filter(([, c]) => c > 0).map(([sev, count]) => (
         <div key={sev} className="flex items-center gap-2">
           <span className="text-[9px] w-12 text-right font-mono" style={{ color: colors[sev] }}>{labels[sev]}</span>
-          <div className="flex-1 h-3 bg-stone-900 rounded-full overflow-hidden">
+          <div className="flex-1 h-3 bg-card rounded-full overflow-hidden">
             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(count / total) * 100}%`, backgroundColor: colors[sev] }} />
           </div>
-          <span className="text-[9px] text-stone-500 font-mono w-4">{count}</span>
+          <span className="text-[9px] text-muted-foreground font-mono w-4">{count}</span>
         </div>
       ))}
     </div>
@@ -228,7 +228,7 @@ function ScanTimeline({ scans }: { scans: any[] }) {
   });
   return (
     <div className="space-y-1.5">
-      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Scan Timeline</h5>
+      <h5 className="text-[10px] text-muted-foreground uppercase flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Scan Timeline</h5>
       <div className="flex items-end gap-1 h-12">
         {sorted.map((s, i) => {
           const resultCount = Array.isArray(s.results) ? s.results.length : (s.results ? Object.keys(s.results).length : 0);
@@ -241,7 +241,7 @@ function ScanTimeline({ scans }: { scans: any[] }) {
           );
         })}
       </div>
-      <div className="flex justify-between text-[8px] text-stone-700">
+      <div className="flex justify-between text-[8px] text-muted-foreground">
         <span>{sorted[0]?.completedAt ? new Date(sorted[0].completedAt).toLocaleDateString() : "Start"}</span>
         <span>{sorted[sorted.length - 1]?.completedAt ? new Date(sorted[sorted.length - 1].completedAt).toLocaleDateString() : "End"}</span>
       </div>
@@ -263,7 +263,7 @@ function EvidenceDonut({ evidence }: { evidence: { type: string; label: string; 
 
   return (
     <div className="space-y-1.5">
-      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1"><PieChart className="w-3 h-3" /> Evidence by Type</h5>
+      <h5 className="text-[10px] text-muted-foreground uppercase flex items-center gap-1"><PieChart className="w-3 h-3" /> Evidence by Type</h5>
       <div className="flex items-center gap-3">
         <svg width={80} height={80} viewBox="0 0 80 80">
           {entries.map(([type, count], i) => {
@@ -286,14 +286,14 @@ function EvidenceDonut({ evidence }: { evidence: { type: string; label: string; 
             offset += dashLen;
             return seg;
           })}
-          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" className="fill-stone-300 text-[12px] font-mono font-bold">{total}</text>
+          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" className="fill-foreground text-[12px] font-mono font-bold">{total}</text>
         </svg>
         <div className="space-y-0.5">
           {entries.map(([type, count], i) => (
             <div key={type} className="flex items-center gap-1.5 text-[9px]">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: donutColors[i % donutColors.length] }} />
-              <span className="text-stone-400">{type}</span>
-              <span className="text-stone-600 font-mono">({count})</span>
+              <span className="text-muted-foreground">{type}</span>
+              <span className="text-muted-foreground font-mono">({count})</span>
             </div>
           ))}
         </div>
@@ -314,13 +314,13 @@ function EmbedCard({ type, title, content, id, color }: { type: string; title: s
   };
 
   return (
-    <div className={`p-3 bg-stone-900/20 rounded-lg border border-${color}-900/20`}>
+    <div className={`p-3 bg-card/20 rounded-lg border border-${color}-900/20`}>
       <div className="flex items-center justify-between mb-2">
         <Badge variant="outline" className={`text-[9px] border-${color}-900/30 text-${color}-400`}>{type}</Badge>
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 px-2 text-[9px] text-stone-600 hover:text-amber-400"
+          className="h-6 px-2 text-[9px] text-muted-foreground hover:text-amber-700"
           onClick={handleCopy}
           data-testid={`copy-embed-${type.toLowerCase().replace(/\s+/g, "-")}-${id}`}
         >
@@ -328,8 +328,8 @@ function EmbedCard({ type, title, content, id, color }: { type: string; title: s
           {copied ? "Copied" : "Copy Embed"}
         </Button>
       </div>
-      <h5 className="text-xs font-bold text-stone-300 mb-1">{title}</h5>
-      <p className="text-[10px] text-stone-600 line-clamp-2">{content}</p>
+      <h5 className="text-xs font-bold text-foreground mb-1">{title}</h5>
+      <p className="text-[10px] text-muted-foreground line-clamp-2">{content}</p>
     </div>
   );
 }
@@ -373,27 +373,27 @@ function EditEntryForm({ entry, onSave, onCancel }: {
     <div className="p-4 space-y-4 border-t border-amber-900/30 bg-amber-950/5" data-testid={`edit-form-${entry.id}`}>
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Title</label>
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Title</label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="bg-stone-900/30 border-stone-800 text-stone-300 h-8 text-sm"
+            className="bg-card/30 border-border text-foreground h-8 text-sm"
           />
         </div>
         <div className="col-span-2">
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Summary</label>
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Summary</label>
           <Textarea
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
-            className="bg-stone-900/30 border-stone-800 text-stone-300 text-sm min-h-[60px]"
+            className="bg-card/30 border-border text-foreground text-sm min-h-[60px]"
           />
         </div>
         <div>
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Category</label>
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Category</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+            className="w-full bg-card/30 border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
           >
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>{c.label}</option>
@@ -401,11 +401,11 @@ function EditEntryForm({ entry, onSave, onCancel }: {
           </select>
         </div>
         <div>
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Difficulty</label>
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Difficulty</label>
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+            className="w-full bg-card/30 border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
           >
             <option value="">Select...</option>
             <option value="beginner">Beginner</option>
@@ -417,7 +417,7 @@ function EditEntryForm({ entry, onSave, onCancel }: {
       </div>
 
       <div>
-        <label className="text-[10px] text-stone-600 uppercase mb-1 block">Skills</label>
+        <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Skills</label>
         <div className="flex flex-wrap gap-1.5">
           {SKILL_TAGS.map((skill) => (
             <button
@@ -425,8 +425,8 @@ function EditEntryForm({ entry, onSave, onCancel }: {
               onClick={() => setSelectedSkills(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill])}
               className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
                 selectedSkills.includes(skill)
-                  ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
-                  : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+                  ? "bg-amber-900/30 border-amber-700/50 text-amber-800"
+                  : "bg-card/20 border-border text-muted-foreground hover:border-border"
               }`}
             >
               {skill}
@@ -436,7 +436,7 @@ function EditEntryForm({ entry, onSave, onCancel }: {
       </div>
 
       <div>
-        <label className="text-[10px] text-stone-600 uppercase mb-1 block">Tools</label>
+        <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Tools</label>
         <div className="flex flex-wrap gap-1.5">
           {TOOL_TAGS.map((tool) => (
             <button
@@ -444,8 +444,8 @@ function EditEntryForm({ entry, onSave, onCancel }: {
               onClick={() => setSelectedTools(prev => prev.includes(tool) ? prev.filter(t => t !== tool) : [...prev, tool])}
               className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
                 selectedTools.includes(tool)
-                  ? "bg-teal-900/30 border-teal-700/50 text-teal-400"
-                  : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+                  ? "bg-teal-900/30 border-teal-700/50 text-teal-800"
+                  : "bg-card/20 border-border text-muted-foreground hover:border-border"
               }`}
             >
               {tool}
@@ -455,7 +455,7 @@ function EditEntryForm({ entry, onSave, onCancel }: {
       </div>
 
       <div>
-        <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1"><BarChart3 className="w-2.5 h-2.5" /> Visualization Style</label>
+        <label className="text-[10px] text-muted-foreground uppercase mb-1 block flex items-center gap-1"><BarChart3 className="w-2.5 h-2.5" /> Visualization Style</label>
         <div className="flex flex-wrap gap-1.5">
           {VIZ_OPTIONS.map(({ value, label, icon: Icon }) => (
             <button
@@ -463,10 +463,10 @@ function EditEntryForm({ entry, onSave, onCancel }: {
               onClick={() => setSelectedViz(prev => value === "none" ? [] : prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value])}
               className={`px-2 py-0.5 rounded text-[10px] border flex items-center gap-1 transition-colors ${
                 value === "none" && selectedViz.length === 0
-                  ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
+                  ? "bg-amber-900/30 border-amber-700/50 text-amber-800"
                   : value !== "none" && selectedViz.includes(value)
-                  ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
-                  : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+                  ? "bg-amber-900/30 border-amber-700/50 text-amber-800"
+                  : "bg-card/20 border-border text-muted-foreground hover:border-border"
               }`}
               data-testid={`edit-viz-option-${value}`}
             >
@@ -477,11 +477,11 @@ function EditEntryForm({ entry, onSave, onCancel }: {
       </div>
 
       <div>
-        <label className="text-[10px] text-stone-600 uppercase mb-1 block">Outcome</label>
+        <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Outcome</label>
         <Textarea
           value={outcome}
           onChange={(e) => setOutcome(e.target.value)}
-          className="bg-stone-900/30 border-stone-800 text-stone-300 text-sm min-h-[50px]"
+          className="bg-card/30 border-border text-foreground text-sm min-h-[50px]"
         />
       </div>
 
@@ -490,18 +490,18 @@ function EditEntryForm({ entry, onSave, onCancel }: {
           variant="ghost"
           size="sm"
           onClick={() => setVisibility(visibility === "public" ? "private" : "public")}
-          className={`text-xs ${visibility === "public" ? "text-teal-400" : "text-stone-500"}`}
+          className={`text-xs ${visibility === "public" ? "text-teal-800" : "text-muted-foreground"}`}
         >
           {visibility === "public" ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
           {visibility === "public" ? "Public" : "Private"}
         </Button>
         <div className="flex-1" />
-        <Button variant="ghost" size="sm" onClick={onCancel} className="text-stone-500 text-xs" data-testid={`cancel-edit-${entry.id}`}>Cancel</Button>
+        <Button variant="ghost" size="sm" onClick={onCancel} className="text-muted-foreground text-xs" data-testid={`cancel-edit-${entry.id}`}>Cancel</Button>
         <Button
           size="sm"
           onClick={handleSubmit}
           disabled={!title.trim()}
-          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
           data-testid={`save-edit-${entry.id}`}
         >
           Save Changes
@@ -556,21 +556,21 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
   const vulns = entry.agentSnapshot?.extractedIntel?.potentialVulns || [];
 
   return (
-    <Card className={`bg-[#0a0500] border-amber-900/30 transition-all hover:border-amber-700/50 ${entry.featured ? "ring-1 ring-amber-600/30" : ""}`}>
+    <Card className={`bg-[hsl(var(--card))] border-amber-900/30 transition-all hover:border-amber-700/50 ${entry.featured ? "ring-1 ring-amber-600/30" : ""}`}>
       <CardContent className="p-0">
         <div className="p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="w-10 h-10 rounded-lg bg-amber-900/20 border border-amber-900/30 flex items-center justify-center flex-shrink-0">
-                <CategoryIcon className="w-5 h-5 text-amber-500" />
+                <CategoryIcon className="w-5 h-5 text-amber-800" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-stone-200 truncate">{entry.title}</h3>
-                  {entry.featured && <Star className="w-3 h-3 text-amber-500 flex-shrink-0" />}
+                  <h3 className="text-sm font-bold text-foreground truncate">{entry.title}</h3>
+                  {entry.featured && <Star className="w-3 h-3 text-amber-800 flex-shrink-0" />}
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                  <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
                     {entry.category}
                   </Badge>
                   {entry.difficulty && (
@@ -578,7 +578,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
                       {entry.difficulty}
                     </Badge>
                   )}
-                  <Badge variant="outline" className={`text-[9px] ${entry.visibility === "public" ? "border-teal-700 text-teal-400" : "border-stone-700 text-stone-500"}`}>
+                  <Badge variant="outline" className={`text-[9px] ${entry.visibility === "public" ? "border-teal-700 text-teal-800" : "border-border text-muted-foreground"}`}>
                     {entry.visibility === "public" ? <Eye className="w-2.5 h-2.5 mr-1" /> : <EyeOff className="w-2.5 h-2.5 mr-1" />}
                     {entry.visibility}
                   </Badge>
@@ -589,7 +589,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-stone-600 hover:text-amber-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-700"
                 onClick={() => setEditing(!editing)}
                 data-testid={`edit-entry-${entry.id}`}
               >
@@ -598,7 +598,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-stone-600 hover:text-amber-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-700"
                 onClick={() => onToggleFeatured(entry.id, !entry.featured)}
                 data-testid={`toggle-featured-${entry.id}`}
               >
@@ -607,7 +607,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-stone-600 hover:text-teal-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-teal-700"
                 onClick={() => onToggleVisibility(entry.id, entry.visibility === "public" ? "private" : "public")}
                 data-testid={`toggle-visibility-${entry.id}`}
               >
@@ -616,7 +616,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-stone-600 hover:text-amber-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-700"
                 onClick={() => onCopyLink(entry.shareId)}
                 data-testid={`copy-link-${entry.id}`}
               >
@@ -625,7 +625,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-stone-600 hover:text-red-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-red-700"
                 onClick={() => onDelete(entry.id)}
                 data-testid={`delete-entry-${entry.id}`}
               >
@@ -634,40 +634,40 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
             </div>
           </div>
 
-          <div className="mt-2 flex items-center gap-2 p-2 bg-stone-900/30 rounded border border-stone-800/50" data-testid={`share-url-${entry.id}`}>
-            <Link className="w-3 h-3 text-stone-600 flex-shrink-0" />
-            <span className="text-[10px] text-stone-500 font-mono truncate flex-1">{displayUrl}</span>
+          <div className="mt-2 flex items-center gap-2 p-2 bg-card/30 rounded border border-border/50" data-testid={`share-url-${entry.id}`}>
+            <Link className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            <span className="text-[10px] text-muted-foreground font-mono truncate flex-1">{displayUrl}</span>
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 w-5 p-0 text-stone-600 hover:text-amber-400"
+              className="h-5 w-5 p-0 text-muted-foreground hover:text-amber-700"
               onClick={handleCopyUrl}
             >
-              {urlCopied ? <Check className="w-3 h-3 text-teal-400" /> : <Copy className="w-3 h-3" />}
+              {urlCopied ? <Check className="w-3 h-3 text-teal-800" /> : <Copy className="w-3 h-3" />}
             </Button>
             <a href={shareUrl} target="_blank" rel="noopener noreferrer" data-testid={`open-share-${entry.id}`}>
-              <Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-stone-600 hover:text-teal-400">
+              <Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-muted-foreground hover:text-teal-700">
                 <ExternalLink className="w-3 h-3" />
               </Button>
             </a>
           </div>
 
           {entry.summary && (
-            <p className="text-xs text-stone-500 mt-2 line-clamp-2">{entry.summary}</p>
+            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{entry.summary}</p>
           )}
 
           {(entry.skills.length > 0 || entry.tools.length > 0) && (
             <div className="flex flex-wrap gap-1 mt-3">
               {entry.skills.map(s => (
-                <Badge key={s} className="text-[9px] bg-amber-950/30 text-amber-400 border-amber-900/30">{s}</Badge>
+                <Badge key={s} className="text-[9px] bg-amber-950/30 text-amber-800 border-amber-900/30">{s}</Badge>
               ))}
               {entry.tools.map(t => (
-                <Badge key={t} className="text-[9px] bg-teal-950/30 text-teal-400 border-teal-900/30">{t}</Badge>
+                <Badge key={t} className="text-[9px] bg-teal-950/30 text-teal-800 border-teal-900/30">{t}</Badge>
               ))}
             </div>
           )}
 
-          <div className="flex items-center gap-4 mt-3 text-[10px] text-stone-600">
+          <div className="flex items-center gap-4 mt-3 text-[10px] text-muted-foreground">
             {entry.scanSnapshot.length > 0 && (
               <span className="flex items-center gap-1"><Scan className="w-3 h-3" /> {entry.scanSnapshot.length} scans</span>
             )}
@@ -693,7 +693,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
 
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full py-2 px-4 text-[10px] text-stone-600 hover:text-stone-400 border-t border-stone-900/50 flex items-center justify-center gap-1 transition-colors"
+          className="w-full py-2 px-4 text-[10px] text-muted-foreground hover:text-muted-foreground border-t border-card/50 flex items-center justify-center gap-1 transition-colors"
           data-testid={`expand-entry-${entry.id}`}
         >
           {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -701,7 +701,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
         </button>
 
         {expanded && (
-          <div className="px-4 pb-4 space-y-4 border-t border-stone-900/50">
+          <div className="px-4 pb-4 space-y-4 border-t border-card/50">
 
             {(() => {
               const vizConfig = entry.evidence.find((e: any) => e.type === "viz_config");
@@ -714,23 +714,23 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               return hasAnyViz ? (
                 <div className="grid grid-cols-2 gap-3 pt-3">
                   {showSeverity && (
-                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                    <div className="p-2 bg-card/20 rounded border border-border/30">
                       <SeverityChart vulns={vulns} />
                     </div>
                   )}
                   {showTimeline && (
-                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                    <div className="p-2 bg-card/20 rounded border border-border/30">
                       <ScanTimeline scans={entry.scanSnapshot} />
                     </div>
                   )}
                   {showRadar && (
-                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
-                      <h5 className="text-[10px] text-stone-600 uppercase flex items-center gap-1 mb-1"><Palette className="w-3 h-3" /> Skills Radar</h5>
+                    <div className="p-2 bg-card/20 rounded border border-border/30">
+                      <h5 className="text-[10px] text-muted-foreground uppercase flex items-center gap-1 mb-1"><Palette className="w-3 h-3" /> Skills Radar</h5>
                       <RadarChart skills={skillRadarData} size={140} />
                     </div>
                   )}
                   {showDonut && (
-                    <div className="p-2 bg-stone-900/20 rounded border border-stone-800/30">
+                    <div className="p-2 bg-card/20 rounded border border-border/30">
                       <EvidenceDonut evidence={entry.evidence.filter((e: any) => e.type !== "viz_config")} />
                     </div>
                   )}
@@ -740,24 +740,24 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
 
             {entry.agentSnapshot?.extractedIntel && (
               <div className="space-y-2 pt-3">
-                <h4 className="text-xs font-mono text-amber-500 flex items-center gap-1"><Bot className="w-3 h-3" /> Agent Intelligence</h4>
+                <h4 className="text-xs font-mono text-amber-800 flex items-center gap-1"><Bot className="w-3 h-3" /> Agent Intelligence</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {entry.agentSnapshot.extractedIntel.targets?.length > 0 && (
-                    <div className="p-2 bg-stone-900/30 rounded">
-                      <p className="text-[10px] text-stone-600 mb-1">Targets</p>
+                    <div className="p-2 bg-card/30 rounded">
+                      <p className="text-[10px] text-muted-foreground mb-1">Targets</p>
                       <div className="flex flex-wrap gap-1">
                         {entry.agentSnapshot.extractedIntel.targets.map((t: string, i: number) => (
-                          <Badge key={i} variant="outline" className="text-[9px] border-amber-900/30 text-amber-400">{t}</Badge>
+                          <Badge key={i} variant="outline" className="text-[9px] border-amber-900/30 text-amber-800">{t}</Badge>
                         ))}
                       </div>
                     </div>
                   )}
                   {entry.agentSnapshot.extractedIntel.technologies?.length > 0 && (
-                    <div className="p-2 bg-stone-900/30 rounded">
-                      <p className="text-[10px] text-stone-600 mb-1">Technologies</p>
+                    <div className="p-2 bg-card/30 rounded">
+                      <p className="text-[10px] text-muted-foreground mb-1">Technologies</p>
                       <div className="flex flex-wrap gap-1">
                         {entry.agentSnapshot.extractedIntel.technologies.map((t: string, i: number) => (
-                          <Badge key={i} variant="outline" className="text-[9px] border-teal-900/30 text-teal-400">{t}</Badge>
+                          <Badge key={i} variant="outline" className="text-[9px] border-teal-900/30 text-teal-800">{t}</Badge>
                         ))}
                       </div>
                     </div>
@@ -765,13 +765,13 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
                 </div>
                 {entry.agentSnapshot.extractedIntel.potentialVulns?.length > 0 && (
                   <div className="p-2 bg-red-950/10 rounded border border-red-900/20">
-                    <p className="text-[10px] text-stone-600 mb-1">Potential Vulnerabilities</p>
+                    <p className="text-[10px] text-muted-foreground mb-1">Potential Vulnerabilities</p>
                     <div className="space-y-1">
                       {entry.agentSnapshot.extractedIntel.potentialVulns.map((v: any, i: number) => (
                         <div key={i} className="flex items-center gap-2 text-[10px]">
-                          <AlertTriangle className={`w-3 h-3 ${v.severity === "critical" ? "text-red-400" : v.severity === "high" ? "text-orange-400" : "text-amber-400"}`} />
-                          <span className="text-stone-400">{v.type}</span>
-                          <Badge variant="outline" className={`text-[8px] ml-auto ${v.severity === "critical" ? "border-red-700 text-red-400" : v.severity === "high" ? "border-orange-700 text-orange-400" : "border-amber-700 text-amber-400"}`}>
+                          <AlertTriangle className={`w-3 h-3 ${v.severity === "critical" ? "text-red-700" : v.severity === "high" ? "text-orange-800" : "text-amber-800"}`} />
+                          <span className="text-muted-foreground">{v.type}</span>
+                          <Badge variant="outline" className={`text-[8px] ml-auto ${v.severity === "critical" ? "border-red-700 text-red-700" : v.severity === "high" ? "border-orange-700 text-orange-800" : "border-amber-700 text-amber-800"}`}>
                             {v.severity}
                           </Badge>
                         </div>
@@ -784,12 +784,12 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
 
             {entry.scanSnapshot.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-xs font-mono text-teal-500 flex items-center gap-1"><Scan className="w-3 h-3" /> Scan Results</h4>
+                <h4 className="text-xs font-mono text-teal-800 flex items-center gap-1"><Scan className="w-3 h-3" /> Scan Results</h4>
                 {entry.scanSnapshot.map((scan: any, i: number) => (
-                  <div key={i} className="p-2 bg-stone-900/30 rounded text-[10px]">
+                  <div key={i} className="p-2 bg-card/30 rounded text-[10px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-stone-400 font-mono">{scan.target}</span>
-                      <span className="text-stone-600">{scan.scriptPath}</span>
+                      <span className="text-muted-foreground font-mono">{scan.target}</span>
+                      <span className="text-muted-foreground">{scan.scriptPath}</span>
                     </div>
                   </div>
                 ))}
@@ -798,14 +798,14 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
 
             {entry.evidence.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-xs font-mono text-purple-500 flex items-center gap-1"><FileText className="w-3 h-3" /> Evidence</h4>
+                <h4 className="text-xs font-mono text-purple-700 flex items-center gap-1"><FileText className="w-3 h-3" /> Evidence</h4>
                 {entry.evidence.map((ev, i) => (
-                  <div key={i} className="p-2 bg-stone-900/30 rounded text-[10px]">
+                  <div key={i} className="p-2 bg-card/30 rounded text-[10px]">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="text-[8px] border-purple-900/30 text-purple-400">{ev.type}</Badge>
-                      <span className="text-stone-400">{ev.label}</span>
+                      <Badge variant="outline" className="text-[8px] border-purple-900/30 text-purple-700">{ev.type}</Badge>
+                      <span className="text-muted-foreground">{ev.label}</span>
                     </div>
-                    <p className="text-stone-600 font-mono text-[9px] whitespace-pre-wrap line-clamp-3">{ev.content}</p>
+                    <p className="text-muted-foreground font-mono text-[9px] whitespace-pre-wrap line-clamp-3">{ev.content}</p>
                   </div>
                 ))}
               </div>
@@ -813,13 +813,13 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
 
             {entry.outcome && (
               <div className="p-2 bg-teal-950/10 rounded border border-teal-900/20">
-                <p className="text-[10px] text-stone-600 mb-1">Outcome</p>
-                <p className="text-xs text-stone-400">{entry.outcome}</p>
+                <p className="text-[10px] text-muted-foreground mb-1">Outcome</p>
+                <p className="text-xs text-muted-foreground">{entry.outcome}</p>
               </div>
             )}
 
-            <div className="space-y-2 pt-3 border-t border-stone-900/50">
-              <h4 className="text-xs font-mono text-amber-500 flex items-center gap-1"><Layers className="w-3 h-3" /> Embeddable Cards</h4>
+            <div className="space-y-2 pt-3 border-t border-card/50">
+              <h4 className="text-xs font-mono text-amber-800 flex items-center gap-1"><Layers className="w-3 h-3" /> Embeddable Cards</h4>
               <div className="grid gap-2">
                 {vulns.length > 0 && vulns.map((v: any, i: number) => (
                   <EmbedCard
@@ -851,7 +851,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
                   />
                 )}
                 {vulns.length === 0 && entry.scanSnapshot.length === 0 && !entry.agentSnapshot?.extractedIntel && (
-                  <p className="text-[10px] text-stone-700">No embeddable content available for this entry.</p>
+                  <p className="text-[10px] text-muted-foreground">No embeddable content available for this entry.</p>
                 )}
               </div>
             </div>
@@ -1059,36 +1059,36 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
   };
 
   return (
-    <Card className="bg-[#0a0500] border-amber-900/40">
+    <Card className="bg-[hsl(var(--card))] border-amber-900/40">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+          <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
             <Plus className="w-4 h-4" /> New Portfolio Entry
           </CardTitle>
-          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-stone-600" onClick={onClose}>
+          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>
         </div>
-        <CardDescription className="text-stone-600 text-xs">
+        <CardDescription className="text-muted-foreground text-xs">
           Select a source below to auto-fill, or create a blank entry
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {hasSources && (
           <div className="space-y-3 p-3 bg-amber-950/10 rounded-lg border border-amber-900/20">
-            <h4 className="text-[10px] text-amber-500 uppercase font-mono flex items-center gap-1">
+            <h4 className="text-[10px] text-amber-800 uppercase font-mono flex items-center gap-1">
               <Layers className="w-3 h-3" /> Load From Your Work
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {sources.investigations.length > 0 && (
                 <div>
-                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                  <label className="text-[10px] text-muted-foreground uppercase mb-1 block flex items-center gap-1">
                     <Crosshair className="w-2.5 h-2.5" /> Investigation ({sources.investigations.length})
                   </label>
                   <select
                     value={selectedInvestigation}
                     onChange={(e) => autoPopulateFromInvestigation(e.target.value)}
-                    className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+                    className="w-full bg-card/30 border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
                     data-testid="portfolio-investigation-select"
                   >
                     <option value="">Select investigation...</option>
@@ -1103,13 +1103,13 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
 
               {sources.campaignRuns.length > 0 && (
                 <div>
-                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                  <label className="text-[10px] text-muted-foreground uppercase mb-1 block flex items-center gap-1">
                     <Target className="w-2.5 h-2.5" /> Campaign ({sources.campaignRuns.length})
                   </label>
                   <select
                     value={selectedCampaign}
                     onChange={(e) => autoPopulateFromCampaign(e.target.value)}
-                    className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+                    className="w-full bg-card/30 border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
                     data-testid="portfolio-campaign-select"
                   >
                     <option value="">Select campaign...</option>
@@ -1124,13 +1124,13 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
 
               {sources.dossiers.length > 0 && (
                 <div>
-                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                  <label className="text-[10px] text-muted-foreground uppercase mb-1 block flex items-center gap-1">
                     <FileText className="w-2.5 h-2.5" /> Report / Dossier ({sources.dossiers.length})
                   </label>
                   <select
                     value={selectedDossier}
                     onChange={(e) => autoPopulateFromDossier(e.target.value)}
-                    className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+                    className="w-full bg-card/30 border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
                     data-testid="portfolio-dossier-select"
                   >
                     <option value="">Select report...</option>
@@ -1145,19 +1145,19 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
 
               {sources.scans.length > 0 && (
                 <div>
-                  <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+                  <label className="text-[10px] text-muted-foreground uppercase mb-1 block flex items-center gap-1">
                     <Scan className="w-2.5 h-2.5" /> Scans ({sources.scans.length})
                   </label>
-                  <div className="max-h-24 overflow-y-auto space-y-1 bg-stone-900/30 border border-stone-800 rounded-md p-2">
+                  <div className="max-h-24 overflow-y-auto space-y-1 bg-card/30 border border-border rounded-md p-2">
                     {sources.scans.map((s: any) => {
                       const scanKey = s.id?.toString() || s.scanId;
                       return (
-                        <label key={scanKey} className="flex items-center gap-2 text-xs text-stone-400 cursor-pointer hover:text-stone-200">
+                        <label key={scanKey} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground">
                           <input
                             type="checkbox"
                             checked={selectedScans.includes(scanKey)}
                             onChange={() => setSelectedScans(prev => prev.includes(scanKey) ? prev.filter(x => x !== scanKey) : [...prev, scanKey])}
-                            className="rounded border-stone-700"
+                            className="rounded border-border"
                           />
                           <span className="truncate">{s.target || "Unknown"} — {s.scriptPath || "scan"}</span>
                         </label>
@@ -1172,31 +1172,31 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Title *</label>
+            <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Title *</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., APT-29 Infrastructure Analysis"
-              className="bg-stone-900/30 border-stone-800 text-stone-300 h-8 text-sm"
+              className="bg-card/30 border-border text-foreground h-8 text-sm"
               data-testid="portfolio-title-input"
             />
           </div>
           <div className="col-span-2">
-            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Summary</label>
+            <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Summary</label>
             <Textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               placeholder="Brief description of this investigation or project..."
-              className="bg-stone-900/30 border-stone-800 text-stone-300 text-sm min-h-[60px]"
+              className="bg-card/30 border-border text-foreground text-sm min-h-[60px]"
               data-testid="portfolio-summary-input"
             />
           </div>
           <div>
-            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Category</label>
+            <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Category</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+              className="w-full bg-card/30 border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
               data-testid="portfolio-category-select"
             >
               {CATEGORIES.map((c) => (
@@ -1205,11 +1205,11 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
             </select>
           </div>
           <div>
-            <label className="text-[10px] text-stone-600 uppercase mb-1 block">Difficulty</label>
+            <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Difficulty</label>
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
-              className="w-full bg-stone-900/30 border border-stone-800 rounded-md px-3 py-1.5 text-sm text-stone-300"
+              className="w-full bg-card/30 border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
               data-testid="portfolio-difficulty-select"
             >
               <option value="">Select...</option>
@@ -1222,7 +1222,7 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
         </div>
 
         <div>
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block flex items-center gap-1">
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block flex items-center gap-1">
             <Palette className="w-2.5 h-2.5" /> Visualization Style
           </label>
           <div className="flex flex-wrap gap-1.5">
@@ -1232,8 +1232,8 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
                 onClick={() => toggleViz(v.value)}
                 className={`px-2.5 py-1 rounded text-[10px] border transition-colors ${
                   (v.value === "none" && selectedViz.length === 0) || selectedViz.includes(v.value)
-                    ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
-                    : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+                    ? "bg-amber-900/30 border-amber-700/50 text-amber-800"
+                    : "bg-card/20 border-border text-muted-foreground hover:border-border"
                 }`}
                 title={v.desc}
                 data-testid={`viz-option-${v.value}`}
@@ -1246,11 +1246,11 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
               </button>
             ))}
           </div>
-          <p className="text-[9px] text-stone-700 mt-1">Select which visualizations to show on this entry, or none for text-only</p>
+          <p className="text-[9px] text-muted-foreground mt-1">Select which visualizations to show on this entry, or none for text-only</p>
         </div>
 
         <div>
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Skills Demonstrated</label>
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Skills Demonstrated</label>
           <div className="flex flex-wrap gap-1.5">
             {SKILL_TAGS.map((skill) => (
               <button
@@ -1258,8 +1258,8 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
                 onClick={() => setSelectedSkills(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill])}
                 className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
                   selectedSkills.includes(skill)
-                    ? "bg-amber-900/30 border-amber-700/50 text-amber-400"
-                    : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+                    ? "bg-amber-900/30 border-amber-700/50 text-amber-800"
+                    : "bg-card/20 border-border text-muted-foreground hover:border-border"
                 }`}
                 data-testid={`skill-tag-${skill.toLowerCase().replace(/\s+/g, "-")}`}
               >
@@ -1270,7 +1270,7 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
         </div>
 
         <div>
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Tools Used</label>
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Tools Used</label>
           <div className="flex flex-wrap gap-1.5">
             {TOOL_TAGS.map((tool) => (
               <button
@@ -1278,8 +1278,8 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
                 onClick={() => setSelectedTools(prev => prev.includes(tool) ? prev.filter(t => t !== tool) : [...prev, tool])}
                 className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
                   selectedTools.includes(tool)
-                    ? "bg-teal-900/30 border-teal-700/50 text-teal-400"
-                    : "bg-stone-900/20 border-stone-800 text-stone-600 hover:border-stone-700"
+                    ? "bg-teal-900/30 border-teal-700/50 text-teal-800"
+                    : "bg-card/20 border-border text-muted-foreground hover:border-border"
                 }`}
                 data-testid={`tool-tag-${tool.toLowerCase().replace(/\s+/g, "-")}`}
               >
@@ -1290,12 +1290,12 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
         </div>
 
         <div>
-          <label className="text-[10px] text-stone-600 uppercase mb-1 block">Outcome / Findings</label>
+          <label className="text-[10px] text-muted-foreground uppercase mb-1 block">Outcome / Findings</label>
           <Textarea
             value={outcome}
             onChange={(e) => setOutcome(e.target.value)}
             placeholder="Key findings, impact, or results..."
-            className="bg-stone-900/30 border-stone-800 text-stone-300 text-sm min-h-[50px]"
+            className="bg-card/30 border-border text-foreground text-sm min-h-[50px]"
             data-testid="portfolio-outcome-input"
           />
         </div>
@@ -1305,19 +1305,19 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
             variant="ghost"
             size="sm"
             onClick={() => setVisibility(visibility === "public" ? "private" : "public")}
-            className={`text-xs ${visibility === "public" ? "text-teal-400" : "text-stone-500"}`}
+            className={`text-xs ${visibility === "public" ? "text-teal-800" : "text-muted-foreground"}`}
             data-testid="toggle-new-visibility"
           >
             {visibility === "public" ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
             {visibility === "public" ? "Public" : "Private"}
           </Button>
           <div className="flex-1" />
-          <Button variant="ghost" size="sm" onClick={onClose} className="text-stone-500 text-xs">Cancel</Button>
+          <Button variant="ghost" size="sm" onClick={onClose} className="text-muted-foreground text-xs">Cancel</Button>
           <Button
             size="sm"
             onClick={handleSubmit}
             disabled={!title.trim() || createMutation.isPending}
-            className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+            className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
             data-testid="create-portfolio-entry-btn"
           >
             {createMutation.isPending ? "Saving..." : "Save to Portfolio"}
@@ -1440,7 +1440,7 @@ export default function PortfolioTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-amber-500 font-mono text-sm animate-pulse">Loading portfolio...</div>
+        <div className="text-amber-800 font-mono text-sm animate-pulse">Loading portfolio...</div>
       </div>
     );
   }
@@ -1450,37 +1450,37 @@ export default function PortfolioTab() {
       {entries.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
           <div className="text-center p-3 bg-amber-950/10 rounded-lg border border-amber-900/20">
-            <p className="text-2xl font-bold text-amber-400 font-mono">{portfolioStats.totalEntries}</p>
-            <p className="text-[10px] text-stone-600 uppercase">Entries</p>
+            <p className="text-2xl font-bold text-amber-800 font-mono">{portfolioStats.totalEntries}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Entries</p>
           </div>
           <div className="text-center p-3 bg-teal-950/10 rounded-lg border border-teal-900/20">
-            <p className="text-2xl font-bold text-teal-400 font-mono">{portfolioStats.publicEntries}</p>
-            <p className="text-[10px] text-stone-600 uppercase">Public</p>
+            <p className="text-2xl font-bold text-teal-800 font-mono">{portfolioStats.publicEntries}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Public</p>
           </div>
           <div className="text-center p-3 bg-purple-950/10 rounded-lg border border-purple-900/20">
-            <p className="text-2xl font-bold text-purple-400 font-mono">{portfolioStats.totalScans}</p>
-            <p className="text-[10px] text-stone-600 uppercase">Scans</p>
+            <p className="text-2xl font-bold text-purple-700 font-mono">{portfolioStats.totalScans}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Scans</p>
           </div>
           <div className="text-center p-3 bg-red-950/10 rounded-lg border border-red-900/20">
-            <p className="text-2xl font-bold text-red-400 font-mono">{portfolioStats.totalFindings}</p>
-            <p className="text-[10px] text-stone-600 uppercase">Findings</p>
+            <p className="text-2xl font-bold text-red-700 font-mono">{portfolioStats.totalFindings}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Findings</p>
           </div>
           <div className="text-center p-3 bg-orange-950/10 rounded-lg border border-orange-900/20">
-            <p className="text-2xl font-bold text-orange-400 font-mono">{portfolioStats.featuredEntries}</p>
-            <p className="text-[10px] text-stone-600 uppercase">Featured</p>
+            <p className="text-2xl font-bold text-orange-800 font-mono">{portfolioStats.featuredEntries}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Featured</p>
           </div>
-          <div className="text-center p-3 bg-stone-900/30 rounded-lg border border-stone-800/40">
-            <p className="text-2xl font-bold text-stone-400 font-mono">{portfolioStats.topSkills.length}</p>
-            <p className="text-[10px] text-stone-600 uppercase">Skills</p>
+          <div className="text-center p-3 bg-card/30 rounded-lg border border-border/40">
+            <p className="text-2xl font-bold text-muted-foreground font-mono">{portfolioStats.topSkills.length}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Skills</p>
           </div>
         </div>
       )}
 
       {entries.length > 0 && (
         <div className="grid lg:grid-cols-2 gap-4">
-          <Card className="bg-[#0a0500] border-amber-900/20">
+          <Card className="bg-[hsl(var(--card))] border-amber-900/20">
             <CardHeader className="pb-2">
-              <CardTitle className="text-amber-500 text-xs font-mono flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-xs font-mono flex items-center gap-2">
                 <BarChart3 className="w-3.5 h-3.5" /> Skill Coverage
               </CardTitle>
             </CardHeader>
@@ -1489,9 +1489,9 @@ export default function PortfolioTab() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0a0500] border-teal-900/20">
+          <Card className="bg-[hsl(var(--card))] border-teal-900/20">
             <CardHeader className="pb-2">
-              <CardTitle className="text-teal-500 text-xs font-mono flex items-center gap-2">
+              <CardTitle className="text-teal-800 text-xs font-mono flex items-center gap-2">
                 <Activity className="w-3.5 h-3.5" /> Category Breakdown
               </CardTitle>
             </CardHeader>
@@ -1502,12 +1502,12 @@ export default function PortfolioTab() {
                 return (
                   <div key={cat.value} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-1.5 text-stone-400">
-                        <Icon className="w-3 h-3 text-teal-500" /> {cat.label}
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
+                        <Icon className="w-3 h-3 text-teal-800" /> {cat.label}
                       </span>
-                      <span className="font-mono text-teal-400">{cat.count}</span>
+                      <span className="font-mono text-teal-800">{cat.count}</span>
                     </div>
-                    <div className="h-1.5 bg-stone-900 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-card rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-teal-600 to-teal-400 rounded-full transition-all duration-700"
                         style={{ width: `${pct}%` }}
@@ -1517,11 +1517,11 @@ export default function PortfolioTab() {
                 );
               })}
               {portfolioStats.topTools.length > 0 && (
-                <div className="pt-2 border-t border-stone-900/50">
-                  <p className="text-[10px] text-stone-600 uppercase mb-2">Top Tools</p>
+                <div className="pt-2 border-t border-card/50">
+                  <p className="text-[10px] text-muted-foreground uppercase mb-2">Top Tools</p>
                   <div className="flex flex-wrap gap-1">
                     {portfolioStats.topTools.map(([tool, count]) => (
-                      <Badge key={tool} className="text-[9px] bg-teal-950/20 text-teal-400 border-teal-900/30">
+                      <Badge key={tool} className="text-[9px] bg-teal-950/20 text-teal-800 border-teal-900/30">
                         {tool} ({count})
                       </Badge>
                     ))}
@@ -1534,13 +1534,13 @@ export default function PortfolioTab() {
       )}
 
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-orbitron text-amber-500">
+        <h3 className="text-sm font-orbitron text-amber-800">
           Portfolio Entries
         </h3>
         <Button
           size="sm"
           onClick={() => setShowCreate(!showCreate)}
-          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
           data-testid="add-portfolio-entry-btn"
         >
           <Plus className="w-3 h-3 mr-1" /> Add Entry
@@ -1556,17 +1556,17 @@ export default function PortfolioTab() {
       )}
 
       {entries.length === 0 ? (
-        <Card className="bg-[#0a0500] border-stone-800">
+        <Card className="bg-[hsl(var(--card))] border-border">
           <CardContent className="p-8 text-center">
-            <Briefcase className="w-12 h-12 text-stone-700 mx-auto mb-4" />
-            <p className="text-stone-500 mb-2">Your portfolio is empty</p>
-            <p className="text-xs text-stone-700 mb-4">
+            <Briefcase className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground mb-2">Your portfolio is empty</p>
+            <p className="text-xs text-muted-foreground mb-4">
               Add investigations, campaigns, and scan results to build a professional cybersecurity portfolio
             </p>
             <Button
               size="sm"
               onClick={() => setShowCreate(true)}
-              className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+              className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
               data-testid="empty-add-entry-btn"
             >
               <Plus className="w-3 h-3 mr-1" /> Create First Entry
