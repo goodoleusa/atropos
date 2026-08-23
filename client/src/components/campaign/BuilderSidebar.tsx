@@ -93,18 +93,18 @@ export default function BuilderSidebar({
   };
 
   return (
-    <div className="w-64 bg-stone-950 border-r border-stone-800 flex flex-col h-full">
-      <div className="flex items-center justify-between px-3 h-10 border-b border-stone-800 shrink-0">
-        <span className="text-[10px] uppercase font-bold text-stone-500 tracking-wider">Explorer</span>
-        <Button data-testid="toggle-sidebar" variant="ghost" size="icon" className="h-6 w-6 text-stone-500 hover:text-stone-300" onClick={onClose}>
+    <div className="w-64 bg-card border-r border-border flex flex-col h-full">
+      <div className="flex items-center justify-between px-3 h-10 border-b border-border shrink-0">
+        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Explorer</span>
+        <Button data-testid="toggle-sidebar" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={onClose}>
           <X className="w-3.5 h-3.5" />
         </Button>
       </div>
 
       <Tabs defaultValue="files" className="flex-1 flex flex-col overflow-hidden">
-        <TabsList className="bg-stone-900/50 border-b border-stone-800 rounded-none h-8 px-1 shrink-0 w-full justify-start flex-wrap">
+        <TabsList className="bg-card/50 border-b border-border rounded-none h-8 px-1 shrink-0 w-full justify-start flex-wrap">
           {['files', 'arcs', 'clues', 'missions', 'meta', 'import'].map(tab => (
-            <TabsTrigger key={tab} value={tab} className={`text-[9px] uppercase font-bold px-2 h-6 data-[state=active]:text-amber-500 text-stone-500 ${tab === 'missions' ? 'data-[state=active]:bg-teal-600/20 data-[state=active]:text-teal-400' : 'data-[state=active]:bg-amber-600/20'}`}>
+            <TabsTrigger key={tab} value={tab} className={`text-[9px] uppercase font-bold px-2 h-6 data-[state=active]:text-amber-500 text-muted-foreground ${tab === 'missions' ? 'data-[state=active]:bg-teal-600/20 data-[state=active]:text-teal-400' : 'data-[state=active]:bg-amber-600/20'}`}>
               {tab}
             </TabsTrigger>
           ))}
@@ -120,7 +120,7 @@ export default function BuilderSidebar({
                 className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-left transition-colors ${isMobile ? 'min-h-[44px]' : ''} ${
                   selectedNodeId === node.id
                     ? 'bg-amber-600/20 text-amber-400 border border-amber-600/30'
-                    : 'text-stone-400 hover:bg-stone-900 hover:text-stone-300 border border-transparent'
+                    : 'text-muted-foreground hover:bg-card hover:text-foreground border border-transparent'
                 }`}
               >
                 <span className="shrink-0">{NODE_TYPE_ICONS[node.type]}</span>
@@ -128,14 +128,14 @@ export default function BuilderSidebar({
               </button>
             ))}
             {campaign.nodes.length === 0 && (
-              <p className="text-[10px] text-stone-600 text-center py-4">No nodes yet</p>
+              <p className="text-[10px] text-muted-foreground text-center py-4">No nodes yet</p>
             )}
-            <Separator className="bg-stone-800 my-2" />
+            <Separator className="bg-border my-2" />
             <Button
               data-testid="add-node"
               variant="ghost"
               size="sm"
-              className={`w-full text-stone-500 hover:text-amber-500 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
+              className={`w-full text-muted-foreground hover:text-amber-500 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
               onClick={() => onAddNode()}
             >
               <Plus className="w-3 h-3 mr-1" />Add Node
@@ -148,20 +148,20 @@ export default function BuilderSidebar({
                 <Card
                   key={arc.name}
                   data-testid={`arc-${arc.name}`}
-                  className={`bg-stone-900/50 border-stone-800 cursor-pointer hover:border-amber-600/50 transition-colors ${isMobile ? 'min-h-[44px]' : ''}`}
+                  className={`bg-card/50 border-border cursor-pointer hover:border-amber-600/50 transition-colors ${isMobile ? 'min-h-[44px]' : ''}`}
                   onClick={() => onApplyArc(arc)}
                 >
                   <CardContent className="p-2.5">
                     <div className="flex items-center gap-1.5 mb-1">
                       <Zap className="w-3 h-3 text-amber-500" />
-                      <span className="text-[11px] font-bold text-stone-300">{arc.name}</span>
+                      <span className="text-[11px] font-bold text-foreground">{arc.name}</span>
                     </div>
-                    <p className="text-[9px] text-stone-500 mb-1.5">{arc.desc}</p>
+                    <p className="text-[9px] text-muted-foreground mb-1.5">{arc.desc}</p>
                     <div className="flex gap-1.5">
-                      <Badge variant="outline" className="text-[8px] border-stone-700 text-stone-500 px-1 py-0">
+                      <Badge variant="outline" className="text-[8px] border-border text-muted-foreground px-1 py-0">
                         {arc.nodes.length} nodes
                       </Badge>
-                      <Badge variant="outline" className="text-[8px] border-stone-700 text-stone-500 px-1 py-0">
+                      <Badge variant="outline" className="text-[8px] border-border text-muted-foreground px-1 py-0">
                         {arc.clues.length} clues
                       </Badge>
                     </div>
@@ -169,7 +169,7 @@ export default function BuilderSidebar({
                 </Card>
               ))}
               {arcTemplates.length === 0 && (
-                <p className="text-[10px] text-stone-600 text-center py-4">No arc templates available</p>
+                <p className="text-[10px] text-muted-foreground text-center py-4">No arc templates available</p>
               )}
             </div>
           </TabsContent>
@@ -179,24 +179,24 @@ export default function BuilderSidebar({
               data-testid="add-clue"
               variant="ghost"
               size="sm"
-              className={`w-full text-stone-500 hover:text-amber-500 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
+              className={`w-full text-muted-foreground hover:text-amber-500 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
               onClick={() => setShowClueForm(!showClueForm)}
             >
               <Plus className="w-3 h-3 mr-1" />Add Hidden Clue
             </Button>
 
             {showClueForm && (
-              <Card className="bg-stone-900/50 border-stone-800">
+              <Card className="bg-card/50 border-border">
                 <CardContent className="p-2.5 space-y-2">
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Type</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Type</label>
                     <Select value={newClue.type} onValueChange={(v) => setNewClue(p => ({ ...p, type: v as ClueType }))}>
-                      <SelectTrigger className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300">
+                      <SelectTrigger className="h-7 text-[10px] bg-card border-border text-foreground">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-stone-950 border-stone-800">
+                      <SelectContent className="bg-card border-border">
                         {CLUE_TYPES.map(ct => (
-                          <SelectItem key={ct} value={ct} className="text-[10px] text-stone-300">
+                          <SelectItem key={ct} value={ct} className="text-[10px] text-foreground">
                             <span className="flex items-center gap-1.5">{CLUE_ICONS[ct]}{ct}</span>
                           </SelectItem>
                         ))}
@@ -204,34 +204,34 @@ export default function BuilderSidebar({
                     </Select>
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Target Node</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Target Node</label>
                     <Select value={newClue.nodeId} onValueChange={(v) => setNewClue(p => ({ ...p, nodeId: v }))}>
-                      <SelectTrigger className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300">
+                      <SelectTrigger className="h-7 text-[10px] bg-card border-border text-foreground">
                         <SelectValue placeholder="Select node..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-stone-950 border-stone-800">
+                      <SelectContent className="bg-card border-border">
                         {campaign.nodes.map(n => (
-                          <SelectItem key={n.id} value={n.id} className="text-[10px] text-stone-300">{n.title}</SelectItem>
+                          <SelectItem key={n.id} value={n.id} className="text-[10px] text-foreground">{n.title}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Hint</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Hint</label>
                     <Input
                       value={newClue.hint}
                       onChange={(e) => setNewClue(p => ({ ...p, hint: e.target.value }))}
                       placeholder="Hint for the player..."
-                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                      className="h-7 text-[10px] bg-card border-border text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Value</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Value</label>
                     <Input
                       value={newClue.value}
                       onChange={(e) => setNewClue(p => ({ ...p, value: e.target.value }))}
                       placeholder="Hidden value..."
-                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                      className="h-7 text-[10px] bg-card border-border text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <Button
@@ -249,17 +249,17 @@ export default function BuilderSidebar({
               {campaign.hiddenClues.map(clue => {
                 const targetNode = campaign.nodes.find(n => n.id === clue.nodeId);
                 return (
-                  <div key={clue.id} className="flex items-start gap-2 px-2 py-1.5 rounded bg-stone-900/30 border border-stone-800/50 group">
+                  <div key={clue.id} className="flex items-start gap-2 px-2 py-1.5 rounded bg-card/30 border border-border/50 group">
                     <span className="shrink-0 text-amber-500/70 mt-0.5">{CLUE_ICONS[clue.type]}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-stone-300 truncate">{clue.hint}</p>
-                      <p className="text-[9px] text-stone-600 truncate">{targetNode?.title || clue.nodeId}</p>
+                      <p className="text-[10px] text-foreground truncate">{clue.hint}</p>
+                      <p className="text-[9px] text-muted-foreground truncate">{targetNode?.title || clue.nodeId}</p>
                     </div>
                     <Button
                       data-testid={`delete-clue-${clue.id}`}
                       variant="ghost"
                       size="icon"
-                      className="h-5 w-5 text-stone-600 hover:text-red-400 opacity-0 group-hover:opacity-100 shrink-0"
+                      className="h-5 w-5 text-muted-foreground hover:text-red-400 opacity-0 group-hover:opacity-100 shrink-0"
                       onClick={() => onDeleteClue(clue.id)}
                     >
                       <Trash2 className="w-3 h-3" />
@@ -268,7 +268,7 @@ export default function BuilderSidebar({
                 );
               })}
               {campaign.hiddenClues.length === 0 && (
-                <p className="text-[10px] text-stone-600 text-center py-4">No clues added yet</p>
+                <p className="text-[10px] text-muted-foreground text-center py-4">No clues added yet</p>
               )}
             </div>
           </TabsContent>
@@ -278,7 +278,7 @@ export default function BuilderSidebar({
               data-testid="add-terminal-mission"
               variant="ghost"
               size="sm"
-              className={`w-full text-stone-500 hover:text-teal-500 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
+              className={`w-full text-muted-foreground hover:text-teal-500 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
               onClick={() => {
                 setShowMissionForm(!showMissionForm);
                 setEditingMissionId(null);
@@ -290,7 +290,7 @@ export default function BuilderSidebar({
 
             {!showMissionForm && (
               <div className="space-y-1">
-                <p className="text-[8px] uppercase text-stone-600 font-bold px-1">Quick Templates</p>
+                <p className="text-[8px] uppercase text-muted-foreground font-bold px-1">Quick Templates</p>
                 {[
                   { name: 'Port Scan', command: 'nmap -sV target.local', description: 'Scan target for open ports and services', xpReward: 50, toolsRequired: 'nmap' },
                   { name: 'DNS Lookup', command: 'dig target.local ANY', description: 'Enumerate DNS records for the target domain', xpReward: 30, toolsRequired: 'dig' },
@@ -303,7 +303,7 @@ export default function BuilderSidebar({
                     key={preset.name}
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-[9px] h-6 text-stone-600 hover:text-teal-400 hover:bg-teal-900/10 px-2"
+                    className="w-full justify-start text-[9px] h-6 text-muted-foreground hover:text-teal-400 hover:bg-teal-900/10 px-2"
                     onClick={() => {
                       setNewMission({
                         name: preset.name,
@@ -329,92 +329,92 @@ export default function BuilderSidebar({
             )}
 
             {showMissionForm && (
-              <Card className="bg-stone-900/50 border-teal-800/30">
+              <Card className="bg-card/50 border-teal-800/30">
                 <CardContent className="p-2.5 space-y-2">
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Mission Name</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Mission Name</label>
                     <Input
                       data-testid="mission-name"
                       value={newMission.name}
                       onChange={(e) => setNewMission(p => ({ ...p, name: e.target.value }))}
                       placeholder="e.g. Ghost Recon"
-                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                      className="h-7 text-[10px] bg-card border-border text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Command</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Command</label>
                     <Input
                       data-testid="mission-command"
                       value={newMission.command}
                       onChange={(e) => setNewMission(p => ({ ...p, command: e.target.value }))}
                       placeholder="e.g. scan --deep target.corp"
-                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-teal-400 font-mono placeholder:text-stone-600"
+                      className="h-7 text-[10px] bg-card border-border text-teal-400 font-mono placeholder:text-muted-foreground"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Description</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Description</label>
                     <Textarea
                       data-testid="mission-desc"
                       value={newMission.description}
                       onChange={(e) => setNewMission(p => ({ ...p, description: e.target.value }))}
                       placeholder="What the player should do..."
-                      className="text-[10px] bg-stone-900 border-stone-800 text-stone-300 min-h-[40px] resize-none placeholder:text-stone-600"
+                      className="text-[10px] bg-card border-border text-foreground min-h-[40px] resize-none placeholder:text-muted-foreground"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Expected Output (optional)</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Expected Output (optional)</label>
                     <Textarea
                       data-testid="mission-output"
                       value={newMission.expectedOutput}
                       onChange={(e) => setNewMission(p => ({ ...p, expectedOutput: e.target.value }))}
                       placeholder="What the terminal should show..."
-                      className="text-[10px] bg-stone-900 border-stone-800 text-stone-300 min-h-[40px] resize-none font-mono placeholder:text-stone-600"
+                      className="text-[10px] bg-card border-border text-foreground min-h-[40px] resize-none font-mono placeholder:text-muted-foreground"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Hint (optional)</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Hint (optional)</label>
                     <Input
                       data-testid="mission-hint"
                       value={newMission.hint}
                       onChange={(e) => setNewMission(p => ({ ...p, hint: e.target.value }))}
                       placeholder="Hint for stuck players..."
-                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                      className="h-7 text-[10px] bg-card border-border text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">XP Reward</label>
+                      <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">XP Reward</label>
                       <Input
                         data-testid="mission-xp"
                         type="number"
                         value={newMission.xpReward}
                         onChange={(e) => setNewMission(p => ({ ...p, xpReward: parseInt(e.target.value) || 0 }))}
-                        className="h-7 text-[10px] bg-stone-900 border-stone-800 text-amber-400 font-mono"
+                        className="h-7 text-[10px] bg-card border-border text-amber-400 font-mono"
                       />
                     </div>
                     <div className="flex-1">
-                      <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Trigger Node</label>
+                      <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Trigger Node</label>
                       <Select value={newMission.triggerNodeId} onValueChange={(v) => setNewMission(p => ({ ...p, triggerNodeId: v }))}>
-                        <SelectTrigger className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300">
+                        <SelectTrigger className="h-7 text-[10px] bg-card border-border text-foreground">
                           <SelectValue placeholder="Optional..." />
                         </SelectTrigger>
-                        <SelectContent className="bg-stone-950 border-stone-800">
-                          <SelectItem value="none" className="text-[10px] text-stone-500">None</SelectItem>
+                        <SelectContent className="bg-card border-border">
+                          <SelectItem value="none" className="text-[10px] text-muted-foreground">None</SelectItem>
                           {campaign.nodes.map(n => (
-                            <SelectItem key={n.id} value={n.id} className="text-[10px] text-stone-300">{n.title}</SelectItem>
+                            <SelectItem key={n.id} value={n.id} className="text-[10px] text-foreground">{n.title}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div>
-                    <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Required Tools (comma-separated)</label>
+                    <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Required Tools (comma-separated)</label>
                     <Input
                       data-testid="mission-tools"
                       value={newMission.toolsRequired}
                       onChange={(e) => setNewMission(p => ({ ...p, toolsRequired: e.target.value }))}
                       placeholder="e.g. nmap, whois, dig"
-                      className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                      className="h-7 text-[10px] bg-card border-border text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <Button
@@ -454,19 +454,19 @@ export default function BuilderSidebar({
               {(campaign.terminalMissions || []).map(mission => {
                 const triggerNode = mission.triggerNodeId ? campaign.nodes.find(n => n.id === mission.triggerNodeId) : null;
                 return (
-                  <div key={mission.id} className="px-2 py-2 rounded bg-stone-900/30 border border-teal-800/20 group">
+                  <div key={mission.id} className="px-2 py-2 rounded bg-card/30 border border-teal-800/20 group">
                     <div className="flex items-start gap-2">
                       <Terminal className="w-3.5 h-3.5 text-teal-500 mt-0.5 shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-stone-300 font-bold truncate">{mission.name}</p>
+                        <p className="text-[10px] text-foreground font-bold truncate">{mission.name}</p>
                         <code className="text-[9px] text-teal-600 font-mono block truncate">$ {mission.command}</code>
-                        {mission.description && <p className="text-[9px] text-stone-600 truncate mt-0.5">{mission.description}</p>}
+                        {mission.description && <p className="text-[9px] text-muted-foreground truncate mt-0.5">{mission.description}</p>}
                         <div className="flex gap-1.5 mt-1">
                           <Badge variant="outline" className="text-[7px] border-amber-800/30 text-amber-500 px-1 py-0">
                             {mission.xpReward} XP
                           </Badge>
                           {triggerNode && (
-                            <Badge variant="outline" className="text-[7px] border-stone-700 text-stone-500 px-1 py-0">
+                            <Badge variant="outline" className="text-[7px] border-border text-muted-foreground px-1 py-0">
                               @ {triggerNode.title}
                             </Badge>
                           )}
@@ -481,7 +481,7 @@ export default function BuilderSidebar({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-5 w-5 text-stone-600 hover:text-amber-400"
+                          className="h-5 w-5 text-muted-foreground hover:text-amber-400"
                           onClick={() => {
                             setEditingMissionId(mission.id);
                             setNewMission({
@@ -502,7 +502,7 @@ export default function BuilderSidebar({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-5 w-5 text-stone-600 hover:text-red-400"
+                          className="h-5 w-5 text-muted-foreground hover:text-red-400"
                           onClick={() => onDeleteTerminalMission?.(mission.id)}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -514,9 +514,9 @@ export default function BuilderSidebar({
               })}
               {(!campaign.terminalMissions || campaign.terminalMissions.length === 0) && (
                 <div className="text-center py-4 space-y-2">
-                  <Terminal className="w-6 h-6 text-stone-700 mx-auto" />
-                  <p className="text-[10px] text-stone-600">No terminal missions yet</p>
-                  <p className="text-[9px] text-stone-700">Add commands, tools, and objectives that players execute in the terminal</p>
+                  <Terminal className="w-6 h-6 text-muted-foreground mx-auto" />
+                  <p className="text-[10px] text-muted-foreground">No terminal missions yet</p>
+                  <p className="text-[9px] text-muted-foreground">Add commands, tools, and objectives that players execute in the terminal</p>
                 </div>
               )}
             </div>
@@ -524,81 +524,81 @@ export default function BuilderSidebar({
 
           <TabsContent value="meta" className="mt-0 p-2 space-y-3">
             <div>
-              <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Name</label>
+              <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Name</label>
               <Input
                 data-testid="input-campaign-name"
                 value={campaign.name}
                 onChange={(e) => onUpdateCampaign({ name: e.target.value })}
-                className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300"
+                className="h-7 text-[10px] bg-card border-border text-foreground"
               />
             </div>
             <div>
-              <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Description</label>
+              <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Description</label>
               <Textarea
                 data-testid="input-campaign-desc"
                 value={campaign.description}
                 onChange={(e) => onUpdateCampaign({ description: e.target.value })}
-                className="text-[10px] bg-stone-900 border-stone-800 text-stone-300 min-h-[60px] resize-none"
+                className="text-[10px] bg-card border-border text-foreground min-h-[60px] resize-none"
               />
             </div>
             <div>
-              <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Category</label>
+              <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Category</label>
               <Select
                 value={campaign.category}
                 onValueChange={(v) => onUpdateCampaign({ category: v })}
               >
-                <SelectTrigger data-testid="select-category" className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300">
+                <SelectTrigger data-testid="select-category" className="h-7 text-[10px] bg-card border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-stone-950 border-stone-800">
+                <SelectContent className="bg-card border-border">
                   {CATEGORIES.map(c => (
-                    <SelectItem key={c} value={c} className="text-[10px] text-stone-300">{c}</SelectItem>
+                    <SelectItem key={c} value={c} className="text-[10px] text-foreground">{c}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Difficulty</label>
+              <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Difficulty</label>
               <Select
                 value={campaign.difficulty}
                 onValueChange={(v) => onUpdateCampaign({ difficulty: v })}
               >
-                <SelectTrigger data-testid="select-difficulty" className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300">
+                <SelectTrigger data-testid="select-difficulty" className="h-7 text-[10px] bg-card border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-stone-950 border-stone-800">
+                <SelectContent className="bg-card border-border">
                   {DIFFICULTIES.map(d => (
-                    <SelectItem key={d} value={d} className="text-[10px] text-stone-300">{d}</SelectItem>
+                    <SelectItem key={d} value={d} className="text-[10px] text-foreground">{d}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Estimated Time</label>
+              <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Estimated Time</label>
               <Input
                 data-testid="input-time"
                 value={campaign.estimatedTime}
                 onChange={(e) => onUpdateCampaign({ estimatedTime: e.target.value })}
                 placeholder="e.g. 30 min"
-                className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                className="h-7 text-[10px] bg-card border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
             <div>
-              <label className="text-[9px] uppercase text-stone-500 font-bold mb-1 block">Tags (comma-separated)</label>
+              <label className="text-[9px] uppercase text-muted-foreground font-bold mb-1 block">Tags (comma-separated)</label>
               <Input
                 data-testid="input-tags"
                 value={campaign.tags.join(', ')}
                 onChange={(e) => onUpdateCampaign({ tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })}
                 placeholder="osint, beginner, phishing"
-                className="h-7 text-[10px] bg-stone-900 border-stone-800 text-stone-300 placeholder:text-stone-600"
+                className="h-7 text-[10px] bg-card border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </TabsContent>
 
           <TabsContent value="import" className="mt-0 p-2 space-y-3">
-            <div className="border border-dashed border-stone-700 rounded-lg p-4 text-center space-y-3">
-              <Upload className="w-8 h-8 text-stone-600 mx-auto" />
-              <p className="text-[10px] text-stone-500 leading-relaxed">
+            <div className="border border-dashed border-border rounded-lg p-4 text-center space-y-3">
+              <Upload className="w-8 h-8 text-muted-foreground mx-auto" />
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
                 Import a single .md or .json file, or select multiple .md files from an Obsidian vault folder.
               </p>
               <input
@@ -613,7 +613,7 @@ export default function BuilderSidebar({
                 data-testid="import-files-btn"
                 variant="outline"
                 size="sm"
-                className={`border-stone-700 text-stone-400 hover:text-amber-500 hover:border-amber-600/50 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
+                className={`border-border text-muted-foreground hover:text-amber-500 hover:border-amber-600/50 text-[10px] h-8 ${isMobile ? 'min-h-[44px]' : ''}`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload className="w-3 h-3 mr-1.5" />Select Files

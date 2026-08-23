@@ -60,10 +60,10 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
     return (
       <button
         onClick={() => setExpanded(true)}
-        className="w-full flex items-center justify-between p-2 text-xs bg-stone-900/50 rounded border border-stone-800 hover:border-teal-800 transition-colors min-h-[44px]"
+        className="w-full flex items-center justify-between p-2 text-xs bg-card/50 rounded border border-border hover:border-teal-800 transition-colors min-h-[44px]"
         data-testid="expand-learning-settings"
       >
-        <span className="flex items-center gap-2 text-stone-400">
+        <span className="flex items-center gap-2 text-muted-foreground">
           <BookOpen className="w-3 h-3 text-teal-500" />
           Learning Profile
         </span>
@@ -75,18 +75,18 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
           <Badge variant="outline" className="text-[9px] border-amber-800 text-amber-400">
             {store.goals.length} goals
           </Badge>
-          <ChevronDown className="w-3 h-3 text-stone-500" />
+          <ChevronDown className="w-3 h-3 text-muted-foreground" />
         </div>
       </button>
     );
   }
 
   return (
-    <div className="space-y-3 md:space-y-4 bg-stone-950/50 rounded-lg border border-stone-800 p-2.5 md:p-3">
+    <div className="space-y-3 md:space-y-4 bg-card/50 rounded-lg border border-border p-2.5 md:p-3">
       {compact && (
         <button
           onClick={() => setExpanded(false)}
-          className="w-full flex items-center justify-between text-xs text-stone-400 hover:text-teal-400 min-h-[36px]"
+          className="w-full flex items-center justify-between text-xs text-muted-foreground hover:text-teal-400 min-h-[36px]"
         >
           <span className="flex items-center gap-2">
             <BookOpen className="w-3 h-3 text-teal-500" />
@@ -97,7 +97,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
       )}
 
       <div>
-        <Label className="text-xs text-stone-400 mb-2 block">Learning Style</Label>
+        <Label className="text-xs text-muted-foreground mb-2 block">Learning Style</Label>
         <div className="grid grid-cols-1 gap-1.5 md:gap-2">
           {LEARNING_STYLES.map(s => {
             const StyleIcon = STYLE_ICONS[s.id];
@@ -108,15 +108,15 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
                 className={`p-2 md:p-2 rounded border text-left text-xs transition-all min-h-[44px] ${
                   store.style === s.id
                     ? STYLE_COLORS[s.id]
-                    : 'border-stone-800 bg-stone-900/30 text-stone-400 hover:border-stone-700 active:bg-stone-800/30'
+                    : 'border-border bg-card/30 text-muted-foreground hover:border-border active:bg-border/30'
                 }`}
                 data-testid={`style-${s.id}`}
               >
                 <div className="flex items-center gap-2">
-                  <StyleIcon className={`w-3.5 h-3.5 ${store.style === s.id ? '' : 'text-stone-600'}`} />
+                  <StyleIcon className={`w-3.5 h-3.5 ${store.style === s.id ? '' : 'text-muted-foreground'}`} />
                   <span className="font-medium">{s.name}</span>
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1 pl-6">{s.description}</p>
+                <p className="text-[10px] text-muted-foreground mt-1 pl-6">{s.description}</p>
               </button>
             );
           })}
@@ -124,7 +124,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
       </div>
 
       <div>
-        <Label className="text-xs text-stone-400 mb-2 block">Skill Level</Label>
+        <Label className="text-xs text-muted-foreground mb-2 block">Skill Level</Label>
         <div className="flex gap-1 flex-wrap">
           {SKILL_LEVELS.map(level => (
             <button
@@ -133,7 +133,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
               className={`px-2.5 py-1.5 md:py-1 rounded text-[10px] md:text-[10px] border transition-all min-h-[36px] md:min-h-0 ${
                 store.skillLevel === level.id
                   ? 'border-amber-600 bg-amber-950/30 text-amber-300'
-                  : 'border-stone-800 text-stone-500 hover:border-stone-700 active:bg-stone-800/30'
+                  : 'border-border text-muted-foreground hover:border-border active:bg-border/30'
               }`}
               title={level.description}
               data-testid={`skill-${level.id}`}
@@ -145,7 +145,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
       </div>
 
       <div>
-        <Label className="text-xs text-stone-400 mb-2 block flex items-center gap-1">
+        <Label className="text-xs text-muted-foreground mb-2 block flex items-center gap-1">
           <Target className="w-3 h-3" /> Learning Goals
         </Label>
         <div className="grid grid-cols-1 gap-1.5 max-h-48 overflow-y-auto pr-1">
@@ -156,31 +156,31 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
               className={`p-2 rounded border text-left text-xs transition-all min-h-[44px] ${
                 store.goals.includes(goal.id)
                   ? 'border-purple-600 bg-purple-950/30'
-                  : 'border-stone-800 bg-stone-900/20 hover:border-stone-700 active:bg-stone-800/30'
+                  : 'border-border bg-card/20 hover:border-border active:bg-border/30'
               }`}
               data-testid={`goal-${goal.id}`}
             >
               <div className="flex items-center justify-between">
-                <span className={store.goals.includes(goal.id) ? 'text-purple-300' : 'text-stone-400'}>
+                <span className={store.goals.includes(goal.id) ? 'text-purple-300' : 'text-muted-foreground'}>
                   {goal.name}
                 </span>
                 <Badge 
                   variant="outline" 
-                  className={`text-[8px] ${CATEGORY_COLORS[goal.category] || 'border-stone-700'}`}
+                  className={`text-[8px] ${CATEGORY_COLORS[goal.category] || 'border-border'}`}
                 >
                   {goal.category}
                 </Badge>
               </div>
-              <p className="text-[10px] text-stone-600 mt-0.5">{goal.description}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{goal.description}</p>
               {store.goals.includes(goal.id) && (
                 <div className="flex gap-1 mt-1 flex-wrap">
                   {goal.tools.slice(0, 3).map(tool => (
-                    <span key={tool} className="text-[8px] px-1 py-0.5 bg-stone-800/50 rounded text-stone-500">
+                    <span key={tool} className="text-[8px] px-1 py-0.5 bg-border/50 rounded text-muted-foreground">
                       {tool}
                     </span>
                   ))}
                   {goal.tools.length > 3 && (
-                    <span className="text-[8px] text-stone-600">+{goal.tools.length - 3}</span>
+                    <span className="text-[8px] text-muted-foreground">+{goal.tools.length - 3}</span>
                   )}
                 </div>
               )}
@@ -190,10 +190,10 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
       </div>
 
       {store.goals.length > 0 && (
-        <p className="text-[10px] text-stone-600 text-center">
+        <p className="text-[10px] text-muted-foreground text-center">
           NEXUS tailors responses to your {store.goals.length} goal{store.goals.length > 1 ? 's' : ''} using {store.style} style.
           <br />
-          <span className="text-stone-700">Changes saved automatically.</span>
+          <span className="text-muted-foreground">Changes saved automatically.</span>
         </p>
       )}
     </div>

@@ -28,10 +28,10 @@ export default function BuilderCanvas({
 }: BuilderCanvasProps) {
   if (campaign.nodes.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-stone-950">
+      <div className="flex-1 flex items-center justify-center bg-card">
         <div className="text-center space-y-4">
-          <Network className="w-12 h-12 text-stone-600 mx-auto" />
-          <p className="text-stone-500 text-sm">Empty canvas</p>
+          <Network className="w-12 h-12 text-muted-foreground mx-auto" />
+          <p className="text-muted-foreground text-sm">Empty canvas</p>
           <Button
             data-testid="add-first-node"
             size="sm"
@@ -49,7 +49,7 @@ export default function BuilderCanvas({
 
   return (
     <div
-      className="flex-1 overflow-auto bg-stone-950"
+      className="flex-1 overflow-auto bg-card"
       onClick={() => onSelectNode(null)}
     >
       <div
@@ -116,7 +116,7 @@ export default function BuilderCanvas({
               style={{ left: node.x, top: node.y }}
             >
               <Card
-                className={`w-48 border-2 ${colorClasses} bg-stone-900/80 backdrop-blur-sm transition-all ${
+                className={`w-48 border-2 ${colorClasses} bg-card/80 backdrop-blur-sm transition-all ${
                   isSelected
                     ? 'border-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.3)] scale-105'
                     : ''
@@ -126,24 +126,24 @@ export default function BuilderCanvas({
                   <div className="flex items-center gap-1 flex-wrap">
                     <Badge
                       variant="outline"
-                      className="text-[8px] px-1 py-0 h-4 border-stone-600 text-stone-400"
+                      className="text-[8px] px-1 py-0 h-4 border-muted text-muted-foreground"
                     >
                       {node.type}
                     </Badge>
                     {node.pageLayout && (
                       <Badge
                         variant="outline"
-                        className="text-[8px] px-1 py-0 h-4 border-stone-700 text-stone-500"
+                        className="text-[8px] px-1 py-0 h-4 border-border text-muted-foreground"
                       >
                         {node.pageLayout}
                       </Badge>
                     )}
                   </div>
-                  <p className="text-[11px] font-medium text-stone-200 leading-tight truncate">
+                  <p className="text-[11px] font-medium text-foreground leading-tight truncate">
                     {node.title}
                   </p>
                   {node.content && (
-                    <p className="text-[9px] text-stone-500 leading-tight">
+                    <p className="text-[9px] text-muted-foreground leading-tight">
                       {node.content.length > 60
                         ? node.content.slice(0, 60) + '…'
                         : node.content}

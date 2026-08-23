@@ -58,7 +58,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
         variant="ghost"
         size="sm"
         className={`w-full justify-start min-h-[44px] relative group overflow-hidden ${
-          isActive ? styles.active : 'text-stone-400 hover:text-stone-200'
+          isActive ? styles.active : 'text-muted-foreground hover:text-foreground'
         }`}
         data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
       >
@@ -127,9 +127,9 @@ export default function QuickNav() {
       onTouchMove={(e) => e.stopPropagation()}
     >
       {expanded && (
-        <div className="bg-black border border-stone-800 rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar shadow-2xl">
+        <div className="bg-card border border-border rounded-lg p-2 space-y-1 animate-in slide-in-from-bottom-2 max-h-[70vh] w-[260px] sm:w-auto overflow-y-auto no-scrollbar shadow-2xl">
           {progression && (
-            <div className="px-3 py-2 border-b border-stone-800 mb-2">
+            <div className="px-3 py-2 border-b border-border mb-2">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <Trophy className="w-3 h-3 text-amber-500" />
@@ -141,14 +141,14 @@ export default function QuickNav() {
               </div>
               <Progress
                 value={(progression.xp / (progression.level * 100)) * 100}
-                className="h-1.5 bg-stone-900"
+                className="h-1.5 bg-card"
               />
             </div>
           )}
 
           {currentSession && (
-            <div className="px-3 py-2 border-b border-stone-800 mb-2">
-              <p className="text-[10px] text-stone-500 uppercase">Active Session</p>
+            <div className="px-3 py-2 border-b border-border mb-2">
+              <p className="text-[10px] text-muted-foreground uppercase">Active Session</p>
               <p className="text-xs text-amber-400 font-bold truncate max-w-[150px]">{currentSession.name}</p>
               <div className="flex gap-2 mt-1 text-[10px]">
                 <span className="text-amber-500">{targets.length} targets</span>
@@ -158,14 +158,14 @@ export default function QuickNav() {
           )}
 
           <div className="pb-2">
-            <p className="text-[9px] text-stone-600 uppercase px-3 mb-1 font-orbitron tracking-widest">{USER_NAV.title}</p>
+            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-orbitron tracking-widest">{USER_NAV.title}</p>
             {USER_NAV.items.map(item => (
               <NavItemButton key={item.path} item={item} isActive={location === item.path} />
             ))}
           </div>
 
-          <div className="border-t border-stone-800 pt-2 pb-2">
-            <p className="text-[9px] text-stone-600 uppercase px-3 mb-1 font-orbitron tracking-widest">{ADMIN_NAV.title}</p>
+          <div className="border-t border-border pt-2 pb-2">
+            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-orbitron tracking-widest">{ADMIN_NAV.title}</p>
             {ADMIN_NAV.items.map(item => (
               <NavItemButton key={item.path} item={item} isActive={location === item.path} />
             ))}
@@ -184,11 +184,11 @@ export default function QuickNav() {
             </Button>
           </div>
 
-          <div className="border-t border-stone-800 pt-2 mt-2">
+          <div className="border-t border-border pt-2 mt-2">
             <div className="px-3 py-1">
-              <p className="text-[10px] text-stone-500 uppercase">Progress</p>
+              <p className="text-[10px] text-muted-foreground uppercase">Progress</p>
               <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
                   <div
                     className="h-full bg-amber-600 rounded-full transition-all"
                     style={{ width: `${Math.min(100, (gameState.inventory?.length || 0) * 5)}%` }}
@@ -197,7 +197,7 @@ export default function QuickNav() {
                 <span className="text-[10px] text-amber-400">{gameState.inventory?.length || 0} clues</span>
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] text-stone-500">Lv.{gameState.level || 1}</span>
+                <span className="text-[10px] text-muted-foreground">Lv.{gameState.level || 1}</span>
                 <span className="text-[10px] text-amber-500">{(gameState.xp || 0).toLocaleString()} XP</span>
               </div>
             </div>
@@ -206,8 +206,8 @@ export default function QuickNav() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2 border-t border-stone-800 mt-2">
-            <span className="text-[10px] text-stone-500 uppercase font-orbitron tracking-tighter">Dev Mode</span>
+          <div className="flex items-center justify-between px-3 py-2 border-t border-border mt-2">
+            <span className="text-[10px] text-muted-foreground uppercase font-orbitron tracking-tighter">Dev Mode</span>
             <Switch
               checked={gameState.devMode}
               onCheckedChange={toggleDevMode}
@@ -234,10 +234,10 @@ export default function QuickNav() {
         )}
         <Button
           onClick={handleToggle}
-          className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/30 relative z-10 hover:bg-stone-900 ${
+          className={`rounded-full w-12 h-12 transition-all duration-500 border border-amber-900/30 relative z-10 hover:bg-card ${
             expanded
-              ? 'bg-stone-900 rotate-180 shadow-xl'
-              : 'bg-stone-950 shadow-[0_0_15px_rgba(180,83,9,0.2)]'
+              ? 'bg-card rotate-180 shadow-xl'
+              : 'bg-card shadow-[0_0_15px_rgba(180,83,9,0.2)]'
           }`}
           data-testid="quick-nav-toggle"
         >

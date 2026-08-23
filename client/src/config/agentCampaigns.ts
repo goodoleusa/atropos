@@ -1056,7 +1056,7 @@ export const getDifficultyColor = (difficulty: Campaign['difficulty']): string =
     case 'intermediate': return 'text-yellow-400';
     case 'advanced': return 'text-orange-400';
     case 'expert': return 'text-red-400';
-    default: return 'text-stone-400';
+    default: return 'text-muted-foreground';
   }
 };
 

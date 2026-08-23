@@ -18,10 +18,10 @@ const SOURCE_CONFIG: Record<string, { icon: typeof Bot; color: string; label: st
   agent: { icon: Shield, color: 'text-amber-400', label: 'Agent' },
   scanner: { icon: Radar, color: 'text-blue-400', label: 'Scanner' },
   spiderfoot: { icon: Globe, color: 'text-purple-400', label: 'SpiderFoot' },
-  manual: { icon: FileText, color: 'text-stone-400', label: 'Manual' },
+  manual: { icon: FileText, color: 'text-muted-foreground', label: 'Manual' },
   agent_analysis: { icon: Shield, color: 'text-amber-400', label: 'Analysis' },
   scan: { icon: Radar, color: 'text-blue-400', label: 'Scan' },
-  compression: { icon: Archive, color: 'text-stone-400', label: 'Memory' },
+  compression: { icon: Archive, color: 'text-muted-foreground', label: 'Memory' },
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
@@ -29,7 +29,7 @@ const SEVERITY_COLORS: Record<string, string> = {
   high: 'bg-orange-900/30 text-orange-400 border-orange-700',
   medium: 'bg-amber-900/30 text-amber-400 border-amber-700',
   low: 'bg-teal-900/30 text-teal-400 border-teal-700',
-  info: 'bg-stone-800/50 text-stone-400 border-stone-700',
+  info: 'bg-border/50 text-muted-foreground border-border',
 };
 
 const STATUS_ICONS: Record<string, typeof CheckCircle2> = {
@@ -74,35 +74,35 @@ function ActivityItemRow({ item }: { item: ActivityItem }) {
   } : null;
 
   return (
-    <div className="flex items-start gap-3 p-3 border-b border-stone-800/50 hover:bg-stone-900/30 transition-colors group" data-testid={`activity-item-${item.id}`}>
-      <div className={`mt-0.5 p-1.5 rounded ${cfg.color} bg-stone-900/50`}>
+    <div className="flex items-start gap-3 p-3 border-b border-border/50 hover:bg-card/30 transition-colors group" data-testid={`activity-item-${item.id}`}>
+      <div className={`mt-0.5 p-1.5 rounded ${cfg.color} bg-card/50`}>
         <Icon className="w-3.5 h-3.5" />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
-          <span className="text-xs font-medium text-stone-200 truncate">{item.title}</span>
+          <span className="text-xs font-medium text-foreground truncate">{item.title}</span>
           {item.severity && (
             <Badge variant="outline" className={`text-[9px] px-1 py-0 ${SEVERITY_COLORS[item.severity] || ''}`}>
               {item.severity}
             </Badge>
           )}
         </div>
-        <div className="flex items-center gap-2 text-[10px] text-stone-500">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
           <span className={cfg.color}>{cfg.label}</span>
           {item.sourceAgent && <span>· {item.sourceAgent}</span>}
           <span>· {timeAgo(item.timestamp)}</span>
           {isTask && item.progress !== undefined && item.status === 'running' && (
             <span className="text-amber-400">{item.progress}%</span>
           )}
-          <StatusIcon className={`w-3 h-3 ${item.status === 'running' ? 'animate-spin text-amber-400' : item.status === 'completed' ? 'text-emerald-400' : item.status === 'failed' ? 'text-red-400' : 'text-stone-600'}`} />
+          <StatusIcon className={`w-3 h-3 ${item.status === 'running' ? 'animate-spin text-amber-400' : item.status === 'completed' ? 'text-emerald-400' : item.status === 'failed' ? 'text-red-400' : 'text-muted-foreground'}`} />
         </div>
         {item.content && (
-          <p className="text-[11px] text-stone-500 mt-1 line-clamp-2">{item.content.slice(0, 150)}</p>
+          <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">{item.content.slice(0, 150)}</p>
         )}
         {item.sentTo && item.sentTo.length > 0 && (
           <div className="flex gap-1 mt-1">
             {item.sentTo.map(t => (
-              <Badge key={t} variant="outline" className="text-[8px] border-stone-700 text-stone-500">{t}</Badge>
+              <Badge key={t} variant="outline" className="text-[8px] border-border text-muted-foreground">{t}</Badge>
             ))}
           </div>
         )}
@@ -140,13 +140,13 @@ export function ActivityStream({ limit = 30 }: { limit?: number }) {
 
       {stats && (
         <div className="flex gap-2 flex-wrap">
-          <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-400 cursor-pointer hover:border-amber-700" onClick={() => setFilter('all')} data-testid="filter-all">
+          <Badge variant="outline" className="text-[10px] border-border text-muted-foreground cursor-pointer hover:border-amber-700" onClick={() => setFilter('all')} data-testid="filter-all">
             All ({stats.total})
           </Badge>
           {stats.bySource.map(s => {
             const cfg = SOURCE_CONFIG[s.source] || SOURCE_CONFIG.manual;
             return (
-              <Badge key={s.source} variant="outline" className={`text-[10px] border-stone-700 ${cfg.color} cursor-pointer hover:border-amber-700`} onClick={() => setFilter(s.source)} data-testid={`filter-${s.source}`}>
+              <Badge key={s.source} variant="outline" className={`text-[10px] border-border ${cfg.color} cursor-pointer hover:border-amber-700`} onClick={() => setFilter(s.source)} data-testid={`filter-${s.source}`}>
                 {cfg.label} ({s.count})
               </Badge>
             );
@@ -161,12 +161,12 @@ export function ActivityStream({ limit = 30 }: { limit?: number }) {
 
       <ScrollArea className="h-[400px]">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12 text-stone-600">
+          <div className="flex items-center justify-center py-12 text-muted-foreground">
             <Loader2 className="w-5 h-5 animate-spin" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-stone-600 gap-2">
-            <Activity className="w-8 h-8 text-stone-700" />
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
+            <Activity className="w-8 h-8 text-muted-foreground" />
             <p className="text-sm">No activity yet</p>
             <p className="text-xs">Findings from NEXUS, agents, and scanners will appear here</p>
           </div>

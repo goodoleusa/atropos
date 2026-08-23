@@ -116,7 +116,7 @@ export default function FontCustomizer() {
     <div className="fixed bottom-4 left-4 z-50" data-testid="font-customizer">
       <button
         onClick={() => setOpen(!open)}
-        className="w-10 h-10 rounded-full bg-stone-900/90 border border-amber-800/40 flex items-center justify-center text-amber-500 hover:text-amber-400 hover:border-amber-600/60 transition-all shadow-lg backdrop-blur-sm"
+        className="w-10 h-10 rounded-full bg-card/90 border border-amber-800/40 flex items-center justify-center text-amber-500 hover:text-amber-400 hover:border-amber-600/60 transition-all shadow-lg backdrop-blur-sm"
         title="Font Settings"
         data-testid="font-customizer-toggle"
       >
@@ -124,20 +124,20 @@ export default function FontCustomizer() {
       </button>
 
       {open && (
-        <div className="absolute bottom-12 left-0 w-72 bg-stone-950/95 border border-stone-800/60 rounded-lg shadow-2xl backdrop-blur-md p-3 space-y-3 max-h-[80vh] overflow-y-auto" data-testid="font-customizer-panel">
+        <div className="absolute bottom-12 left-0 w-72 bg-card/95 border border-border/60 rounded-lg shadow-2xl backdrop-blur-md p-3 space-y-3 max-h-[80vh] overflow-y-auto" data-testid="font-customizer-panel">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-stone-300 uppercase tracking-wider">Typography</span>
+            <span className="text-xs font-medium text-foreground uppercase tracking-wider">Typography</span>
             <div className="flex gap-1">
-              <button onClick={reset} className="text-stone-500 hover:text-amber-400 transition-colors" title="Reset to defaults" data-testid="font-reset">
+              <button onClick={reset} className="text-muted-foreground hover:text-amber-400 transition-colors" title="Reset to defaults" data-testid="font-reset">
                 <RotateCcw className="w-3 h-3" />
               </button>
-              <button onClick={() => setOpen(false)} className="text-stone-500 hover:text-stone-300 transition-colors">
+              <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors">
                 <ChevronDown className="w-3 h-3" />
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 text-[9px] text-stone-600">
+          <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
             <span className="text-sky-400">clean</span>
             <span>→</span>
             <span className="text-amber-400">modern</span>
@@ -149,7 +149,7 @@ export default function FontCustomizer() {
 
           {["headingFont", "bodyFont"].map(target => (
             <div key={target} className="space-y-1">
-              <label className="text-[10px] text-stone-500 uppercase tracking-wider">
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider">
                 {target === "headingFont" ? "Headings" : "Body"}
               </label>
               <div className="flex flex-wrap gap-1">
@@ -162,8 +162,8 @@ export default function FontCustomizer() {
                       style={{ fontFamily: f.value }}
                       className={`px-2 py-1 text-[10px] rounded border transition-all ${
                         isActive
-                          ? "bg-stone-800/80 border-stone-600/80 " + VIBE_COLORS[f.vibe]
-                          : "bg-stone-900/50 border-stone-800/40 text-stone-500 hover:text-stone-300 hover:border-stone-700/60"
+                          ? "bg-border/80 border-muted/80 " + VIBE_COLORS[f.vibe]
+                          : "bg-card/50 border-border/40 text-muted-foreground hover:text-foreground hover:border-border/60"
                       }`}
                       data-testid={`font-${target === "headingFont" ? "heading" : "body"}-${f.label.toLowerCase().replace(/\s/g, '-')}`}
                     >
@@ -176,7 +176,7 @@ export default function FontCustomizer() {
           ))}
 
           <div className="space-y-1">
-            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Weight</label>
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Weight</label>
             <div className="flex gap-1">
               {WEIGHT_OPTIONS.map(w => (
                 <button
@@ -184,8 +184,8 @@ export default function FontCustomizer() {
                   onClick={() => update({ headingWeight: w.value })}
                   className={`px-2 py-1 text-[10px] rounded border transition-all ${
                     settings.headingWeight === w.value
-                      ? "bg-stone-800/80 border-stone-600/80 text-amber-400"
-                      : "bg-stone-900/50 border-stone-800/40 text-stone-500 hover:text-stone-300"
+                      ? "bg-border/80 border-muted/80 text-amber-400"
+                      : "bg-card/50 border-border/40 text-muted-foreground hover:text-foreground"
                   }`}
                   data-testid={`font-weight-${w.label.toLowerCase()}`}
                 >
@@ -196,7 +196,7 @@ export default function FontCustomizer() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] text-stone-500 uppercase tracking-wider">Scale</label>
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Scale</label>
             <div className="flex gap-1">
               {SIZE_OPTIONS.map(s => (
                 <button
@@ -204,8 +204,8 @@ export default function FontCustomizer() {
                   onClick={() => update({ sizeScale: s.value })}
                   className={`px-3 py-1 text-[10px] rounded border transition-all ${
                     settings.sizeScale === s.value
-                      ? "bg-stone-800/80 border-stone-600/80 text-amber-400"
-                      : "bg-stone-900/50 border-stone-800/40 text-stone-500 hover:text-stone-300"
+                      ? "bg-border/80 border-muted/80 text-amber-400"
+                      : "bg-card/50 border-border/40 text-muted-foreground hover:text-foreground"
                   }`}
                   data-testid={`font-size-${s.label.toLowerCase()}`}
                 >
@@ -215,11 +215,11 @@ export default function FontCustomizer() {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-stone-800/40 space-y-1">
-            <p className="text-sm text-stone-400 leading-relaxed" style={{ fontFamily: settings.headingFont, fontWeight: Number(settings.headingWeight) }}>
+          <div className="pt-2 border-t border-border/40 space-y-1">
+            <p className="text-sm text-muted-foreground leading-relaxed" style={{ fontFamily: settings.headingFont, fontWeight: Number(settings.headingWeight) }}>
               Heading Preview
             </p>
-            <p className="text-[10px] text-stone-600 leading-relaxed" style={{ fontFamily: settings.bodyFont }}>
+            <p className="text-[10px] text-muted-foreground leading-relaxed" style={{ fontFamily: settings.bodyFont }}>
               Body: The quick brown fox jumps over the lazy dog. 0123456789
             </p>
           </div>

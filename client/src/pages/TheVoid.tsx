@@ -158,7 +158,7 @@ export default function TheVoid() {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 border border-amber-900/10 rounded-full animate-pulse [animation-duration:4s]" />
       <div className="absolute bottom-1/4 right-1/4 w-64 h-64 border border-amber-900/10 rounded-full animate-pulse [animation-duration:6s]" />
       <motion.div
-        className="absolute top-1/3 right-1/3 w-32 h-32 border border-stone-800/20 rotate-45"
+        className="absolute top-1/3 right-1/3 w-32 h-32 border border-border/20 rotate-45"
         animate={{ rotate: 360 }}
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
       />
@@ -170,7 +170,7 @@ export default function TheVoid() {
           className="text-4xl md:text-6xl font-black text-amber-900/30 tracking-tighter mix-blend-exclusion"
         />
         
-        <p className="text-stone-600 font-mono text-xs md:text-sm">
+        <p className="text-muted-foreground font-mono text-xs md:text-sm">
           Gaze into the probability field. Visions manifest for those who wait.
         </p>
 
@@ -181,7 +181,7 @@ export default function TheVoid() {
           whileTap={{ scale: 0.98 }}
           data-testid="scrying-pool"
         >
-          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-stone-950 via-amber-950/20 to-amber-950/30 border border-amber-900/20" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-card via-amber-950/20 to-amber-950/30 border border-amber-900/20" />
           
           <motion.div
             className="absolute inset-4 rounded-full bg-gradient-radial from-amber-900/10 via-transparent to-transparent"
@@ -225,7 +225,7 @@ export default function TheVoid() {
                   description={clue.description}
                   content={clue.content}
                   triggerText={clue.name}
-                  className="text-xs text-stone-600 hover:text-amber-500 transition-colors p-2 border border-amber-900/10 hover:border-amber-700/30 rounded block w-full text-center"
+                  className="text-xs text-muted-foreground hover:text-amber-500 transition-colors p-2 border border-amber-900/10 hover:border-amber-700/30 rounded block w-full text-center"
                 />
               ) : (
                 <div className="text-xs text-amber-800/50 p-2 border border-amber-900/20 rounded opacity-50">
@@ -238,26 +238,26 @@ export default function TheVoid() {
 
         <div className="flex flex-wrap justify-center gap-4 pt-6">
           <Link href="/terminal">
-            <Button variant="ghost" className="text-xs font-mono text-stone-600 hover:text-amber-500 hover:bg-amber-900/10 gap-2">
+            <Button variant="ghost" className="text-xs font-mono text-muted-foreground hover:text-amber-500 hover:bg-amber-900/10 gap-2">
               <Terminal className="w-3 h-3" />
               TERMINAL
             </Button>
           </Link>
           <Link href="/agents">
-            <Button variant="ghost" className="text-xs font-mono text-stone-600 hover:text-amber-500 hover:bg-amber-900/10 gap-2">
+            <Button variant="ghost" className="text-xs font-mono text-muted-foreground hover:text-amber-500 hover:bg-amber-900/10 gap-2">
               <Eye className="w-3 h-3" />
               AGENTS
             </Button>
           </Link>
           <Link href="/">
-            <Button variant="ghost" className="text-xs font-mono text-stone-600 hover:text-amber-500 hover:bg-amber-900/10 gap-2">
+            <Button variant="ghost" className="text-xs font-mono text-muted-foreground hover:text-amber-500 hover:bg-amber-900/10 gap-2">
               <Compass className="w-3 h-3" />
               RETURN
             </Button>
           </Link>
         </div>
 
-        <p className="text-[10px] text-stone-700 font-mono pt-4">
+        <p className="text-[10px] text-muted-foreground font-mono pt-4">
           Clues collected: {gameState.inventory.length} | Click the pool to invoke the oracle
         </p>
       </div>
@@ -272,7 +272,7 @@ export default function TheVoid() {
             onClick={dismissEvent}
           >
             <motion.div
-              className="bg-[#0a0500]/95 border border-amber-600/50 rounded-lg p-6 max-w-sm backdrop-blur-md shadow-[0_0_60px_rgba(184,115,51,0.3)]"
+              className="bg-[hsl(var(--card))]/95 border border-amber-600/50 rounded-lg p-6 max-w-sm backdrop-blur-md shadow-[0_0_60px_rgba(184,115,51,0.3)]"
               onClick={(e) => e.stopPropagation()}
               animate={{ boxShadow: ["0 0 30px rgba(184,115,51,0.2)", "0 0 60px rgba(184,115,51,0.4)", "0 0 30px rgba(184,115,51,0.2)"] }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -281,7 +281,7 @@ export default function TheVoid() {
                 <Sparkles className="w-10 h-10 text-amber-500 mx-auto mb-3" />
                 <h3 className="text-amber-500 font-orbitron text-lg mb-2">MANIFESTATION</h3>
                 <p className="text-amber-700 font-mono text-sm mb-1">{floatingClue.name}</p>
-                <p className="text-stone-500 text-xs mb-4">{floatingClue.description}</p>
+                <p className="text-muted-foreground text-xs mb-4">{floatingClue.description}</p>
                 <Button
                   onClick={handleCollectFloatingClue}
                   className="bg-amber-700 hover:bg-amber-600 text-black font-bold text-sm"
@@ -301,13 +301,13 @@ export default function TheVoid() {
             exit={{ opacity: 0, x: 100 }}
             className="fixed top-1/2 right-4 -translate-y-1/2 z-50 max-w-xs"
           >
-            <div className="bg-[#0a0500]/95 border border-teal-600/50 rounded-lg p-4 backdrop-blur-md">
+            <div className="bg-[hsl(var(--card))]/95 border border-teal-600/50 rounded-lg p-4 backdrop-blur-md">
               <div className="flex items-start gap-3">
                 <Terminal className="w-5 h-5 text-teal-500 mt-1 shrink-0" />
                 <div>
                   <h4 className="text-teal-400 font-orbitron text-sm mb-1">MISSION AVAILABLE</h4>
                   <p className="text-teal-600 font-mono text-xs mb-2">{missionPrompt.name}</p>
-                  <p className="text-stone-500 text-xs mb-3">{missionPrompt.description}</p>
+                  <p className="text-muted-foreground text-xs mb-3">{missionPrompt.description}</p>
                   <code className="text-[10px] text-teal-700 bg-black/50 px-2 py-1 rounded block mb-3">
                     $ {missionPrompt.command}
                   </code>
@@ -330,7 +330,7 @@ export default function TheVoid() {
                     >
                       ACCEPT
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={dismissEvent} className="text-stone-500 text-xs h-7">
+                    <Button size="sm" variant="ghost" onClick={dismissEvent} className="text-muted-foreground text-xs h-7">
                       DISMISS
                     </Button>
                   </div>
@@ -348,7 +348,7 @@ export default function TheVoid() {
             className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
           >
             <div 
-              className="bg-[#0a0500]/90 border border-amber-600/40 rounded-lg px-6 py-3 backdrop-blur-md cursor-pointer"
+              className="bg-[hsl(var(--card))]/90 border border-amber-600/40 rounded-lg px-6 py-3 backdrop-blur-md cursor-pointer"
               onClick={dismissEvent}
             >
               <div className="flex items-center gap-3">

@@ -154,13 +154,13 @@ export function SitemapPanel() {
           <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2 mb-1">
             <Map className="w-5 h-5" /> Platform Sitemap
           </h3>
-          <p className="text-xs text-stone-500">Interactive map of all pages. Add pages, apply arc templates, open in Campaign Builder.</p>
+          <p className="text-xs text-muted-foreground">Interactive map of all pages. Add pages, apply arc templates, open in Campaign Builder.</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={handleSync} className="text-xs text-stone-500 hover:text-teal-400" data-testid="sitemap-sync-btn">
+          <Button variant="ghost" size="sm" onClick={handleSync} className="text-xs text-muted-foreground hover:text-teal-400" data-testid="sitemap-sync-btn">
             <Zap className="w-3 h-3 mr-1" /> Sync Routes
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => setViewMode(v => v === 'tree' ? 'grid' : 'tree')} className="text-xs text-stone-500">
+          <Button variant="ghost" size="sm" onClick={() => setViewMode(v => v === 'tree' ? 'grid' : 'tree')} className="text-xs text-muted-foreground">
             {viewMode === 'tree' ? <Layers className="w-3 h-3" /> : <Folder className="w-3 h-3" />}
           </Button>
           <Button size="sm" onClick={() => setShowAdd(!showAdd)} className="bg-amber-700 hover:bg-amber-600 text-black text-xs" data-testid="sitemap-add-btn">
@@ -170,9 +170,9 @@ export function SitemapPanel() {
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        <button onClick={() => setFilterCategory('')} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${!filterCategory ? 'bg-amber-900/30 border-amber-700/50 text-amber-400' : 'bg-stone-900/20 border-stone-800 text-stone-600'}`}>All</button>
+        <button onClick={() => setFilterCategory('')} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${!filterCategory ? 'bg-amber-900/30 border-amber-700/50 text-amber-400' : 'bg-card/20 border-border text-muted-foreground'}`}>All</button>
         {SITEMAP_CATEGORIES.map(cat => (
-          <button key={cat} onClick={() => setFilterCategory(cat === filterCategory ? '' : cat)} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${filterCategory === cat ? 'bg-amber-900/30 border-amber-700/50 text-amber-400' : 'bg-stone-900/20 border-stone-800 text-stone-600'}`}>{cat}</button>
+          <button key={cat} onClick={() => setFilterCategory(cat === filterCategory ? '' : cat)} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${filterCategory === cat ? 'bg-amber-900/30 border-amber-700/50 text-amber-400' : 'bg-card/20 border-border text-muted-foreground'}`}>{cat}</button>
         ))}
       </div>
 
@@ -182,60 +182,60 @@ export function SitemapPanel() {
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[9px] text-stone-600 uppercase block mb-0.5">Name</label>
-              <Input value={newEntry.name} onChange={e => setNewEntry(p => ({ ...p, name: e.target.value }))} className="bg-stone-900/30 border-stone-800 h-7 text-xs text-stone-300" data-testid="sitemap-name-input" />
+              <label className="text-[9px] text-muted-foreground uppercase block mb-0.5">Name</label>
+              <Input value={newEntry.name} onChange={e => setNewEntry(p => ({ ...p, name: e.target.value }))} className="bg-card/30 border-border h-7 text-xs text-foreground" data-testid="sitemap-name-input" />
             </div>
             <div>
-              <label className="text-[9px] text-stone-600 uppercase block mb-0.5">Path</label>
-              <Input value={newEntry.path} onChange={e => setNewEntry(p => ({ ...p, path: e.target.value }))} placeholder="/my-page" className="bg-stone-900/30 border-stone-800 h-7 text-xs text-stone-300" data-testid="sitemap-path-input" />
+              <label className="text-[9px] text-muted-foreground uppercase block mb-0.5">Path</label>
+              <Input value={newEntry.path} onChange={e => setNewEntry(p => ({ ...p, path: e.target.value }))} placeholder="/my-page" className="bg-card/30 border-border h-7 text-xs text-foreground" data-testid="sitemap-path-input" />
             </div>
           </div>
           <div>
-            <label className="text-[9px] text-stone-600 uppercase block mb-0.5">Description</label>
-            <Input value={newEntry.description} onChange={e => setNewEntry(p => ({ ...p, description: e.target.value }))} className="bg-stone-900/30 border-stone-800 h-7 text-xs text-stone-300" />
+            <label className="text-[9px] text-muted-foreground uppercase block mb-0.5">Description</label>
+            <Input value={newEntry.description} onChange={e => setNewEntry(p => ({ ...p, description: e.target.value }))} className="bg-card/30 border-border h-7 text-xs text-foreground" />
           </div>
           <div className="grid grid-cols-4 gap-2">
             <div>
-              <label className="text-[9px] text-stone-600 uppercase block mb-0.5">Category</label>
-              <select value={newEntry.category} onChange={e => setNewEntry(p => ({ ...p, category: e.target.value }))} className="w-full bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300">
+              <label className="text-[9px] text-muted-foreground uppercase block mb-0.5">Category</label>
+              <select value={newEntry.category} onChange={e => setNewEntry(p => ({ ...p, category: e.target.value }))} className="w-full bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground">
                 {SITEMAP_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[9px] text-stone-600 uppercase block mb-0.5">Color</label>
-              <select value={newEntry.color} onChange={e => setNewEntry(p => ({ ...p, color: e.target.value }))} className="w-full bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300">
+              <label className="text-[9px] text-muted-foreground uppercase block mb-0.5">Color</label>
+              <select value={newEntry.color} onChange={e => setNewEntry(p => ({ ...p, color: e.target.value }))} className="w-full bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground">
                 {SITEMAP_COLORS.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[9px] text-stone-600 uppercase block mb-0.5">Page Layout</label>
-              <select value={newEntry.pageLayout} onChange={e => setNewEntry(p => ({ ...p, pageLayout: e.target.value }))} className="w-full bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300" data-testid="sitemap-layout-select">
+              <label className="text-[9px] text-muted-foreground uppercase block mb-0.5">Page Layout</label>
+              <select value={newEntry.pageLayout} onChange={e => setNewEntry(p => ({ ...p, pageLayout: e.target.value }))} className="w-full bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground" data-testid="sitemap-layout-select">
                 {PAGE_LAYOUTS.map(l => <option key={l} value={l}>{l}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[9px] text-stone-600 uppercase block mb-0.5">Icon</label>
-              <select value={newEntry.icon} onChange={e => setNewEntry(p => ({ ...p, icon: e.target.value }))} className="w-full bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300">
+              <label className="text-[9px] text-muted-foreground uppercase block mb-0.5">Icon</label>
+              <select value={newEntry.icon} onChange={e => setNewEntry(p => ({ ...p, icon: e.target.value }))} className="w-full bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground">
                 {ICON_NAMES.map(i => <option key={i} value={i}>{i}</option>)}
               </select>
             </div>
           </div>
 
           <div>
-            <label className="text-[9px] text-stone-600 uppercase block mb-1 flex items-center gap-1"><Zap className="w-2.5 h-2.5" /> Apply Arc Template (opens in Campaign Builder)</label>
+            <label className="text-[9px] text-muted-foreground uppercase block mb-1 flex items-center gap-1"><Zap className="w-2.5 h-2.5" /> Apply Arc Template (opens in Campaign Builder)</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5">
               {ARC_TEMPLATE_SUMMARIES.map(arc => (
                 <button
                   key={arc.id}
                   onClick={() => applyArcTemplate(arc)}
-                  className={`p-2 rounded border text-left transition-colors ${newEntry.arcTemplateId === arc.id ? 'border-amber-600/60 bg-amber-950/30' : 'border-stone-800 bg-stone-900/20 hover:border-stone-700'}`}
+                  className={`p-2 rounded border text-left transition-colors ${newEntry.arcTemplateId === arc.id ? 'border-amber-600/60 bg-amber-950/30' : 'border-border bg-card/20 hover:border-border'}`}
                   data-testid={`arc-template-${arc.id}`}
                 >
-                  <span className="text-[10px] font-bold text-stone-300 block truncate">{arc.name}</span>
-                  <span className="text-[8px] text-stone-500">{arc.desc}</span>
+                  <span className="text-[10px] font-bold text-foreground block truncate">{arc.name}</span>
+                  <span className="text-[8px] text-muted-foreground">{arc.desc}</span>
                   <div className="flex gap-1 mt-0.5">
-                    <Badge variant="outline" className="text-[7px] px-1 py-0 border-stone-700 text-stone-500">{arc.nodes}n</Badge>
-                    <Badge variant="outline" className="text-[7px] px-1 py-0 border-stone-700 text-stone-500">{arc.category}</Badge>
+                    <Badge variant="outline" className="text-[7px] px-1 py-0 border-border text-muted-foreground">{arc.nodes}n</Badge>
+                    <Badge variant="outline" className="text-[7px] px-1 py-0 border-border text-muted-foreground">{arc.category}</Badge>
                   </div>
                 </button>
               ))}
@@ -251,7 +251,7 @@ export function SitemapPanel() {
                 <Layers className="w-3 h-3 mr-1" /> Save & Open in Builder
               </Button>
             )}
-            <Button variant="ghost" size="sm" onClick={() => setShowAdd(false)} className="text-xs text-stone-500">Cancel</Button>
+            <Button variant="ghost" size="sm" onClick={() => setShowAdd(false)} className="text-xs text-muted-foreground">Cancel</Button>
           </div>
         </div>
       )}
@@ -266,8 +266,8 @@ export function SitemapPanel() {
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
                 <h4 className={`text-sm font-bold uppercase tracking-wider ${colors.text}`}>{category}</h4>
-                <div className="flex-1 h-px bg-stone-800/50" />
-                <span className="text-[10px] text-stone-600">{(items as any[]).length} pages</span>
+                <div className="flex-1 h-px bg-border/50" />
+                <span className="text-[10px] text-muted-foreground">{(items as any[]).length} pages</span>
               </div>
 
               <div className={viewMode === 'grid' ? 'grid sm:grid-cols-2 lg:grid-cols-3 gap-2 ml-4' : 'space-y-1 ml-4'}>
@@ -279,27 +279,27 @@ export function SitemapPanel() {
                     return (
                       <div key={item.id} className="p-3 rounded-lg border border-amber-900/40 bg-amber-950/10 space-y-2" data-testid={`sitemap-edit-${item.id}`}>
                         <div className="grid grid-cols-2 gap-2">
-                          <Input value={editEntry.name} onChange={e => setEditEntry((p: any) => ({ ...p, name: e.target.value }))} className="bg-stone-900/30 border-stone-800 h-7 text-xs text-stone-300" />
-                          <Input value={editEntry.path} onChange={e => setEditEntry((p: any) => ({ ...p, path: e.target.value }))} className="bg-stone-900/30 border-stone-800 h-7 text-xs text-stone-300" />
+                          <Input value={editEntry.name} onChange={e => setEditEntry((p: any) => ({ ...p, name: e.target.value }))} className="bg-card/30 border-border h-7 text-xs text-foreground" />
+                          <Input value={editEntry.path} onChange={e => setEditEntry((p: any) => ({ ...p, path: e.target.value }))} className="bg-card/30 border-border h-7 text-xs text-foreground" />
                         </div>
-                        <Input value={editEntry.description} onChange={e => setEditEntry((p: any) => ({ ...p, description: e.target.value }))} className="bg-stone-900/30 border-stone-800 h-7 text-xs text-stone-300" />
+                        <Input value={editEntry.description} onChange={e => setEditEntry((p: any) => ({ ...p, description: e.target.value }))} className="bg-card/30 border-border h-7 text-xs text-foreground" />
                         <div className="grid grid-cols-4 gap-2">
-                          <select value={editEntry.category} onChange={e => setEditEntry((p: any) => ({ ...p, category: e.target.value }))} className="bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300">
+                          <select value={editEntry.category} onChange={e => setEditEntry((p: any) => ({ ...p, category: e.target.value }))} className="bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground">
                             {SITEMAP_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                           </select>
-                          <select value={editEntry.color} onChange={e => setEditEntry((p: any) => ({ ...p, color: e.target.value }))} className="bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300">
+                          <select value={editEntry.color} onChange={e => setEditEntry((p: any) => ({ ...p, color: e.target.value }))} className="bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground">
                             {SITEMAP_COLORS.map(c => <option key={c} value={c}>{c}</option>)}
                           </select>
-                          <select value={editEntry.pageLayout} onChange={e => setEditEntry((p: any) => ({ ...p, pageLayout: e.target.value }))} className="bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300">
+                          <select value={editEntry.pageLayout} onChange={e => setEditEntry((p: any) => ({ ...p, pageLayout: e.target.value }))} className="bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground">
                             {PAGE_LAYOUTS.map(l => <option key={l} value={l}>{l}</option>)}
                           </select>
-                          <select value={editEntry.icon} onChange={e => setEditEntry((p: any) => ({ ...p, icon: e.target.value }))} className="bg-stone-900/30 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-300">
+                          <select value={editEntry.icon} onChange={e => setEditEntry((p: any) => ({ ...p, icon: e.target.value }))} className="bg-card/30 border border-border rounded px-2 py-1 text-[10px] text-foreground">
                             {ICON_NAMES.map(i => <option key={i} value={i}>{i}</option>)}
                           </select>
                         </div>
                         <div className="flex gap-2">
                           <Button size="sm" onClick={handleUpdate} className="bg-amber-700 hover:bg-amber-600 text-black text-xs"><Save className="w-3 h-3 mr-1" /> Save</Button>
-                          <Button variant="ghost" size="sm" onClick={() => { setEditingId(null); setEditEntry(null); }} className="text-xs text-stone-500">Cancel</Button>
+                          <Button variant="ghost" size="sm" onClick={() => { setEditingId(null); setEditEntry(null); }} className="text-xs text-muted-foreground">Cancel</Button>
                         </div>
                       </div>
                     );
@@ -307,23 +307,23 @@ export function SitemapPanel() {
 
                   if (viewMode === 'tree') {
                     return (
-                      <div key={item.id} className={`flex items-center gap-2 py-1.5 px-2 rounded hover:bg-stone-900/30 group transition-colors`} data-testid={`sitemap-row-${item.id}`}>
+                      <div key={item.id} className={`flex items-center gap-2 py-1.5 px-2 rounded hover:bg-card/30 group transition-colors`} data-testid={`sitemap-row-${item.id}`}>
                         <IconComp className={`w-3.5 h-3.5 ${colors.text} shrink-0`} />
                         <Link href={item.path.includes(':') ? '#' : item.path} className="flex-1 min-w-0">
-                          <span className="text-xs text-stone-300 group-hover:text-white font-medium truncate block">{item.name}</span>
+                          <span className="text-xs text-foreground group-hover:text-white font-medium truncate block">{item.name}</span>
                         </Link>
-                        <span className="text-[8px] text-stone-700 font-mono shrink-0">{item.path}</span>
-                        <Badge variant="outline" className="text-[7px] px-1 py-0 border-stone-800 text-stone-600 shrink-0">{item.pageLayout}</Badge>
+                        <span className="text-[8px] text-muted-foreground font-mono shrink-0">{item.path}</span>
+                        <Badge variant="outline" className="text-[7px] px-1 py-0 border-border text-muted-foreground shrink-0">{item.pageLayout}</Badge>
                         {item.isCustom && <Badge variant="outline" className="text-[7px] px-1 py-0 border-amber-800 text-amber-600 shrink-0">custom</Badge>}
                         <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                          <Button variant="ghost" size="icon" className="h-5 w-5 text-stone-600 hover:text-amber-400" onClick={() => { setEditingId(item.id); setEditEntry({ ...item }); }} data-testid={`sitemap-edit-${item.id}`}>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-amber-400" onClick={() => { setEditingId(item.id); setEditEntry({ ...item }); }} data-testid={`sitemap-edit-${item.id}`}>
                             <Edit className="w-2.5 h-2.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-5 w-5 text-stone-600 hover:text-purple-400" onClick={() => openInBuilder(item)} data-testid={`sitemap-builder-${item.id}`}>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-purple-400" onClick={() => openInBuilder(item)} data-testid={`sitemap-builder-${item.id}`}>
                             <Layers className="w-2.5 h-2.5" />
                           </Button>
                           {item.isCustom && (
-                            <Button variant="ghost" size="icon" className="h-5 w-5 text-stone-600 hover:text-red-400" onClick={() => handleDelete(item.id)} data-testid={`sitemap-delete-${item.id}`}>
+                            <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-red-400" onClick={() => handleDelete(item.id)} data-testid={`sitemap-delete-${item.id}`}>
                               <Trash2 className="w-2.5 h-2.5" />
                             </Button>
                           )}
@@ -333,7 +333,7 @@ export function SitemapPanel() {
                   }
 
                   return (
-                    <div key={item.id} className={`p-3 rounded-lg border ${colors.border} bg-[#0a0500] ${colors.hover} transition-all group relative`} data-testid={`sitemap-card-${item.id}`}>
+                    <div key={item.id} className={`p-3 rounded-lg border ${colors.border} bg-[hsl(var(--card))] ${colors.hover} transition-all group relative`} data-testid={`sitemap-card-${item.id}`}>
                       <div className="flex items-start gap-2.5">
                         <div className={`mt-0.5 p-1.5 rounded ${colors.bg}`}>
                           <IconComp className={`w-3.5 h-3.5 ${colors.text}`} />
@@ -341,26 +341,26 @@ export function SitemapPanel() {
                         <div className="flex-1 min-w-0">
                           <Link href={item.path.includes(':') ? '#' : item.path}>
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-stone-200 group-hover:text-white transition-colors truncate">{item.name}</span>
-                              <ArrowRight className="w-2.5 h-2.5 text-stone-600 group-hover:text-stone-400 opacity-0 group-hover:opacity-100 shrink-0" />
+                              <span className="text-xs font-bold text-foreground group-hover:text-white transition-colors truncate">{item.name}</span>
+                              <ArrowRight className="w-2.5 h-2.5 text-muted-foreground group-hover:text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0" />
                             </div>
                           </Link>
-                          <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-2">{item.description}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{item.description}</p>
                           <div className="flex items-center gap-1.5 mt-1">
-                            <span className="text-[9px] text-stone-700 font-mono">{item.path}</span>
-                            <Badge variant="outline" className="text-[7px] px-1 py-0 border-stone-800 text-stone-600">{item.pageLayout}</Badge>
+                            <span className="text-[9px] text-muted-foreground font-mono">{item.path}</span>
+                            <Badge variant="outline" className="text-[7px] px-1 py-0 border-border text-muted-foreground">{item.pageLayout}</Badge>
                           </div>
                         </div>
                       </div>
                       <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-5 w-5 text-stone-600 hover:text-amber-400" onClick={() => { setEditingId(item.id); setEditEntry({ ...item }); }}>
+                        <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-amber-400" onClick={() => { setEditingId(item.id); setEditEntry({ ...item }); }}>
                           <Edit className="w-2.5 h-2.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-5 w-5 text-stone-600 hover:text-purple-400" onClick={() => openInBuilder(item)}>
+                        <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-purple-400" onClick={() => openInBuilder(item)}>
                           <Layers className="w-2.5 h-2.5" />
                         </Button>
                         {item.isCustom && (
-                          <Button variant="ghost" size="icon" className="h-5 w-5 text-stone-600 hover:text-red-400" onClick={() => handleDelete(item.id)}>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-red-400" onClick={() => handleDelete(item.id)}>
                             <Trash2 className="w-2.5 h-2.5" />
                           </Button>
                         )}
@@ -374,10 +374,10 @@ export function SitemapPanel() {
         })}
       </div>
 
-      <div className="p-3 rounded-lg bg-stone-900/30 border border-stone-800/50">
+      <div className="p-3 rounded-lg bg-card/30 border border-border/50">
         <div className="flex items-center gap-2 mb-2">
-          <Globe className="w-3.5 h-3.5 text-stone-500" />
-          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Coverage</span>
+          <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Coverage</span>
         </div>
         <div className="flex flex-wrap gap-3 text-[10px]">
           {Object.entries(grouped).map(([cat, items]) => {
@@ -386,14 +386,14 @@ export function SitemapPanel() {
             return (
               <div key={cat} className="flex items-center gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-                <span className="text-stone-400">{cat}</span>
-                <span className="text-stone-600">({(items as any[]).length})</span>
+                <span className="text-muted-foreground">{cat}</span>
+                <span className="text-muted-foreground">({(items as any[]).length})</span>
               </div>
             );
           })}
           <div className="flex items-center gap-1.5 ml-auto">
-            <span className="text-stone-500 font-bold">{entries.length} total pages</span>
-            <span className="text-stone-700">|</span>
+            <span className="text-muted-foreground font-bold">{entries.length} total pages</span>
+            <span className="text-muted-foreground">|</span>
             <span className="text-amber-600">{entries.filter((e: any) => e.isCustom).length} custom</span>
           </div>
         </div>

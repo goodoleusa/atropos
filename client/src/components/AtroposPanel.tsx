@@ -662,7 +662,7 @@ Summarize key findings, highlight risks, and recommend next investigation steps.
       case 'osint': return 'bg-teal-500/15 text-teal-300 border-teal-500/40';
       case 'vulnerability': return 'bg-orange-500/15 text-orange-300 border-orange-500/40';
       case 'secret_detection': return 'bg-amber-500/15 text-amber-300 border-amber-500/40';
-      default: return 'bg-stone-500/15 text-stone-300 border-stone-500/40';
+      default: return 'bg-muted/15 text-foreground border-muted/40';
     }
   };
 
@@ -672,7 +672,7 @@ Summarize key findings, highlight risks, and recommend next investigation steps.
       case 'high': return 'bg-orange-500/20 text-orange-300 border-orange-500/40';
       case 'medium': return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
       case 'low': return 'bg-teal-500/20 text-teal-300 border-teal-500/40';
-      default: return 'bg-stone-500/20 text-stone-300 border-stone-500/40';
+      default: return 'bg-muted/20 text-foreground border-muted/40';
     }
   };
 
@@ -685,7 +685,7 @@ Summarize key findings, highlight risks, and recommend next investigation steps.
       case 'running':
         return <Loader2 className="h-4 w-4 text-amber-400 animate-spin" />;
       default:
-        return <Clock className="h-4 w-4 text-stone-400" />;
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -709,37 +709,37 @@ Summarize key findings, highlight risks, and recommend next investigation steps.
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div className="rounded-lg border border-amber-900/30 bg-stone-950/60 p-2 text-center">
+            <div className="rounded-lg border border-amber-900/30 bg-card/60 p-2 text-center">
               <div className="text-lg font-bold text-amber-300">{result.summary.subdomains}</div>
-              <div className="text-xs text-stone-500">Subdomains</div>
+              <div className="text-xs text-muted-foreground">Subdomains</div>
             </div>
-            <div className="rounded-lg border border-teal-900/30 bg-stone-950/60 p-2 text-center">
+            <div className="rounded-lg border border-teal-900/30 bg-card/60 p-2 text-center">
               <div className="text-lg font-bold text-teal-300">{result.summary.openPorts}</div>
-              <div className="text-xs text-stone-500">Open Ports</div>
+              <div className="text-xs text-muted-foreground">Open Ports</div>
             </div>
-            <div className="rounded-lg border border-amber-900/30 bg-stone-950/60 p-2 text-center">
+            <div className="rounded-lg border border-amber-900/30 bg-card/60 p-2 text-center">
               <div className="text-lg font-bold text-amber-300">{result.summary.technologies}</div>
-              <div className="text-xs text-stone-500">Technologies</div>
+              <div className="text-xs text-muted-foreground">Technologies</div>
             </div>
-            <div className="rounded-lg border border-orange-900/30 bg-stone-950/60 p-2 text-center">
+            <div className="rounded-lg border border-orange-900/30 bg-card/60 p-2 text-center">
               <div className="text-lg font-bold text-orange-300">{result.summary.vulnerabilities}</div>
-              <div className="text-xs text-stone-500">Vulnerabilities</div>
+              <div className="text-xs text-muted-foreground">Vulnerabilities</div>
             </div>
           </div>
 
-          <ScrollArea className="h-56 rounded-lg border border-amber-900/30 bg-stone-950/50 p-3">
+          <ScrollArea className="h-56 rounded-lg border border-amber-900/30 bg-card/50 p-3">
             <div className="space-y-2">
               {result.findings.slice(0, 30).map((finding, idx) => (
                 <div key={`${finding.type}-${idx}`} className="flex items-center gap-2 text-sm">
                   <Badge variant="outline" className={`text-[10px] ${getSeverityColor(finding.severity)}`}>
                     {finding.type}
                   </Badge>
-                  <span className="text-stone-300 truncate flex-1">{finding.value}</span>
-                  {finding.source && <span className="text-stone-600 text-xs">{finding.source}</span>}
+                  <span className="text-foreground truncate flex-1">{finding.value}</span>
+                  {finding.source && <span className="text-muted-foreground text-xs">{finding.source}</span>}
                 </div>
               ))}
               {result.findings.length > 30 && (
-                <div className="text-xs text-stone-500 text-center pt-2">
+                <div className="text-xs text-muted-foreground text-center pt-2">
                   +{result.findings.length - 30} more findings...
                 </div>
               )}

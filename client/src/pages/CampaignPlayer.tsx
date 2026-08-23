@@ -76,7 +76,7 @@ const COLOR_ACCENTS: Record<string, string> = {
   amber: 'border-amber-600 bg-amber-950/20 text-amber-400',
   teal: 'border-teal-600 bg-teal-950/20 text-teal-400',
   purple: 'border-purple-600 bg-purple-950/20 text-purple-400',
-  stone: 'border-stone-600 bg-stone-900/20 text-stone-400',
+  stone: 'border-muted bg-card/20 text-muted-foreground',
 };
 
 const CLUE_TYPE_ICONS: Record<string, { icon: any; label: string; tip: string }> = {
@@ -282,10 +282,10 @@ export default function CampaignPlayer() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0500] flex items-center justify-center">
+      <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-stone-500 font-mono text-sm">Loading campaign...</p>
+          <p className="text-muted-foreground font-mono text-sm">Loading campaign...</p>
         </div>
       </div>
     );
@@ -293,12 +293,12 @@ export default function CampaignPlayer() {
 
   if (!campaign || !currentNode) {
     return (
-      <div className="min-h-screen bg-[#0a0500] flex items-center justify-center">
-        <Card className="bg-stone-950 border-red-900/50 max-w-md">
+      <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center">
+        <Card className="bg-card border-red-900/50 max-w-md">
           <CardContent className="p-8 text-center">
             <Shield className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-red-400 font-mono text-lg mb-2">Campaign Not Found</h2>
-            <p className="text-stone-500 text-sm mb-4">This campaign doesn't exist or hasn't been published yet.</p>
+            <p className="text-muted-foreground text-sm mb-4">This campaign doesn't exist or hasn't been published yet.</p>
             <Button onClick={() => navigate('/campaigns')} className="bg-amber-700 hover:bg-amber-600">
               Browse Campaigns
             </Button>
@@ -309,7 +309,7 @@ export default function CampaignPlayer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0500] text-stone-300">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground">
       {nodeClues.filter(c => c.type === 'source-code').map(clue => (
         <div key={clue.id} dangerouslySetInnerHTML={{ __html: `<!-- ${clue.value} -->` }} style={{ display: 'none' }} />
       ))}
@@ -395,7 +395,7 @@ export default function CampaignPlayer() {
         ))}
       </AnimatePresence>
 
-      <div className="sticky top-0 z-30 bg-[#0a0500]/95 border-b border-amber-900/30 backdrop-blur-sm">
+      <div className="sticky top-0 z-30 bg-[hsl(var(--card))]/95 border-b border-amber-900/30 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
           <div className="flex items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -403,7 +403,7 @@ export default function CampaignPlayer() {
                 size="sm"
                 variant="ghost"
                 onClick={() => navigate('/campaigns')}
-                className="text-stone-500 hover:text-amber-400 shrink-0 min-h-[44px] min-w-[44px] touch-manipulation"
+                className="text-muted-foreground hover:text-amber-400 shrink-0 min-h-[44px] min-w-[44px] touch-manipulation"
                 data-testid="back-to-campaigns"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -411,23 +411,23 @@ export default function CampaignPlayer() {
               <div className="min-w-0">
                 <h1 className="text-amber-500 font-mono text-xs sm:text-sm font-bold truncate" data-testid="campaign-title">{campaign.name}</h1>
                 <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
-                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[9px] sm:text-[10px]">{campaign.category}</Badge>
-                  <Badge variant="outline" className="border-stone-700 text-stone-500 text-[9px] sm:text-[10px]">{campaign.difficulty}</Badge>
+                  <Badge variant="outline" className="border-border text-muted-foreground text-[9px] sm:text-[10px]">{campaign.category}</Badge>
+                  <Badge variant="outline" className="border-border text-muted-foreground text-[9px] sm:text-[10px]">{campaign.difficulty}</Badge>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
-                <p className="text-[10px] text-stone-600">CLUES</p>
+                <p className="text-[10px] text-muted-foreground">CLUES</p>
                 <p className="text-amber-400 font-mono text-sm">{foundClues.size}/{totalClues}</p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] text-stone-600">PROGRESS</p>
+                <p className="text-[10px] text-muted-foreground">PROGRESS</p>
                 <p className="text-teal-400 font-mono text-sm">{Math.round(progress)}%</p>
               </div>
             </div>
           </div>
-          <div className="mt-2 h-1 bg-stone-900 rounded-full overflow-hidden">
+          <div className="mt-2 h-1 bg-card rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-gradient-to-r from-amber-600 to-teal-500 rounded-full"
               initial={{ width: 0 }}
@@ -439,8 +439,8 @@ export default function CampaignPlayer() {
       </div>
 
       <div className="flex max-w-5xl mx-auto">
-        <div className="hidden md:block w-48 shrink-0 border-r border-stone-800/50 p-3 sticky top-[85px] h-[calc(100vh-85px)]">
-          <p className="text-[10px] text-stone-600 uppercase tracking-wider mb-2">Navigation</p>
+        <div className="hidden md:block w-48 shrink-0 border-r border-border/50 p-3 sticky top-[85px] h-[calc(100vh-85px)]">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Navigation</p>
           <ScrollArea className="h-[calc(100vh-130px)]">
             <div className="space-y-1">
               {campaign.nodes.map(node => {
@@ -455,15 +455,15 @@ export default function CampaignPlayer() {
                     disabled={!isVisited}
                     className={`w-full text-left p-2 rounded text-xs flex items-center gap-2 transition-all ${
                       isCurrent ? 'bg-amber-900/30 text-amber-400 border border-amber-700' :
-                      isVisited ? 'text-stone-400 hover:bg-stone-800/50 cursor-pointer' :
-                      'text-stone-700 cursor-not-allowed'
+                      isVisited ? 'text-muted-foreground hover:bg-border/50 cursor-pointer' :
+                      'text-muted-foreground cursor-not-allowed'
                     }`}
                     data-testid={`nav-node-${node.id}`}
                   >
                     {isVisited ? (
                       <CheckCircle2 className={`w-3 h-3 shrink-0 ${isCurrent ? 'text-amber-400' : 'text-teal-600'}`} />
                     ) : (
-                      <Lock className="w-3 h-3 shrink-0 text-stone-700" />
+                      <Lock className="w-3 h-3 shrink-0 text-muted-foreground" />
                     )}
                     <span className="truncate flex-1">{node.title}</span>
                     {hasClue && (
@@ -497,9 +497,9 @@ export default function CampaignPlayer() {
                   {NODE_ICONS[currentNode.type] || NODE_ICONS.step}
                 </div>
                 <div>
-                  <h2 className="text-xl font-mono font-bold text-stone-200" data-testid="node-title">{currentNode.title}</h2>
+                  <h2 className="text-xl font-mono font-bold text-foreground" data-testid="node-title">{currentNode.title}</h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500 capitalize">{currentNode.type}</Badge>
+                    <Badge variant="outline" className="text-[10px] border-border text-muted-foreground capitalize">{currentNode.type}</Badge>
                     {currentNode.metadata?.featureType && (
                       <Badge variant="outline" className="text-[10px] border-teal-800 text-teal-500">{currentNode.metadata.featureType}</Badge>
                     )}
@@ -514,9 +514,9 @@ export default function CampaignPlayer() {
                 <div className={`mb-6 ${
                   currentNode.pageLayout === 'full-page' ? '' :
                   currentNode.pageLayout === 'terminal' ? 'bg-black border border-amber-900/40 rounded-lg font-mono text-sm' :
-                  currentNode.pageLayout === 'dossier' ? 'bg-stone-950 border-2 border-amber-800/50 rounded-none' :
+                  currentNode.pageLayout === 'dossier' ? 'bg-card border-2 border-amber-800/50 rounded-none' :
                   currentNode.pageLayout === 'split' ? 'grid md:grid-cols-2 gap-4' :
-                  'bg-stone-950/50 border border-stone-800 rounded-lg'
+                  'bg-card/50 border border-border rounded-lg'
                 }`}>
                   {currentNode.customCss && (
                     <style dangerouslySetInnerHTML={{ __html: currentNode.customCss }} />
@@ -534,7 +534,7 @@ export default function CampaignPlayer() {
                   />
                 </div>
               ) : (
-                <Card className="bg-stone-950/50 border-stone-800 mb-6">
+                <Card className="bg-card/50 border-border mb-6">
                   <CardContent className="p-6">
                     <div className="prose prose-invert prose-sm max-w-none">
                       {currentNode.content.split('\n').map((line, i) => {
@@ -542,19 +542,19 @@ export default function CampaignPlayer() {
                           return <h3 key={i} className="text-amber-500 font-mono text-lg mb-2">{line.replace(/\*\*/g, '')}</h3>;
                         }
                         if (line.startsWith('> ')) {
-                          return <blockquote key={i} className="border-l-2 border-amber-700 pl-3 text-stone-500 italic my-2">{line.slice(2)}</blockquote>;
+                          return <blockquote key={i} className="border-l-2 border-amber-700 pl-3 text-muted-foreground italic my-2">{line.slice(2)}</blockquote>;
                         }
                         if (line.startsWith('- ') || line.startsWith('→ ')) {
-                          return <li key={i} className="text-stone-300 ml-4 list-disc my-1">{line.slice(2)}</li>;
+                          return <li key={i} className="text-foreground ml-4 list-disc my-1">{line.slice(2)}</li>;
                         }
                         if (line.match(/^\d+\./)) {
-                          return <li key={i} className="text-stone-300 ml-4 list-decimal my-1">{line.replace(/^\d+\.\s*/, '')}</li>;
+                          return <li key={i} className="text-foreground ml-4 list-decimal my-1">{line.replace(/^\d+\.\s*/, '')}</li>;
                         }
                         if (line.startsWith('⚠️')) {
                           return <p key={i} className="text-amber-400 bg-amber-900/10 border border-amber-900/30 rounded p-2 my-2 text-xs">{line}</p>;
                         }
                         if (line.trim() === '') return <br key={i} />;
-                        return <p key={i} className="text-stone-300 my-1">{line}</p>;
+                        return <p key={i} className="text-foreground my-1">{line}</p>;
                       })}
                     </div>
                   </CardContent>
@@ -600,7 +600,7 @@ export default function CampaignPlayer() {
                           className={`p-3 rounded border relative overflow-hidden transition-colors duration-500 ${
                             isFound
                               ? 'border-teal-700 bg-teal-950/20'
-                              : 'border-stone-800 bg-stone-950/30'
+                              : 'border-border bg-card/30'
                           }`}
                           animate={justRevealed ? { 
                             borderColor: ['#d97706', '#14b8a6', '#14b8a6'],
@@ -626,7 +626,7 @@ export default function CampaignPlayer() {
                               >
                                 {typeInfo.icon}
                               </motion.span>
-                              <span className={`text-xs font-mono ${isFound ? 'text-teal-400' : 'text-stone-400'}`}>{typeInfo.label}</span>
+                              <span className={`text-xs font-mono ${isFound ? 'text-teal-400' : 'text-muted-foreground'}`}>{typeInfo.label}</span>
                               {isFound && (
                                 <motion.span
                                   initial={justRevealed ? { scale: 0 } : { scale: 1 }}
@@ -642,7 +642,7 @@ export default function CampaignPlayer() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => setShowHints(prev => ({ ...prev, [clue.id]: !prev[clue.id] }))}
-                                className="text-stone-600 hover:text-amber-400 h-6 px-2 text-[10px]"
+                                className="text-muted-foreground hover:text-amber-400 h-6 px-2 text-[10px]"
                               >
                                 <Lightbulb className="w-3 h-3 mr-1" /> {showHint ? 'Hide' : 'Hint'}
                               </Button>
@@ -657,7 +657,7 @@ export default function CampaignPlayer() {
                                 className="mt-2 text-xs overflow-hidden"
                               >
                                 <p className="text-amber-400/80 mb-1">{clue.hint}</p>
-                                <p className="text-stone-600">{typeInfo.tip}</p>
+                                <p className="text-muted-foreground">{typeInfo.tip}</p>
                               </motion.div>
                             )}
                           </AnimatePresence>
@@ -683,7 +683,7 @@ export default function CampaignPlayer() {
                           onChange={(e) => setClueInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && checkClueAnswer()}
                           placeholder="Enter discovered value..."
-                          className="bg-black/30 border-stone-700 text-stone-300 text-xs sm:text-sm flex-1 min-h-[44px]"
+                          className="bg-black/30 border-border text-foreground text-xs sm:text-sm flex-1 min-h-[44px]"
                           data-testid="clue-input"
                         />
                         <Button
@@ -706,10 +706,10 @@ export default function CampaignPlayer() {
                   <CardContent className="p-8 text-center">
                     <Award className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                     <h3 className="text-amber-400 font-mono text-xl mb-2">Campaign Complete</h3>
-                    <p className="text-stone-400 text-sm mb-2">
+                    <p className="text-muted-foreground text-sm mb-2">
                       You found {foundClues.size} of {totalClues} hidden clues.
                     </p>
-                    <p className="text-stone-500 text-xs mb-6">
+                    <p className="text-muted-foreground text-xs mb-6">
                       Visited {visitedNodes.size} of {campaign.nodes.length} nodes.
                     </p>
                     <div className="flex gap-3 justify-center">
@@ -724,7 +724,7 @@ export default function CampaignPlayer() {
                           }
                         }}
                         variant="outline"
-                        className="border-stone-700 text-stone-400"
+                        className="border-border text-muted-foreground"
                         data-testid="replay-campaign"
                       >
                         Replay
@@ -741,7 +741,7 @@ export default function CampaignPlayer() {
                 </Card>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-stone-600 text-xs font-mono uppercase tracking-wider">
+                  <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">
                     {currentNode.type === 'decision' ? 'Choose your path' : 'Continue investigation'}
                   </p>
                   {nextNodes.map(({ link, node }) => (
@@ -759,11 +759,11 @@ export default function CampaignPlayer() {
                           <div>
                             <p className="font-mono text-sm font-medium">{node.title}</p>
                             {link.label && (
-                              <p className="text-[10px] text-stone-500 mt-0.5">{link.label}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">{link.label}</p>
                             )}
                           </div>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-stone-600" />
+                        <ArrowRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </button>
                   ))}
@@ -771,18 +771,18 @@ export default function CampaignPlayer() {
               )}
 
               {visitedNodes.size > 1 && (
-                <div className="mt-8 pt-4 border-t border-stone-800/50">
-                  <p className="text-stone-700 text-[10px] font-mono mb-2">TRAIL</p>
+                <div className="mt-8 pt-4 border-t border-border/50">
+                  <p className="text-muted-foreground text-[10px] font-mono mb-2">TRAIL</p>
                   <div className="flex flex-wrap items-center gap-1">
                     {Array.from(visitedNodes).map((nid, i) => {
                       const n = campaign.nodes.find(x => x.id === nid);
                       return (
                         <span key={nid} className="flex items-center">
-                          {i > 0 && <ChevronRight className="w-3 h-3 text-stone-800 mx-0.5" />}
+                          {i > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground mx-0.5" />}
                           <button
                             onClick={() => navigateToNode(nid)}
                             className={`text-[10px] px-1.5 py-0.5 rounded ${
-                              nid === currentNodeId ? 'bg-amber-900/30 text-amber-400' : 'text-stone-600 hover:text-stone-400'
+                              nid === currentNodeId ? 'bg-amber-900/30 text-amber-400' : 'text-muted-foreground hover:text-muted-foreground'
                             }`}
                           >
                             {n?.title || nid.slice(0, 6)}

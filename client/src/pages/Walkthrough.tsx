@@ -253,12 +253,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   ai: 'bg-purple-900/30 text-purple-400 border-purple-800/50',
   tools: 'bg-orange-900/30 text-orange-400 border-orange-800/50',
   learning: 'bg-teal-900/30 text-teal-400 border-teal-800/50',
-  meta: 'bg-stone-800/50 text-stone-400 border-stone-700/50',
+  meta: 'bg-border/50 text-muted-foreground border-border/50',
   hidden: 'bg-red-900/30 text-red-400 border-red-800/50',
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
-  low: 'bg-stone-800 text-stone-400 border-stone-700',
+  low: 'bg-border text-muted-foreground border-border',
   medium: 'bg-amber-900/40 text-amber-400 border-amber-800',
   high: 'bg-orange-900/40 text-orange-400 border-orange-800',
   critical: 'bg-red-900/40 text-red-400 border-red-800',
@@ -330,8 +330,8 @@ export default function Walkthrough() {
   const submittedCount = findings.filter(f => f.submitted).length;
 
   return (
-    <div className="min-h-screen bg-[#0a0500] text-stone-300">
-      <header className="sticky top-0 z-50 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground">
+      <header className="sticky top-0 z-50 bg-[hsl(var(--card))]/95 backdrop-blur border-b border-amber-900/30">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -366,7 +366,7 @@ export default function Walkthrough() {
 
       <main className="container mx-auto px-4 py-6 max-w-7xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-stone-900/50 border border-stone-800 p-1" data-testid="walkthrough-tabs">
+          <TabsList className="bg-card/50 border border-border p-1" data-testid="walkthrough-tabs">
             <TabsTrigger value="map" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400 min-h-[44px] gap-2" data-testid="tab-map">
               <Map className="w-4 h-4" />
               Tool Map
@@ -382,13 +382,13 @@ export default function Walkthrough() {
           </TabsList>
 
           <TabsContent value="map" className="space-y-6" data-testid="content-map">
-            <Card className="bg-stone-900/50 border-stone-800">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="text-amber-400 flex items-center gap-2">
                   <Map className="w-5 h-5" />
                   All Tools & Pages ({TOOLS.length})
                 </CardTitle>
-                <CardDescription className="text-stone-500">
+                <CardDescription className="text-muted-foreground">
                   Every route in the platform, organized by category. Click any card to visit that page.
                 </CardDescription>
               </CardHeader>
@@ -408,7 +408,7 @@ export default function Walkthrough() {
                       variant={activeCategory === cat.id ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setActiveCategory(cat.id)}
-                      className={`min-h-[36px] ${activeCategory === cat.id ? 'bg-amber-700 text-black' : 'border-stone-700 text-stone-400'}`}
+                      className={`min-h-[36px] ${activeCategory === cat.id ? 'bg-amber-700 text-black' : 'border-border text-muted-foreground'}`}
                       data-testid={`filter-${cat.id}`}
                     >
                       {cat.label} ({cat.count})
@@ -421,29 +421,29 @@ export default function Walkthrough() {
                     const Icon = tool.icon;
                     return (
                       <Link key={tool.id} href={tool.route}>
-                        <Card className="bg-stone-950/80 border-stone-800 hover:border-amber-800/50 transition-colors cursor-pointer h-full" data-testid={`tool-card-${tool.id}`}>
+                        <Card className="bg-card/80 border-border hover:border-amber-800/50 transition-colors cursor-pointer h-full" data-testid={`tool-card-${tool.id}`}>
                           <CardHeader className="pb-2">
                             <div className="flex items-center justify-between">
                               <CardTitle className="text-sm flex items-center gap-2">
                                 <Icon className={`w-4 h-4 text-${tool.color}-400`} />
-                                <span className="text-stone-200">{tool.name}</span>
+                                <span className="text-foreground">{tool.name}</span>
                               </CardTitle>
                               <Badge className={`text-[10px] ${CATEGORY_COLORS[tool.category]}`}>
                                 {tool.category}
                               </Badge>
                             </div>
-                            <code className="text-[10px] text-stone-600 font-mono">{tool.route}</code>
+                            <code className="text-[10px] text-muted-foreground font-mono">{tool.route}</code>
                           </CardHeader>
                           <CardContent className="pt-0">
-                            <p className="text-xs text-stone-400 mb-3">{tool.purpose}</p>
+                            <p className="text-xs text-muted-foreground mb-3">{tool.purpose}</p>
                             <div className="flex flex-wrap gap-1">
                               {tool.features.slice(0, 4).map(f => (
-                                <Badge key={f} variant="outline" className="text-[9px] border-stone-700 text-stone-500 py-0">
+                                <Badge key={f} variant="outline" className="text-[9px] border-border text-muted-foreground py-0">
                                   {f}
                                 </Badge>
                               ))}
                               {tool.features.length > 4 && (
-                                <Badge variant="outline" className="text-[9px] border-stone-700 text-stone-500 py-0">
+                                <Badge variant="outline" className="text-[9px] border-border text-muted-foreground py-0">
                                   +{tool.features.length - 4} more
                                 </Badge>
                               )}
@@ -459,7 +459,7 @@ export default function Walkthrough() {
           </TabsContent>
 
           <TabsContent value="findings" className="space-y-6" data-testid="content-findings">
-            <Card className="bg-stone-900/50 border-stone-800">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
@@ -467,7 +467,7 @@ export default function Walkthrough() {
                       <AlertTriangle className="w-5 h-5" />
                       Architectural Findings ({findings.length})
                     </CardTitle>
-                    <CardDescription className="text-stone-500 mt-1">
+                    <CardDescription className="text-muted-foreground mt-1">
                       Feature overlaps, naming collisions, and improvement opportunities discovered during the walkthrough.
                       Each finding can be submitted to RECS to test the agentic feedback pipeline.
                     </CardDescription>
@@ -490,7 +490,7 @@ export default function Walkthrough() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {findings.map(finding => (
-                  <Card key={finding.id} className={`border ${finding.submitted ? 'bg-teal-950/20 border-teal-900/30' : 'bg-stone-950/80 border-stone-800'}`} data-testid={`finding-${finding.id}`}>
+                  <Card key={finding.id} className={`border ${finding.submitted ? 'bg-teal-950/20 border-teal-900/30' : 'bg-card/80 border-border'}`} data-testid={`finding-${finding.id}`}>
                     <CardContent className="pt-4">
                       <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="flex-1 min-w-0">
@@ -498,7 +498,7 @@ export default function Walkthrough() {
                             <Badge className={SEVERITY_COLORS[finding.severity]}>
                               {finding.severity}
                             </Badge>
-                            <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500">
+                            <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                               {finding.category}
                             </Badge>
                             {finding.submitted && (
@@ -508,14 +508,14 @@ export default function Walkthrough() {
                               </Badge>
                             )}
                           </div>
-                          <h3 className="text-sm font-semibold text-stone-200 mb-2" data-testid={`finding-title-${finding.id}`}>
+                          <h3 className="text-sm font-semibold text-foreground mb-2" data-testid={`finding-title-${finding.id}`}>
                             {finding.title}
                           </h3>
-                          <p className="text-xs text-stone-400 mb-3">{finding.description}</p>
+                          <p className="text-xs text-muted-foreground mb-3">{finding.description}</p>
 
                           <div className="space-y-2">
                             <div>
-                              <span className="text-[10px] uppercase tracking-wider text-stone-600 font-bold">Involved Tools</span>
+                              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Involved Tools</span>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {finding.involvedTools.map(t => (
                                   <Badge key={t} variant="outline" className="text-[9px] border-amber-800/50 text-amber-500 py-0">{t}</Badge>
@@ -523,20 +523,20 @@ export default function Walkthrough() {
                               </div>
                             </div>
                             <div>
-                              <span className="text-[10px] uppercase tracking-wider text-stone-600 font-bold">Pain Points</span>
+                              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Pain Points</span>
                               <ul className="mt-1 space-y-0.5">
                                 {finding.painPoints.map(p => (
-                                  <li key={p} className="text-[11px] text-stone-500 flex items-start gap-1">
+                                  <li key={p} className="text-[11px] text-muted-foreground flex items-start gap-1">
                                     <span className="text-orange-600 mt-0.5">-</span> {p}
                                   </li>
                                 ))}
                               </ul>
                             </div>
                             <div>
-                              <span className="text-[10px] uppercase tracking-wider text-stone-600 font-bold">Target Files</span>
+                              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Target Files</span>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {finding.targetFiles.map(f => (
-                                  <code key={f} className="text-[9px] bg-stone-900 text-stone-500 px-1.5 py-0.5 rounded font-mono">{f}</code>
+                                  <code key={f} className="text-[9px] bg-card text-muted-foreground px-1.5 py-0.5 rounded font-mono">{f}</code>
                                 ))}
                               </div>
                             </div>
@@ -572,13 +572,13 @@ export default function Walkthrough() {
           </TabsContent>
 
           <TabsContent value="flow" className="space-y-6" data-testid="content-flow">
-            <Card className="bg-stone-900/50 border-stone-800">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="text-teal-400 flex items-center gap-2">
                   <Layers className="w-5 h-5" />
                   Recommended User Flow
                 </CardTitle>
-                <CardDescription className="text-stone-500">
+                <CardDescription className="text-muted-foreground">
                   The ideal path through the platform for new users, showing how tools connect.
                 </CardDescription>
               </CardHeader>
@@ -602,23 +602,23 @@ export default function Walkthrough() {
                     return (
                       <div key={item.step} data-testid={`flow-step-${item.step}`}>
                         <Link href={item.route.includes(':') ? '#' : item.route}>
-                          <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-stone-900/50 transition-colors cursor-pointer group">
+                          <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-card/50 transition-colors cursor-pointer group">
                             <div className={`w-10 h-10 rounded-full bg-${item.color}-900/30 border border-${item.color}-800/50 flex items-center justify-center shrink-0`}>
                               <span className={`text-sm font-bold text-${item.color}-400`}>{item.step}</span>
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <Icon className={`w-4 h-4 text-${item.color}-400`} />
-                                <span className="text-sm font-semibold text-stone-200">{item.name}</span>
-                                <code className="text-[10px] text-stone-600 font-mono hidden sm:inline">{item.route}</code>
+                                <span className="text-sm font-semibold text-foreground">{item.name}</span>
+                                <code className="text-[10px] text-muted-foreground font-mono hidden sm:inline">{item.route}</code>
                               </div>
-                              <p className="text-xs text-stone-500 mt-0.5">{item.desc}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-stone-700 group-hover:text-amber-600 transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-amber-600 transition-colors" />
                           </div>
                         </Link>
                         {idx < arr.length - 1 && (
-                          <div className="ml-5 h-4 border-l-2 border-stone-800 border-dashed" />
+                          <div className="ml-5 h-4 border-l-2 border-border border-dashed" />
                         )}
                       </div>
                     );
@@ -627,7 +627,7 @@ export default function Walkthrough() {
               </CardContent>
             </Card>
 
-            <Card className="bg-stone-900/50 border-stone-800">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="text-amber-400 flex items-center gap-2 text-sm">
                   <Sparkles className="w-4 h-4" />
@@ -636,20 +636,20 @@ export default function Walkthrough() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="grid sm:grid-cols-3 gap-4">
-                  <div className="bg-stone-950/80 rounded-lg p-4 border border-stone-800" data-testid="stat-routes">
+                  <div className="bg-card/80 rounded-lg p-4 border border-border" data-testid="stat-routes">
                     <div className="text-2xl font-bold text-amber-400">{TOOLS.length}</div>
-                    <div className="text-xs text-stone-500">Total Routes</div>
+                    <div className="text-xs text-muted-foreground">Total Routes</div>
                   </div>
-                  <div className="bg-stone-950/80 rounded-lg p-4 border border-stone-800" data-testid="stat-findings">
+                  <div className="bg-card/80 rounded-lg p-4 border border-border" data-testid="stat-findings">
                     <div className="text-2xl font-bold text-orange-400">{findings.length}</div>
-                    <div className="text-xs text-stone-500">Overlap Findings</div>
+                    <div className="text-xs text-muted-foreground">Overlap Findings</div>
                   </div>
-                  <div className="bg-stone-950/80 rounded-lg p-4 border border-stone-800" data-testid="stat-submitted">
+                  <div className="bg-card/80 rounded-lg p-4 border border-border" data-testid="stat-submitted">
                     <div className="text-2xl font-bold text-teal-400">{submittedCount}</div>
-                    <div className="text-xs text-stone-500">Recommendations Sent</div>
+                    <div className="text-xs text-muted-foreground">Recommendations Sent</div>
                   </div>
                 </div>
-                <p className="text-xs text-stone-500 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   The main architectural concern is the Investigation Hub embedding standalone pages (AI Lab, Scanner, Prompt Builder) as tabs.
                   This creates parallel code paths where the same component renders in two routing contexts.
                   The recommended fix is to canonicalize each tool to one location and use deep-links or redirects for the other.

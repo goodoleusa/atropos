@@ -34,12 +34,12 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
     return (
       <div className="flex items-center gap-2 px-2" data-testid="crew-status-compact">
         <Bot className="w-3.5 h-3.5 text-teal-500" />
-        <span className="text-[10px] text-stone-500 uppercase tracking-wider">Crew</span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Crew</span>
         <div className="flex gap-1">
           {agentActivity.map(a => (
             <div
               key={a.id}
-              className={`w-2 h-2 rounded-full ${a.isRunning ? 'bg-amber-400 animate-pulse' : a.findingsCount > 0 ? 'bg-teal-400' : 'bg-stone-700'}`}
+              className={`w-2 h-2 rounded-full ${a.isRunning ? 'bg-amber-400 animate-pulse' : a.findingsCount > 0 ? 'bg-teal-400' : 'bg-border'}`}
               title={`${a.name}: ${a.isRunning ? 'Running' : a.findingsCount > 0 ? `${a.findingsCount} findings` : 'Standby'}`}
               data-testid={`crew-dot-${a.id}`}
             />
@@ -55,12 +55,12 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <Card className="bg-[#0a0500] border-stone-800/50" data-testid="crew-status-panel">
+    <Card className="bg-[hsl(var(--card))] border-border/50" data-testid="crew-status-panel">
       <CardHeader className="p-3 pb-2">
-        <CardTitle className="text-xs font-medium flex items-center gap-2 text-stone-300">
+        <CardTitle className="text-xs font-medium flex items-center gap-2 text-foreground">
           <Zap className="w-3.5 h-3.5 text-teal-500" />
           NEXUS CREW
-          <Badge variant="outline" className="ml-auto text-[8px] border-stone-700 text-stone-500">
+          <Badge variant="outline" className="ml-auto text-[8px] border-border text-muted-foreground">
             {totalFindings} findings
           </Badge>
         </CardTitle>
@@ -84,18 +84,18 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
                       RUNNING
                     </Badge>
                   ) : agent.findingsCount > 0 ? (
-                    <Badge variant="outline" className="text-[7px] border-stone-700 text-stone-500 px-1 py-0 h-3.5">
+                    <Badge variant="outline" className="text-[7px] border-border text-muted-foreground px-1 py-0 h-3.5">
                       {agent.findingsCount}
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="text-[7px] border-stone-800 text-stone-600 px-1 py-0 h-3.5">
+                    <Badge variant="outline" className="text-[7px] border-border text-muted-foreground px-1 py-0 h-3.5">
                       STANDBY
                     </Badge>
                   )}
                 </div>
-                <p className="text-[8px] text-stone-600 truncate">{agent.role}</p>
+                <p className="text-[8px] text-muted-foreground truncate">{agent.role}</p>
               </div>
-              <ArrowRight className="w-3 h-3 text-stone-700 group-hover:text-stone-400 transition-colors" />
+              <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
             </div>
           );
         })}

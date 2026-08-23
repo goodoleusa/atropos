@@ -50,12 +50,12 @@ export function SendToMenu({ finding, compact = false, onSent }: SendToMenuProps
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-6 px-1.5 text-stone-500 hover:text-amber-400" data-testid={`send-to-trigger-${finding.id}`}>
+          <Button variant="ghost" size="sm" className="h-6 px-1.5 text-muted-foreground hover:text-amber-400" data-testid={`send-to-trigger-${finding.id}`}>
             <Send className="w-3 h-3" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-[#0a0500] border-amber-900/50 w-48" align="end">
-          <DropdownMenuLabel className="text-stone-500 text-[10px]">PIPE TO</DropdownMenuLabel>
+        <DropdownMenuContent className="bg-[hsl(var(--card))] border-amber-900/50 w-48" align="end">
+          <DropdownMenuLabel className="text-muted-foreground text-[10px]">PIPE TO</DropdownMenuLabel>
           {TARGETS.map(t => {
             const sent = alreadySent.includes(t.id);
             return (
@@ -68,7 +68,7 @@ export function SendToMenu({ finding, compact = false, onSent }: SendToMenuProps
               >
                 {sent ? <Check className="w-3 h-3 mr-2" /> : <t.icon className="w-3 h-3 mr-2" />}
                 {t.label}
-                {sent && <Badge variant="outline" className="ml-auto text-[8px] border-stone-700">sent</Badge>}
+                {sent && <Badge variant="outline" className="ml-auto text-[8px] border-border">sent</Badge>}
               </DropdownMenuItem>
             );
           })}
@@ -88,7 +88,7 @@ export function SendToMenu({ finding, compact = false, onSent }: SendToMenuProps
             size="sm"
             onClick={() => !sent && handleSend(t.id, t.path)}
             disabled={sent}
-            className={`h-6 px-2 text-[10px] border-amber-900/30 ${sent ? 'opacity-40 text-stone-600' : t.color}`}
+            className={`h-6 px-2 text-[10px] border-amber-900/30 ${sent ? 'opacity-40 text-muted-foreground' : t.color}`}
             data-testid={`send-to-${t.id}-${finding.id}`}
           >
             {sent ? <Check className="w-3 h-3 mr-1" /> : <t.icon className="w-3 h-3 mr-1" />}
@@ -137,17 +137,17 @@ export function SendToInline({ content, title, source, sourceAgent, type = 'find
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-5 px-1 text-stone-600 hover:text-amber-400" disabled={sending} data-testid="send-to-inline">
+        <Button variant="ghost" size="sm" className="h-5 px-1 text-muted-foreground hover:text-amber-400" disabled={sending} data-testid="send-to-inline">
           <Send className="w-3 h-3" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-[#0a0500] border-amber-900/50 w-44" align="end">
-        <DropdownMenuLabel className="text-stone-500 text-[10px]">PIPE TO</DropdownMenuLabel>
+      <DropdownMenuContent className="bg-[hsl(var(--card))] border-amber-900/50 w-44" align="end">
+        <DropdownMenuLabel className="text-muted-foreground text-[10px]">PIPE TO</DropdownMenuLabel>
         {TARGETS.map(t => (
           <DropdownMenuItem key={t.id} onClick={() => handleSend(t.id, t.path)} className={`text-xs ${t.color} cursor-pointer`} data-testid={`inline-send-${t.id}`}>
             <t.icon className="w-3 h-3 mr-2" />
             {t.label}
-            <span className="ml-auto text-stone-600 text-[9px]">{t.desc}</span>
+            <span className="ml-auto text-muted-foreground text-[9px]">{t.desc}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

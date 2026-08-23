@@ -172,7 +172,7 @@ export function AgentModulesSection() {
               <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50">
+              <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">
                 {ICON_OPTIONS.map(icon => (
                   <SelectItem key={icon} value={icon} className="text-amber-500">{icon}</SelectItem>
                 ))}
@@ -185,7 +185,7 @@ export function AgentModulesSection() {
               <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50">
+              <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">
                 {DIFFICULTY_OPTIONS.map(d => (
                   <SelectItem key={d} value={d} className="text-amber-500">{d}</SelectItem>
                 ))}
@@ -198,7 +198,7 @@ export function AgentModulesSection() {
               <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50">
+              <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">
                 {COLOR_OPTIONS.map(c => (
                   <SelectItem key={c} value={c} className="text-amber-500">{c}</SelectItem>
                 ))}
@@ -288,7 +288,7 @@ export function AgentModulesSection() {
             onChange={(e) => setModule({ ...module, targetFields: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
             className="bg-black/50 border-amber-900/30 text-amber-500"
           />
-          <p className="text-stone-600 text-xs">Fields users must fill in before starting</p>
+          <p className="text-muted-foreground text-xs">Fields users must fill in before starting</p>
         </div>
 
         <div className="space-y-2">
@@ -303,7 +303,7 @@ export function AgentModulesSection() {
             }}
             className="bg-black/50 border-amber-900/30 text-amber-500 font-mono text-xs min-h-[80px]"
           />
-          <p className="text-stone-600 text-xs">Default values for practice mode</p>
+          <p className="text-muted-foreground text-xs">Default values for practice mode</p>
         </div>
 
         <div className="space-y-2">
@@ -334,7 +334,7 @@ export function AgentModulesSection() {
             }}
             className="bg-black/50 border-amber-900/30 text-amber-500 font-mono text-xs min-h-[150px]"
           />
-          <p className="text-stone-600 text-xs">AI responses triggered by user discoveries</p>
+          <p className="text-muted-foreground text-xs">AI responses triggered by user discoveries</p>
         </div>
       </TabsContent>
     </Tabs>
@@ -351,7 +351,7 @@ export function AgentModulesSection() {
           <h3 className="text-lg font-orbitron text-amber-600 flex items-center gap-2">
             <Target className="w-5 h-5" /> Investigation Modules
           </h3>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Configure AI-guided investigation campaigns. Each module defines a complete security workflow.
           </p>
         </div>
@@ -371,7 +371,7 @@ export function AgentModulesSection() {
                 <Plus className="w-4 h-4 mr-2" /> New Module
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 max-w-2xl">
+            <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground max-w-2xl">
               <DialogHeader>
                 <DialogTitle className="text-amber-600 font-orbitron">Create Investigation Module</DialogTitle>
               </DialogHeader>
@@ -396,7 +396,7 @@ export function AgentModulesSection() {
         {modules.map((module) => (
           <Card 
             key={module.moduleId} 
-            className={`bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-colors ${!module.isActive ? 'opacity-50' : ''}`}
+            className={`bg-[hsl(var(--card))] border-amber-900/30 hover:border-amber-600/50 transition-colors ${!module.isActive ? 'opacity-50' : ''}`}
           >
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -422,10 +422,10 @@ export function AgentModulesSection() {
                   </Button>
                 </div>
               </div>
-              <CardDescription className="text-stone-600 text-xs">{module.moduleId}</CardDescription>
+              <CardDescription className="text-muted-foreground text-xs">{module.moduleId}</CardDescription>
             </CardHeader>
             <CardContent className="text-xs space-y-3">
-              <p className="text-stone-400">{module.description}</p>
+              <p className="text-muted-foreground">{module.description}</p>
               
               <div className="flex flex-wrap gap-1">
                 {module.tags?.map(tag => (
@@ -439,7 +439,7 @@ export function AgentModulesSection() {
                 <div className="mt-4 pt-4 border-t border-amber-900/30 space-y-3">
                   <div>
                     <Label className="text-amber-600 text-xs">Objectives ({module.objectives?.length || 0})</Label>
-                    <ul className="list-disc list-inside text-stone-500 mt-1">
+                    <ul className="list-disc list-inside text-muted-foreground mt-1">
                       {module.objectives?.slice(0, 3).map((obj, i) => <li key={i}>{obj}</li>)}
                       {(module.objectives?.length || 0) > 3 && <li className="text-amber-700">...and {module.objectives!.length - 3} more</li>}
                     </ul>
@@ -457,7 +457,7 @@ export function AgentModulesSection() {
                   {module.starterPrompt && (
                     <div>
                       <Label className="text-amber-600 text-xs">Starter Prompt Preview</Label>
-                      <p className="text-stone-500 font-mono text-xs mt-1 truncate">{module.starterPrompt.slice(0, 150)}...</p>
+                      <p className="text-muted-foreground font-mono text-xs mt-1 truncate">{module.starterPrompt.slice(0, 150)}...</p>
                     </div>
                   )}
                 </div>
@@ -475,7 +475,7 @@ export function AgentModulesSection() {
                       <Edit2 className="w-4 h-4 mr-1" /> Edit
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 max-w-2xl">
+                  <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground max-w-2xl">
                     <DialogHeader>
                       <DialogTitle className="text-amber-600 font-orbitron">Edit: {module.name}</DialogTitle>
                     </DialogHeader>
@@ -508,7 +508,7 @@ export function AgentModulesSection() {
         ))}
         
         {modules.length === 0 && (
-          <div className="text-center py-12 text-stone-600">
+          <div className="text-center py-12 text-muted-foreground">
             <Target className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>No investigation modules found.</p>
             <p className="text-sm mt-2">Click "Seed Defaults" to import from configuration, or create a new module.</p>

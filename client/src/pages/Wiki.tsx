@@ -39,7 +39,7 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">The AI Ecosystem</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Atropos features several AI-powered interfaces designed for different stages of your journey. 
             Here is a guide to help you navigate them:
           </p>
@@ -47,7 +47,7 @@ export default function Wiki() {
           <div className="grid gap-4">
             <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
               <h3 className="text-lg font-semibold text-teal-300 mb-2">1. Campaigns (/campaigns)</h3>
-              <p className="text-stone-300 text-sm">
+              <p className="text-foreground text-sm">
                 <strong>Purpose:</strong> Structured learning and skill development.
                 <br />
                 Choose from 23+ investigation tracks where a NEXUS Agent guides you through 
@@ -57,7 +57,7 @@ export default function Wiki() {
 
             <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
               <h3 className="text-lg font-semibold text-amber-300 mb-2">2. NEXUS Agents (/agents)</h3>
-              <p className="text-stone-300 text-sm">
+              <p className="text-foreground text-sm">
                 <strong>Purpose:</strong> Specialized consultation.
                 <br />
                 Interact with 6 specialized personas (OSINTAnalyst, VulnAnalyst, etc.) to get 
@@ -67,7 +67,7 @@ export default function Wiki() {
 
             <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
               <h3 className="text-lg font-semibold text-purple-300 mb-2">3. AI Lab (/ai-lab)</h3>
-              <p className="text-stone-300 text-sm">
+              <p className="text-foreground text-sm">
                 <strong>Purpose:</strong> Research and Experimentation.
                 <br />
                 A sandbox for advanced users to compare different AI models, test prompts, 
@@ -75,9 +75,9 @@ export default function Wiki() {
               </p>
             </div>
 
-            <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-stone-300 mb-2">4. AI Playground (/prompt-builder)</h3>
-              <p className="text-stone-300 text-sm">
+            <div className="bg-card/50 border border-border rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-foreground mb-2">4. AI Playground (/prompt-builder)</h3>
+              <p className="text-foreground text-sm">
                 <strong>Purpose:</strong> Command Crafting.
                 <br />
                 The technical workshop where you can build and refine custom prompts for 
@@ -95,13 +95,13 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Agent-to-Agent Coordination</h2>
-          <div className="bg-amber-950/20 border border-amber-800/30 p-4 rounded-lg italic text-stone-400 text-sm">
+          <div className="bg-amber-950/20 border border-amber-800/30 p-4 rounded-lg italic text-muted-foreground text-sm">
             "These notes serve as the shared memory context for autonomous agents navigating the platform."
           </div>
           
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-amber-300">Current Observations</h3>
-            <ul className="list-disc list-inside space-y-2 text-stone-300 text-sm">
+            <ul className="list-disc list-inside space-y-2 text-foreground text-sm">
               <li><strong>UI Convergence:</strong> The QuickNav is now the primary nexus for all features. Maintain "molten bronze" aesthetics for all interactive elements.</li>
               <li><strong>Navigation Logic:</strong> Workflow-based grouping is prioritized. (Foundation → Investigation → Results → Profile).</li>
               <li><strong>Missing Features:</strong> The 'Business' and 'Investor' dashboards are currently placeholders and require integration with real-time project metrics.</li>
@@ -119,15 +119,15 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Welcome to SysAdmin Corp</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             SysAdmin Corp is an interactive terminal-based CTF (Capture The Flag) experience that combines 
             escape room puzzles with cybersecurity investigation training. Navigate a fictional corporate 
             system, collect clues, complete quests, and uncover hidden secrets.
           </p>
           
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Key Features</h3>
-            <ul className="space-y-2 text-stone-300">
+            <ul className="space-y-2 text-foreground">
               <li className="flex items-start gap-2">
                 <Trophy className="w-4 h-4 text-amber-500 mt-1 flex-shrink-0" />
                 <span><strong>Player Progression:</strong> XP, levels, skill specializations, achievements, and global leaderboards ✨ NEW</span>
@@ -161,9 +161,9 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Getting Started</h3>
-            <ol className="list-decimal list-inside space-y-2 text-stone-300">
-              <li>Start at the <strong>Terminal</strong> - type <code className="bg-stone-800 px-1 rounded">help</code> to see available commands</li>
-              <li>Explore the system using commands like <code className="bg-stone-800 px-1 rounded">ls</code>, <code className="bg-stone-800 px-1 rounded">cat</code>, and <code className="bg-stone-800 px-1 rounded">scan</code></li>
+            <ol className="list-decimal list-inside space-y-2 text-foreground">
+              <li>Start at the <strong>Terminal</strong> - type <code className="bg-border px-1 rounded">help</code> to see available commands</li>
+              <li>Explore the system using commands like <code className="bg-border px-1 rounded">ls</code>, <code className="bg-border px-1 rounded">cat</code>, and <code className="bg-border px-1 rounded">scan</code></li>
               <li>Collect clues and complete quests to progress</li>
               <li>Use the <strong>NEXUS Agent</strong> for AI-assisted investigations</li>
               <li>Export findings to professional reports</li>
@@ -179,14 +179,14 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Player Progression System</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Track your growth as a security investigator through XP, levels, skill specializations, and achievements. 
             Compete on global leaderboards and complete daily challenges for rewards.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">XP & Leveling</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li>• Earn XP by completing investigations (+100 XP)</li>
               <li>• Find hidden clues (+50 XP each)</li>
               <li>• Complete daily challenges (+100-300 XP)</li>
@@ -196,42 +196,42 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-teal-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-teal-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Skill Specializations</h3>
             <div className="grid md:grid-cols-2 gap-3 text-sm">
               <div>
                 <h4 className="font-bold text-teal-400 mb-1">🎯 OSINT</h4>
-                <p className="text-stone-400">Passive recon, corporate intel, social media investigation</p>
+                <p className="text-muted-foreground">Passive recon, corporate intel, social media investigation</p>
               </div>
               <div>
                 <h4 className="font-bold text-teal-400 mb-1">🛡️ Network</h4>
-                <p className="text-stone-400">Infrastructure security, BGP analysis, topology mapping</p>
+                <p className="text-muted-foreground">Infrastructure security, BGP analysis, topology mapping</p>
               </div>
               <div>
                 <h4 className="font-bold text-teal-400 mb-1">🔬 Malware</h4>
-                <p className="text-stone-400">Reverse engineering, triage, threat analysis</p>
+                <p className="text-muted-foreground">Reverse engineering, triage, threat analysis</p>
               </div>
               <div>
                 <h4 className="font-bold text-teal-400 mb-1">👥 Social</h4>
-                <p className="text-stone-400">Phishing analysis, SOCMINT, human factors</p>
+                <p className="text-muted-foreground">Phishing analysis, SOCMINT, human factors</p>
               </div>
             </div>
-            <p className="text-stone-500 text-xs mt-3">Skills develop automatically based on campaigns you complete.</p>
+            <p className="text-muted-foreground text-xs mt-3">Skills develop automatically based on campaigns you complete.</p>
           </div>
 
-          <div className="bg-stone-900/50 border border-purple-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-purple-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">Achievements</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               Unlock 500+ achievements across multiple categories:
             </p>
-            <ul className="space-y-1 text-stone-300 text-sm">
+            <ul className="space-y-1 text-foreground text-sm">
               <li>• <strong>Discovery:</strong> Find hidden secrets and easter eggs</li>
               <li>• <strong>Speed:</strong> Complete campaigns quickly</li>
               <li>• <strong>Mastery:</strong> Demonstrate tool proficiency</li>
               <li>• <strong>Social:</strong> Multiplayer and community activities</li>
               <li>• <strong>Special:</strong> Unique accomplishments</li>
             </ul>
-            <p className="text-stone-500 text-xs mt-3">
+            <p className="text-muted-foreground text-xs mt-3">
               <strong>Rarity Tiers:</strong> Common, Rare, Epic, Legendary<br />
               Higher rarity = bigger XP and currency rewards
             </p>
@@ -266,26 +266,26 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Experiential Learning Framework</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Atropos emphasizes <strong>learning by doing</strong> with a mission-critical philosophy: 
             in cybersecurity, hands-on experience far outweighs traditional degrees.
           </p>
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">80/20 Learning Model</h3>
-            <div className="space-y-3 text-stone-300 text-sm">
+            <div className="space-y-3 text-foreground text-sm">
               <div>
                 <strong className="text-teal-400">80% Hands-On Practice</strong>
-                <p className="text-stone-400 mt-1">Spend most of your time actively investigating, using tools, and solving real scenarios.</p>
+                <p className="text-muted-foreground mt-1">Spend most of your time actively investigating, using tools, and solving real scenarios.</p>
               </div>
               <div>
                 <strong className="text-teal-400">20% Theory & Context</strong>
-                <p className="text-stone-400 mt-1">Learn concepts just-in-time as you encounter them, not as upfront lectures.</p>
+                <p className="text-muted-foreground mt-1">Learn concepts just-in-time as you encounter them, not as upfront lectures.</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">6 OSINT Specialization Tracks</h3>
             <div className="space-y-3">
               {[
@@ -296,20 +296,20 @@ export default function Wiki() {
                 { icon: '🎯', name: 'Nation-State Threat Intel', desc: 'APT tracking, attribution, geopolitical analysis, campaign monitoring' },
                 { icon: '🕸️', name: 'Dark Web Intelligence', desc: 'Underground markets, stolen data monitoring, forum analysis' }
               ].map((track) => (
-                <div key={track.name} className="flex items-start gap-3 p-2 bg-stone-900/30 rounded">
+                <div key={track.name} className="flex items-start gap-3 p-2 bg-card/30 rounded">
                   <span className="text-2xl">{track.icon}</span>
                   <div>
-                    <h4 className="font-bold text-stone-200 text-sm">{track.name}</h4>
-                    <p className="text-stone-400 text-xs">{track.desc}</p>
+                    <h4 className="font-bold text-foreground text-sm">{track.name}</h4>
+                    <p className="text-muted-foreground text-xs">{track.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-purple-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-purple-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">5 Learning Styles</h3>
-            <p className="text-stone-300 text-sm mb-3">The AI adapts its teaching to match how YOU learn:</p>
+            <p className="text-foreground text-sm mb-3">The AI adapts its teaching to match how YOU learn:</p>
             <div className="space-y-2 text-sm">
               {[
                 { icon: '🔧', style: 'Experiential', desc: 'Jump in, try tools, learn by mistakes and exploration' },
@@ -322,7 +322,7 @@ export default function Wiki() {
                   <span>{item.icon}</span>
                   <div>
                     <strong className="text-purple-300">{item.style}:</strong>
-                    <span className="text-stone-400 ml-2">{item.desc}</span>
+                    <span className="text-muted-foreground ml-2">{item.desc}</span>
                   </div>
                 </div>
               ))}
@@ -331,13 +331,13 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Career Paths</h3>
-            <ul className="space-y-1 text-stone-300 text-sm">
+            <ul className="space-y-1 text-foreground text-sm">
               <li>• <strong>Threat Intelligence Analyst:</strong> OSINT → Nation-State Intel → Dark Web</li>
               <li>• <strong>Financial Crime Investigator:</strong> OSINT → Financial → Crypto/Blockchain</li>
               <li>• <strong>OSINT Specialist:</strong> OSINT → SOCMINT → Geolocation → Dark Web</li>
               <li>• <strong>Security Researcher:</strong> OSINT → Network → Penetration Testing</li>
             </ul>
-            <p className="text-stone-500 text-xs mt-3">
+            <p className="text-muted-foreground text-xs mt-3">
               See full curriculum: <a href="https://github.com/goodoleusa/atropos/blob/main/docs/CURRICULUM.md" target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:underline">docs/CURRICULUM.md</a>
             </p>
           </div>
@@ -351,7 +351,7 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Investigation Campaigns</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Choose from 23 guided investigations ranging from beginner to expert difficulty. 
             Each campaign teaches specific skills and tools used by professional security investigators.
           </p>
@@ -361,7 +361,7 @@ export default function Wiki() {
               <h3 className="text-md font-semibold text-teal-300 mb-3 flex items-center gap-2">
                 <Shield className="w-4 h-4" /> Beginner Campaigns
               </h3>
-              <ul className="space-y-2 text-sm text-stone-300">
+              <ul className="space-y-2 text-sm text-foreground">
                 <li>• <strong>Passive Reconnaissance</strong> - DNS, subdomains, certificates (20-30 min)</li>
                 <li>• <strong>Basic OSINT</strong> - Target profiling, digital footprints (25-35 min)</li>
                 <li>• <strong>Email Intelligence</strong> - Pattern discovery, verification (15-25 min)</li>
@@ -372,7 +372,7 @@ export default function Wiki() {
               <h3 className="text-md font-semibold text-amber-300 mb-3 flex items-center gap-2">
                 <Target className="w-4 h-4" /> Intermediate Campaigns
               </h3>
-              <ul className="space-y-2 text-sm text-stone-300">
+              <ul className="space-y-2 text-sm text-foreground">
                 <li>• <strong>Shell Corp Investigation</strong> - Corporate tracing (45-60 min)</li>
                 <li>• <strong>Active Reconnaissance</strong> - Port scanning, enumeration (30-45 min)</li>
                 <li>• <strong>Phishing Analysis</strong> - Email forensics, attribution (35-45 min)</li>
@@ -384,7 +384,7 @@ export default function Wiki() {
               <h3 className="text-md font-semibold text-red-300 mb-3 flex items-center gap-2">
                 <Zap className="w-4 h-4" /> Advanced Campaigns
               </h3>
-              <ul className="space-y-2 text-sm text-stone-300">
+              <ul className="space-y-2 text-sm text-foreground">
                 <li>• <strong>BGP Route Tracing</strong> - Network routing analysis (30-45 min)</li>
                 <li>• <strong>Dark Web Intelligence</strong> - Underground monitoring (30-45 min)</li>
                 <li>• <strong>Cryptocurrency Tracing</strong> - Blockchain analysis (45-60 min)</li>
@@ -397,7 +397,7 @@ export default function Wiki() {
               <h3 className="text-md font-semibold text-purple-300 mb-3 flex items-center gap-2">
                 <Award className="w-4 h-4" /> Expert Campaigns
               </h3>
-              <ul className="space-y-2 text-sm text-stone-300">
+              <ul className="space-y-2 text-sm text-foreground">
                 <li>• <strong>Incident Response</strong> - Full IR cycle, containment (60-90 min)</li>
                 <li>• <strong>APT Attribution</strong> - Advanced persistent threat analysis (60-90 min)</li>
                 <li>• <strong>Network Topology Mapping</strong> - Complete infrastructure analysis (45-60 min)</li>
@@ -407,7 +407,7 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">How Campaigns Work</h3>
-            <ol className="list-decimal list-inside space-y-2 text-stone-300 text-sm">
+            <ol className="list-decimal list-inside space-y-2 text-foreground text-sm">
               <li>Choose a campaign from <Link href="/campaigns" className="text-teal-400 hover:underline">/campaigns</Link></li>
               <li>AI agent provides context and objectives</li>
               <li>Use recommended tools to gather intelligence</li>
@@ -415,7 +415,7 @@ export default function Wiki() {
               <li>Complete objectives to finish campaign</li>
               <li>Earn XP, unlock achievements, build portfolio</li>
             </ol>
-            <p className="text-stone-500 text-xs mt-3">
+            <p className="text-muted-foreground text-xs mt-3">
               Every campaign teaches real-world techniques used by security professionals.
               Based on actual incidents like Panama Papers, Silk Road investigations, APT campaigns.
             </p>
@@ -430,36 +430,36 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Global Rankings</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Compete with investigators worldwide. Track your progress and climb the ranks through 
             skill development and consistent investigation work.
           </p>
 
-          <div className="bg-stone-900/50 border border-teal-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-teal-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Leaderboard Types</h3>
             <div className="space-y-3 text-sm">
               <div>
                 <h4 className="font-bold text-teal-400">🏆 Global XP Rankings</h4>
-                <p className="text-stone-400">Top 100 investigators by total experience points earned</p>
+                <p className="text-muted-foreground">Top 100 investigators by total experience points earned</p>
               </div>
               <div>
                 <h4 className="font-bold text-amber-400">⚡ Weekly Champions</h4>
-                <p className="text-stone-400">This week's top performers (resets every Monday)</p>
+                <p className="text-muted-foreground">This week's top performers (resets every Monday)</p>
               </div>
               <div>
                 <h4 className="font-bold text-purple-400">🎯 Campaign Records</h4>
-                <p className="text-stone-400">Fastest completion times for each investigation</p>
+                <p className="text-muted-foreground">Fastest completion times for each investigation</p>
               </div>
               <div>
                 <h4 className="font-bold text-blue-400">🛡️ Skill Rankings</h4>
-                <p className="text-stone-400">Leaders in OSINT, Network, Malware, Social specializations</p>
+                <p className="text-muted-foreground">Leaders in OSINT, Network, Malware, Social specializations</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Improving Your Rank</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li>✅ Complete daily challenges (consistent activity)</li>
               <li>✅ Finish campaigns thoroughly (quality over speed)</li>
               <li>✅ Unlock rare achievements (bonus XP)</li>
@@ -486,12 +486,12 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Terminal Interface</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             The terminal is your primary interface for interacting with SysAdmin Corp's systems. 
             It simulates a Unix-like environment with custom commands for the game.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Basic Commands</h3>
             <div className="grid gap-3">
               {[
@@ -504,14 +504,14 @@ export default function Wiki() {
                 { cmd: 'whoami', desc: 'Display current user information' },
               ].map(({ cmd, desc }) => (
                 <div key={cmd} className="flex gap-4 text-sm">
-                  <code className="bg-stone-800 px-2 py-1 rounded text-teal-400 font-mono min-w-[120px]">{cmd}</code>
-                  <span className="text-stone-300">{desc}</span>
+                  <code className="bg-border px-2 py-1 rounded text-teal-400 font-mono min-w-[120px]">{cmd}</code>
+                  <span className="text-foreground">{desc}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Investigation Commands</h3>
             <div className="grid gap-3">
               {[
@@ -522,8 +522,8 @@ export default function Wiki() {
                 { cmd: 'hint', desc: 'Get a hint for the current objective (if available)' },
               ].map(({ cmd, desc }) => (
                 <div key={cmd} className="flex gap-4 text-sm">
-                  <code className="bg-stone-800 px-2 py-1 rounded text-teal-400 font-mono min-w-[140px]">{cmd}</code>
-                  <span className="text-stone-300">{desc}</span>
+                  <code className="bg-border px-2 py-1 rounded text-teal-400 font-mono min-w-[140px]">{cmd}</code>
+                  <span className="text-foreground">{desc}</span>
                 </div>
               ))}
             </div>
@@ -531,7 +531,7 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-2">Hidden Commands</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               Some commands are hidden and must be discovered through exploration. 
               Pay attention to clues in files, error messages, and environmental hints. 
               Hidden commands often unlock special content or advance the storyline.
@@ -547,16 +547,16 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">NEXUS — Lead Architect</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             NEXUS is the <strong className="text-amber-300">Lead Architect</strong> of the multi-agent system. 
             It maintains a bird's-eye view of the entire platform — receiving live Mission Bus findings 
             and crew agent status directly in its system prompt so every response is informed by the 
             full operational picture.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Core Capabilities</h3>
-            <ul className="space-y-3 text-stone-300">
+            <ul className="space-y-3 text-foreground">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
@@ -598,9 +598,9 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Investigation Campaigns</h3>
-            <p className="text-stone-400 text-sm mb-3">
+            <p className="text-muted-foreground text-sm mb-3">
               Pre-built investigation flows still work as before — select a campaign and NEXUS guides 
               you through it, now with crew agent assistance:
             </p>
@@ -612,9 +612,9 @@ export default function Wiki() {
                 { name: 'Threat Modeling', desc: 'Identify potential attack vectors and risks' },
                 { name: 'Custom Investigation', desc: 'Free-form investigation with full AI assistance' },
               ].map(({ name, desc }) => (
-                <div key={name} className="bg-stone-800/50 p-3 rounded">
+                <div key={name} className="bg-border/50 p-3 rounded">
                   <div className="font-medium text-teal-400">{name}</div>
-                  <div className="text-sm text-stone-400">{desc}</div>
+                  <div className="text-sm text-muted-foreground">{desc}</div>
                 </div>
               ))}
             </div>
@@ -622,7 +622,7 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Tips for Effective Use</h3>
-            <ul className="list-disc list-inside space-y-1 text-stone-300 text-sm">
+            <ul className="list-disc list-inside space-y-1 text-foreground text-sm">
               <li>Be specific about your targets and objectives</li>
               <li>Let NEXUS delegate to crew agents — don't try to do everything in one prompt</li>
               <li>Check the Mission Bus feed to see what other modules have discovered</li>
@@ -644,16 +644,16 @@ export default function Wiki() {
           
           <div className="bg-teal-950/30 border border-teal-800/50 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-2">What is Prompt Studio?</h3>
-            <p className="text-stone-300 leading-relaxed">
+            <p className="text-foreground leading-relaxed">
               Prompt Studio is your <strong>AI tuning control panel</strong>. It allows you to customize 
               how the NEXUS agent behaves by enabling/disabling capabilities, adjusting response parameters, 
               and optimizing context usage. Think of it as the "settings" for your AI assistant.
             </p>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Purpose & Benefits</h3>
-            <ul className="space-y-3 text-stone-300">
+            <ul className="space-y-3 text-foreground">
               <li className="flex items-start gap-2">
                 <Shield className="w-4 h-4 text-green-500 mt-1" />
                 <div>
@@ -685,9 +685,9 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Capability Modules</h3>
-            <p className="text-stone-400 text-sm mb-3">
+            <p className="text-muted-foreground text-sm mb-3">
               Toggle these modules to customize what the AI knows and can help with:
             </p>
             <div className="grid gap-2">
@@ -699,30 +699,30 @@ export default function Wiki() {
                 { name: 'Malware Analysis', desc: 'Static/dynamic analysis techniques' },
                 { name: 'Report Writing', desc: 'Professional documentation assistance' },
               ].map(({ name, desc }) => (
-                <div key={name} className="flex items-center gap-3 bg-stone-800/50 p-2 rounded">
+                <div key={name} className="flex items-center gap-3 bg-border/50 p-2 rounded">
                   <div className="w-3 h-3 rounded border-2 border-teal-500" />
                   <div>
                     <span className="text-teal-400 font-medium">{name}</span>
-                    <span className="text-stone-500 text-sm ml-2">— {desc}</span>
+                    <span className="text-muted-foreground text-sm ml-2">— {desc}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Context Compression</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               Long conversations can exceed AI model limits. Context compression intelligently 
               summarizes your conversation history to preserve key information while reducing token usage.
             </p>
-            <div className="bg-stone-800/50 p-3 rounded">
+            <div className="bg-border/50 p-3 rounded">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-stone-400">Original Context</span>
+                <span className="text-muted-foreground">Original Context</span>
                 <span className="text-amber-400">~8,000 tokens</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-stone-400">Compressed Context</span>
+                <span className="text-muted-foreground">Compressed Context</span>
                 <span className="text-green-400">~2,000 tokens (75% reduction)</span>
               </div>
             </div>
@@ -730,7 +730,7 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-2">Model Battleground</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               Compare responses from multiple AI models side-by-side. Send the same prompt to 
               different models and see which provides the best guidance for your specific use case.
             </p>
@@ -745,18 +745,18 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Investigation Reports</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             The Report Builder helps you create professional investigation reports from your 
             NEXUS agent conversations. It automatically extracts key intelligence and pre-fills 
             approximately 70% of the report structure.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Auto-Populated Sections</h3>
-            <p className="text-stone-400 text-sm mb-3">
+            <p className="text-muted-foreground text-sm mb-3">
               These sections are automatically filled from your conversation:
             </p>
-            <ul className="space-y-2 text-stone-300">
+            <ul className="space-y-2 text-foreground">
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
                 <span><strong>Targets Identified:</strong> IPs, domains, organizations mentioned</span>
@@ -784,12 +784,12 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Human Input Sections</h3>
-            <p className="text-stone-400 text-sm mb-3">
+            <p className="text-muted-foreground text-sm mb-3">
               These sections require your professional judgment:
             </p>
-            <ul className="space-y-2 text-stone-300">
+            <ul className="space-y-2 text-foreground">
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-amber-500" />
                 <span><strong>Executive Summary:</strong> High-level overview for stakeholders</span>
@@ -815,7 +815,7 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">How to Export</h3>
-            <ol className="list-decimal list-inside space-y-2 text-stone-300 text-sm">
+            <ol className="list-decimal list-inside space-y-2 text-foreground text-sm">
               <li>Have a conversation with NEXUS about your investigation</li>
               <li>Click the <strong>Report</strong> button in the chat header</li>
               <li>A markdown file will download with pre-filled intelligence</li>
@@ -833,14 +833,14 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Admin Dashboard</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             The Admin Dashboard provides content management and game configuration tools 
-            for administrators. Access it at <code className="bg-stone-800 px-1 rounded">/admin</code>.
+            for administrators. Access it at <code className="bg-border px-1 rounded">/admin</code>.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Content Management</h3>
-            <ul className="space-y-2 text-stone-300">
+            <ul className="space-y-2 text-foreground">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <span><strong>Clues:</strong> Create, edit, and manage discoverable clues</span>
@@ -860,12 +860,12 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">UX Playground</h3>
-            <p className="text-stone-400 text-sm mb-3">
+            <p className="text-muted-foreground text-sm mb-3">
               Real-time visual effect tweaking for the game's atmosphere:
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li>• Background effects and gradients</li>
               <li>• Mouse tracking particle effects</li>
               <li>• Glitch and chaos overlay intensity</li>
@@ -876,7 +876,7 @@ export default function Wiki() {
 
           <div className="bg-red-950/30 border border-red-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-red-300 mb-2">Access Control</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               The admin dashboard requires authentication. Only users with admin privileges 
               can access and modify game content. Unauthorized access attempts are logged.
             </p>
@@ -892,13 +892,13 @@ export default function Wiki() {
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Game Mechanics</h2>
           
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Clue System</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               Clues are discoverable pieces of information scattered throughout the game. 
               They can be found by:
             </p>
-            <ul className="list-disc list-inside space-y-1 text-stone-300 text-sm">
+            <ul className="list-disc list-inside space-y-1 text-foreground text-sm">
               <li>Exploring directories and reading files</li>
               <li>Running scan commands in different locations</li>
               <li>Completing quests and objectives</li>
@@ -907,12 +907,12 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Quest Progression</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               Quests guide your investigation through the corporate mystery:
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-blue-500" />
                 <span><strong>Active:</strong> Currently available objectives</span>
@@ -928,12 +928,12 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Session Persistence</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               Your progress is automatically saved. Game state includes:
             </p>
-            <ul className="list-disc list-inside space-y-1 text-stone-300 text-sm mt-2">
+            <ul className="list-disc list-inside space-y-1 text-foreground text-sm mt-2">
               <li>Collected clues and inventory</li>
               <li>Quest progress and completions</li>
               <li>Discovered commands and secrets</li>
@@ -944,11 +944,11 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-2">Mystical Elements</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               The game incorporates mystical themes including tarot cards, zodiac signs, 
               and quantum mechanics references. These elements appear through:
             </p>
-            <ul className="list-disc list-inside space-y-1 text-stone-300 text-sm mt-2">
+            <ul className="list-disc list-inside space-y-1 text-foreground text-sm mt-2">
               <li>Atmospheric popups and overlays</li>
               <li>Hidden easter eggs in the terminal</li>
               <li>Thematic clue connections</li>
@@ -965,15 +965,15 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Campaign Builder & Sitemap Integration</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             The Campaign Builder is a visual editor for creating investigation campaigns. It now syncs
             directly with the platform sitemap: saving or publishing a campaign automatically registers
             its route in the sitemap database.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Builder Features</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
                 <span><strong>Visual Canvas:</strong> Drag-and-drop node editor with connection lines, zoom, and pan</span>
@@ -999,7 +999,7 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">10 Arc Templates</h3>
-            <p className="text-stone-400 text-sm mb-3">Pre-built campaign structures you can apply from the sitemap or builder:</p>
+            <p className="text-muted-foreground text-sm mb-3">Pre-built campaign structures you can apply from the sitemap or builder:</p>
             <div className="grid grid-cols-2 gap-2 text-sm">
               {[
                 { name: 'Phantom Thread', desc: 'Phishing / Initial Access' },
@@ -1013,9 +1013,9 @@ export default function Wiki() {
                 { name: 'Red Herring', desc: 'Counter-Intelligence' },
                 { name: 'First Contact', desc: 'Beginner Tutorial' },
               ].map(t => (
-                <div key={t.name} className="bg-stone-900/30 rounded p-2">
-                  <span className="text-stone-200 font-bold text-xs">{t.name}</span>
-                  <span className="text-stone-500 text-[10px] block">{t.desc}</span>
+                <div key={t.name} className="bg-card/30 rounded p-2">
+                  <span className="text-foreground font-bold text-xs">{t.name}</span>
+                  <span className="text-muted-foreground text-[10px] block">{t.desc}</span>
                 </div>
               ))}
             </div>
@@ -1023,11 +1023,11 @@ export default function Wiki() {
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Sitemap Sync</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               The sitemap and builder are now fully connected:
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
-              <li>Save a campaign in the builder &rarr; sitemap entry created at <code className="bg-stone-800 px-1 rounded">/play/[id]</code></li>
+            <ul className="space-y-2 text-foreground text-sm">
+              <li>Save a campaign in the builder &rarr; sitemap entry created at <code className="bg-border px-1 rounded">/play/[id]</code></li>
               <li>Publish a campaign &rarr; sitemap entry marked as published (visible to players)</li>
               <li>Unpublish &rarr; sitemap entry marked draft</li>
               <li>Sitemap "Open in Builder" button &rarr; loads the campaign or arc template in the visual editor</li>
@@ -1037,10 +1037,10 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Interactive Sitemap (Admin)</h3>
-            <p className="text-stone-300 text-sm mb-2">
+            <p className="text-foreground text-sm mb-2">
               The sitemap panel in the Admin Dashboard lets you:
             </p>
-            <ul className="space-y-1 text-stone-300 text-sm">
+            <ul className="space-y-1 text-foreground text-sm">
               <li>Add custom pages with name, path, icon, category, color, and page layout</li>
               <li>Apply arc templates from the campaign builder</li>
               <li>Edit or delete custom entries inline</li>
@@ -1078,46 +1078,46 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Obsidian Vault Export</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Export campaigns from the builder directly into Obsidian-compatible markdown files.
             The export is fully compatible with Templater, Dataview, Excalibrain, and Breadcrumbs plugins.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Plugin Compatibility</h3>
             <div className="space-y-3">
-              <div className="bg-stone-900/30 rounded p-3">
+              <div className="bg-card/30 rounded p-3">
                 <h4 className="font-bold text-teal-400 text-sm mb-1">Templater</h4>
-                <p className="text-stone-400 text-xs">
-                  Every exported file starts with a <code className="bg-stone-800 px-1 rounded">{'<%* %>'}</code> script block
+                <p className="text-muted-foreground text-xs">
+                  Every exported file starts with a <code className="bg-border px-1 rounded">{'<%* %>'}</code> script block
                   that exposes campaign metadata (nodeType, campaignId, difficulty, category, etc.) as variables.
                   Templater auto-fills date fields on note creation.
                 </p>
               </div>
-              <div className="bg-stone-900/30 rounded p-3">
+              <div className="bg-card/30 rounded p-3">
                 <h4 className="font-bold text-purple-400 text-sm mb-1">Breadcrumbs</h4>
-                <p className="text-stone-400 text-xs">
-                  Frontmatter uses <code className="bg-stone-800 px-1 rounded">parent</code>,
-                  <code className="bg-stone-800 px-1 rounded">child</code>, and
-                  <code className="bg-stone-800 px-1 rounded">sibling</code> fields
-                  as wikilink arrays. The index note uses <code className="bg-stone-800 px-1 rounded">BC-folder-note: true</code> for
-                  folder-level hierarchy. Inline relations use <code className="bg-stone-800 px-1 rounded">{'parent:: [[...]]'}</code> syntax.
+                <p className="text-muted-foreground text-xs">
+                  Frontmatter uses <code className="bg-border px-1 rounded">parent</code>,
+                  <code className="bg-border px-1 rounded">child</code>, and
+                  <code className="bg-border px-1 rounded">sibling</code> fields
+                  as wikilink arrays. The index note uses <code className="bg-border px-1 rounded">BC-folder-note: true</code> for
+                  folder-level hierarchy. Inline relations use <code className="bg-border px-1 rounded">{'parent:: [[...]]'}</code> syntax.
                 </p>
               </div>
-              <div className="bg-stone-900/30 rounded p-3">
+              <div className="bg-card/30 rounded p-3">
                 <h4 className="font-bold text-amber-400 text-sm mb-1">Dataview</h4>
-                <p className="text-stone-400 text-xs">
+                <p className="text-muted-foreground text-xs">
                   All frontmatter fields are Dataview-queryable: type, skill-level, tools, hidden-clue-count,
                   page-layout, campaign, difficulty, published, sitemap-path, and more.
                   Each node file includes inline Dataview TABLE and LIST queries. The index file has advanced
                   queries for clue summaries and skills/tools maps.
                 </p>
               </div>
-              <div className="bg-stone-900/30 rounded p-3">
+              <div className="bg-card/30 rounded p-3">
                 <h4 className="font-bold text-red-400 text-sm mb-1">Excalibrain</h4>
-                <p className="text-stone-400 text-xs">
-                  Nodes export with <code className="bg-stone-800 px-1 rounded">excalibrain-color</code> and
-                  <code className="bg-stone-800 px-1 rounded">excalibrain-shape</code> fields matching node types:
+                <p className="text-muted-foreground text-xs">
+                  Nodes export with <code className="bg-border px-1 rounded">excalibrain-color</code> and
+                  <code className="bg-border px-1 rounded">excalibrain-shape</code> fields matching node types:
                   steps = amber boxes, decisions = purple diamonds, tools = teal ovals, outputs = red hexagons.
                   The index includes an Excalibrain code block with style definitions.
                 </p>
@@ -1125,9 +1125,9 @@ export default function Wiki() {
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-teal-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-teal-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Frontmatter Fields</h3>
-            <p className="text-stone-400 text-sm mb-3">Each exported node includes these queryable fields:</p>
+            <p className="text-muted-foreground text-sm mb-3">Each exported node includes these queryable fields:</p>
             <div className="grid grid-cols-2 gap-1 text-[11px]">
               {[
                 ['id', 'Unique node identifier'],
@@ -1150,8 +1150,8 @@ export default function Wiki() {
                 ['excalibrain-shape', 'box / diamond / oval / hexagon'],
               ].map(([field, desc]) => (
                 <div key={field} className="flex gap-2 py-0.5">
-                  <code className="bg-stone-800 px-1 rounded text-amber-400 shrink-0">{field}</code>
-                  <span className="text-stone-500 truncate">{desc}</span>
+                  <code className="bg-border px-1 rounded text-amber-400 shrink-0">{field}</code>
+                  <span className="text-muted-foreground truncate">{desc}</span>
                 </div>
               ))}
             </div>
@@ -1159,11 +1159,11 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">How to Export</h3>
-            <ol className="list-decimal list-inside space-y-2 text-stone-300 text-sm">
-              <li>Open the Campaign Builder at <code className="bg-stone-800 px-1 rounded">/builder</code></li>
+            <ol className="list-decimal list-inside space-y-2 text-foreground text-sm">
+              <li>Open the Campaign Builder at <code className="bg-border px-1 rounded">/builder</code></li>
               <li>Create or load a campaign</li>
               <li>Click <strong>Obsidian Export</strong> in the toolbar</li>
-              <li>A single <code className="bg-stone-800 px-1 rounded">.md</code> file downloads containing all node files separated by markers</li>
+              <li>A single <code className="bg-border px-1 rounded">.md</code> file downloads containing all node files separated by markers</li>
               <li>Split the file into individual notes in your Obsidian vault folder</li>
               <li>Breadcrumbs, Dataview, and Excalibrain will auto-detect the relationships</li>
             </ol>
@@ -1178,16 +1178,16 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Portfolio System</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Build a shareable professional portfolio from your investigations, campaigns, reports,
             and scanner results. Each portfolio entry supports data visualizations, custom styling,
             and public share links.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Auto-Population Sources</h3>
-            <p className="text-stone-400 text-sm mb-3">Portfolio entries can be created from:</p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <p className="text-muted-foreground text-sm mb-3">Portfolio entries can be created from:</p>
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1 flex-shrink-0" />
                 <span><strong>Investigations:</strong> NEXUS agent conversations and findings</span>
@@ -1209,10 +1209,10 @@ export default function Wiki() {
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Data Visualizations</h3>
-            <p className="text-stone-400 text-sm mb-3">
+            <p className="text-muted-foreground text-sm mb-3">
               Each portfolio entry can display one of these visualization types, selectable during creation or editing:
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li><strong>Radar Chart:</strong> Multi-axis skill profile (network, web, crypto, osint, system, programming)</li>
               <li><strong>Severity Donut:</strong> Critical / High / Medium / Low finding distribution</li>
               <li><strong>Timeline:</strong> Investigation milestones with dates and events</li>
@@ -1223,8 +1223,8 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">Sharing & Embedding</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
-              <li>Each entry gets a unique share link at <code className="bg-stone-800 px-1 rounded">/portfolio/:shareId</code></li>
+            <ul className="space-y-2 text-foreground text-sm">
+              <li>Each entry gets a unique share link at <code className="bg-border px-1 rounded">/portfolio/:shareId</code></li>
               <li>Share links work without login for public viewing</li>
               <li>Entries display the selected visualization, evidence, and tags</li>
               <li>Use for job applications, research portfolios, or team sharing</li>
@@ -1233,7 +1233,7 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Post-Creation Editing</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               After creating a portfolio entry, you can edit it anytime from your Profile page.
               Change the title, description, tags, evidence, visibility, and visualization type.
               Entries are editable inline without leaving the profile view.
@@ -1260,15 +1260,15 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">QR C2 Framework</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             An educational command-and-control framework using QR codes. Learn how real-world attackers
             use QR-based C2 channels, then practice defending against them through guided missions and
             hands-on hijacking labs.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">3 Guided Missions</h3>
-            <ul className="space-y-3 text-stone-300 text-sm">
+            <ul className="space-y-3 text-foreground text-sm">
               <li>
                 <strong className="text-teal-400">First Beacon (50 XP):</strong> Learn how C2 beacons establish initial communication.
                 Reference: APT29 / SolarWinds.
@@ -1284,7 +1284,7 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-purple-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-purple-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">6 QR Hijacking Labs</h3>
             <div className="space-y-2 text-sm">
               {[
@@ -1295,12 +1295,12 @@ export default function Wiki() {
                 { num: 5, name: 'Split QR Email Attack', level: 'Intermediate', desc: 'Bypass email security with fragmented QR images' },
                 { num: 6, name: 'Programmatic PDF QR', level: 'Advanced', desc: 'Evade image scanners with vector-drawn QR codes' },
               ].map(lab => (
-                <div key={lab.num} className="flex items-start gap-2 bg-stone-900/30 rounded p-2">
+                <div key={lab.num} className="flex items-start gap-2 bg-card/30 rounded p-2">
                   <span className="text-amber-500 font-bold text-xs shrink-0">Lab {lab.num}</span>
                   <div>
-                    <span className="text-stone-200 font-bold text-xs">{lab.name}</span>
-                    <span className="text-stone-600 text-[10px] ml-1">({lab.level})</span>
-                    <p className="text-stone-500 text-[10px]">{lab.desc}</p>
+                    <span className="text-foreground font-bold text-xs">{lab.name}</span>
+                    <span className="text-muted-foreground text-[10px] ml-1">({lab.level})</span>
+                    <p className="text-muted-foreground text-[10px]">{lab.desc}</p>
                   </div>
                 </div>
               ))}
@@ -1309,10 +1309,10 @@ export default function Wiki() {
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Multi-Target Simulation Console</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               4 simulated target machines with OS-specific command responses:
             </p>
-            <ul className="space-y-1 text-stone-300 text-sm">
+            <ul className="space-y-1 text-foreground text-sm">
               <li><strong>Linux Server:</strong> Ubuntu-based web server with realistic shell output</li>
               <li><strong>Windows Workstation:</strong> Domain-joined endpoint with PowerShell responses</li>
               <li><strong>IoT Camera:</strong> Embedded Linux device with limited commands</li>
@@ -1320,9 +1320,9 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Attack Flow Presets</h3>
-            <ul className="space-y-1 text-stone-300 text-sm">
+            <ul className="space-y-1 text-foreground text-sm">
               <li><strong>Raw Payload:</strong> Base64/hex data injection templates</li>
               <li><strong>C2 Beacon:</strong> Agent registration and check-in simulation</li>
               <li><strong>Data Exfiltration:</strong> Session/token theft simulation</li>
@@ -1339,7 +1339,7 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Agent Recommendation System</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             NEXUS agents automatically generate actionable platform improvements — complete with starter code,
             target files, pain points addressed, and impact estimates. These recommendations can be exported
             and fed directly into any coding agent (Replit Agent, Cursor, Copilot, Claude, etc.).
@@ -1347,17 +1347,17 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">What It Does</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
-              <li className="flex items-start gap-2"><Code className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> Agents emit <code className="bg-stone-800 text-amber-400 px-1 rounded text-xs">```recommendation</code> blocks during conversations containing structured JSON</li>
+            <ul className="space-y-2 text-foreground text-sm">
+              <li className="flex items-start gap-2"><Code className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> Agents emit <code className="bg-border text-amber-400 px-1 rounded text-xs">```recommendation</code> blocks during conversations containing structured JSON</li>
               <li className="flex items-start gap-2"><FileCode className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" /> Each recommendation includes a title, category, code snippet, target files, and pain points it solves</li>
-              <li className="flex items-start gap-2"><Puzzle className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> Recommendations auto-save to the database and can be synced to <code className="bg-stone-800 text-amber-400 px-1 rounded text-xs">.github/RECOMMENDATIONS.md</code></li>
+              <li className="flex items-start gap-2"><Puzzle className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> Recommendations auto-save to the database and can be synced to <code className="bg-border text-amber-400 px-1 rounded text-xs">.github/RECOMMENDATIONS.md</code></li>
               <li className="flex items-start gap-2"><Download className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" /> Export in 6+ formats: AI prompt, code only, git patch, curl command, JSON, markdown</li>
             </ul>
           </div>
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Step-by-Step: Generating Recommendations</h3>
-            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+            <ol className="space-y-3 text-foreground text-sm list-decimal list-inside">
               <li>
                 <strong className="text-teal-400">Chat with any NEXUS agent</strong> — Go to <Link href="/agents"><span className="text-cyan-400 underline cursor-pointer">/agents</span></Link> and start a conversation with any specialist (VulnAnalyst, OSINTAnalyst, etc.)
               </li>
@@ -1365,7 +1365,7 @@ export default function Wiki() {
                 <strong className="text-teal-400">Agent detects improvement opportunities</strong> — As the agent analyzes your query, it may identify platform enhancements, new tools, or code fixes
               </li>
               <li>
-                <strong className="text-teal-400">Recommendation block emitted</strong> — The agent outputs a <code className="bg-stone-800 text-amber-400 px-1 rounded text-xs">```recommendation</code> JSON block with structured data
+                <strong className="text-teal-400">Recommendation block emitted</strong> — The agent outputs a <code className="bg-border text-amber-400 px-1 rounded text-xs">```recommendation</code> JSON block with structured data
               </li>
               <li>
                 <strong className="text-teal-400">Auto-saved to database</strong> — The chat parser detects the block and saves it via the API. A toast notification confirms submission
@@ -1378,18 +1378,18 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">Step-by-Step: Exporting to Other Agents</h3>
-            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+            <ol className="space-y-3 text-foreground text-sm list-decimal list-inside">
               <li>
                 <strong className="text-purple-400">Select a rec</strong> — Click any item in the RECS tab to see full details in the side panel
               </li>
               <li>
                 <strong className="text-purple-400">Choose your export format</strong>:
-                <ul className="ml-6 mt-1 space-y-1 text-xs text-stone-400">
+                <ul className="ml-6 mt-1 space-y-1 text-xs text-muted-foreground">
                   <li><strong className="text-amber-400">AI Prompt</strong> — Formatted instruction ready to paste into Replit Agent, Cursor, or any LLM chat</li>
                   <li><strong className="text-cyan-400">Code Only</strong> — Just the starter code snippet, no context</li>
                   <li><strong className="text-purple-400">Git Patch</strong> — A diff-style patch targeting the recommended file</li>
                   <li><strong className="text-teal-400">curl</strong> — A shell command to fetch this recommendation from the API</li>
-                  <li><strong className="text-stone-300">JSON</strong> — Full structured data for programmatic use</li>
+                  <li><strong className="text-foreground">JSON</strong> — Full structured data for programmatic use</li>
                 </ul>
               </li>
               <li>
@@ -1398,23 +1398,23 @@ export default function Wiki() {
             </ol>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Syncing to Repository (.github)</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               Click <strong className="text-amber-400">Sync to .github</strong> on the Suggestions page to auto-generate:
             </p>
-            <ul className="space-y-1 text-stone-300 text-sm">
-              <li><code className="bg-stone-800 text-cyan-400 px-1.5 py-0.5 rounded text-xs">.github/RECOMMENDATIONS.md</code> — Human-readable markdown with all recommendations organized by category</li>
-              <li><code className="bg-stone-800 text-cyan-400 px-1.5 py-0.5 rounded text-xs">.github/recommendations.json</code> — Machine-readable JSON for programmatic ingestion</li>
+            <ul className="space-y-1 text-foreground text-sm">
+              <li><code className="bg-border text-cyan-400 px-1.5 py-0.5 rounded text-xs">.github/RECOMMENDATIONS.md</code> — Human-readable markdown with all recommendations organized by category</li>
+              <li><code className="bg-border text-cyan-400 px-1.5 py-0.5 rounded text-xs">.github/recommendations.json</code> — Machine-readable JSON for programmatic ingestion</li>
             </ul>
-            <p className="text-stone-400 text-xs mt-3">
+            <p className="text-muted-foreground text-xs mt-3">
               Any coding agent working in the repo can discover these files automatically. This is especially useful
               for Replit Agent, which reads .github/ files for context.
             </p>
           </div>
 
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">5 Recommendation Categories</h3>
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">5 Recommendation Categories</h3>
             <div className="space-y-2">
               {[
                 { label: 'Code Snippet', icon: <Code className="w-4 h-4 text-cyan-400" />, desc: 'Small, self-contained code additions — utility functions, hooks, helpers' },
@@ -1423,11 +1423,11 @@ export default function Wiki() {
                 { label: 'Integration', icon: <Puzzle className="w-4 h-4 text-teal-400" />, desc: 'External service connections — APIs, auth providers, data sources' },
                 { label: 'New Tool', icon: <Wrench className="w-4 h-4 text-orange-400" />, desc: 'Entirely new features or tools — must address 3+ pain points' },
               ].map(cat => (
-                <div key={cat.label} className="flex items-start gap-3 bg-stone-900/30 rounded p-2">
+                <div key={cat.label} className="flex items-start gap-3 bg-card/30 rounded p-2">
                   {cat.icon}
                   <div>
-                    <span className="text-stone-200 font-bold text-xs">{cat.label}</span>
-                    <p className="text-stone-500 text-[10px]">{cat.desc}</p>
+                    <span className="text-foreground font-bold text-xs">{cat.label}</span>
+                    <p className="text-muted-foreground text-[10px]">{cat.desc}</p>
                   </div>
                 </div>
               ))}
@@ -1436,44 +1436,44 @@ export default function Wiki() {
 
           <div className="bg-cyan-950/20 border border-cyan-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-cyan-300 mb-3">Best Use Cases</h3>
-            <div className="space-y-3 text-stone-300 text-sm">
+            <div className="space-y-3 text-foreground text-sm">
               <div>
                 <strong className="text-cyan-400">Platform improvement at scale</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Let agents identify and propose improvements across the entire codebase, then batch-implement them using your preferred coding agent.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Let agents identify and propose improvements across the entire codebase, then batch-implement them using your preferred coding agent.</p>
               </div>
               <div>
                 <strong className="text-cyan-400">Pain point tracking</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Each recommendation tags the specific user pain points it addresses. Use the stats dashboard to see which problems are most covered.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Each recommendation tags the specific user pain points it addresses. Use the stats dashboard to see which problems are most covered.</p>
               </div>
               <div>
                 <strong className="text-cyan-400">Cross-tool workflow</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Generate recommendations in Atropos, export as prompts, paste into Cursor or Copilot to implement. The curl export lets you automate this with scripts.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Generate recommendations in Atropos, export as prompts, paste into Cursor or Copilot to implement. The curl export lets you automate this with scripts.</p>
               </div>
               <div>
                 <strong className="text-cyan-400">Code review + voting</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Upvote the most impactful recommendations. Sort by votes to prioritize what to implement first.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Upvote the most impactful recommendations. Sort by votes to prioritize what to implement first.</p>
               </div>
               <div>
                 <strong className="text-cyan-400">Repository-level AI context</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Sync to .github/ so every agent session in your repo starts with awareness of pending improvements.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Sync to .github/ so every agent session in your repo starts with awareness of pending improvements.</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">API Reference</h3>
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">API Reference</h3>
             <div className="space-y-2 text-xs font-mono">
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs <span className="text-stone-600">— List all recs</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs/stats <span className="text-stone-600">— Category/priority/status breakdown</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs/export?format=json|md|prompt <span className="text-stone-600">— Bulk export</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/recs/export/:id?format=prompt <span className="text-stone-600">— Single item export</span></div>
-              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recs <span className="text-stone-600">— Create rec</span></div>
-              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/recs/sync <span className="text-stone-600">— Write to .github/ files</span></div>
-              <div className="bg-stone-950 p-2 rounded text-amber-400">POST /api/recs/:id/vote <span className="text-stone-600">— Upvote</span></div>
-              <div className="bg-stone-950 p-2 rounded text-purple-400">PATCH /api/recs/:id <span className="text-stone-600">— Update status/priority</span></div>
-              <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/recs/:id <span className="text-stone-600">— Remove</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">GET /api/recs <span className="text-muted-foreground">— List all recs</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">GET /api/recs/stats <span className="text-muted-foreground">— Category/priority/status breakdown</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">GET /api/recs/export?format=json|md|prompt <span className="text-muted-foreground">— Bulk export</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">GET /api/recs/export/:id?format=prompt <span className="text-muted-foreground">— Single item export</span></div>
+              <div className="bg-card p-2 rounded text-teal-400">POST /api/recs <span className="text-muted-foreground">— Create rec</span></div>
+              <div className="bg-card p-2 rounded text-teal-400">POST /api/recs/sync <span className="text-muted-foreground">— Write to .github/ files</span></div>
+              <div className="bg-card p-2 rounded text-amber-400">POST /api/recs/:id/vote <span className="text-muted-foreground">— Upvote</span></div>
+              <div className="bg-card p-2 rounded text-purple-400">PATCH /api/recs/:id <span className="text-muted-foreground">— Update status/priority</span></div>
+              <div className="bg-card p-2 rounded text-red-400">DELETE /api/recs/:id <span className="text-muted-foreground">— Remove</span></div>
             </div>
-            <p className="text-stone-400 text-xs mt-2">Push architecture recs: <code className="bg-stone-800 px-1 rounded">npm run recs:push</code> (requires server running)</p>
+            <p className="text-muted-foreground text-xs mt-2">Push architecture recs: <code className="bg-border px-1 rounded">npm run recs:push</code> (requires server running)</p>
           </div>
         </div>
       )
@@ -1485,12 +1485,12 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Platform Architecture</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             High-level structure and recurring improvement themes identified during architectural review.
           </p>
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Stack Overview</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li><strong>Frontend:</strong> React 18, TypeScript, Tailwind v4, Framer Motion, Wouter</li>
               <li><strong>Backend:</strong> Express 5, TypeScript ESM, Drizzle ORM, PostgreSQL</li>
               <li><strong>AI:</strong> OpenRouter API, NEXUS multi-agent orchestration</li>
@@ -1499,7 +1499,7 @@ export default function Wiki() {
           </div>
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Improvement Themes</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li><strong>Route Cleanup:</strong> Remove duplicate route blocks in server/routes.ts</li>
               <li><strong>Recs API:</strong> Add pagination, GET /api/recs/:id, rate limiting</li>
               <li><strong>Curriculum-Recs Integration:</strong> One-click apply rec from Curriculum Section</li>
@@ -1507,11 +1507,11 @@ export default function Wiki() {
               <li><strong>Real-time:</strong> SSE or WebSocket for live rec updates on /recs</li>
             </ul>
           </div>
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">Related</h3>
-            <p className="text-stone-400 text-sm">
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">Related</h3>
+            <p className="text-muted-foreground text-sm">
               See <Link href="/recs"><span className="text-cyan-400 underline cursor-pointer">/recs</span></Link> for all recommendations including architecture improvements.
-              Run <code className="bg-stone-800 px-1 rounded">npm run recs:push</code> to push latest architecture recs (server must be running).
+              Run <code className="bg-border px-1 rounded">npm run recs:push</code> to push latest architecture recs (server must be running).
             </p>
           </div>
         </div>
@@ -1524,7 +1524,7 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">AI Mastery Curriculum</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Seven interconnected tracks that take you from scientific prompting fundamentals to building 
             and deploying multi-agent AI systems. Each track contains missions with hands-on exercises 
             adapted to your learning style.
@@ -1542,9 +1542,9 @@ export default function Wiki() {
                 { name: 'CrewAI & LangChain Patterns', desc: 'Export your agent designs to production frameworks. Build real crews, chains, and orchestration systems.', color: 'text-rose-400' },
                 { name: 'DecoherenceLab', desc: '15 failure exercises where AI systems break down. Study hallucination cascades, prompt injection, context collapse, and emergent failures.', color: 'text-red-400' },
               ].map(track => (
-                <div key={track.name} className="bg-stone-900/30 rounded p-3">
+                <div key={track.name} className="bg-card/30 rounded p-3">
                   <span className={`font-bold text-sm ${track.color}`}>{track.name}</span>
-                  <p className="text-stone-400 text-xs mt-1">{track.desc}</p>
+                  <p className="text-muted-foreground text-xs mt-1">{track.desc}</p>
                 </div>
               ))}
             </div>
@@ -1552,7 +1552,7 @@ export default function Wiki() {
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">How It Works</h3>
-            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+            <ol className="space-y-3 text-foreground text-sm list-decimal list-inside">
               <li><strong className="text-teal-400">Open Mission Briefing</strong> — Click the compass icon in NEXUS chat to browse all available tracks and missions</li>
               <li><strong className="text-teal-400">Select a mission</strong> — Each mission shows objectives, exercises, difficulty, and estimated time</li>
               <li><strong className="text-teal-400">Exercises adapt to your style</strong> — Visual learners get diagrams, experiential learners get hands-on labs, analytical learners get deep-dive theory</li>
@@ -1563,10 +1563,10 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">Admin Editing</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               The entire curriculum is stored in the database and editable from the Admin Dashboard.
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2"><Settings className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> Navigate to Admin Dashboard &gt; Curriculum tab</li>
               <li className="flex items-start gap-2"><FileText className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> Edit track descriptions, mission objectives, and exercise content inline</li>
               <li className="flex items-start gap-2"><Zap className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> Changes push immediately to all players via the database API</li>
@@ -1583,7 +1583,7 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Cyber OSINT Curriculum</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Six specialization tracks covering the full spectrum of Open Source Intelligence. From geolocation 
             analysis to dark web monitoring, each track maps to real-world security job roles and builds 
             portfolio-ready investigation skills.
@@ -1600,9 +1600,9 @@ export default function Wiki() {
                 { name: 'Nation-State Threat Intelligence', desc: 'Track APT groups, analyze TTPs, map infrastructure, and understand geopolitical motivations behind cyber operations.', color: 'text-red-400' },
                 { name: 'Dark Web Intelligence', desc: 'Navigate .onion services, monitor marketplaces, track threat actors, and collect evidence from hidden services safely.', color: 'text-purple-400' },
               ].map(track => (
-                <div key={track.name} className="bg-stone-900/30 rounded p-3">
+                <div key={track.name} className="bg-card/30 rounded p-3">
                   <span className={`font-bold text-sm ${track.color}`}>{track.name}</span>
-                  <p className="text-stone-400 text-xs mt-1">{track.desc}</p>
+                  <p className="text-muted-foreground text-xs mt-1">{track.desc}</p>
                 </div>
               ))}
             </div>
@@ -1610,40 +1610,40 @@ export default function Wiki() {
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">Learning Model</h3>
-            <div className="space-y-3 text-stone-300 text-sm">
+            <div className="space-y-3 text-foreground text-sm">
               <div>
                 <strong className="text-teal-400">80/20 Hands-On Ratio</strong>
-                <p className="text-xs text-stone-400 mt-0.5">80% practical investigation exercises, 20% theory and context. You learn by doing real investigations, not reading textbooks.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">80% practical investigation exercises, 20% theory and context. You learn by doing real investigations, not reading textbooks.</p>
               </div>
               <div>
                 <strong className="text-teal-400">Portfolio Assessment</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Demonstrate skills through completed investigations and reports, not multiple-choice exams. Build a portfolio that proves your capabilities.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Demonstrate skills through completed investigations and reports, not multiple-choice exams. Build a portfolio that proves your capabilities.</p>
               </div>
               <div>
                 <strong className="text-teal-400">Career Mapping</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Every track maps to real security job roles. Track descriptions include the specific career paths each specialization supports.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Every track maps to real security job roles. Track descriptions include the specific career paths each specialization supports.</p>
               </div>
               <div>
                 <strong className="text-teal-400">5 Learning Style Adaptations</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Set your preferred style (Experiential, Visual, Analytical, Social, Pragmatic) and all mission guidance adapts to match how you learn best.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Set your preferred style (Experiential, Visual, Analytical, Social, Pragmatic) and all mission guidance adapts to match how you learn best.</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">Real-World Campaign Examples</h3>
-            <div className="space-y-2 text-stone-300 text-sm">
-              <div className="bg-stone-900/30 rounded p-2">
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">Real-World Campaign Examples</h3>
+            <div className="space-y-2 text-foreground text-sm">
+              <div className="bg-card/30 rounded p-2">
                 <span className="text-amber-400 font-bold text-xs">Panama Papers</span>
-                <span className="text-stone-500 text-xs ml-2">Financial Investigation track — trace offshore shell companies</span>
+                <span className="text-muted-foreground text-xs ml-2">Financial Investigation track — trace offshore shell companies</span>
               </div>
-              <div className="bg-stone-900/30 rounded p-2">
+              <div className="bg-card/30 rounded p-2">
                 <span className="text-amber-400 font-bold text-xs">Silk Road</span>
-                <span className="text-stone-500 text-xs ml-2">Dark Web Intelligence track — marketplace analysis and takedown</span>
+                <span className="text-muted-foreground text-xs ml-2">Dark Web Intelligence track — marketplace analysis and takedown</span>
               </div>
-              <div className="bg-stone-900/30 rounded p-2">
+              <div className="bg-card/30 rounded p-2">
                 <span className="text-amber-400 font-bold text-xs">APT29 / Cozy Bear</span>
-                <span className="text-stone-500 text-xs ml-2">Nation-State Threat Intel track — TTP mapping and infrastructure tracking</span>
+                <span className="text-muted-foreground text-xs ml-2">Nation-State Threat Intel track — TTP mapping and infrastructure tracking</span>
               </div>
             </div>
           </div>
@@ -1657,7 +1657,7 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">DecoherenceLab — AI Failure Analysis</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             15 structured exercises where you intentionally break AI systems to understand their failure modes.
             Study hallucination cascades, prompt injection, context window collapse, and emergent failures 
             in multi-agent systems. Understanding how AI fails is essential to building reliable AI partnerships.
@@ -1673,9 +1673,9 @@ export default function Wiki() {
                 { name: 'Confidence Miscalibration', desc: 'Identify when models express high confidence in wrong answers. Build intuition for spotting overconfident outputs.', color: 'text-yellow-400' },
                 { name: 'Multi-Agent Failure Modes', desc: 'Study how agent teams can amplify errors, create feedback loops, or reach false consensus on incorrect conclusions.', color: 'text-purple-400' },
               ].map(cat => (
-                <div key={cat.name} className="bg-stone-900/30 rounded p-3">
+                <div key={cat.name} className="bg-card/30 rounded p-3">
                   <span className={`font-bold text-sm ${cat.color}`}>{cat.name}</span>
-                  <p className="text-stone-400 text-xs mt-1">{cat.desc}</p>
+                  <p className="text-muted-foreground text-xs mt-1">{cat.desc}</p>
                 </div>
               ))}
             </div>
@@ -1683,7 +1683,7 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Exercise Structure</h3>
-            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+            <ol className="space-y-3 text-foreground text-sm list-decimal list-inside">
               <li><strong className="text-amber-400">Setup</strong> — Each exercise provides a specific scenario and AI configuration designed to trigger a known failure mode</li>
               <li><strong className="text-amber-400">Observation</strong> — Run the scenario and document exactly how the AI fails. What goes wrong? When? Why?</li>
               <li><strong className="text-amber-400">Analysis</strong> — Use the Failure Lab exercise type to write up your findings. Compare with known failure patterns</li>
@@ -1694,18 +1694,18 @@ export default function Wiki() {
 
           <div className="bg-purple-950/30 border border-purple-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-purple-300 mb-3">Why This Matters</h3>
-            <div className="space-y-3 text-stone-300 text-sm">
+            <div className="space-y-3 text-foreground text-sm">
               <div>
                 <strong className="text-purple-400">AI Safety Literacy</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Understanding failure modes is the foundation of responsible AI deployment. Every AI practitioner should know how systems break.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Understanding failure modes is the foundation of responsible AI deployment. Every AI practitioner should know how systems break.</p>
               </div>
               <div>
                 <strong className="text-purple-400">Red Team Skills</strong>
-                <p className="text-xs text-stone-400 mt-0.5">The ability to find and exploit AI weaknesses is a highly valued cybersecurity skill. DecoherenceLab builds this systematically.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">The ability to find and exploit AI weaknesses is a highly valued cybersecurity skill. DecoherenceLab builds this systematically.</p>
               </div>
               <div>
                 <strong className="text-purple-400">Career Differentiator</strong>
-                <p className="text-xs text-stone-400 mt-0.5">Most AI practitioners only know how to use AI when it works. Understanding failure modes sets you apart in interviews and on the job.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Most AI practitioners only know how to use AI when it works. Understanding failure modes sets you apart in interviews and on the job.</p>
               </div>
             </div>
           </div>
@@ -1719,14 +1719,14 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Curriculum Administration</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             The entire AI Mastery and OSINT curriculum is stored in a PostgreSQL database and editable
             through the Admin Dashboard. Changes propagate immediately to all players across the platform.
           </p>
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Admin Dashboard Features</h3>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2"><TrendingUp className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> Stats overview: total tracks, missions, exercises, and objectives at a glance</li>
               <li className="flex items-start gap-2"><FileText className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> Inline editing of track descriptions, mission names, and exercise content</li>
               <li className="flex items-start gap-2"><Target className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> Edit learning objectives for any mission directly in the dashboard</li>
@@ -1737,7 +1737,7 @@ export default function Wiki() {
 
           <div className="bg-teal-950/30 border border-teal-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-teal-300 mb-3">How Changes Flow</h3>
-            <ol className="space-y-3 text-stone-300 text-sm list-decimal list-inside">
+            <ol className="space-y-3 text-foreground text-sm list-decimal list-inside">
               <li><strong className="text-teal-400">Edit in Admin Dashboard</strong> — Modify any field and save. The change writes to the database immediately</li>
               <li><strong className="text-teal-400">API updates database</strong> — PUT /api/curriculum/:trackId persists the change in the curriculum_tracks table</li>
               <li><strong className="text-teal-400">Frontend fetches from DB</strong> — Mission Briefing and NEXUS chat load curriculum from the API with a 60-second cache</li>
@@ -1745,21 +1745,21 @@ export default function Wiki() {
             </ol>
           </div>
 
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">Curriculum API</h3>
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">Curriculum API</h3>
             <div className="space-y-2 text-xs font-mono">
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/curriculum <span className="text-stone-600">— All tracks with missions and exercises</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/curriculum/:trackId <span className="text-stone-600">— Single track details</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">GET /api/curriculum/stats/overview <span className="text-stone-600">— Aggregate stats</span></div>
-              <div className="bg-stone-950 p-2 rounded text-teal-400">POST /api/curriculum/seed <span className="text-stone-600">— Seed all tracks from static config</span></div>
-              <div className="bg-stone-950 p-2 rounded text-amber-400">PUT /api/curriculum/:trackId <span className="text-stone-600">— Update track data</span></div>
-              <div className="bg-stone-950 p-2 rounded text-red-400">DELETE /api/curriculum/:trackId <span className="text-stone-600">— Remove track</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">GET /api/curriculum <span className="text-muted-foreground">— All tracks with missions and exercises</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">GET /api/curriculum/:trackId <span className="text-muted-foreground">— Single track details</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">GET /api/curriculum/stats/overview <span className="text-muted-foreground">— Aggregate stats</span></div>
+              <div className="bg-card p-2 rounded text-teal-400">POST /api/curriculum/seed <span className="text-muted-foreground">— Seed all tracks from static config</span></div>
+              <div className="bg-card p-2 rounded text-amber-400">PUT /api/curriculum/:trackId <span className="text-muted-foreground">— Update track data</span></div>
+              <div className="bg-card p-2 rounded text-red-400">DELETE /api/curriculum/:trackId <span className="text-muted-foreground">— Remove track</span></div>
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Resilience</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               If the database is unavailable or empty, the frontend automatically falls back to the static 
               curriculum configuration compiled into the app. This ensures players always have access to 
               the curriculum even during database maintenance or initial setup before seeding.
@@ -1775,26 +1775,26 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Starter Kit / Templates System</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             Atropos includes a modular starter kit that lets you assemble a custom deployment by picking 
-            only the features you need. The system lives in the <code className="text-amber-400 bg-stone-900 px-1 rounded">templates/</code> folder.
+            only the features you need. The system lives in the <code className="text-amber-400 bg-card px-1 rounded">templates/</code> folder.
           </p>
 
           <div className="bg-amber-950/20 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">How It Works</h3>
-            <ol className="space-y-2 text-stone-300 text-sm list-decimal list-inside">
+            <ol className="space-y-2 text-foreground text-sm list-decimal list-inside">
               <li><strong className="text-amber-400">Base template</strong> provides the core platform: Express server, React, PostgreSQL, Drizzle ORM, Tailwind CSS, molten-bronze theme</li>
               <li><strong className="text-amber-400">Feature modules</strong> add capabilities: each module includes its database schema, API routes, pages, components, and nav config entries</li>
               <li><strong className="text-amber-400">Setup script</strong> assembles everything: copies the base, appends selected module schemas, injects nav items, imports, and routes</li>
             </ol>
           </div>
 
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">Quick Start</h3>
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">Quick Start</h3>
             <div className="space-y-2 text-xs font-mono">
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">bash templates/setup.sh <span className="text-stone-500"># Interactive mode — choose preset or pick modules</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">bash templates/setup.sh learner ./my-project <span className="text-stone-500"># CLI preset mode</span></div>
-              <div className="bg-stone-950 p-2 rounded text-cyan-400">bash templates/setup.sh full ./my-project <span className="text-stone-500"># Everything included</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">bash templates/setup.sh <span className="text-muted-foreground"># Interactive mode — choose preset or pick modules</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">bash templates/setup.sh learner ./my-project <span className="text-muted-foreground"># CLI preset mode</span></div>
+              <div className="bg-card p-2 rounded text-cyan-400">bash templates/setup.sh full ./my-project <span className="text-muted-foreground"># Everything included</span></div>
             </div>
           </div>
 
@@ -1803,88 +1803,88 @@ export default function Wiki() {
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2">
                 <span className="text-teal-400 font-mono font-bold w-28 shrink-0">minimal</span>
-                <span className="text-stone-300">Core platform + terminal only</span>
+                <span className="text-foreground">Core platform + terminal only</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-teal-400 font-mono font-bold w-28 shrink-0">learner</span>
-                <span className="text-stone-300">Campaigns, AI agents, gamification, wiki</span>
+                <span className="text-foreground">Campaigns, AI agents, gamification, wiki</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-teal-400 font-mono font-bold w-28 shrink-0">security</span>
-                <span className="text-stone-300">OSINT tools, scanning, reports, investigations</span>
+                <span className="text-foreground">OSINT tools, scanning, reports, investigations</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-teal-400 font-mono font-bold w-28 shrink-0">marketing</span>
-                <span className="text-stone-300">Behavior analysis, engagement, reporting</span>
+                <span className="text-foreground">Behavior analysis, engagement, reporting</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-teal-400 font-mono font-bold w-28 shrink-0">full</span>
-                <span className="text-stone-300">All 13 feature modules included</span>
+                <span className="text-foreground">All 13 feature modules included</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">Available Modules (13)</h3>
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">Available Modules (13)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
               <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
                 <span className="text-teal-400 font-bold">nexus-ai</span>
-                <p className="text-stone-400 text-xs">AI investigation assistant, multi-agent orchestration</p>
+                <p className="text-muted-foreground text-xs">AI investigation assistant, multi-agent orchestration</p>
               </div>
               <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
                 <span className="text-amber-400 font-bold">terminal</span>
-                <p className="text-stone-400 text-xs">Custom CLI with command parsing and history</p>
+                <p className="text-muted-foreground text-xs">Custom CLI with command parsing and history</p>
               </div>
               <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
                 <span className="text-teal-400 font-bold">campaigns</span>
-                <p className="text-stone-400 text-xs">Investigation campaigns with visual flow editor</p>
+                <p className="text-muted-foreground text-xs">Investigation campaigns with visual flow editor</p>
               </div>
               <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
                 <span className="text-amber-400 font-bold">scanner-osint</span>
-                <p className="text-stone-400 text-xs">Atropos scanner + real OSINT integration</p>
+                <p className="text-muted-foreground text-xs">Atropos scanner + real OSINT integration</p>
               </div>
               <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
                 <span className="text-teal-400 font-bold">qr-c2</span>
-                <p className="text-stone-400 text-xs">QR C2 framework with guided missions</p>
+                <p className="text-muted-foreground text-xs">QR C2 framework with guided missions</p>
               </div>
               <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
                 <span className="text-amber-400 font-bold">gamification</span>
-                <p className="text-stone-400 text-xs">XP, levels, achievements, leaderboards</p>
+                <p className="text-muted-foreground text-xs">XP, levels, achievements, leaderboards</p>
               </div>
               <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
                 <span className="text-teal-400 font-bold">behavior-analysis</span>
-                <p className="text-stone-400 text-xs">User behavior tracking, customer journeys</p>
+                <p className="text-muted-foreground text-xs">User behavior tracking, customer journeys</p>
               </div>
               <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
                 <span className="text-amber-400 font-bold">report-builder</span>
-                <p className="text-stone-400 text-xs">Bug bounty reports, vulnerability tracking</p>
+                <p className="text-muted-foreground text-xs">Bug bounty reports, vulnerability tracking</p>
               </div>
               <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
                 <span className="text-teal-400 font-bold">portfolio</span>
-                <p className="text-stone-400 text-xs">Shareable investigation portfolio</p>
+                <p className="text-muted-foreground text-xs">Shareable investigation portfolio</p>
               </div>
               <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
                 <span className="text-amber-400 font-bold">ai-lab</span>
-                <p className="text-stone-400 text-xs">Prompt engineering playground</p>
+                <p className="text-muted-foreground text-xs">Prompt engineering playground</p>
               </div>
               <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
                 <span className="text-teal-400 font-bold">wiki</span>
-                <p className="text-stone-400 text-xs">Built-in docs with search and linking</p>
+                <p className="text-muted-foreground text-xs">Built-in docs with search and linking</p>
               </div>
               <div className="bg-amber-950/20 border border-amber-800/20 rounded p-2">
                 <span className="text-amber-400 font-bold">spiderfoot</span>
-                <p className="text-stone-400 text-xs">OSINT recon with streaming results</p>
+                <p className="text-muted-foreground text-xs">OSINT recon with streaming results</p>
               </div>
               <div className="bg-teal-950/20 border border-teal-800/20 rounded p-2">
                 <span className="text-teal-400 font-bold">crew-builder</span>
-                <p className="text-stone-400 text-xs">Multi-agent teams with CrewAI export</p>
+                <p className="text-muted-foreground text-xs">Multi-agent teams with CrewAI export</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">File Structure</h3>
-            <pre className="text-xs font-mono text-stone-400 whitespace-pre leading-relaxed">{`templates/
+            <pre className="text-xs font-mono text-muted-foreground whitespace-pre leading-relaxed">{`templates/
   manifest.json          # Module registry with descriptions & dependencies
   setup.sh               # Interactive assembler script
   base/                  # Core platform files (always included)
@@ -1897,13 +1897,13 @@ export default function Wiki() {
       schema.ts          # Database tables for this module`}</pre>
           </div>
 
-          <div className="bg-stone-900/50 border border-stone-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-stone-300 mb-3">Adding a Custom Module</h3>
-            <ol className="space-y-2 text-stone-300 text-sm list-decimal list-inside">
-              <li>Create <code className="text-amber-400 bg-stone-900 px-1 rounded">templates/modules/your-module/module.json</code> with inject config</li>
-              <li>Add <code className="text-amber-400 bg-stone-900 px-1 rounded">schema.ts</code> if your module needs database tables</li>
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-3">Adding a Custom Module</h3>
+            <ol className="space-y-2 text-foreground text-sm list-decimal list-inside">
+              <li>Create <code className="text-amber-400 bg-card px-1 rounded">templates/modules/your-module/module.json</code> with inject config</li>
+              <li>Add <code className="text-amber-400 bg-card px-1 rounded">schema.ts</code> if your module needs database tables</li>
               <li>Reference your pages, components, and routes in the module.json</li>
-              <li>Run <code className="text-amber-400 bg-stone-900 px-1 rounded">bash templates/setup.sh custom ./output</code> and select your module</li>
+              <li>Run <code className="text-amber-400 bg-card px-1 rounded">bash templates/setup.sh custom ./output</code> and select your module</li>
             </ol>
           </div>
         </div>
@@ -1916,13 +1916,13 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Crew Orchestration</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             NEXUS commands a crew of 6 specialist agents, each focused on a distinct domain. 
             Tasks are delegated automatically based on investigation context — you interact with 
             NEXUS and the crew works behind the scenes.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Specialist Agents</h3>
             <div className="grid gap-3">
               {[
@@ -1933,24 +1933,24 @@ export default function Wiki() {
                 { name: 'NetworkRecon', specialty: 'Infrastructure mapping, BGP analysis, topology discovery', color: 'text-blue-400' },
                 { name: 'Synthesis', specialty: 'Cross-domain correlation, final reporting, pattern recognition', color: 'text-emerald-400' },
               ].map(({ name, specialty, color }) => (
-                <div key={name} className="bg-stone-800/50 p-3 rounded flex items-start gap-3">
-                  <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-stone-500" />
+                <div key={name} className="bg-border/50 p-3 rounded flex items-start gap-3">
+                  <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
                   <div>
                     <div className={`font-medium ${color}`}>{name}</div>
-                    <div className="text-sm text-stone-400">{specialty}</div>
+                    <div className="text-sm text-muted-foreground">{specialty}</div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Crew Status Panel</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               The Crew Status Panel shows real-time agent activity alongside the agent chat. 
               Each agent displays its current status, specialty, and findings count.
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div><strong>Status Indicators:</strong> idle, running, complete, or error — updated in real time</div>
@@ -1966,20 +1966,20 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Tier-Based Color Coding</h3>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-red-500 flex-shrink-0" />
-                <span className="text-stone-300"><strong className="text-red-400">Red</strong> — Critical findings or agent error state</span>
+                <span className="text-foreground"><strong className="text-red-400">Red</strong> — Critical findings or agent error state</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-amber-500 flex-shrink-0" />
-                <span className="text-stone-300"><strong className="text-amber-400">Amber</strong> — Warning-level findings or agent running</span>
+                <span className="text-foreground"><strong className="text-amber-400">Amber</strong> — Warning-level findings or agent running</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0" />
-                <span className="text-stone-300"><strong className="text-emerald-400">Emerald</strong> — Successful completion or low-severity info</span>
+                <span className="text-foreground"><strong className="text-emerald-400">Emerald</strong> — Successful completion or low-severity info</span>
               </div>
             </div>
           </div>
@@ -1993,15 +1993,15 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Mission Bus</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             The Mission Bus is the cross-module event system that connects every feature on the platform. 
             When any module produces a finding, it publishes to the bus — and NEXUS consumes those 
             findings for holistic, platform-wide analysis.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">How It Works</h3>
-            <ul className="space-y-3 text-stone-300">
+            <ul className="space-y-3 text-foreground">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
@@ -2034,7 +2034,7 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Connected Modules</h3>
             <div className="grid md:grid-cols-2 gap-3 text-sm">
               {[
@@ -2045,9 +2045,9 @@ export default function Wiki() {
                 { module: 'Report Builder', action: 'Consumes findings for auto-population' },
                 { module: 'NEXUS Agent', action: 'Consumes all findings for holistic analysis' },
               ].map(({ module, action }) => (
-                <div key={module} className="bg-stone-800/50 p-3 rounded">
+                <div key={module} className="bg-border/50 p-3 rounded">
                   <div className="font-medium text-teal-400">{module}</div>
-                  <div className="text-stone-400 text-xs">{action}</div>
+                  <div className="text-muted-foreground text-xs">{action}</div>
                 </div>
               ))}
             </div>
@@ -2055,7 +2055,7 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Why It Matters</h3>
-            <p className="text-stone-300 text-sm">
+            <p className="text-foreground text-sm">
               Without the Mission Bus, each tool operates in a silo. With it, a scanner finding 
               can trigger a crew agent deep-dive, whose results inform NEXUS's campaign guidance, 
               which populates your report — all automatically. This is the "force multiplier" that 
@@ -2072,15 +2072,15 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Context & Memory Management</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             NEXUS uses automatic context compression to manage long conversations without losing 
             critical findings. Inspired by Replit Agent-style memory management, the system 
             keeps you within token limits while preserving investigation continuity.
           </p>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Automatic Compression</h3>
-            <ul className="space-y-3 text-stone-300">
+            <ul className="space-y-3 text-foreground">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
@@ -2105,9 +2105,9 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">UI Controls</h3>
-            <ul className="space-y-3 text-stone-300 text-sm">
+            <ul className="space-y-3 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <div>
@@ -2132,13 +2132,13 @@ export default function Wiki() {
             </ul>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3">Optimization Tracking</h3>
-            <p className="text-stone-300 text-sm mb-3">
+            <p className="text-foreground text-sm mb-3">
               Compression quality is tracked via Weights & Biases integration to continuously 
               improve how well the system preserves investigation context:
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-1" />
                 <span>Compression ratio (original tokens vs. compressed tokens)</span>
@@ -2156,7 +2156,7 @@ export default function Wiki() {
 
           <div className="bg-amber-950/30 border border-amber-800/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-2">Best Practices</h3>
-            <ul className="list-disc list-inside space-y-1 text-stone-300 text-sm">
+            <ul className="list-disc list-inside space-y-1 text-foreground text-sm">
               <li>Let auto-compression handle most cases — it fires at the right time</li>
               <li>Use manual compress before starting a new investigation phase</li>
               <li>Watch the token bar to understand your remaining context budget</li>
@@ -2173,7 +2173,7 @@ export default function Wiki() {
       content: (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-amber-400">Content Development Workflows</h2>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-foreground leading-relaxed">
             These workflows are designed to keep you in a creative flow state. Whether you have a sudden 
             spark of inspiration or a systematic gap to fill, each path guides you from idea to published 
             content without breaking your momentum. Every workflow aligns with the platform's pedagogy: 
@@ -2184,8 +2184,8 @@ export default function Wiki() {
             <h3 className="text-lg font-semibold text-amber-300 mb-3 flex items-center gap-2">
               <Sparkles className="w-4 h-4" /> Workflow 1: "Spark to Campaign"
             </h3>
-            <p className="text-stone-400 text-sm mb-3 italic">When inspiration hits — ride the wave from idea to live content.</p>
-            <ol className="space-y-3 text-stone-300 text-sm">
+            <p className="text-muted-foreground text-sm mb-3 italic">When inspiration hits — ride the wave from idea to live content.</p>
+            <ol className="space-y-3 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold min-w-[20px]">1.</span>
                 <div><strong className="text-teal-300">Capture the idea in NEXUS Agent chat</strong> — describe the scenario loosely, don't overthink it. The AI thrives on raw concepts.</div>
@@ -2196,7 +2196,7 @@ export default function Wiki() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold min-w-[20px]">3.</span>
-                <div><strong className="text-teal-300">Go to Suggestions Dashboard</strong> (<code className="bg-stone-800 px-1 rounded">/suggestions</code>) to refine the recommendation — adjust priority, category, and pain points.</div>
+                <div><strong className="text-teal-300">Go to Suggestions Dashboard</strong> (<code className="bg-border px-1 rounded">/suggestions</code>) to refine the recommendation — adjust priority, category, and pain points.</div>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold min-w-[20px]">4.</span>
@@ -2212,7 +2212,7 @@ export default function Wiki() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold min-w-[20px]">7.</span>
-                <div><strong className="text-stone-400">Optionally open Campaign Builder</strong> to create a full investigation flow around the new content.</div>
+                <div><strong className="text-muted-foreground">Optionally open Campaign Builder</strong> to create a full investigation flow around the new content.</div>
               </li>
             </ol>
           </div>
@@ -2221,8 +2221,8 @@ export default function Wiki() {
             <h3 className="text-lg font-semibold text-teal-300 mb-3 flex items-center gap-2">
               <Target className="w-4 h-4" /> Workflow 2: "Gap-Fill"
             </h3>
-            <p className="text-stone-400 text-sm mb-3 italic">Systematic curriculum improvement — find what's missing and fill it.</p>
-            <ol className="space-y-3 text-stone-300 text-sm">
+            <p className="text-muted-foreground text-sm mb-3 italic">Systematic curriculum improvement — find what's missing and fill it.</p>
+            <ol className="space-y-3 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-teal-500 font-bold min-w-[20px]">1.</span>
                 <div><strong className="text-teal-300">Check Curriculum Dashboard stats</strong> — identify tracks with few missions or missing difficulty levels.</div>
@@ -2254,8 +2254,8 @@ export default function Wiki() {
             <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center gap-2">
               <Zap className="w-4 h-4" /> Workflow 3: "Quick Deploy"
             </h3>
-            <p className="text-stone-400 text-sm mb-3 italic">Drop a clue or artifact fast — minimal steps, immediate impact.</p>
-            <ol className="space-y-3 text-stone-300 text-sm">
+            <p className="text-muted-foreground text-sm mb-3 italic">Drop a clue or artifact fast — minimal steps, immediate impact.</p>
+            <ol className="space-y-3 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-purple-500 font-bold min-w-[20px]">1.</span>
                 <div><strong className="text-purple-300">Open Admin &gt; Collectibles Library</strong> (or Quick Push section).</div>
@@ -2279,12 +2279,12 @@ export default function Wiki() {
             </ol>
           </div>
 
-          <div className="bg-stone-900/50 border border-amber-900/30 rounded-lg p-4">
+          <div className="bg-card/50 border border-amber-900/30 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-amber-300 mb-3 flex items-center gap-2">
               <GraduationCap className="w-4 h-4" /> Workflow 4: "Deep Dive Track Creation"
             </h3>
-            <p className="text-stone-400 text-sm mb-3 italic">Building a full specialization track — the most thorough workflow.</p>
-            <ol className="space-y-3 text-stone-300 text-sm">
+            <p className="text-muted-foreground text-sm mb-3 italic">Building a full specialization track — the most thorough workflow.</p>
+            <ol className="space-y-3 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold min-w-[20px]">1.</span>
                 <div><strong className="text-amber-300">Plan the track structure</strong> — define prerequisites, target audience, and high-level learning objectives.</div>
@@ -2303,7 +2303,7 @@ export default function Wiki() {
                   <strong className="text-teal-300">Add exercises per mission</strong> — use the full range of types:
                   <div className="flex flex-wrap gap-1 mt-1">
                     {['prompt_craft', 'comparison', 'crew_build', 'eval_run', 'observation', 'debate', 'failure_analysis', 'reflection'].map(type => (
-                      <span key={type} className="bg-stone-800 text-stone-400 text-[10px] px-1.5 py-0.5 rounded font-mono">{type}</span>
+                      <span key={type} className="bg-border text-muted-foreground text-[10px] px-1.5 py-0.5 rounded font-mono">{type}</span>
                     ))}
                   </div>
                 </div>
@@ -2334,10 +2334,10 @@ export default function Wiki() {
             <h3 className="text-lg font-semibold text-amber-300 mb-3 flex items-center gap-2">
               <BookOpen className="w-4 h-4" /> Pedagogy Alignment Checklist
             </h3>
-            <p className="text-stone-400 text-sm mb-3">
+            <p className="text-muted-foreground text-sm mb-3">
               Before publishing any content, run through these quick checks to ensure alignment with the platform's learning philosophy:
             </p>
-            <ul className="space-y-2 text-stone-300 text-sm">
+            <ul className="space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2">
                 <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
                 <span>Does each mission have clear objectives tied to <strong>real job skills</strong>?</span>
@@ -2379,10 +2379,10 @@ export default function Wiki() {
   const activeContent = sections.find(s => s.id === activeSection);
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-stone-950/50">
+    <div className="flex flex-col h-full bg-card/50">
       <div className="p-4 border-b border-amber-900/20">
         <Link href="/">
-          <Button variant="ghost" size="sm" className="text-stone-400 hover:text-amber-400 mb-4 w-full justify-start">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-amber-400 mb-4 w-full justify-start">
             <Home className="w-4 h-4 mr-2" />
             Back to Game
           </Button>
@@ -2391,17 +2391,17 @@ export default function Wiki() {
           <Book className="w-5 h-5" />
           Wiki
         </h1>
-        <p className="text-xs text-stone-500 mt-1">SysAdmin Corp Documentation</p>
+        <p className="text-xs text-muted-foreground mt-1">SysAdmin Corp Documentation</p>
       </div>
 
       <div className="p-4 border-b border-amber-900/20">
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search docs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 bg-stone-900/50 border-stone-800 text-stone-300 text-sm"
+            className="pl-8 bg-card/50 border-border text-foreground text-sm"
             data-testid="input-wiki-search"
           />
         </div>
@@ -2420,7 +2420,7 @@ export default function Wiki() {
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                 activeSection === section.id
                   ? 'bg-amber-900/30 text-amber-400'
-                  : 'text-stone-400 hover:text-amber-300 hover:bg-stone-800/50'
+                  : 'text-muted-foreground hover:text-amber-300 hover:bg-border/50'
               }`}
             >
               {section.icon}
@@ -2433,16 +2433,16 @@ export default function Wiki() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-card via-card to-card flex flex-col">
       {/* Mobile Header */}
-      <header className="md:hidden flex items-center justify-start p-4 border-b border-amber-900/30 bg-stone-950/80 backdrop-blur-sm sticky top-0 z-20 gap-4">
+      <header className="md:hidden flex items-center justify-start p-4 border-b border-amber-900/30 bg-card/80 backdrop-blur-sm sticky top-0 z-20 gap-4">
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="text-amber-500">
               <Menu className="w-6 h-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-72 bg-stone-950 border-r border-amber-900/30">
+          <SheetContent side="left" className="p-0 w-72 bg-card border-r border-amber-900/30">
             <SheetHeader className="p-4 border-b border-amber-900/20">
               <SheetTitle className="text-amber-500 flex items-center gap-2 text-left">
                 <Book className="w-5 h-5" />
@@ -2460,19 +2460,19 @@ export default function Wiki() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex w-64 lg:w-72 flex-shrink-0 border-r border-amber-900/30 bg-stone-950/50 flex-col">
+        <aside className="hidden md:flex w-64 lg:w-72 flex-shrink-0 border-r border-amber-900/30 bg-card/50 flex-col">
           <SidebarContent />
         </aside>
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8">
           <div className="max-w-3xl mx-auto">
-            <div className="mb-8 flex items-center gap-2 text-stone-500 text-xs md:text-sm">
+            <div className="mb-8 flex items-center gap-2 text-muted-foreground text-xs md:text-sm">
               <Link href="/">
                 <span className="hover:text-amber-500 cursor-pointer">Home</span>
               </Link>
               <ChevronRight className="w-3 h-3 md:w-4 h-4" />
-              <span className="text-stone-300 cursor-pointer" onClick={() => setActiveSection('overview')}>Wiki</span>
+              <span className="text-foreground cursor-pointer" onClick={() => setActiveSection('overview')}>Wiki</span>
               <ChevronRight className="w-3 h-3 md:w-4 h-4" />
               <span className="text-amber-500 font-medium truncate">
                 {activeContent?.title}

@@ -59,12 +59,12 @@ export function AgentConfigPanel() {
         </Button>
       </div>
 
-      <Card className="bg-[#0a0500] border-cyan-900/30">
+      <Card className="bg-[hsl(var(--card))] border-cyan-900/30">
         <CardHeader>
           <CardTitle className="text-cyan-500 text-sm font-mono flex items-center gap-2">
             <Terminal className="w-4 h-4" /> Core Identity (Base System Prompt)
           </CardTitle>
-          <CardDescription className="text-stone-500">
+          <CardDescription className="text-muted-foreground">
             This is always included. Override the default NEXUS identity here.
           </CardDescription>
         </CardHeader>
@@ -73,19 +73,19 @@ export function AgentConfigPanel() {
             value={corePrompt}
             onChange={(e) => setCorePrompt(e.target.value)}
             placeholder="NEXUS v2.0 | SysAdmin Corp Terminal Agent&#10;Role: CTF/OSINT assistant, payload interpreter, system navigator&#10;Context: Escape room game with hidden routes, QR mechanics, clue collection"
-            className="bg-stone-900 border-cyan-900/50 text-stone-300 font-mono text-sm min-h-[120px]"
+            className="bg-card border-cyan-900/50 text-foreground font-mono text-sm min-h-[120px]"
             data-testid="core-prompt-input"
           />
-          <p className="text-xs text-stone-600 mt-2">Leave empty to use default. This sets the agent's personality and role.</p>
+          <p className="text-xs text-muted-foreground mt-2">Leave empty to use default. This sets the agent's personality and role.</p>
         </CardContent>
       </Card>
 
-      <Card className="bg-[#0a0500] border-cyan-900/30">
+      <Card className="bg-[hsl(var(--card))] border-cyan-900/30">
         <CardHeader>
           <CardTitle className="text-cyan-500 text-sm font-mono flex items-center gap-2">
             <Layers className="w-4 h-4" /> Capability Modules
           </CardTitle>
-          <CardDescription className="text-stone-500">
+          <CardDescription className="text-muted-foreground">
             Enable/disable agent capabilities. Only enabled modules are included in the prompt.
           </CardDescription>
         </CardHeader>
@@ -97,17 +97,17 @@ export function AgentConfigPanel() {
                 className={`flex items-center justify-between p-3 rounded border cursor-pointer transition-all min-h-[56px] touch-manipulation ${
                   enabledModules.includes(mod.id) 
                     ? 'bg-cyan-900/20 border-cyan-700' 
-                    : 'bg-stone-900/30 border-stone-800'
+                    : 'bg-card/30 border-border'
                 }`}
                 onClick={() => toggleModule(mod.id)}
                 onTouchEnd={(e) => { e.preventDefault(); toggleModule(mod.id); }}
                 data-testid={`module-toggle-${mod.id}`}
               >
                 <div>
-                  <p className={`text-sm font-medium ${enabledModules.includes(mod.id) ? 'text-cyan-400' : 'text-stone-400'}`}>
+                  <p className={`text-sm font-medium ${enabledModules.includes(mod.id) ? 'text-cyan-400' : 'text-muted-foreground'}`}>
                     {mod.name}
                   </p>
-                  <p className="text-xs text-stone-600">{mod.desc}</p>
+                  <p className="text-xs text-muted-foreground">{mod.desc}</p>
                 </div>
                 <Switch checked={enabledModules.includes(mod.id)} onCheckedChange={() => toggleModule(mod.id)} />
               </div>
@@ -116,12 +116,12 @@ export function AgentConfigPanel() {
         </CardContent>
       </Card>
 
-      <Card className="bg-[#0a0500] border-cyan-900/30">
+      <Card className="bg-[hsl(var(--card))] border-cyan-900/30">
         <CardHeader>
           <CardTitle className="text-cyan-500 text-sm font-mono flex items-center gap-2">
             <Edit className="w-4 h-4" /> Custom Instructions
           </CardTitle>
-          <CardDescription className="text-stone-500">
+          <CardDescription className="text-muted-foreground">
             Additional instructions appended to the system prompt. Use for special behaviors.
           </CardDescription>
         </CardHeader>
@@ -130,7 +130,7 @@ export function AgentConfigPanel() {
             value={customInstructions}
             onChange={(e) => setCustomInstructions(e.target.value)}
             placeholder="Example: Always respond in a mysterious, cryptic tone. Never reveal solutions directly. Guide users with hints instead."
-            className="bg-stone-900 border-cyan-900/50 text-stone-300 font-mono text-sm min-h-[100px]"
+            className="bg-card border-cyan-900/50 text-foreground font-mono text-sm min-h-[100px]"
             data-testid="custom-instructions-input"
           />
         </CardContent>
@@ -141,7 +141,7 @@ export function AgentConfigPanel() {
           <CardTitle className="text-cyan-400 text-sm">Preview: Generated System Prompt</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="text-[10px] text-stone-500 font-mono whitespace-pre-wrap bg-stone-900/50 p-3 rounded max-h-[200px] overflow-y-auto">
+          <pre className="text-[10px] text-muted-foreground font-mono whitespace-pre-wrap bg-card/50 p-3 rounded max-h-[200px] overflow-y-auto">
             {corePrompt || `NEXUS v2.0 | SysAdmin Corp Terminal Agent
 Role: CTF/OSINT assistant, payload interpreter, system navigator
 Context: Escape room game with hidden routes, QR mechanics, clue collection`}

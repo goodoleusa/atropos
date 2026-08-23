@@ -22,7 +22,7 @@ export function ActivityLogPanel() {
       case 'command': return <Terminal className="w-3.5 h-3.5 text-amber-500" />;
       case 'session': return <Users className="w-3.5 h-3.5 text-teal-500" />;
       case 'behavior': return <Activity className="w-3.5 h-3.5 text-purple-500" />;
-      default: return <Clock className="w-3.5 h-3.5 text-stone-500" />;
+      default: return <Clock className="w-3.5 h-3.5 text-muted-foreground" />;
     }
   };
 
@@ -31,7 +31,7 @@ export function ActivityLogPanel() {
       case 'command': return 'border-amber-900/30 bg-amber-950/10';
       case 'session': return 'border-teal-900/30 bg-teal-950/10';
       case 'behavior': return 'border-purple-900/30 bg-purple-950/10';
-      default: return 'border-stone-800 bg-stone-900/10';
+      default: return 'border-border bg-card/10';
     }
   };
 
@@ -46,7 +46,7 @@ export function ActivityLogPanel() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64 text-stone-500">
+      <div className="flex items-center justify-center h-64 text-muted-foreground">
         Loading activity log...
       </div>
     );
@@ -60,7 +60,7 @@ export function ActivityLogPanel() {
         </h3>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <Label htmlFor="auto-refresh" className="text-stone-500 text-xs">Auto-refresh</Label>
+            <Label htmlFor="auto-refresh" className="text-muted-foreground text-xs">Auto-refresh</Label>
             <Switch
               id="auto-refresh"
               checked={autoRefresh}
@@ -89,7 +89,7 @@ export function ActivityLogPanel() {
             <p className="text-2xl font-bold text-amber-400">
               {activities.filter(a => a.type === 'command').length}
             </p>
-            <p className="text-xs text-stone-500">Commands</p>
+            <p className="text-xs text-muted-foreground">Commands</p>
           </CardContent>
         </Card>
         <Card className="bg-teal-950/20 border-teal-900/30">
@@ -97,7 +97,7 @@ export function ActivityLogPanel() {
             <p className="text-2xl font-bold text-teal-400">
               {activities.filter(a => a.type === 'session').length}
             </p>
-            <p className="text-xs text-stone-500">Sessions</p>
+            <p className="text-xs text-muted-foreground">Sessions</p>
           </CardContent>
         </Card>
         <Card className="bg-purple-950/20 border-purple-900/30">
@@ -105,12 +105,12 @@ export function ActivityLogPanel() {
             <p className="text-2xl font-bold text-purple-400">
               {activities.filter(a => a.type === 'behavior').length}
             </p>
-            <p className="text-xs text-stone-500">Behaviors</p>
+            <p className="text-xs text-muted-foreground">Behaviors</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-[#0a0500] border-amber-900/30">
+      <Card className="bg-[hsl(var(--card))] border-amber-900/30">
         <CardHeader className="pb-2">
           <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
             <Clock className="w-4 h-4" /> Live Feed
@@ -119,7 +119,7 @@ export function ActivityLogPanel() {
         <CardContent>
           <div className="space-y-2 max-h-[500px] overflow-y-auto">
             {activities.length === 0 ? (
-              <div className="text-center py-8 text-stone-600">
+              <div className="text-center py-8 text-muted-foreground">
                 <Activity className="w-8 h-8 mx-auto mb-2 opacity-30" />
                 <p>No activity recorded yet</p>
               </div>
@@ -131,14 +131,14 @@ export function ActivityLogPanel() {
               >
                 <div className="flex-shrink-0">{typeIcon(act.type)}</div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-stone-300 truncate">{act.description}</p>
-                  <p className="text-[10px] text-stone-600 truncate">{act.detail}</p>
+                  <p className="text-sm text-foreground truncate">{act.description}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{act.detail}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-500">
+                  <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                     {act.type}
                   </Badge>
-                  <span className="text-[10px] text-stone-600 whitespace-nowrap">{formatTime(act.timestamp)}</span>
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap">{formatTime(act.timestamp)}</span>
                 </div>
               </div>
             ))}

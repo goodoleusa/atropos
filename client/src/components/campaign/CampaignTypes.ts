@@ -144,7 +144,7 @@ export const COLOR_MAP: Record<string, string> = {
   blue: 'border-blue-600 bg-blue-950/30',
   red: 'border-red-600 bg-red-950/30',
   green: 'border-green-600 bg-green-950/30',
-  stone: 'border-stone-600 bg-stone-900/30',
+  stone: 'border-muted bg-card/30',
 };
 
 export const RELATION_TYPES: { type: RelationType; label: string; icon: string; color: string }[] = [
@@ -153,7 +153,7 @@ export const RELATION_TYPES: { type: RelationType; label: string; icon: string; 
   { type: 'sibling', label: 'Sibling', icon: '↔', color: 'text-amber-400' },
   { type: 'next', label: 'Next', icon: '→', color: 'text-teal-400' },
   { type: 'prev', label: 'Previous', icon: '←', color: 'text-purple-400' },
-  { type: 'related', label: 'Related', icon: '◇', color: 'text-stone-400' },
+  { type: 'related', label: 'Related', icon: '◇', color: 'text-muted-foreground' },
 ];
 
 export const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;

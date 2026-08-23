@@ -360,19 +360,19 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] bg-stone-900 border-amber-800/50">
+      <DialogContent className="max-w-4xl max-h-[90vh] bg-card border-amber-800/50">
         <DialogHeader>
           <DialogTitle className="text-amber-500 flex items-center gap-2">
             <Zap className="w-5 h-5" />
             Export to CrewAI
           </DialogTitle>
-          <DialogDescription className="text-stone-400">
+          <DialogDescription className="text-muted-foreground">
             Build modular agent crews and export to Python for CrewAI
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="agents" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-stone-800">
+          <TabsList className="grid w-full grid-cols-4 bg-border">
             <TabsTrigger value="agents" className="data-[state=active]:bg-amber-900/30">
               <Bot className="w-4 h-4 mr-2" />
               Agents
@@ -400,7 +400,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                     className={`cursor-pointer transition-all ${
                       selectedAgents.includes(agent.id) 
                         ? 'border-amber-500 bg-amber-950/30' 
-                        : 'border-stone-700 bg-stone-800/50 hover:border-stone-600'
+                        : 'border-border bg-border/50 hover:border-muted'
                     }`}
                     onClick={() => toggleAgent(agent.id)}
                     data-testid={`agent-card-${agent.id}`}
@@ -415,22 +415,22 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                         />
                         {agent.name}
                       </CardTitle>
-                      <CardDescription className="text-xs text-stone-400">
+                      <CardDescription className="text-xs text-muted-foreground">
                         {agent.role}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="p-4 pt-0">
-                      <p className="text-xs text-stone-500 line-clamp-2">
+                      <p className="text-xs text-muted-foreground line-clamp-2">
                         {agent.goal}
                       </p>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {agent.tools.slice(0, 3).map(tool => (
-                          <span key={tool} className="text-xs bg-stone-700 px-1.5 py-0.5 rounded text-stone-300">
+                          <span key={tool} className="text-xs bg-border px-1.5 py-0.5 rounded text-foreground">
                             {tool}
                           </span>
                         ))}
                         {agent.tools.length > 3 && (
-                          <span className="text-xs text-stone-500">+{agent.tools.length - 3}</span>
+                          <span className="text-xs text-muted-foreground">+{agent.tools.length - 3}</span>
                         )}
                       </div>
                     </CardContent>
@@ -438,7 +438,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                 ))}
               </div>
             </ScrollArea>
-            <p className="text-xs text-stone-500 mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Selected: {selectedAgents.length} agents
             </p>
           </TabsContent>
@@ -451,7 +451,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                   className={`cursor-pointer transition-all ${
                     selectedTemplate === template.id
                       ? 'border-amber-500 bg-amber-950/30'
-                      : 'border-stone-700 bg-stone-800/50 hover:border-stone-600'
+                      : 'border-border bg-border/50 hover:border-muted'
                   }`}
                   onClick={() => applyTemplate(template.id)}
                   data-testid={`template-card-${template.id}`}
@@ -466,13 +466,13 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                       />
                       {template.name}
                     </CardTitle>
-                    <CardDescription className="text-stone-400">
+                    <CardDescription className="text-muted-foreground">
                       {template.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
                     <div className="flex gap-2 mb-2">
-                      <span className="text-xs text-stone-500">Agents:</span>
+                      <span className="text-xs text-muted-foreground">Agents:</span>
                       {template.agents.map(a => (
                         <span key={a.id} className="text-xs bg-amber-900/30 px-2 py-0.5 rounded text-amber-400">
                           {a.name}
@@ -480,8 +480,8 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <span className="text-xs text-stone-500">Tasks:</span>
-                      <span className="text-xs text-stone-400">{template.tasks.length} tasks</span>
+                      <span className="text-xs text-muted-foreground">Tasks:</span>
+                      <span className="text-xs text-muted-foreground">{template.tasks.length} tasks</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -492,22 +492,22 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
           <TabsContent value="config" className="mt-4 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="crew-name" className="text-stone-300">Crew Name</Label>
+                <Label htmlFor="crew-name" className="text-foreground">Crew Name</Label>
                 <Input 
                   id="crew-name"
                   value={crewName}
                   onChange={(e) => setCrewName(e.target.value.replace(/\s+/g, '_').toLowerCase())}
-                  className="bg-stone-800 border-stone-700 text-amber-400"
+                  className="bg-border border-border text-amber-400"
                   data-testid="crew-name-input"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-stone-300">LLM Provider</Label>
+                <Label className="text-foreground">LLM Provider</Label>
                 <Select value={llmProvider} onValueChange={setLlmProvider}>
-                  <SelectTrigger className="bg-stone-800 border-stone-700 text-stone-300" data-testid="llm-provider-select">
+                  <SelectTrigger className="bg-border border-border text-foreground" data-testid="llm-provider-select">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-stone-800 border-stone-700">
+                  <SelectContent className="bg-border border-border">
                     <SelectItem value="openai">OpenAI (GPT-4)</SelectItem>
                     <SelectItem value="anthropic">Anthropic (Claude)</SelectItem>
                     <SelectItem value="ollama">Ollama (Local)</SelectItem>
@@ -516,12 +516,12 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-stone-300">Custom Context / Initial Prompt</Label>
+              <Label className="text-foreground">Custom Context / Initial Prompt</Label>
               <Textarea 
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
                 placeholder="Add any custom context or instructions for your crew..."
-                className="bg-stone-800 border-stone-700 text-stone-300 min-h-[100px]"
+                className="bg-border border-border text-foreground min-h-[100px]"
                 data-testid="custom-prompt-textarea"
               />
             </div>
@@ -530,7 +530,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
           <TabsContent value="export" className="mt-4">
             <ScrollArea className="h-[400px]">
               <div className="space-y-4">
-                <Card className="border-stone-700 bg-stone-800/50">
+                <Card className="border-border bg-border/50">
                   <CardHeader className="p-4 flex flex-row items-center justify-between">
                     <CardTitle className="text-amber-400 text-sm">
                       {crewName}.py
@@ -558,13 +558,13 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
-                    <pre className="text-xs text-stone-300 bg-black/30 p-3 rounded overflow-x-auto max-h-[200px]">
+                    <pre className="text-xs text-foreground bg-black/30 p-3 rounded overflow-x-auto max-h-[200px]">
                       {generateFullCrewCode()}
                     </pre>
                   </CardContent>
                 </Card>
 
-                <Card className="border-stone-700 bg-stone-800/50">
+                <Card className="border-border bg-border/50">
                   <CardHeader className="p-4 flex flex-row items-center justify-between">
                     <CardTitle className="text-amber-400 text-sm">
                       requirements.txt
@@ -581,13 +581,13 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                     </Button>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
-                    <pre className="text-xs text-stone-300 bg-black/30 p-3 rounded">
+                    <pre className="text-xs text-foreground bg-black/30 p-3 rounded">
                       {generateRequirementsTxt()}
                     </pre>
                   </CardContent>
                 </Card>
 
-                <Card className="border-stone-700 bg-stone-800/50">
+                <Card className="border-border bg-border/50">
                   <CardHeader className="p-4 flex flex-row items-center justify-between">
                     <CardTitle className="text-amber-400 text-sm">
                       .env.template
@@ -604,7 +604,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                     </Button>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
-                    <pre className="text-xs text-stone-300 bg-black/30 p-3 rounded">
+                    <pre className="text-xs text-foreground bg-black/30 p-3 rounded">
                       {generateEnvTemplate()}
                     </pre>
                   </CardContent>

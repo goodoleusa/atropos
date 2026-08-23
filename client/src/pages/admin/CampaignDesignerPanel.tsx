@@ -83,15 +83,15 @@ export function CampaignDesignerPanel({ onOpenBuilder }: { onOpenBuilder: () => 
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-64 text-stone-500">
+        <div className="flex items-center justify-center h-64 text-muted-foreground">
           Loading campaigns...
         </div>
       ) : (
         <div className="space-y-4">
-          <Card className="bg-[#0a0500] border-purple-900/30">
+          <Card className="bg-[hsl(var(--card))] border-purple-900/30">
             <CardHeader>
               <CardTitle className="text-purple-400 text-sm">Quick Start</CardTitle>
-              <CardDescription className="text-stone-500">
+              <CardDescription className="text-muted-foreground">
                 Design investigations visually or import from Obsidian vault
               </CardDescription>
             </CardHeader>
@@ -100,8 +100,8 @@ export function CampaignDesignerPanel({ onOpenBuilder }: { onOpenBuilder: () => 
                     onClick={onOpenBuilder}>
                 <CardContent className="p-4 text-center">
                   <Layers className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-                  <h4 className="font-bold text-stone-200 text-sm mb-1">Visual Designer</h4>
-                  <p className="text-stone-500 text-xs">Create campaigns with node editor</p>
+                  <h4 className="font-bold text-foreground text-sm mb-1">Visual Designer</h4>
+                  <p className="text-muted-foreground text-xs">Create campaigns with node editor</p>
                 </CardContent>
               </Card>
 
@@ -109,22 +109,22 @@ export function CampaignDesignerPanel({ onOpenBuilder }: { onOpenBuilder: () => 
                     onClick={handleImportFromObsidian}>
                 <CardContent className="p-4 text-center">
                   <Download className="w-8 h-8 text-teal-400 mx-auto mb-2" />
-                  <h4 className="font-bold text-stone-200 text-sm mb-1">Import from Obsidian</h4>
-                  <p className="text-stone-500 text-xs">Use your Obsidian vault campaigns</p>
+                  <h4 className="font-bold text-foreground text-sm mb-1">Import from Obsidian</h4>
+                  <p className="text-muted-foreground text-xs">Use your Obsidian vault campaigns</p>
                 </CardContent>
               </Card>
 
               <Card className="bg-amber-950/20 border-amber-800/30 cursor-pointer hover:border-amber-600/50 transition-all">
                 <CardContent className="p-4 text-center">
                   <FileText className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                  <h4 className="font-bold text-stone-200 text-sm mb-1">Documentation</h4>
-                  <p className="text-stone-500 text-xs">See docs/OBSIDIAN_VAULT_GUIDE.md</p>
+                  <h4 className="font-bold text-foreground text-sm mb-1">Documentation</h4>
+                  <p className="text-muted-foreground text-xs">See docs/OBSIDIAN_VAULT_GUIDE.md</p>
                 </CardContent>
               </Card>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0a0500] border-purple-900/30">
+          <Card className="bg-[hsl(var(--card))] border-purple-900/30">
             <CardHeader>
               <CardTitle className="text-purple-400 text-sm flex items-center gap-2">
                 <Database className="w-4 h-4" />
@@ -134,33 +134,33 @@ export function CampaignDesignerPanel({ onOpenBuilder }: { onOpenBuilder: () => 
             <CardContent>
               {designerCampaigns.length === 0 ? (
                 <div className="text-center py-12">
-                  <Layers className="w-12 h-12 text-stone-700 mx-auto mb-4" />
-                  <p className="text-stone-500 mb-2">No campaigns yet</p>
-                  <p className="text-stone-700 text-sm">Create your first campaign to get started</p>
+                  <Layers className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground mb-2">No campaigns yet</p>
+                  <p className="text-muted-foreground text-sm">Create your first campaign to get started</p>
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {designerCampaigns.map((campaign: any) => (
                     <Card 
                       key={campaign.campaignId} 
-                      className="bg-stone-900/30 border-stone-800 hover:border-purple-600/50 transition-all cursor-pointer"
+                      className="bg-card/30 border-border hover:border-purple-600/50 transition-all cursor-pointer"
                       onClick={() => {
                         onOpenBuilder();
                       }}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-bold text-stone-200 text-sm">{campaign.name}</h4>
+                          <h4 className="font-bold text-foreground text-sm">{campaign.name}</h4>
                           {campaign.isPublished && (
                             <Badge className="bg-teal-900/50 text-teal-400 text-[10px]">Published</Badge>
                           )}
                         </div>
-                        <p className="text-stone-500 text-xs mb-2 line-clamp-2">{campaign.description}</p>
+                        <p className="text-muted-foreground text-xs mb-2 line-clamp-2">{campaign.description}</p>
                         <div className="flex items-center gap-2 text-[10px]">
-                          <Badge variant="outline" className="border-stone-700">
+                          <Badge variant="outline" className="border-border">
                             {campaign.difficulty || 'intermediate'}
                           </Badge>
-                          <Badge variant="outline" className="border-stone-700">
+                          <Badge variant="outline" className="border-border">
                             {campaign.nodes?.length || 0} nodes
                           </Badge>
                         </div>
@@ -179,33 +179,33 @@ export function CampaignDesignerPanel({ onOpenBuilder }: { onOpenBuilder: () => 
                 Obsidian Vault Integration
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-stone-300">
+            <CardContent className="space-y-3 text-sm text-foreground">
               <div>
-                <h4 className="font-bold text-stone-200 mb-1">✨ Design campaigns offline in Obsidian</h4>
-                <p className="text-stone-500 text-xs">
+                <h4 className="font-bold text-foreground mb-1">✨ Design campaigns offline in Obsidian</h4>
+                <p className="text-muted-foreground text-xs">
                   Use Breadcrumbs for relationships, Excalibrain for visual graph, Templater for rapid creation
                 </p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
                   <Badge className="bg-purple-900/30 text-purple-400 text-[10px]">1</Badge>
-                  <p className="text-xs text-stone-400">Edit campaigns in obsidian-vault/Campaigns/</p>
+                  <p className="text-xs text-muted-foreground">Edit campaigns in obsidian-vault/Campaigns/</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <Badge className="bg-purple-900/30 text-purple-400 text-[10px]">2</Badge>
-                  <p className="text-xs text-stone-400">Use Templater templates for auto-fill</p>
+                  <p className="text-xs text-muted-foreground">Use Templater templates for auto-fill</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <Badge className="bg-purple-900/30 text-purple-400 text-[10px]">3</Badge>
-                  <p className="text-xs text-stone-400">Visualize relationships in Excalibrain</p>
+                  <p className="text-xs text-muted-foreground">Visualize relationships in Excalibrain</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <Badge className="bg-purple-900/30 text-purple-400 text-[10px]">4</Badge>
-                  <p className="text-xs text-stone-400">Run: npm run sync:campaigns</p>
+                  <p className="text-xs text-muted-foreground">Run: npm run sync:campaigns</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <Badge className="bg-purple-900/30 text-purple-400 text-[10px]">5</Badge>
-                  <p className="text-xs text-stone-400">Campaigns appear in app automatically</p>
+                  <p className="text-xs text-muted-foreground">Campaigns appear in app automatically</p>
                 </div>
               </div>
               <div className="pt-2 border-t border-amber-900/20">

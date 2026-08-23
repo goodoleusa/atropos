@@ -70,7 +70,7 @@ const colorClasses: Record<string, string> = {
   red: 'border-red-800 text-red-400 hover:bg-red-950/50',
   blue: 'border-blue-800 text-blue-400 hover:bg-blue-950/50',
   orange: 'border-orange-800 text-orange-400 hover:bg-orange-950/50',
-  stone: 'border-stone-700 text-stone-400 hover:bg-stone-900/50',
+  stone: 'border-border text-muted-foreground hover:bg-card/50',
 };
 
 export default function DevModePanel() {
@@ -125,7 +125,7 @@ export default function DevModePanel() {
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
-              className="bg-[#0a0500] border border-amber-900/50 rounded-lg shadow-2xl p-3 sm:p-4 w-[85vw] sm:w-72 max-w-72"
+              className="bg-[hsl(var(--card))] border border-amber-900/50 rounded-lg shadow-2xl p-3 sm:p-4 w-[85vw] sm:w-72 max-w-72"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
@@ -137,7 +137,7 @@ export default function DevModePanel() {
                   size="sm" 
                   variant="ghost" 
                   onClick={() => setExpanded(false)}
-                  className="h-6 w-6 p-0 text-stone-500"
+                  className="h-6 w-6 p-0 text-muted-foreground"
                 >
                   <ChevronDown className="w-4 h-4" />
                 </Button>
@@ -149,14 +149,14 @@ export default function DevModePanel() {
                   {gameState.devMode ? (
                     <Eye className="w-4 h-4 text-teal-400" />
                   ) : (
-                    <EyeOff className="w-4 h-4 text-stone-500" />
+                    <EyeOff className="w-4 h-4 text-muted-foreground" />
                   )}
-                  <span className="text-xs text-stone-300">Dev Mode</span>
+                  <span className="text-xs text-foreground">Dev Mode</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge 
                     variant="outline" 
-                    className={`text-[10px] ${gameState.devMode ? 'border-teal-600 text-teal-400' : 'border-stone-600 text-stone-500'}`}
+                    className={`text-[10px] ${gameState.devMode ? 'border-teal-600 text-teal-400' : 'border-muted text-muted-foreground'}`}
                   >
                     {gameState.devMode ? 'ON' : 'OFF'}
                   </Badge>
@@ -169,7 +169,7 @@ export default function DevModePanel() {
               </div>
 
               {/* Session Info */}
-              <div className="text-xs text-stone-500 mb-4 p-2 bg-black/30 rounded">
+              <div className="text-xs text-muted-foreground mb-4 p-2 bg-black/30 rounded">
                 <div className="flex justify-between">
                   <span>Session:</span>
                   <span className="text-amber-600 font-mono">{gameState.sessionToken.slice(0, 8)}...</span>
@@ -229,7 +229,7 @@ export default function DevModePanel() {
                   </Button>
                 </Link>
                 <a href="/api/agent/schema" target="_blank" rel="noopener noreferrer">
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-stone-700 text-stone-400">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground">
                     <ExternalLink className="w-3 h-3" />
                   </Button>
                 </a>
@@ -245,7 +245,7 @@ export default function DevModePanel() {
               className={`flex items-center gap-2 px-4 py-2 rounded-full border shadow-lg transition-all ${
                 gameState.devMode 
                   ? 'bg-teal-950/80 border-teal-600 text-teal-400' 
-                  : 'bg-[#0a0500] border-amber-900/50 text-amber-500'
+                  : 'bg-[hsl(var(--card))] border-amber-900/50 text-amber-500'
               }`}
               data-testid="dev-mode-panel-button"
             >

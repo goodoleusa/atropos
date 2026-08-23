@@ -257,7 +257,7 @@ export default function ReportBuilder() {
   const bountyEstimate = calculateEstimatedBounty();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0500] via-[#1a0a00] to-[#0a0500] text-stone-300 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--card))] via-[hsl(var(--muted))] to-[hsl(var(--card))] text-foreground p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {autoCaptureActive ? (
           <div className="mb-4">
@@ -269,10 +269,10 @@ export default function ReportBuilder() {
                   </div>
                   <div>
                     <p className="text-teal-400 text-xs uppercase font-bold">Investigation Active</p>
-                    <p className="text-stone-300 text-sm font-semibold">
+                    <p className="text-foreground text-sm font-semibold">
                       {activeModule?.name || currentSession?.name || 'Active Module'}
                     </p>
-                    <p className="text-stone-500 text-xs mt-1">
+                    <p className="text-muted-foreground text-xs mt-1">
                       Targets: {targets.map(t => t.value).join(', ') || 'None'} • Findings: {pendingFindings.length}
                     </p>
                   </div>
@@ -291,7 +291,7 @@ export default function ReportBuilder() {
                   <Bot className="w-6 h-6 text-amber-500" />
                 </div>
                 <h3 className="text-amber-400 font-bold mb-2">No Active Investigation</h3>
-                <p className="text-stone-500 text-sm mb-4 max-w-md mx-auto">
+                <p className="text-muted-foreground text-sm mb-4 max-w-md mx-auto">
                   Start an investigation in the NEXUS Agent to auto-populate this report with your findings, targets, and tool outputs.
                 </p>
                 <Link href="/investigate">
@@ -343,7 +343,7 @@ export default function ReportBuilder() {
             <CardContent className="p-4">
               <div className="text-amber-600 text-xs uppercase mb-1">Findings</div>
               <div className="text-2xl font-bold text-amber-500">{findings.length}</div>
-              <div className="text-xs text-stone-500">
+              <div className="text-xs text-muted-foreground">
                 {findings.filter(f => f.severity === 'critical').length} Critical, {findings.filter(f => f.severity === 'high').length} High
               </div>
             </CardContent>
@@ -354,7 +354,7 @@ export default function ReportBuilder() {
               <div className="text-2xl font-bold text-teal-400">
                 ${bountyEstimate.min.toLocaleString()} - ${bountyEstimate.max.toLocaleString()}
               </div>
-              <div className="text-xs text-stone-500">Based on category averages</div>
+              <div className="text-xs text-muted-foreground">Based on category averages</div>
             </CardContent>
           </Card>
           <Card className="bg-black/50 border-purple-900/30">
@@ -363,7 +363,7 @@ export default function ReportBuilder() {
               <div className="text-2xl font-bold text-purple-400">
                 {Object.keys(reportData).length} / {REPORT_SECTIONS.reduce((acc, s) => acc + s.fields.length, 0)}
               </div>
-              <div className="text-xs text-stone-500">Fields filled</div>
+              <div className="text-xs text-muted-foreground">Fields filled</div>
             </CardContent>
           </Card>
           <Card className="bg-black/50 border-red-900/30">
@@ -372,7 +372,7 @@ export default function ReportBuilder() {
               <div className="text-2xl font-bold text-red-400">
                 {findings.filter(f => f.severity === 'critical' || f.severity === 'high').length}
               </div>
-              <div className="text-xs text-stone-500">Priority targets</div>
+              <div className="text-xs text-muted-foreground">Priority targets</div>
             </CardContent>
           </Card>
         </div>
@@ -384,13 +384,13 @@ export default function ReportBuilder() {
                 <CardTitle className="text-amber-500 flex items-center gap-2">
                   <FileText className="w-5 h-5" /> Report Sections
                 </CardTitle>
-                <CardDescription className="text-stone-500">
+                <CardDescription className="text-muted-foreground">
                   Structure your findings for maximum impact
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs value={activeSection} onValueChange={setActiveSection}>
-                  <TabsList className="bg-[#0a0500] border border-amber-900/30 w-full flex-wrap h-auto gap-1 p-1">
+                  <TabsList className="bg-[hsl(var(--card))] border border-amber-900/30 w-full flex-wrap h-auto gap-1 p-1">
                     {REPORT_SECTIONS.map((section) => (
                       <TabsTrigger 
                         key={section.id}
@@ -407,7 +407,7 @@ export default function ReportBuilder() {
                     <TabsContent key={section.id} value={section.id} className="mt-4 space-y-4">
                       <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-3">
                         <p className="text-amber-400 text-sm font-bold mb-1">{section.title}</p>
-                        <p className="text-stone-400 text-xs">{section.description}</p>
+                        <p className="text-muted-foreground text-xs">{section.description}</p>
                         <p className="text-teal-400 text-xs mt-1">
                           <Lightbulb className="w-3 h-3 inline mr-1" />
                           <strong>Bounty Tip:</strong> {section.bountyImpact}
@@ -418,14 +418,14 @@ export default function ReportBuilder() {
                         <div key={field.id} className="space-y-1">
                           <Label className="text-amber-600 text-sm">{field.label}</Label>
                           {field.tip && (
-                            <p className="text-stone-500 text-xs">{field.tip}</p>
+                            <p className="text-muted-foreground text-xs">{field.tip}</p>
                           )}
                           {field.type === 'text' && (
                             <Input
                               value={reportData[field.id] || ''}
                               onChange={(e) => updateField(field.id, e.target.value)}
                               placeholder={field.placeholder}
-                              className="bg-black/50 border-amber-900/30 text-stone-300"
+                              className="bg-black/50 border-amber-900/30 text-foreground"
                               data-testid={`input-${field.id}`}
                             />
                           )}
@@ -434,7 +434,7 @@ export default function ReportBuilder() {
                               value={reportData[field.id] || ''}
                               onChange={(e) => updateField(field.id, e.target.value)}
                               placeholder={field.placeholder}
-                              className="bg-black/50 border-amber-900/30 text-stone-300 min-h-[100px]"
+                              className="bg-black/50 border-amber-900/30 text-foreground min-h-[100px]"
                               data-testid={`textarea-${field.id}`}
                             />
                           )}
@@ -562,13 +562,13 @@ export default function ReportBuilder() {
                       className="bg-black/50 border-amber-900/30 text-xs h-12"
                     />
                     <div>
-                      <Label className="text-xs text-stone-400 mb-1 block">High-Value Indicators</Label>
+                      <Label className="text-xs text-muted-foreground mb-1 block">High-Value Indicators</Label>
                       <div className="flex flex-wrap gap-1">
                         {HIGH_VALUE_INDICATORS.slice(0, 6).map((ind) => (
                           <Badge
                             key={ind.indicator}
                             variant={selectedIndicators.includes(ind.indicator) ? "default" : "outline"}
-                            className={`cursor-pointer text-[10px] ${selectedIndicators.includes(ind.indicator) ? 'bg-teal-700' : 'border-stone-700'}`}
+                            className={`cursor-pointer text-[10px] ${selectedIndicators.includes(ind.indicator) ? 'bg-teal-700' : 'border-border'}`}
                             onClick={() => setSelectedIndicators(prev => 
                               prev.includes(ind.indicator) 
                                 ? prev.filter(i => i !== ind.indicator)
@@ -596,7 +596,7 @@ export default function ReportBuilder() {
                     {findings.map((finding) => (
                       <div 
                         key={finding.id}
-                        className="p-2 rounded border border-stone-800 bg-black/30"
+                        className="p-2 rounded border border-border bg-black/30"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -611,7 +611,7 @@ export default function ReportBuilder() {
                                 {finding.title}
                               </span>
                             </div>
-                            <p className="text-stone-500 text-[10px] mt-1">
+                            <p className="text-muted-foreground text-[10px] mt-1">
                               {VULNERABILITY_CATEGORIES.find(c => c.id === finding.category)?.name}
                             </p>
                           </div>
@@ -627,7 +627,7 @@ export default function ReportBuilder() {
                       </div>
                     ))}
                     {findings.length === 0 && (
-                      <p className="text-stone-600 text-xs text-center py-4">
+                      <p className="text-muted-foreground text-xs text-center py-4">
                         No findings yet. Use the AI agent to discover vulnerabilities!
                       </p>
                     )}
@@ -647,14 +647,14 @@ export default function ReportBuilder() {
                   {HIGH_VALUE_INDICATORS.slice(0, 5).map((ind) => (
                     <div key={ind.indicator} className="flex items-center gap-2 text-xs">
                       <span>{ind.icon}</span>
-                      <span className="text-stone-400 flex-1">{ind.indicator}</span>
+                      <span className="text-muted-foreground flex-1">{ind.indicator}</span>
                       <Badge variant="outline" className="text-teal-400 border-teal-700 text-[10px]">
                         {ind.multiplier}x
                       </Badge>
                     </div>
                   ))}
                 </div>
-                <p className="text-stone-500 text-[10px] mt-3">
+                <p className="text-muted-foreground text-[10px] mt-3">
                   Findings with these indicators typically pay more. Look for chains!
                 </p>
               </CardContent>
@@ -670,8 +670,8 @@ export default function ReportBuilder() {
                 <ScrollArea className="h-[150px]">
                   <div className="space-y-1">
                     {VULNERABILITY_CATEGORIES.map((cat) => (
-                      <div key={cat.id} className="flex items-center justify-between text-xs py-1 border-b border-stone-800 last:border-0">
-                        <span className="text-stone-400">{cat.name}</span>
+                      <div key={cat.id} className="flex items-center justify-between text-xs py-1 border-b border-border last:border-0">
+                        <span className="text-muted-foreground">{cat.name}</span>
                         <span className="text-amber-500 font-mono">{cat.avgBounty}</span>
                       </div>
                     ))}

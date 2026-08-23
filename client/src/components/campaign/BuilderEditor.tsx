@@ -12,7 +12,7 @@ interface BuilderEditorProps {
 export default function BuilderEditor({ node, onUpdateNode }: BuilderEditorProps) {
   if (!node) {
     return (
-      <div className="flex-1 flex items-center justify-center text-stone-600 italic text-sm">
+      <div className="flex-1 flex items-center justify-center text-muted-foreground italic text-sm">
         Select a node to edit.
       </div>
     );
@@ -28,7 +28,7 @@ export default function BuilderEditor({ node, onUpdateNode }: BuilderEditorProps
           className="text-2xl font-black bg-transparent border-none p-0 focus-visible:ring-0 text-amber-500 h-auto uppercase tracking-tighter"
         />
         <div className="flex gap-2">
-          <Badge className="bg-stone-900 text-stone-500 border-stone-800 h-5 text-[9px] font-mono">{node.id}</Badge>
+          <Badge className="bg-card text-muted-foreground border-border h-5 text-[9px] font-mono">{node.id}</Badge>
           <Badge className="bg-amber-950/30 text-amber-500 border-amber-900/30 h-5 text-[9px] uppercase">{node.type}</Badge>
           {node.pageLayout && (
             <Badge className="bg-teal-950/30 text-teal-400 border-teal-900/30 h-5 text-[9px]">{node.pageLayout}</Badge>
@@ -38,7 +38,7 @@ export default function BuilderEditor({ node, onUpdateNode }: BuilderEditorProps
           data-testid="edit-node-content"
           value={node.content}
           onChange={e => onUpdateNode(node.id, { content: e.target.value })}
-          className="flex-1 bg-stone-900/30 border-stone-800 text-stone-300 resize-none font-mono text-sm leading-relaxed focus:border-amber-900/50 p-4 rounded-xl min-h-[300px]"
+          className="flex-1 bg-card/30 border-border text-foreground resize-none font-mono text-sm leading-relaxed focus:border-amber-900/50 p-4 rounded-xl min-h-[300px]"
           placeholder="Write markdown with [[wikilinks]]..."
         />
       </div>

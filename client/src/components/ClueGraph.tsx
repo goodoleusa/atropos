@@ -139,7 +139,7 @@ export function ClueGraph({
         </Button>
       </div>
 
-      <div className="absolute top-2 left-2 z-10 text-[10px] text-stone-600 bg-black/50 px-2 py-1 rounded">
+      <div className="absolute top-2 left-2 z-10 text-[10px] text-muted-foreground bg-black/50 px-2 py-1 rounded">
         {filteredClues.length} nodes · {edges.length} connections
       </div>
 
@@ -258,19 +258,19 @@ export function ClueGraph({
       <div className="absolute bottom-2 left-2 flex items-center gap-3 text-[9px]">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-amber-600" />
-          <span className="text-stone-500">Common</span>
+          <span className="text-muted-foreground">Common</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-teal-500" />
-          <span className="text-stone-500">Uncommon</span>
+          <span className="text-muted-foreground">Uncommon</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-stone-500">Rare</span>
+          <span className="text-muted-foreground">Rare</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-purple-500" />
-          <span className="text-stone-500">Legendary</span>
+          <span className="text-muted-foreground">Legendary</span>
         </div>
       </div>
     </div>

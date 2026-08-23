@@ -94,7 +94,7 @@ export default function AdminDashboard() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0500] flex items-center justify-center">
+      <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center">
         <div className="text-amber-600 font-mono text-sm animate-pulse">Authenticating...</div>
       </div>
     );
@@ -102,14 +102,14 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0a0500] flex items-center justify-center" data-testid="admin-login-gate">
+      <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center" data-testid="admin-login-gate">
         <div className="max-w-lg w-full mx-4 text-center space-y-8">
           <div className="space-y-3">
             <div className="w-20 h-20 mx-auto rounded-2xl bg-amber-900/20 border-2 border-amber-700/50 flex items-center justify-center mb-6">
               <ShieldAlert className="w-10 h-10 text-amber-500" />
             </div>
             <h1 className="text-3xl font-orbitron text-amber-500 tracking-tight">Admin Access</h1>
-            <p className="text-stone-500 text-sm max-w-xs mx-auto">
+            <p className="text-muted-foreground text-sm max-w-xs mx-auto">
               This area is restricted. Sign in with your Replit account to continue.
             </p>
           </div>
@@ -125,7 +125,7 @@ export default function AdminDashboard() {
 
           <div className="pt-4">
             <Link href="/">
-              <span className="text-xs text-stone-600 hover:text-stone-400 cursor-pointer transition-colors">
+              <span className="text-xs text-muted-foreground hover:text-muted-foreground cursor-pointer transition-colors">
                 &larr; Back to platform
               </span>
             </Link>
@@ -143,8 +143,8 @@ export default function AdminDashboard() {
     if (typeof data !== 'object' || data === null) {
       return (
         <div className="flex items-center gap-2 py-1 pl-6">
-          <File className="w-3 h-3 text-stone-600" />
-          <span className="text-stone-400 text-xs">{String(data)}</span>
+          <File className="w-3 h-3 text-muted-foreground" />
+          <span className="text-muted-foreground text-xs">{String(data)}</span>
         </div>
       );
     }
@@ -163,14 +163,14 @@ export default function AdminDashboard() {
             {hasChildren ? (
               isExpanded ? <ChevronDown className="w-3 h-3 text-amber-600" /> : <ChevronRight className="w-3 h-3 text-amber-600" />
             ) : (
-              <File className="w-3 h-3 text-stone-600" />
+              <File className="w-3 h-3 text-muted-foreground" />
             )}
             {hasChildren ? <Folder className="w-3 h-3 text-amber-700" /> : null}
-            <span className={`text-xs font-mono ${hasChildren ? 'text-amber-500 font-bold' : 'text-stone-400'}`}>
+            <span className={`text-xs font-mono ${hasChildren ? 'text-amber-500 font-bold' : 'text-muted-foreground'}`}>
               {key}
             </span>
             {!hasChildren && (
-              <span className="text-[10px] text-stone-600 italic truncate ml-2">
+              <span className="text-[10px] text-muted-foreground italic truncate ml-2">
                 {String(value).substring(0, 50)}{String(value).length > 50 ? '...' : ''}
               </span>
             )}
@@ -227,9 +227,9 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050200] text-stone-300 font-mono flex flex-col md:flex-row overflow-hidden">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground font-mono flex flex-col md:flex-row overflow-hidden">
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0500] border-r border-amber-900/30 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0
+        fixed inset-y-0 left-0 z-50 w-64 bg-[hsl(var(--card))] border-r border-amber-900/30 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="h-full flex flex-col">
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
                     <span className={`text-[9px] font-bold uppercase tracking-widest ${GROUP_COLORS[group.color]}`}>
                       {group.label}
                     </span>
-                    <ChevronDown className={`w-2.5 h-2.5 text-stone-600 transition-transform ${collapsedGroups[group.label] ? '-rotate-90' : ''}`} />
+                    <ChevronDown className={`w-2.5 h-2.5 text-muted-foreground transition-transform ${collapsedGroups[group.label] ? '-rotate-90' : ''}`} />
                   </div>
                   
                   {!collapsedGroups[group.label] && (
@@ -269,11 +269,11 @@ export default function AdminDashboard() {
                           return (
                             <Link key={item.id} href={linkPath}>
                               <button
-                                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded text-[11px] transition-all duration-200 group text-stone-500 hover:text-amber-400 hover:bg-amber-900/10"
+                                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded text-[11px] transition-all duration-200 group text-muted-foreground hover:text-amber-400 hover:bg-amber-900/10"
                               >
-                                <Icon className="w-3.5 h-3.5 text-stone-600 group-hover:text-amber-500" />
+                                <Icon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-amber-500" />
                                 <span className="font-medium truncate">{item.label}</span>
-                                <ExternalLink className="w-2.5 h-2.5 ml-auto text-stone-700 group-hover:text-amber-600" />
+                                <ExternalLink className="w-2.5 h-2.5 ml-auto text-muted-foreground group-hover:text-amber-600" />
                               </button>
                             </Link>
                           );
@@ -290,11 +290,11 @@ export default function AdminDashboard() {
                               w-full flex items-center gap-2.5 px-3 py-1.5 rounded text-[11px] transition-all duration-200 group
                               ${isActive 
                                 ? ACTIVE_COLORS[group.color] 
-                                : 'text-stone-500 hover:text-stone-300 hover:bg-stone-900/50'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                               }
                             `}
                           >
-                            <Icon className={`w-3.5 h-3.5 ${isActive ? '' : 'text-stone-600 group-hover:text-stone-400'}`} />
+                            <Icon className={`w-3.5 h-3.5 ${isActive ? '' : 'text-muted-foreground group-hover:text-muted-foreground'}`} />
                             <span className="font-medium truncate">{item.label}</span>
                           </button>
                         );
@@ -316,10 +316,10 @@ export default function AdminDashboard() {
                     {(user.firstName || user.email || "A")[0].toUpperCase()}
                   </div>
                 )}
-                <span className="text-[10px] text-stone-400 truncate flex-1">{user.firstName || user.email || "Admin"}</span>
+                <span className="text-[10px] text-muted-foreground truncate flex-1">{user.firstName || user.email || "Admin"}</span>
                 <button
                   onClick={() => logout()}
-                  className="text-[9px] text-stone-600 hover:text-red-400 transition-colors"
+                  className="text-[9px] text-muted-foreground hover:text-red-400 transition-colors"
                   data-testid="admin-logout-btn"
                 >
                   Logout
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
               </div>
             )}
             <Link href="/">
-              <Button variant="ghost" size="sm" className="w-full justify-start text-stone-500 hover:text-amber-500 text-[10px] h-8">
+              <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground hover:text-amber-500 text-[10px] h-8">
                 <ArrowRight className="w-3 h-3 mr-2 rotate-180" /> Exit to Platform
               </Button>
             </Link>
@@ -336,18 +336,18 @@ export default function AdminDashboard() {
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        <header className="h-14 border-b border-amber-900/30 bg-[#0a0500]/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0">
+        <header className="h-14 border-b border-amber-900/30 bg-[hsl(var(--card))]/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" className="md:hidden text-amber-500 p-2" onClick={() => setSidebarOpen(true)}>
               <Terminal className="w-5 h-5" />
             </Button>
             <div>
-              <h2 className="text-xs font-bold text-stone-200 capitalize tracking-wide">
+              <h2 className="text-xs font-bold text-foreground capitalize tracking-wide">
                 {activeSection.replace(/-/g, ' ')}
               </h2>
               <div className="flex items-center gap-2 mt-0.5">
                 <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[9px] text-stone-600 font-mono tracking-tight uppercase">System Online</span>
+                <span className="text-[9px] text-muted-foreground font-mono tracking-tight uppercase">System Online</span>
               </div>
             </div>
           </div>
@@ -356,16 +356,16 @@ export default function AdminDashboard() {
             <Button 
               variant="outline" 
               size="sm" 
-              className={`h-7 px-2 border-amber-900/30 text-[9px] font-bold ${gameState?.devMode ? 'text-teal-400 border-teal-500/50 bg-teal-950/20' : 'text-stone-500'}`}
+              className={`h-7 px-2 border-amber-900/30 text-[9px] font-bold ${gameState?.devMode ? 'text-teal-400 border-teal-500/50 bg-teal-950/20' : 'text-muted-foreground'}`}
               onClick={toggleDevMode}
             >
               DEV: {gameState?.devMode ? 'ON' : 'OFF'}
             </Button>
-            <div className="w-px h-3 bg-stone-800 mx-1" />
+            <div className="w-px h-3 bg-border mx-1" />
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-7 w-7 text-stone-500 hover:text-amber-500"
+              className="h-7 w-7 text-muted-foreground hover:text-amber-500"
               onClick={() => setApiPlaygroundOpen(true)}
             >
               <Zap className="w-3.5 h-3.5" />

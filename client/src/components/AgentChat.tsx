@@ -951,7 +951,7 @@ ${learningProfile}`;
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono w-[95vw] max-w-2xl h-[90vh] md:h-[80vh] flex flex-col p-3 md:p-6">
+      <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono w-[95vw] max-w-2xl h-[90vh] md:h-[80vh] flex flex-col p-3 md:p-6">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-amber-600 font-orbitron flex items-center gap-2 text-sm md:text-base">
@@ -970,7 +970,7 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={copySession}
                   title="Copy Transcript"
-                  className="text-stone-500 hover:text-amber-500 h-7 w-7 p-0"
+                  className="text-muted-foreground hover:text-amber-500 h-7 w-7 p-0"
                 >
                   <Copy className="w-3.5 h-3.5" />
                 </Button>
@@ -979,7 +979,7 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={exportPrompt}
                   title="Export Config"
-                  className="text-stone-500 hover:text-amber-500 h-7 w-7 p-0"
+                  className="text-muted-foreground hover:text-amber-500 h-7 w-7 p-0"
                 >
                   <Download className="w-3.5 h-3.5" />
                 </Button>
@@ -988,7 +988,7 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={sendToOptimizer}
                   title="Send to Prompt Optimizer"
-                  className="text-stone-500 hover:text-teal-500 h-7 w-7 p-0"
+                  className="text-muted-foreground hover:text-teal-500 h-7 w-7 p-0"
                 >
                   <Rocket className="w-3.5 h-3.5 text-teal-600" />
                 </Button>
@@ -997,7 +997,7 @@ ${learningProfile}`;
                   size="sm" 
                   onClick={exportToReport}
                   title="Export Investigation Report (70% auto-filled)"
-                  className="text-stone-500 hover:text-purple-500 h-7 px-1"
+                  className="text-muted-foreground hover:text-purple-500 h-7 px-1"
                   data-testid="export-report"
                 >
                   <Save className="w-3.5 h-3.5 text-purple-500" />
@@ -1010,7 +1010,7 @@ ${learningProfile}`;
                   onClick={compressContext}
                   disabled={isCompressing || messages.length < 3}
                   title={promptConfig.compressedContext ? 'Re-compress context' : 'Compress context to save memory'}
-                  className={`h-7 px-1 ${promptConfig.compressedContext ? 'text-teal-500' : 'text-stone-500 hover:text-teal-500'}`}
+                  className={`h-7 px-1 ${promptConfig.compressedContext ? 'text-teal-500' : 'text-muted-foreground hover:text-teal-500'}`}
                   data-testid="compress-context-btn"
                 >
                   {isCompressing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
@@ -1021,7 +1021,7 @@ ${learningProfile}`;
                   variant="ghost" 
                   size="sm" 
                   onClick={resetChat}
-                  className="text-stone-500 hover:text-amber-500 h-7 text-xs"
+                  className="text-muted-foreground hover:text-amber-500 h-7 text-xs"
                 >
                   <ArrowLeft className="w-3 h-3 mr-1" /> New Session
                 </Button>
@@ -1035,7 +1035,7 @@ ${learningProfile}`;
               <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0a0500] border-amber-900/50 max-h-72">
+              <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50 max-h-72">
                 {MODEL_LIST.map((model: any) => {
                   const tc = TIER_COLORS[model.tier] || TIER_COLORS.free;
                   return model.disabled ? (
@@ -1048,13 +1048,13 @@ ${learningProfile}`;
                       value={model.id}
                       className={`${tc.item} focus:bg-amber-900/30 text-xs`}
                     >
-                      <span className="font-mono opacity-60">[{model.short}]</span> {model.name} <span className="text-stone-600 text-[9px]">{model.desc}</span>
+                      <span className="font-mono opacity-60">[{model.short}]</span> {model.name} <span className="text-muted-foreground text-[9px]">{model.desc}</span>
                     </SelectItem>
                   );
                 })}
               </SelectContent>
             </Select>
-            <span className="text-[9px] md:text-[10px] text-stone-600 bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
+            <span className="text-[9px] md:text-[10px] text-muted-foreground bg-amber-900/20 px-2 py-0.5 rounded hidden md:inline">
               /kimi /devs /nemo3 /llama
             </span>
             <LearningStyleBadge />
@@ -1062,7 +1062,7 @@ ${learningProfile}`;
               variant="outline"
               size="sm"
               onClick={() => { setShowMissionBriefing(!showMissionBriefing); if (!showMissionBriefing) setShowPromptStudio(false); }}
-              className={`h-7 px-2 text-xs border-amber-900/30 ${showMissionBriefing ? 'bg-teal-900/30 text-teal-400 border-teal-900/30' : 'text-stone-500'}`}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showMissionBriefing ? 'bg-teal-900/30 text-teal-400 border-teal-900/30' : 'text-muted-foreground'}`}
               data-testid="toggle-mission-briefing"
             >
               <GraduationCap className="w-3 h-3 mr-1" />
@@ -1072,7 +1072,7 @@ ${learningProfile}`;
               variant="outline"
               size="sm"
               onClick={() => { setShowPromptStudio(!showPromptStudio); if (!showPromptStudio) setShowMissionBriefing(false); }}
-              className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-400' : 'text-stone-500'}`}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-400' : 'text-muted-foreground'}`}
               data-testid="toggle-prompt-studio"
             >
               <Settings2 className="w-3 h-3 mr-1" />
@@ -1082,7 +1082,7 @@ ${learningProfile}`;
           
           {/* Mission Briefing Panel */}
           {showMissionBriefing && (
-            <div className="mt-1.5 md:mt-2 max-h-[50vh] md:max-h-[40vh] overflow-y-auto bg-stone-950/50 rounded-lg border border-teal-900/30 p-2 md:p-3">
+            <div className="mt-1.5 md:mt-2 max-h-[50vh] md:max-h-[40vh] overflow-y-auto bg-card/50 rounded-lg border border-teal-900/30 p-2 md:p-3">
               <MissionBriefing
                 onStartMission={startAIMission}
                 onSuggestionChip={(text) => { setInput(text); setShowMissionBriefing(false); }}
@@ -1108,9 +1108,9 @@ ${learningProfile}`;
 
         {/* Context Memory Bar */}
         {messages.length > 0 && (
-          <div className="flex-shrink-0 flex items-center gap-2 px-2 py-1 bg-stone-950/50 border-b border-stone-800/30" data-testid="memory-status-bar">
-            <Zap className={`w-3 h-3 ${promptConfig.compressedContext ? 'text-teal-400' : 'text-stone-600'}`} />
-            <span className="text-[9px] text-stone-500">
+          <div className="flex-shrink-0 flex items-center gap-2 px-2 py-1 bg-card/50 border-b border-border/30" data-testid="memory-status-bar">
+            <Zap className={`w-3 h-3 ${promptConfig.compressedContext ? 'text-teal-400' : 'text-muted-foreground'}`} />
+            <span className="text-[9px] text-muted-foreground">
               {messages.length} msgs · ~{estimateTokens(messages.map(m => m.content).join(' ')).toLocaleString()} tokens
             </span>
             {promptConfig.compressedContext && (
@@ -1145,16 +1145,16 @@ ${learningProfile}`;
               <div className="flex items-center gap-1.5 min-h-[24px] md:min-h-[26px]">
                 <span className="text-xs">{mission.icon}</span>
                 <span className="text-[9px] md:text-[10px] font-medium text-teal-400 truncate max-w-[80px] md:max-w-[160px]">{mission.name}</span>
-                <span className="text-[8px] md:text-[9px] text-stone-600">·</span>
+                <span className="text-[8px] md:text-[9px] text-muted-foreground">·</span>
                 {exercise ? (
-                  <span className="text-[8px] md:text-[9px] text-stone-400 truncate max-w-[100px] md:max-w-[200px]">
+                  <span className="text-[8px] md:text-[9px] text-muted-foreground truncate max-w-[100px] md:max-w-[200px]">
                     Step {currentExerciseIdx + 1}/{totalEx}: {exercise.title}
                   </span>
                 ) : (
-                  <span className="text-[8px] md:text-[9px] text-stone-500">{doneCount}/{totalEx}</span>
+                  <span className="text-[8px] md:text-[9px] text-muted-foreground">{doneCount}/{totalEx}</span>
                 )}
                 {progress > 0 && (
-                  <div className="hidden sm:block w-12 md:w-16 h-1 bg-stone-800 rounded-full overflow-hidden flex-shrink-0">
+                  <div className="hidden sm:block w-12 md:w-16 h-1 bg-border rounded-full overflow-hidden flex-shrink-0">
                     <div className="h-full bg-teal-600 rounded-full transition-all" style={{ width: `${progress}%` }} />
                   </div>
                 )}
@@ -1181,7 +1181,7 @@ ${learningProfile}`;
                   )}
                   <button
                     onClick={() => setShowMissionBriefing(!showMissionBriefing)}
-                    className="p-1 rounded text-stone-600 hover:text-amber-400 hover:bg-amber-900/20 transition-colors"
+                    className="p-1 rounded text-muted-foreground hover:text-amber-400 hover:bg-amber-900/20 transition-colors"
                     title="Mission briefing"
                     data-testid="open-briefing-btn"
                   >
@@ -1189,7 +1189,7 @@ ${learningProfile}`;
                   </button>
                   <button
                     onClick={() => { setActiveMissionId(null); setCurrentExerciseIdx(0); }}
-                    className="p-1 rounded text-stone-700 hover:text-stone-400 hover:bg-stone-800/40 transition-colors"
+                    className="p-1 rounded text-muted-foreground hover:text-muted-foreground hover:bg-border/40 transition-colors"
                     title="Dismiss"
                     data-testid="dismiss-mission-bar"
                   >
@@ -1210,7 +1210,7 @@ ${learningProfile}`;
                 <div className="text-center py-2">
                   <Rocket className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 text-teal-500 opacity-70" />
                   <p className="text-sm md:text-base text-amber-500 font-bold">Choose an Agent Module</p>
-                  <p className="text-[10px] md:text-xs text-stone-500 mt-1">Select a skill module or start a freeform session</p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Select a skill module or start a freeform session</p>
                 </div>
 
                 {/* Module Grid - Mobile Optimized */}
@@ -1228,14 +1228,14 @@ ${learningProfile}`;
                           <p className="text-amber-500 font-bold text-xs md:text-sm truncate group-hover:text-amber-400">
                             {campaign.name}
                           </p>
-                          <p className="text-stone-500 text-[10px] md:text-xs line-clamp-2 mt-0.5">
+                          <p className="text-muted-foreground text-[10px] md:text-xs line-clamp-2 mt-0.5">
                             {campaign.description}
                           </p>
                           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                             <span className={`text-[9px] md:text-[10px] ${getDifficultyColor(campaign.difficulty)}`}>
                               {campaign.difficulty.toUpperCase()}
                             </span>
-                            <span className="text-[9px] md:text-[10px] text-stone-600 flex items-center gap-0.5">
+                            <span className="text-[9px] md:text-[10px] text-muted-foreground flex items-center gap-0.5">
                               <Clock className="w-2.5 h-2.5" /> {campaign.estimatedTime}
                             </span>
                           </div>
@@ -1259,14 +1259,14 @@ ${learningProfile}`;
                   >
                     <Terminal className="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-amber-600" />
                     <p className="text-amber-500 font-bold text-xs md:text-sm">Freeform Session</p>
-                    <p className="text-stone-500 text-[10px] md:text-xs">Start without a module template</p>
+                    <p className="text-muted-foreground text-[10px] md:text-xs">Start without a module template</p>
                   </button>
                 </div>
               </div>
             )}
 
             {messages.length === 0 && !showCampaigns && (
-              <div className="text-center text-stone-600 py-4 md:py-8">
+              <div className="text-center text-muted-foreground py-4 md:py-8">
                 <Bot className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 opacity-30" />
                 <p className="text-xs md:text-sm">NEXUS agent ready.</p>
                 <p className="text-[10px] md:text-xs mt-1">Send commands, payloads, or ask questions.</p>
@@ -1295,7 +1295,7 @@ ${learningProfile}`;
                     setCaptureEnabled(false);
                     setContextCampaign('');
                   }}
-                  className="mt-3 text-stone-500 hover:text-teal-400 text-[10px] md:text-xs"
+                  className="mt-3 text-muted-foreground hover:text-teal-400 text-[10px] md:text-xs"
                 >
                   <ArrowLeft className="w-3 h-3 mr-1" /> Back to Modules
                 </Button>
@@ -1311,7 +1311,7 @@ ${learningProfile}`;
                   className={`max-w-[80%] rounded-lg px-4 py-2 ${
                     msg.role === 'user'
                       ? 'bg-amber-900/30 text-amber-400'
-                      : 'bg-black/50 border border-amber-900/20 text-stone-300'
+                      : 'bg-black/50 border border-amber-900/20 text-foreground'
                   }`}
                 >
                   {msg.role === 'assistant' && (
@@ -1420,7 +1420,7 @@ ${learningProfile}`;
         }
       }}
     >
-      <DialogContent className="bg-[#0a0500] border-amber-900/50 text-stone-300 font-mono max-w-lg">
+      <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-amber-500 font-orbitron text-sm">Module Target Setup</DialogTitle>
         </DialogHeader>
@@ -1428,7 +1428,7 @@ ${learningProfile}`;
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-stone-500">Agent Module</p>
+                <p className="text-xs text-muted-foreground">Agent Module</p>
                 <p className="text-sm text-amber-400 font-bold">{pendingCampaign.name}</p>
               </div>
               <Button
@@ -1450,7 +1450,7 @@ ${learningProfile}`;
               {(pendingCampaign.targetFields || []).map((field) => (
                 <div key={field.key}>
                   <div className="flex items-center justify-between">
-                    <Label className="text-[10px] text-stone-500 uppercase">
+                    <Label className="text-[10px] text-muted-foreground uppercase">
                       {field.label}
                     </Label>
                     {field.required && <Badge variant="outline" className="text-[8px] border-red-700 text-red-400">Required</Badge>}
@@ -1465,7 +1465,7 @@ ${learningProfile}`;
                     className="bg-black/50 border-amber-900/30 text-amber-300 text-sm"
                   />
                   {field.helpText && (
-                    <p className="text-[10px] text-stone-600 mt-1">{field.helpText}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{field.helpText}</p>
                   )}
                 </div>
               ))}
@@ -1478,7 +1478,7 @@ ${learningProfile}`;
             <div className="flex gap-2 pt-2">
               <Button
                 variant="outline"
-                className="border-stone-700 text-stone-400 w-full"
+                className="border-border text-muted-foreground w-full"
                 onClick={() => setTargetModalOpen(false)}
               >
                 Cancel
@@ -1504,7 +1504,7 @@ ${learningProfile}`;
             </div>
           </div>
         ) : (
-          <p className="text-sm text-stone-500">No module selected.</p>
+          <p className="text-sm text-muted-foreground">No module selected.</p>
         )}
       </DialogContent>
     </Dialog>

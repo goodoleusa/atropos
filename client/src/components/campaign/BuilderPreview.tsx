@@ -45,7 +45,7 @@ export default function BuilderPreview({ campaign, node, onSelectNode }: Builder
 
   if (!node) {
     return (
-      <div className="flex-1 flex items-center justify-center text-stone-600">
+      <div className="flex-1 flex items-center justify-center text-muted-foreground">
         Select a node to preview.
       </div>
     );
@@ -56,11 +56,11 @@ export default function BuilderPreview({ campaign, node, onSelectNode }: Builder
       <div className="max-w-3xl mx-auto w-full">
         <div className="border-l-4 border-amber-500 pl-6 py-2 mb-8 bg-amber-500/5 rounded-r">
           <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{node.title}</h1>
-          <p className="text-stone-500 text-[10px] uppercase font-bold tracking-[0.2em] mt-1">
+          <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-[0.2em] mt-1">
             {node.type} · {node.pageLayout || 'card'}
           </p>
         </div>
-        <div className="text-base text-stone-400 leading-relaxed whitespace-pre-wrap">
+        <div className="text-base text-muted-foreground leading-relaxed whitespace-pre-wrap">
           {renderWikilinks(node.content)}
         </div>
         {node.metadata?.learningGoals && node.metadata.learningGoals.length > 0 && (
@@ -68,22 +68,22 @@ export default function BuilderPreview({ campaign, node, onSelectNode }: Builder
             <h3 className="text-xs font-bold text-teal-400 uppercase tracking-wider mb-2">Learning Goals</h3>
             <ul className="space-y-1">
               {node.metadata.learningGoals.map((g, i) => (
-                <li key={i} className="text-sm text-stone-400">· {g}</li>
+                <li key={i} className="text-sm text-muted-foreground">· {g}</li>
               ))}
             </ul>
           </div>
         )}
         {connectedNodes.length > 0 && (
-          <div className="mt-10 pt-6 border-t border-stone-800 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="mt-10 pt-6 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-3">
             {connectedNodes.map(n => (
               <Button
                 key={n.id}
                 variant="outline"
-                className="justify-between h-12 border-stone-800 hover:border-amber-900/50 bg-stone-900/50 group"
+                className="justify-between h-12 border-border hover:border-amber-900/50 bg-card/50 group"
                 onClick={() => onSelectNode(n.id)}
               >
-                <span className="text-xs uppercase font-bold text-stone-400 group-hover:text-amber-500">{n.title}</span>
-                <ChevronRight className="w-4 h-4 text-stone-600 group-hover:text-amber-500" />
+                <span className="text-xs uppercase font-bold text-muted-foreground group-hover:text-amber-500">{n.title}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-amber-500" />
               </Button>
             ))}
           </div>

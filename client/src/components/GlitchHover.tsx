@@ -339,7 +339,7 @@ export function CluePopover({ children, clueId, title, description, difficulty, 
             exit={{ opacity: 0, y: pos === "top" ? 4 : -4, filter: "blur(2px)" }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <div className="bg-stone-950/95 border border-amber-900/40 rounded-lg p-3 shadow-xl shadow-amber-900/10 backdrop-blur-sm">
+            <div className="bg-card/95 border border-amber-900/40 rounded-lg p-3 shadow-xl shadow-amber-900/10 backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                 <span className="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
@@ -348,7 +348,7 @@ export function CluePopover({ children, clueId, title, description, difficulty, 
               </div>
               <GlitchText text={title} className="text-xs font-bold text-amber-400 block mb-1" />
               {description && (
-                <p className="text-[10px] text-stone-500 leading-relaxed">{description}</p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">{description}</p>
               )}
               {difficulty !== undefined && (
                 <div className="flex gap-0.5 mt-2">
@@ -357,7 +357,7 @@ export function CluePopover({ children, clueId, title, description, difficulty, 
                       key={i}
                       className={cn(
                         "w-3 h-1 rounded-full",
-                        i < difficulty ? "bg-amber-600" : "bg-stone-800"
+                        i < difficulty ? "bg-amber-600" : "bg-border"
                       )}
                     />
                   ))}

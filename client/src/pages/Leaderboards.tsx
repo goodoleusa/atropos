@@ -52,26 +52,26 @@ export default function Leaderboards() {
 
   const getRankBadge = (rank: number) => {
     if (rank === 1) return <Crown className="w-5 h-5 text-amber-400" />;
-    if (rank === 2) return <Medal className="w-5 h-5 text-stone-400" />;
+    if (rank === 2) return <Medal className="w-5 h-5 text-muted-foreground" />;
     if (rank === 3) return <Medal className="w-5 h-5 text-orange-600" />;
-    return <span className="text-stone-600 font-mono text-sm">#{rank}</span>;
+    return <span className="text-muted-foreground font-mono text-sm">#{rank}</span>;
   };
 
   const getRowStyle = (rank: number, isPlayer: boolean) => {
     if (isPlayer) return 'bg-amber-900/30 border-amber-600/50 border-2';
     if (rank === 1) return 'bg-amber-950/20 border-amber-900/30';
-    if (rank === 2) return 'bg-stone-900/30 border-stone-700/30';
+    if (rank === 2) return 'bg-card/30 border-border/30';
     if (rank === 3) return 'bg-orange-950/20 border-orange-900/30';
-    return 'bg-stone-900/20 border-stone-800/30';
+    return 'bg-card/20 border-border/30';
   };
 
   return (
-    <div className="min-h-screen bg-[#050200] text-stone-300">
-      <header className="border-b border-amber-900/30 bg-[#0a0500] sticky top-0 z-50">
+    <div className="min-h-screen bg-[hsl(var(--card))] text-foreground">
+      <header className="border-b border-amber-900/30 bg-[hsl(var(--card))] sticky top-0 z-50">
         <div className="px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/profile">
-              <Button variant="ghost" size="sm" className="text-stone-500 hover:text-amber-500">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-amber-500">
                 <ArrowLeft className="w-4 h-4 mr-1" /> Profile
               </Button>
             </Link>
@@ -103,15 +103,15 @@ export default function Leaderboards() {
                     {getRankBadge(playerRank.rank)}
                   </div>
                   <div>
-                    <p className="text-stone-500 text-sm">Your Global Rank</p>
+                    <p className="text-muted-foreground text-sm">Your Global Rank</p>
                     <p className="text-3xl font-bold text-amber-400">#{playerRank.rank}</p>
-                    <p className="text-stone-600 text-xs mt-1">{gameState.username || 'Guest'}</p>
+                    <p className="text-muted-foreground text-xs mt-1">{gameState.username || 'Guest'}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-stone-500 text-sm">Your Score</p>
+                  <p className="text-muted-foreground text-sm">Your Score</p>
                   <p className="text-2xl font-bold text-teal-400">{playerRank.entry.score.toLocaleString()}</p>
-                  <p className="text-stone-600 text-xs mt-1">Total XP</p>
+                  <p className="text-muted-foreground text-xs mt-1">Total XP</p>
                 </div>
               </div>
             </CardContent>
@@ -120,7 +120,7 @@ export default function Leaderboards() {
 
         {/* Leaderboard Tabs */}
         <Tabs value={activeBoard} onValueChange={setActiveBoard}>
-          <TabsList className="bg-stone-900/50 border border-amber-900/30 mb-6">
+          <TabsList className="bg-card/50 border border-amber-900/30 mb-6">
             {leaderboardTypes.map((type) => {
               const Icon = type.icon;
               return (
@@ -137,27 +137,27 @@ export default function Leaderboards() {
           </TabsList>
 
           <TabsContent value="global_xp">
-            <Card className="bg-[#0a0500] border-amber-900/30">
+            <Card className="bg-[hsl(var(--card))] border-amber-900/30">
               <CardHeader>
                 <CardTitle className="text-amber-500 font-orbitron flex items-center gap-2">
                   <Trophy className="w-5 h-5" />
                   Global XP Rankings
                 </CardTitle>
-                <CardDescription className="text-stone-500">
+                <CardDescription className="text-muted-foreground">
                   Top investigators by total experience points earned
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {loadingGlobal ? (
-                  <div className="text-center py-12 text-stone-500">
+                  <div className="text-center py-12 text-muted-foreground">
                     <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2" />
                     Loading rankings...
                   </div>
                 ) : globalLeaderboard.length === 0 ? (
                   <div className="text-center py-12">
-                    <Trophy className="w-12 h-12 text-stone-700 mx-auto mb-4" />
-                    <p className="text-stone-500">No rankings yet</p>
-                    <p className="text-stone-700 text-sm mt-1">Complete campaigns to appear on the leaderboard</p>
+                    <Trophy className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No rankings yet</p>
+                    <p className="text-muted-foreground text-sm mt-1">Complete campaigns to appear on the leaderboard</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -175,11 +175,11 @@ export default function Leaderboards() {
                           </div>
                           
                           <div className="flex-1">
-                            <p className={`font-bold ${isPlayer ? 'text-amber-400' : 'text-stone-200'}`}>
+                            <p className={`font-bold ${isPlayer ? 'text-amber-400' : 'text-foreground'}`}>
                               {entry.username || 'Anonymous'}
                               {isPlayer && <Badge className="ml-2 text-[10px] bg-amber-900/50 text-amber-300">YOU</Badge>}
                             </p>
-                            <p className="text-xs text-stone-600">
+                            <p className="text-xs text-muted-foreground">
                               {entry.sessionToken.substring(0, 8)}...
                             </p>
                           </div>
@@ -188,7 +188,7 @@ export default function Leaderboards() {
                             <p className="text-xl font-bold text-teal-400">
                               {entry.score.toLocaleString()}
                             </p>
-                            <p className="text-xs text-stone-600">Total XP</p>
+                            <p className="text-xs text-muted-foreground">Total XP</p>
                           </div>
                         </div>
                       );
@@ -200,21 +200,21 @@ export default function Leaderboards() {
           </TabsContent>
 
           <TabsContent value="weekly_xp">
-            <Card className="bg-[#0a0500] border-teal-900/30">
+            <Card className="bg-[hsl(var(--card))] border-teal-900/30">
               <CardContent className="p-12 text-center">
                 <Clock className="w-12 h-12 text-teal-700 mx-auto mb-4" />
-                <p className="text-stone-500">Weekly leaderboard</p>
-                <p className="text-stone-700 text-sm mt-1">Coming soon - resets every Monday</p>
+                <p className="text-muted-foreground">Weekly leaderboard</p>
+                <p className="text-muted-foreground text-sm mt-1">Coming soon - resets every Monday</p>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="campaigns">
-            <Card className="bg-[#0a0500] border-purple-900/30">
+            <Card className="bg-[hsl(var(--card))] border-purple-900/30">
               <CardContent className="p-12 text-center">
                 <Target className="w-12 h-12 text-purple-700 mx-auto mb-4" />
-                <p className="text-stone-500">Campaign completion leaderboard</p>
-                <p className="text-stone-700 text-sm mt-1">Coming soon - most campaigns finished</p>
+                <p className="text-muted-foreground">Campaign completion leaderboard</p>
+                <p className="text-muted-foreground text-sm mt-1">Coming soon - most campaigns finished</p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -222,14 +222,14 @@ export default function Leaderboards() {
 
         {/* Info Cards */}
         <div className="grid md:grid-cols-3 gap-4 mt-8">
-          <Card className="bg-[#0a0500] border-amber-900/30">
+          <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-amber-500 text-sm flex items-center gap-2">
                 <Trophy className="w-4 h-4" />
                 How Rankings Work
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-xs text-stone-500 space-y-2">
+            <CardContent className="text-xs text-muted-foreground space-y-2">
               <p>• Earn XP by completing campaigns and challenges</p>
               <p>• Rankings update in real-time</p>
               <p>• Ties broken by earliest achievement</p>
@@ -237,14 +237,14 @@ export default function Leaderboards() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0a0500] border-teal-900/30">
+          <Card className="bg-[hsl(var(--card))] border-teal-900/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-teal-500 text-sm flex items-center gap-2">
                 <Zap className="w-4 h-4" />
                 Earn More XP
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-xs text-stone-500 space-y-2">
+            <CardContent className="text-xs text-muted-foreground space-y-2">
               <p>• Complete investigations: +100 XP</p>
               <p>• Find hidden clues: +50 XP</p>
               <p>• Daily challenges: +100-300 XP</p>
@@ -252,14 +252,14 @@ export default function Leaderboards() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#0a0500] border-purple-900/30">
+          <Card className="bg-[hsl(var(--card))] border-purple-900/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-purple-500 text-sm flex items-center gap-2">
                 <Target className="w-4 h-4" />
                 Compete
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-xs text-stone-500 space-y-2">
+            <CardContent className="text-xs text-muted-foreground space-y-2">
               <p>• Weekly challenges reset Monday</p>
               <p>• Campaign speed runs track your best times</p>
               <p>• Special events have bonus XP</p>

@@ -214,7 +214,7 @@ export const QuantumField = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="hidden md:block fixed bottom-32 left-4 z-40 w-64 bg-[#0a0500]/95 border border-amber-900/50 rounded-lg p-4 backdrop-blur-md"
+            className="hidden md:block fixed bottom-32 left-4 z-40 w-64 bg-[hsl(var(--card))]/95 border border-amber-900/50 rounded-lg p-4 backdrop-blur-md"
           >
             <h3 className="text-amber-600 font-orbitron text-sm mb-3 flex items-center gap-2">
               <span className="text-purple-500">Ψ</span> QUANTUM STATE
@@ -223,7 +223,7 @@ export const QuantumField = () => {
             <div className="space-y-3 text-xs font-mono">
               {/* Wave Function */}
               <div>
-                <div className="flex justify-between text-stone-500 mb-1">
+                <div className="flex justify-between text-muted-foreground mb-1">
                   <span>Wave Function</span>
                   <span className="text-amber-500">{quantumState.probability.toFixed(4)}</span>
                 </div>
@@ -238,7 +238,7 @@ export const QuantumField = () => {
               
               {/* Entropy */}
               <div>
-                <div className="flex justify-between text-stone-500 mb-1">
+                <div className="flex justify-between text-muted-foreground mb-1">
                   <span>Entropy</span>
                   <span className="text-purple-500">{quantumState.entropy.toFixed(4)}</span>
                 </div>
@@ -253,7 +253,7 @@ export const QuantumField = () => {
               
               {/* Observer Effect */}
               <div className="pt-2 border-t border-amber-900/30">
-                <p className="text-stone-600 italic">
+                <p className="text-muted-foreground italic">
                   {quantumState.collapsed 
                     ? `Collapsed: ${quantumState.outcome}`
                     : "Superposition stable. Observing..."
@@ -266,7 +266,7 @@ export const QuantumField = () => {
                 <p className="text-amber-700">
                   Data Fragments: {gameState.inventory.length}
                 </p>
-                <p className="text-stone-600 text-[10px]">
+                <p className="text-muted-foreground text-[10px]">
                   Each fragment increases manifestation probability
                 </p>
               </div>
@@ -286,7 +286,7 @@ export const QuantumField = () => {
             onClick={() => setActiveEvent(null)}
           >
             <div 
-              className="bg-[#0a0500]/95 border border-amber-600/50 rounded-lg p-4 md:p-6 w-full max-w-sm backdrop-blur-md shadow-[0_0_50px_rgba(184,115,51,0.2)]"
+              className="bg-[hsl(var(--card))]/95 border border-amber-600/50 rounded-lg p-4 md:p-6 w-full max-w-sm backdrop-blur-md shadow-[0_0_50px_rgba(184,115,51,0.2)]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="text-center">
@@ -309,12 +309,12 @@ export const QuantumField = () => {
                   {activeEvent.name}
                 </p>
                 
-                <p className="text-stone-400 text-sm mb-4">
+                <p className="text-muted-foreground text-sm mb-4">
                   {activeEvent.description}
                 </p>
                 
                 <div className="bg-black/50 rounded p-2 mb-4">
-                  <p className="text-xs text-stone-500">
+                  <p className="text-xs text-muted-foreground">
                     Collapse Probability: <span className="text-amber-500">{(activeEvent.currentProb * 100).toFixed(1)}%</span>
                   </p>
                   <p className="text-xs text-purple-600 italic mt-1">

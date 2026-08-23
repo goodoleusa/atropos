@@ -196,14 +196,14 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
           <div>
             <p className="text-amber-400 text-sm font-bold">{entry.title}</p>
             {entry.description && (
-              <p className="text-stone-500 text-xs mt-1">{entry.description}</p>
+              <p className="text-muted-foreground text-xs mt-1">{entry.description}</p>
             )}
             <div className="flex flex-wrap gap-1 mt-2">
               <Badge variant="outline" className="text-[9px] border-amber-700 text-amber-500">
                 {entry.category}
               </Badge>
               {entry.tags?.map((tag) => (
-                <Badge key={`${entry.id}-${tag}`} variant="outline" className="text-[9px] border-stone-700 text-stone-500">
+                <Badge key={`${entry.id}-${tag}`} variant="outline" className="text-[9px] border-border text-muted-foreground">
                   {tag}
                 </Badge>
               ))}
@@ -227,12 +227,12 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
             variant="ghost"
             size="sm"
             onClick={() => copyPrompt(entry.prompt, entry.id)}
-            className="text-stone-500 hover:text-amber-500"
+            className="text-muted-foreground hover:text-amber-500"
           >
             {copiedId === entry.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           </Button>
         </div>
-        <pre className="text-[10px] text-stone-400 font-mono whitespace-pre-wrap line-clamp-4">
+        <pre className="text-[10px] text-muted-foreground font-mono whitespace-pre-wrap line-clamp-4">
           {entry.prompt}
         </pre>
         {showStatus && entry.riskFlags && entry.riskFlags.length > 0 && (
@@ -250,7 +250,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
         <CardTitle className="text-amber-500 flex items-center gap-2">
           <Users className="w-5 h-5" /> Community Prompt Gallery
         </CardTitle>
-        <CardDescription className="text-stone-500">
+        <CardDescription className="text-muted-foreground">
           Share prompts for Atropos tools. Submissions are sanitized and risky command patterns are reviewed.
         </CardDescription>
       </CardHeader>
@@ -263,7 +263,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                 value={draft.title}
                 onChange={(e) => setDraft((prev) => ({ ...prev, title: e.target.value }))}
                 placeholder="Atropos Recon Starter"
-                className="bg-black/50 border-amber-900/30 text-stone-300 text-sm"
+                className="bg-black/50 border-amber-900/30 text-foreground text-sm"
               />
             </div>
             <div>
@@ -272,7 +272,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                 value={draft.description}
                 onChange={(e) => setDraft((prev) => ({ ...prev, description: e.target.value }))}
                 placeholder="What this prompt helps the agent accomplish."
-                className="bg-black/50 border-amber-900/30 text-stone-300 text-xs h-20"
+                className="bg-black/50 border-amber-900/30 text-foreground text-xs h-20"
               />
             </div>
             <div className="grid md:grid-cols-2 gap-3">
@@ -282,7 +282,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                   list="prompt-gallery-categories"
                   value={draft.category}
                   onChange={(e) => setDraft((prev) => ({ ...prev, category: e.target.value }))}
-                  className="bg-black/50 border-amber-900/30 text-stone-300 text-xs"
+                  className="bg-black/50 border-amber-900/30 text-foreground text-xs"
                 />
                 <datalist id="prompt-gallery-categories">
                   {CATEGORY_OPTIONS.map((category) => (
@@ -296,7 +296,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                   list="prompt-gallery-tools"
                   value={draft.tool}
                   onChange={(e) => setDraft((prev) => ({ ...prev, tool: e.target.value }))}
-                  className="bg-black/50 border-amber-900/30 text-stone-300 text-xs"
+                  className="bg-black/50 border-amber-900/30 text-foreground text-xs"
                 />
                 <datalist id="prompt-gallery-tools">
                   {TOOL_OPTIONS.map((tool) => (
@@ -311,7 +311,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                 value={draft.tags}
                 onChange={(e) => setDraft((prev) => ({ ...prev, tags: e.target.value }))}
                 placeholder="osint, investigation, workflow"
-                className="bg-black/50 border-amber-900/30 text-stone-300 text-xs"
+                className="bg-black/50 border-amber-900/30 text-foreground text-xs"
               />
             </div>
             <div>
@@ -320,7 +320,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                 value={draft.prompt}
                 onChange={(e) => setDraft((prev) => ({ ...prev, prompt: e.target.value }))}
                 placeholder="Paste or generate a prompt to share."
-                className="bg-black/50 border-amber-900/30 text-stone-300 text-xs h-40 font-mono"
+                className="bg-black/50 border-amber-900/30 text-foreground text-xs h-40 font-mono"
               />
             </div>
             <Button
@@ -340,7 +340,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                       ? 'border-amber-900/40 text-amber-400 bg-amber-900/10'
                       : submissionNote.type === 'error'
                         ? 'border-red-900/40 text-red-400 bg-red-900/10'
-                        : 'border-stone-800 text-stone-400'
+                        : 'border-border text-muted-foreground'
                 }`}
               >
                 {submissionNote.message}
@@ -350,7 +350,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
 
           <div className="space-y-3">
             <Tabs value={galleryTab} onValueChange={(value) => setGalleryTab(value as 'community' | 'mine')}>
-              <TabsList className="bg-[#0a0500] border border-amber-900/30 w-full justify-start">
+              <TabsList className="bg-[hsl(var(--card))] border border-amber-900/30 w-full justify-start">
                 <TabsTrigger value="community" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-500">
                   <Users className="w-3 h-3 mr-1" /> Community
                 </TabsTrigger>
@@ -362,9 +362,9 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
               <TabsContent value="community" className="mt-3">
                 <ScrollArea className="h-[420px] pr-2">
                   {loadingGallery ? (
-                    <p className="text-xs text-stone-500">Loading gallery...</p>
+                    <p className="text-xs text-muted-foreground">Loading gallery...</p>
                   ) : galleryPrompts.length === 0 ? (
-                    <p className="text-xs text-stone-500">No published prompts yet.</p>
+                    <p className="text-xs text-muted-foreground">No published prompts yet.</p>
                   ) : (
                     <div className="space-y-3">
                       {galleryPrompts.map((entry) => renderPromptCard(entry))}
@@ -376,9 +376,9 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
               <TabsContent value="mine" className="mt-3">
                 <ScrollArea className="h-[420px] pr-2">
                   {loadingMine ? (
-                    <p className="text-xs text-stone-500">Loading submissions...</p>
+                    <p className="text-xs text-muted-foreground">Loading submissions...</p>
                   ) : myPrompts.length === 0 ? (
-                    <p className="text-xs text-stone-500">No submissions yet.</p>
+                    <p className="text-xs text-muted-foreground">No submissions yet.</p>
                   ) : (
                     <div className="space-y-3">
                       {myPrompts.map((entry) => renderPromptCard(entry, true))}

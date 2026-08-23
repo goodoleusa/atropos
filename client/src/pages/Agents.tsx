@@ -418,12 +418,12 @@ export default function Agents() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950">
+    <div className="min-h-screen bg-gradient-to-br from-card via-card to-card">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Link href="/">
-              <Button variant="ghost" size="icon" className="text-stone-400 hover:text-amber-500" data-testid="back-button">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-amber-500" data-testid="back-button">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
@@ -431,7 +431,7 @@ export default function Agents() {
               <h1 className="text-2xl font-orbitron font-bold text-amber-500 flex items-center gap-2">
                 <Bot className="w-6 h-6" /> Security Agents
               </h1>
-              <p className="text-stone-400 text-sm">Specialized AI agents for security analysis</p>
+              <p className="text-muted-foreground text-sm">Specialized AI agents for security analysis</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -439,7 +439,7 @@ export default function Agents() {
               variant="outline"
               size="sm"
               onClick={() => setShowExport(!showExport)}
-              className="border-stone-700 text-stone-400"
+              className="border-border text-muted-foreground"
             >
               <Download className="w-4 h-4 mr-1" /> Export
             </Button>
@@ -447,7 +447,7 @@ export default function Agents() {
         </div>
 
         {/* ===== WIZARD STEP INDICATOR ===== */}
-        <div className="flex items-center gap-2 mb-6 bg-stone-900/50 rounded-xl p-3 border border-amber-900/20">
+        <div className="flex items-center gap-2 mb-6 bg-card/50 rounded-xl p-3 border border-amber-900/20">
           {WIZARD_STEPS.map((step, idx) => (
             <div key={step.num} className="flex items-center flex-1">
               <button
@@ -460,14 +460,14 @@ export default function Agents() {
                   wizardStep === step.num
                     ? 'bg-amber-600/20 border border-amber-500/40 text-amber-400'
                     : wizardStep > step.num
-                    ? 'bg-stone-800/50 border border-stone-700 text-stone-300 hover:border-amber-500/30 cursor-pointer'
-                    : 'bg-stone-900/30 border border-stone-800 text-stone-600 cursor-not-allowed'
+                    ? 'bg-border/50 border border-border text-foreground hover:border-amber-500/30 cursor-pointer'
+                    : 'bg-card/30 border border-border text-muted-foreground cursor-not-allowed'
                 }`}
                 data-testid={`wizard-step-${step.num}`}
               >
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                   wizardStep === step.num ? 'bg-amber-500 text-black' :
-                  wizardStep > step.num ? 'bg-stone-700 text-white' : 'bg-stone-800 text-stone-600'
+                  wizardStep > step.num ? 'bg-border text-white' : 'bg-border text-muted-foreground'
                 }`}>
                   {wizardStep > step.num ? <Check className="w-4 h-4" /> : step.num}
                 </div>
@@ -477,7 +477,7 @@ export default function Agents() {
                 {step.icon}
               </button>
               {idx < WIZARD_STEPS.length - 1 && (
-                <ChevronRight className={`w-4 h-4 mx-1 shrink-0 ${wizardStep > step.num ? 'text-amber-500' : 'text-stone-700'}`} />
+                <ChevronRight className={`w-4 h-4 mx-1 shrink-0 ${wizardStep > step.num ? 'text-amber-500' : 'text-muted-foreground'}`} />
               )}
             </div>
           ))}
@@ -500,7 +500,7 @@ export default function Agents() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-orbitron text-white">Choose Your Agent</h2>
-              <p className="text-xs text-stone-500">Click an agent to proceed</p>
+              <p className="text-xs text-muted-foreground">Click an agent to proceed</p>
             </div>
 
             {agentsLoading ? (
@@ -512,7 +512,7 @@ export default function Agents() {
                 {agents.map((agent) => (
                   <Card 
                     key={agent.id}
-                    className={`bg-gradient-to-br ${AGENT_COLORS[(agent as any).moduleId] || 'from-stone-800 to-stone-900'} border cursor-pointer hover:scale-[1.02] transition-all hover:shadow-lg hover:shadow-amber-500/5`}
+                    className={`bg-gradient-to-br ${AGENT_COLORS[(agent as any).moduleId] || 'from-border to-card'} border cursor-pointer hover:scale-[1.02] transition-all hover:shadow-lg hover:shadow-amber-500/5`}
                     onClick={() => {
                       setSelectedAgent(agent);
                       setWizardStep(2);
@@ -522,21 +522,21 @@ export default function Agents() {
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div className="p-2 rounded-lg bg-stone-900/50">
+                          <div className="p-2 rounded-lg bg-card/50">
                             {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-5 h-5" />}
                           </div>
                           <CardTitle className="text-lg text-white">{agent.name}</CardTitle>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-stone-600" />
+                        <ArrowRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-stone-300 mb-3">
+                      <CardDescription className="text-foreground mb-3">
                         {agent.description}
                       </CardDescription>
                       <div className="flex flex-wrap gap-1">
                         {((agent as any).scanCategories || (agent as any).tags || []).slice(0, 3).map((cat: string) => (
-                          <Badge key={cat} variant="secondary" className="text-xs bg-stone-800/50">
+                          <Badge key={cat} variant="secondary" className="text-xs bg-border/50">
                             {cat}
                           </Badge>
                         ))}
@@ -555,22 +555,22 @@ export default function Agents() {
             {/* Selected agent summary banner */}
             <div className="flex items-center justify-between p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-stone-900/60">
+                <div className="p-3 rounded-lg bg-card/60">
                   {AGENT_ICONS[(selectedAgent as any).moduleId] || <Bot className="w-6 h-6" />}
                 </div>
                 <div>
                   <h3 className="text-white font-medium text-lg">{selectedAgent.name}</h3>
-                  <p className="text-sm text-stone-400">{selectedAgent.description}</p>
+                  <p className="text-sm text-muted-foreground">{selectedAgent.description}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setWizardStep(1)} className="text-stone-500 hover:text-white">
+              <Button variant="ghost" size="sm" onClick={() => setWizardStep(1)} className="text-muted-foreground hover:text-white">
                 <RotateCcw className="w-4 h-4 mr-1" /> Change
               </Button>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-4">
               {/* Left: Config */}
-              <Card className="bg-stone-900/50 border-amber-900/30">
+              <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
                   <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
                     <Settings className="w-5 h-5" /> Configuration
@@ -578,9 +578,9 @@ export default function Agents() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block">Model</label>
+                    <label className="text-sm text-muted-foreground mb-2 block">Model</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel}>
-                      <SelectTrigger className="bg-stone-800 border-stone-700" data-testid="select-model">
+                      <SelectTrigger className="bg-border border-border" data-testid="select-model">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -597,7 +597,7 @@ export default function Agents() {
                   </div>
 
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                    <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
                       <Zap className="w-4 h-4 text-teal-400" />
                       Custom Instructions (Optional)
                     </label>
@@ -605,38 +605,38 @@ export default function Agents() {
                       value={userPrompt}
                       onChange={(e) => setUserPrompt(e.target.value)}
                       placeholder="Add focus areas, specific questions, or additional context..."
-                      className="bg-stone-800 border-stone-700 min-h-[80px]"
+                      className="bg-border border-border min-h-[80px]"
                       data-testid="user-prompt-input"
                     />
                   </div>
 
-                  <Separator className="bg-stone-800" />
+                  <Separator className="bg-border" />
 
                   {selectedAgent && (
-                    <div className="p-3 rounded-lg bg-stone-800/50 border border-stone-700">
+                    <div className="p-3 rounded-lg bg-border/50 border border-border">
                       <div className="flex items-center gap-2 mb-2">
                         <Lock className="w-4 h-4 text-amber-500" />
                         <span className="text-sm font-medium text-amber-400">Base Instructions</span>
                         <Badge variant="outline" className="text-xs border-red-500/50 text-red-400">Protected</Badge>
                       </div>
                       <ScrollArea className="h-20">
-                        <pre className="text-xs text-stone-400 whitespace-pre-wrap">
+                        <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
                           {(selectedAgent as any).systemPrompt?.slice(0, 400) || (selectedAgent as any).starterPrompt?.slice(0, 400)}...
                         </pre>
                       </ScrollArea>
                     </div>
                   )}
 
-                  <Separator className="bg-stone-800" />
+                  <Separator className="bg-border" />
 
                   <div>
-                    <label className="text-sm text-stone-400 mb-3 block">Quick Data Import</label>
+                    <label className="text-sm text-muted-foreground mb-3 block">Quick Data Import</label>
                     <div className="space-y-2">
                       <Button 
                         variant="outline" 
                         onClick={fetchLatestScan}
                         disabled={loadingScan}
-                        className="w-full justify-start border-stone-700 text-teal-400 hover:text-teal-300 hover:border-teal-500/40 h-11"
+                        className="w-full justify-start border-border text-teal-400 hover:text-teal-300 hover:border-teal-500/40 h-11"
                         data-testid="import-atropos-scan"
                       >
                         {loadingScan ? <Loader2 className="w-4 h-4 mr-3 animate-spin" /> : <Radar className="w-4 h-4 mr-3" />}
@@ -652,7 +652,7 @@ export default function Agents() {
                               size="sm"
                               onClick={() => fetchThreatIntel(feed.id)}
                               disabled={loadingFeed === feed.id}
-                              className="justify-start border-stone-700 text-stone-300 hover:text-white hover:border-amber-500/30 text-xs h-9"
+                              className="justify-start border-border text-foreground hover:text-white hover:border-amber-500/30 text-xs h-9"
                               data-testid={`feed-${feed.id}`}
                             >
                               {loadingFeed === feed.id ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <span className="mr-2">{feed.icon}</span>}
@@ -667,7 +667,7 @@ export default function Agents() {
               </Card>
 
               {/* Right: Data preview + run */}
-              <Card className="bg-stone-900/50 border-amber-900/30">
+              <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
                   <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
                     <Play className="w-5 h-5" /> Data Input
@@ -678,15 +678,15 @@ export default function Agents() {
                     value={testInput}
                     onChange={(e) => setTestInput(e.target.value)}
                     placeholder="Paste scan results, IOCs, vulnerability data, or use the import buttons on the left..."
-                    className="bg-stone-800 border-stone-700 min-h-[260px] font-mono text-xs"
+                    className="bg-border border-border min-h-[260px] font-mono text-xs"
                     data-testid="test-input"
                   />
 
                   {testInput && (
-                    <div className="flex items-center gap-2 text-xs text-stone-500">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Check className="w-3 h-3 text-teal-500" />
                       <span>{testInput.length.toLocaleString()} characters loaded</span>
-                      <Button variant="ghost" size="sm" onClick={() => setTestInput('')} className="text-stone-600 ml-auto h-6 px-2">
+                      <Button variant="ghost" size="sm" onClick={() => setTestInput('')} className="text-muted-foreground ml-auto h-6 px-2">
                         Clear
                       </Button>
                     </div>
@@ -719,19 +719,19 @@ export default function Agents() {
                 {selectedAgent?.name} - Analysis
               </h2>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setWizardStep(2)} className="text-stone-400 border-stone-700">
+                <Button variant="outline" size="sm" onClick={() => setWizardStep(2)} className="text-muted-foreground border-border">
                   <ArrowLeft className="w-4 h-4 mr-1" /> Adjust Input
                 </Button>
-                <Button variant="outline" size="sm" onClick={resetWizard} className="text-stone-400 border-stone-700">
+                <Button variant="outline" size="sm" onClick={resetWizard} className="text-muted-foreground border-border">
                   <RotateCcw className="w-4 h-4 mr-1" /> New Session
                 </Button>
               </div>
             </div>
 
-            <Card className="bg-stone-900/50 border-amber-900/30">
+            <Card className="bg-card/50 border-amber-900/30">
               <CardContent className="pt-6">
                 {isRunning ? (
-                  <div className="py-24 flex flex-col items-center justify-center gap-4 text-stone-400">
+                  <div className="py-24 flex flex-col items-center justify-center gap-4 text-muted-foreground">
                     <div className="relative">
                       <Loader2 className="w-16 h-16 animate-spin text-amber-500" />
                       <Bot className="w-6 h-6 text-amber-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
@@ -763,15 +763,15 @@ export default function Agents() {
                         <Download className="w-4 h-4 mr-1" /> Save
                       </Button>
                     </div>
-                    <ScrollArea className="h-[550px] w-full rounded-lg border border-stone-800 bg-stone-950 p-6">
-                      <pre className="text-sm text-stone-300 whitespace-pre-wrap font-mono leading-relaxed" data-testid="analysis-output">
+                    <ScrollArea className="h-[550px] w-full rounded-lg border border-border bg-card p-6">
+                      <pre className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed" data-testid="analysis-output">
                         {testOutput}
                       </pre>
                     </ScrollArea>
                   </div>
                 ) : (
-                  <div className="py-20 flex flex-col items-center justify-center gap-3 text-stone-500">
-                    <FileText className="w-10 h-10 text-stone-700" />
+                  <div className="py-20 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                    <FileText className="w-10 h-10 text-muted-foreground" />
                     <p>Waiting for analysis results...</p>
                   </div>
                 )}
@@ -784,7 +784,7 @@ export default function Agents() {
         {showExport && (
           <div className="mt-6 space-y-4">
             <div className="grid lg:grid-cols-2 gap-4">
-              <Card className="bg-stone-900/50 border-amber-900/30">
+              <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
                   <CardTitle className="text-amber-500 flex items-center gap-2">
                     <Download className="w-5 h-5" /> Export Configuration
@@ -793,9 +793,9 @@ export default function Agents() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block">Export Format</label>
+                    <label className="text-sm text-muted-foreground mb-2 block">Export Format</label>
                     <Select value={exportFormat} onValueChange={(v: 'crewai' | 'langchain') => setExportFormat(v)}>
-                      <SelectTrigger className="bg-stone-800 border-stone-700">
+                      <SelectTrigger className="bg-border border-border">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -806,12 +806,12 @@ export default function Agents() {
                   </div>
 
                   <div>
-                    <label className="text-sm text-stone-400 mb-2 block">Select Agents to Export</label>
+                    <label className="text-sm text-muted-foreground mb-2 block">Select Agents to Export</label>
                     <div className="space-y-2">
                       {agents.map(agent => (
                         <div 
                           key={agent.id}
-                          className="flex items-center justify-between p-2 rounded bg-stone-800/50 border border-stone-700"
+                          className="flex items-center justify-between p-2 rounded bg-border/50 border border-border"
                         >
                           <div className="flex items-center gap-2">
                             {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-4 h-4" />}
@@ -824,7 +824,7 @@ export default function Agents() {
                         </div>
                       ))}
                     </div>
-                    <p className="text-xs text-stone-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Leave all unchecked to export all agents
                     </p>
                   </div>
@@ -836,13 +836,13 @@ export default function Agents() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-stone-900/50 border-amber-900/30">
+              <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
                   <CardTitle className="text-amber-500">Export Preview</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[300px]">
-                    <pre className="text-xs text-stone-400 font-mono">
+                    <pre className="text-xs text-muted-foreground font-mono">
 {exportFormat === 'crewai' ? `# CrewAI Export Format
 from crewai import Agent, Crew, Task
 
@@ -881,7 +881,7 @@ ${agents.slice(0, 2).map(a => `  {
 
         {/* ===== RECENT RUNS ===== */}
         {agentRuns.length > 0 && (
-          <Card className="mt-6 bg-stone-900/50 border-amber-900/30">
+          <Card className="mt-6 bg-card/50 border-amber-900/30">
             <CardHeader>
               <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
                 <FileText className="w-5 h-5" /> Recent Analyses
@@ -892,13 +892,13 @@ ${agents.slice(0, 2).map(a => `  {
                 {agentRuns.slice(0, 5).map((run, idx) => (
                   <div 
                     key={run.id || idx}
-                    className="flex items-center justify-between p-3 rounded bg-stone-800/50 border border-stone-700"
+                    className="flex items-center justify-between p-3 rounded bg-border/50 border border-border"
                   >
                     <div className="flex items-center gap-3">
                       {AGENT_ICONS[run.agentId] || AGENT_ICONS[agents.find(a => a.id.toString() === run.agentId)?.moduleId || ''] || <Bot className="w-4 h-4" />}
                       <div>
                         <span className="text-sm text-white">{run.agentId}</span>
-                        <div className="flex items-center gap-2 text-xs text-stone-500">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           {run.latencyMs && <span>{run.latencyMs}ms</span>}
                           {run.tokenUsage && <span>{run.tokenUsage.total} tokens</span>}
                         </div>

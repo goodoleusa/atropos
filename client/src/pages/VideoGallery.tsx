@@ -130,11 +130,11 @@ export default function VideoGallery() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 p-6">
+    <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/">
-            <Button variant="ghost" size="icon" className="text-stone-400 hover:text-amber-500">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-amber-500">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
@@ -148,7 +148,7 @@ export default function VideoGallery() {
               variant={filter === cat ? "default" : "outline"}
               size="sm"
               onClick={() => setFilter(cat)}
-              className={filter === cat ? "bg-amber-600 hover:bg-amber-700" : "border-stone-700"}
+              className={filter === cat ? "bg-amber-600 hover:bg-amber-700" : "border-border"}
             >
               {cat === "all" ? "All Videos" : cat}
             </Button>
@@ -157,7 +157,7 @@ export default function VideoGallery() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredVideos.map((video) => (
-            <div key={video.filename} className="bg-stone-900 rounded-lg overflow-hidden border border-stone-800">
+            <div key={video.filename} className="bg-card rounded-lg overflow-hidden border border-border">
               <div className="relative aspect-video bg-black">
                 <video
                   id={`video-${video.filename}`}
@@ -183,14 +183,14 @@ export default function VideoGallery() {
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-amber-400">{video.title}</h3>
-                  <span className="text-xs px-2 py-1 bg-stone-800 rounded text-stone-400">{video.category}</span>
+                  <span className="text-xs px-2 py-1 bg-border rounded text-muted-foreground">{video.category}</span>
                 </div>
-                <p className="text-xs text-stone-500 mb-3 font-mono">{video.filename}</p>
+                <p className="text-xs text-muted-foreground mb-3 font-mono">{video.filename}</p>
                 
                 <div className="space-y-3">
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-stone-400 uppercase tracking-wider">Prompt</span>
+                      <span className="text-xs text-muted-foreground uppercase tracking-wider">Prompt</span>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -204,14 +204,14 @@ export default function VideoGallery() {
                         )}
                       </Button>
                     </div>
-                    <p className="text-xs text-stone-300 bg-stone-800/50 p-2 rounded max-h-32 overflow-y-auto">
+                    <p className="text-xs text-foreground bg-border/50 p-2 rounded max-h-32 overflow-y-auto">
                       {video.prompt}
                     </p>
                   </div>
                   
                   <div>
-                    <span className="text-xs text-stone-400 uppercase tracking-wider">Negative Prompt</span>
-                    <p className="text-xs text-stone-500 bg-stone-800/30 p-2 rounded mt-1">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Negative Prompt</span>
+                    <p className="text-xs text-muted-foreground bg-border/30 p-2 rounded mt-1">
                       {video.negativePrompt}
                     </p>
                   </div>

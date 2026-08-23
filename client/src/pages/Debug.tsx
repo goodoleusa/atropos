@@ -153,16 +153,16 @@ export default function Debug() {
       case "OK": return "text-amber-500";
       case "WARNING": return "text-orange-500";
       case "CRITICAL": return "text-red-500";
-      default: return "text-stone-500";
+      default: return "text-muted-foreground";
     }
   };
 
   const clearLogs = () => setLogs([]);
 
   return (
-    <div className={`min-h-screen bg-[#050200] text-stone-300 font-mono ${glitchMode ? 'animate-pulse' : ''}`}>
+    <div className={`min-h-screen bg-[hsl(var(--card))] text-foreground font-mono ${glitchMode ? 'animate-pulse' : ''}`}>
       {/* Header */}
-      <header className="border-b border-amber-900/30 bg-[#0a0500]">
+      <header className="border-b border-amber-900/30 bg-[hsl(var(--card))]">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Bug className="w-6 h-6 text-amber-600" />
@@ -171,7 +171,7 @@ export default function Debug() {
             </h1>
           </div>
           <Link href="/">
-            <Button variant="ghost" className="text-stone-500 hover:text-amber-500" data-testid="link-home">
+            <Button variant="ghost" className="text-muted-foreground hover:text-amber-500" data-testid="link-home">
               <ArrowLeft className="w-4 h-4 mr-2" /> Return
             </Button>
           </Link>
@@ -184,7 +184,7 @@ export default function Debug() {
           <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-amber-500 font-bold text-sm">DEBUG MODE ACTIVE</p>
-            <p className="text-stone-500 text-xs">
+            <p className="text-muted-foreground text-xs">
               System diagnostics exposed. Click on metrics to analyze subsystems.
               Anomalies may contain hidden information.
             </p>
@@ -203,7 +203,7 @@ export default function Debug() {
               onClick={() => handleMetricClick(metric.name)}
               className="cursor-pointer"
             >
-              <Card className={`bg-[#0a0500] border-amber-900/30 hover:border-amber-600/50 transition-all ${
+              <Card className={`bg-[hsl(var(--card))] border-amber-900/30 hover:border-amber-600/50 transition-all ${
                 secretsFound.some(s => metric.name.toLowerCase().includes(s)) ? 'ring-1 ring-amber-500' : ''
               }`} data-testid={`card-metric-${metric.name.toLowerCase().replace(' ', '-')}`}>
                 <CardHeader className="pb-2">
@@ -212,7 +212,7 @@ export default function Debug() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-stone-300">{metric.value}</p>
+                  <p className="text-2xl font-bold text-foreground">{metric.value}</p>
                   <p className={`text-xs ${getStatusColor(metric.status)}`}>
                     Status: {metric.status}
                   </p>
@@ -223,7 +223,7 @@ export default function Debug() {
         </div>
 
         {/* Live Logs */}
-        <Card className="bg-[#0a0500] border-amber-900/30">
+        <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-amber-500 font-mono flex items-center gap-2">
               <Terminal className="w-5 h-5" /> System Logs
@@ -232,7 +232,7 @@ export default function Debug() {
               variant="ghost" 
               size="sm" 
               onClick={clearLogs}
-              className="text-stone-600 hover:text-amber-500"
+              className="text-muted-foreground hover:text-amber-500"
               data-testid="button-clear-logs"
             >
               <Trash2 className="w-4 h-4 mr-1" /> Clear
@@ -241,7 +241,7 @@ export default function Debug() {
           <CardContent>
             <div className="bg-black/50 rounded p-4 h-64 overflow-y-auto font-mono text-xs">
               {logs.length === 0 ? (
-                <p className="text-stone-600">Waiting for log entries...</p>
+                <p className="text-muted-foreground">Waiting for log entries...</p>
               ) : (
                 logs.map((log, i) => (
                   <motion.div
@@ -252,7 +252,7 @@ export default function Debug() {
                       log.includes('ERROR') ? 'text-red-500' :
                       log.includes('WARN') ? 'text-yellow-500' :
                       log.includes('DEBUG') ? 'text-purple-400' :
-                      'text-stone-500'
+                      'text-muted-foreground'
                     }`}
                   >
                     {log}
@@ -273,7 +273,7 @@ export default function Debug() {
             <p className="text-purple-400 font-orbitron">
               SYSTEM ANOMALY DETECTED
             </p>
-            <p className="text-stone-500 text-sm mt-2">
+            <p className="text-muted-foreground text-sm mt-2">
               You have uncovered {secretsFound.length} hidden diagnostics.
               The debug console reveals more than it should.
             </p>

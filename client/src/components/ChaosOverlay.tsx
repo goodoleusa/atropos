@@ -47,7 +47,7 @@ export const ChaosOverlay = () => {
       </AnimatePresence>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="border-amber-900/50 bg-[#0a0500] text-amber-500 font-mono">
+        <DialogContent className="border-amber-900/50 bg-[hsl(var(--card))] text-amber-500 font-mono">
           <DialogHeader>
             <DialogTitle className="uppercase tracking-widest text-glitch" data-text="Connection Unstable">Connection Unstable</DialogTitle>
           </DialogHeader>

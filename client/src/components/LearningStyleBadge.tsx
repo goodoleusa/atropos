@@ -50,8 +50,8 @@ export function LearningStyleBadge({ size = 'sm', showLabel = false }: LearningS
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 z-50 bg-stone-950 border border-stone-800 rounded-lg shadow-xl p-1 min-w-[160px] md:min-w-[180px]" data-testid="learning-style-picker">
-          <p className="text-[9px] text-stone-600 uppercase tracking-wider px-2 py-1 font-bold">Learning Style</p>
+        <div className="absolute top-full left-0 mt-1 z-50 bg-card border border-border rounded-lg shadow-xl p-1 min-w-[160px] md:min-w-[180px]" data-testid="learning-style-picker">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-wider px-2 py-1 font-bold">Learning Style</p>
           {(Object.entries(STYLES) as [LearningStyle, typeof STYLES[LearningStyle]][]).map(([key, meta]) => {
             const SIcon = meta.icon;
             const isActive = key === style;
@@ -60,14 +60,14 @@ export function LearningStyleBadge({ size = 'sm', showLabel = false }: LearningS
                 key={key}
                 onClick={() => { setStyle(key); setOpen(false); }}
                 className={`w-full flex items-center gap-2 px-2 py-2 md:py-1.5 rounded text-left transition-colors min-h-[40px] md:min-h-0 ${
-                  isActive ? `${meta.bg} ${meta.color}` : 'text-stone-400 hover:bg-stone-900 hover:text-white'
+                  isActive ? `${meta.bg} ${meta.color}` : 'text-muted-foreground hover:bg-card hover:text-white'
                 }`}
                 data-testid={`style-option-${key}`}
               >
-                <SIcon className={`w-3.5 h-3.5 ${isActive ? meta.color : 'text-stone-600'}`} />
+                <SIcon className={`w-3.5 h-3.5 ${isActive ? meta.color : 'text-muted-foreground'}`} />
                 <div className="flex-1 min-w-0">
                   <span className={`text-[11px] md:text-xs font-medium ${isActive ? meta.color : ''}`}>{meta.label}</span>
-                  <span className="text-[9px] text-stone-600 ml-1.5 hidden md:inline">{meta.short}</span>
+                  <span className="text-[9px] text-muted-foreground ml-1.5 hidden md:inline">{meta.short}</span>
                 </div>
                 {isActive && <div className={`w-1.5 h-1.5 rounded-full ${meta.color.replace('text-', 'bg-')}`} />}
               </button>

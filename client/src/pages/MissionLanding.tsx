@@ -20,7 +20,7 @@ import {
 
 export default function MissionLanding() {
   return (
-    <div className="min-h-screen bg-black text-stone-100">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background gradient */}
@@ -44,12 +44,12 @@ export default function MissionLanding() {
               Train Ethical Hackers
             </span>
             <br />
-            <span className="text-stone-100">
+            <span className="text-foreground">
               to Fight Trafficking
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-stone-400 mb-12 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto">
             Learn real-world OSINT and cyber investigation techniques used by FBI, Interpol, and NGOs
             to combat human trafficking and financial crime.
           </p>
@@ -74,48 +74,48 @@ export default function MissionLanding() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <div>
               <div className="text-4xl font-bold text-amber-400">10,000+</div>
-              <div className="text-sm text-stone-400">Investigators Trained</div>
+              <div className="text-sm text-muted-foreground">Investigators Trained</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-teal-400">50+</div>
-              <div className="text-sm text-stone-400">Cases Supported</div>
+              <div className="text-sm text-muted-foreground">Cases Supported</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-emerald-400">20+</div>
-              <div className="text-sm text-stone-400">Victims Helped</div>
+              <div className="text-sm text-muted-foreground">Victims Helped</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-red-400">5+</div>
-              <div className="text-sm text-stone-400">Networks Disrupted</div>
+              <div className="text-sm text-muted-foreground">Networks Disrupted</div>
             </div>
           </div>
         </div>
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-stone-600 rounded-full p-1">
+          <div className="w-6 h-10 border-2 border-muted rounded-full p-1">
             <div className="w-1 h-2 bg-amber-500 rounded-full mx-auto" />
           </div>
         </div>
       </section>
 
       {/* The Problem Section */}
-      <section className="py-24 border-t border-stone-800">
+      <section className="py-24 border-t border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               The <span className="text-red-400">Problem</span> We're Solving
             </h2>
-            <p className="text-xl text-stone-400">
+            <p className="text-xl text-muted-foreground">
               Human trafficking is a $150 billion industry. Technology enables it. Technology can stop it.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-stone-950/90 border-red-500/30 p-8">
+            <Card className="bg-card/90 border-red-500/30 p-8">
               <AlertTriangle className="w-12 h-12 text-red-400 mb-4" />
               <h3 className="text-2xl font-bold mb-3">The Crisis</h3>
-              <ul className="space-y-2 text-stone-400">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>• 40.3M victims globally</li>
                 <li>• $150B criminal industry</li>
                 <li>• 85% recruited via social media</li>
@@ -123,10 +123,10 @@ export default function MissionLanding() {
               </ul>
             </Card>
 
-            <Card className="bg-stone-950/90 border-amber-500/30 p-8">
+            <Card className="bg-card/90 border-amber-500/30 p-8">
               <Users className="w-12 h-12 text-amber-400 mb-4" />
               <h3 className="text-2xl font-bold mb-3">The Gap</h3>
-              <ul className="space-y-2 text-stone-400">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>• 100,000+ open cases</li>
                 <li>• 1 investigator per 10k victims</li>
                 <li>• NGOs lack tech skills</li>
@@ -134,10 +134,10 @@ export default function MissionLanding() {
               </ul>
             </Card>
 
-            <Card className="bg-stone-950/90 border-emerald-500/30 p-8">
+            <Card className="bg-card/90 border-emerald-500/30 p-8">
               <CheckCircle2 className="w-12 h-12 text-emerald-400 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Our Solution</h3>
-              <ul className="space-y-2 text-stone-400">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>• Train 10k ethical hackers</li>
                 <li>• AI agents scale 100x</li>
                 <li>• Deploy on real cases</li>
@@ -149,13 +149,13 @@ export default function MissionLanding() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-gradient-to-b from-stone-950 to-black border-y border-stone-800">
+      <section className="py-24 bg-gradient-to-b from-card to-black border-y border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               How <span className="text-teal-400">It Works</span>
             </h2>
-            <p className="text-xl text-stone-400">
+            <p className="text-xl text-muted-foreground">
               From student to professional investigator in months, not years
             </p>
           </div>
@@ -166,12 +166,12 @@ export default function MissionLanding() {
               <div className="w-16 h-16 bg-amber-500/20 border-2 border-amber-500 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0">
                 1
               </div>
-              <Card className="bg-stone-900/50 border-stone-800 p-6 flex-1">
+              <Card className="bg-card/50 border-border p-6 flex-1">
                 <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
                   <Target className="w-6 h-6 text-amber-400" />
                   Learn Real Investigation Techniques
                 </h3>
-                <p className="text-stone-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Complete 23+ investigation campaigns teaching social media OSINT, cryptocurrency tracing,
                   dark web analysis, and corporate intelligence - the same methods used by FBI and Interpol.
                 </p>
@@ -194,12 +194,12 @@ export default function MissionLanding() {
               <div className="w-16 h-16 bg-teal-500/20 border-2 border-teal-500 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0">
                 2
               </div>
-              <Card className="bg-stone-900/50 border-stone-800 p-6 flex-1">
+              <Card className="bg-card/50 border-border p-6 flex-1">
                 <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
                   <Award className="w-6 h-6 text-teal-400" />
                   Get Certified & Build Portfolio
                 </h3>
-                <p className="text-stone-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Earn achievements, complete challenges, and build a professional portfolio of investigations.
                   Generate reports that impress law enforcement and NGO employers.
                 </p>
@@ -222,12 +222,12 @@ export default function MissionLanding() {
               <div className="w-16 h-16 bg-red-500/20 border-2 border-red-500 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0">
                 3
               </div>
-              <Card className="bg-stone-900/50 border-stone-800 p-6 flex-1">
+              <Card className="bg-card/50 border-border p-6 flex-1">
                 <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
                   <Shield className="w-6 h-6 text-red-400" />
                   Support Real Cases & Get Paid
                 </h3>
-                <p className="text-stone-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Top students become Research Fellows, supporting real investigations for NGOs and law enforcement.
                   Get paid while making an impact. Direct path to careers at Polaris, Thorn, FBI, or HSI.
                 </p>
@@ -249,7 +249,7 @@ export default function MissionLanding() {
       </section>
 
       {/* Campaign Showcase */}
-      <section className="py-24 border-t border-stone-800">
+      <section className="py-24 border-t border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <Badge className="bg-red-500/20 text-red-400 border-red-500/30 mb-4">
@@ -258,7 +258,7 @@ export default function MissionLanding() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Investigation <span className="text-amber-400">Campaigns</span>
             </h2>
-            <p className="text-xl text-stone-400">
+            <p className="text-xl text-muted-foreground">
               Master real-world techniques through realistic scenarios
             </p>
           </div>
@@ -306,7 +306,7 @@ export default function MissionLanding() {
                 realWorld: 'Interpol Project VIC (10,000+ victims identified)'
               }
             ].map((campaign) => (
-              <Card key={campaign.id} className="bg-stone-950/90 border-stone-800 p-6 hover:border-amber-500/30 transition-colors group">
+              <Card key={campaign.id} className="bg-card/90 border-border p-6 hover:border-amber-500/30 transition-colors group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="text-4xl">{campaign.icon}</div>
                   <Badge className={
@@ -320,22 +320,22 @@ export default function MissionLanding() {
                 </div>
 
                 <h3 className="text-xl font-bold mb-2">{campaign.name}</h3>
-                <p className="text-stone-400 text-sm mb-4">{campaign.description}</p>
+                <p className="text-muted-foreground text-sm mb-4">{campaign.description}</p>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {campaign.techniques.map((tech) => (
-                    <Badge key={tech} variant="outline" className="text-xs border-stone-700 text-stone-400">
+                    <Badge key={tech} variant="outline" className="text-xs border-border text-muted-foreground">
                       {tech}
                     </Badge>
                   ))}
                 </div>
 
-                <div className="text-xs text-stone-500 mb-4 italic">
+                <div className="text-xs text-muted-foreground mb-4 italic">
                   Real-world: {campaign.realWorld}
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-stone-500">{campaign.time}</span>
+                  <span className="text-sm text-muted-foreground">{campaign.time}</span>
                   <Link href={`/play/${campaign.id}`}>
                     <Button size="sm" className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/30">
                       Start Mission
@@ -349,7 +349,7 @@ export default function MissionLanding() {
 
           <div className="text-center">
             <Link href="/campaigns">
-              <Button size="lg" variant="outline" className="border-stone-700 text-stone-300 hover:bg-stone-800">
+              <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-border">
                 View All 23+ Campaigns
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -359,13 +359,13 @@ export default function MissionLanding() {
       </section>
 
       {/* Partners Section */}
-      <section className="py-24 bg-stone-950/50 border-t border-stone-800">
+      <section className="py-24 bg-muted/50 border-t border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Trusted <span className="text-teal-400">Partners</span>
             </h2>
-            <p className="text-xl text-stone-400">
+            <p className="text-xl text-muted-foreground">
               Working with leading organizations to combat trafficking
             </p>
           </div>
@@ -382,36 +382,36 @@ export default function MissionLanding() {
               { name: 'OUR', desc: 'Field Ops' }
             ].map((partner) => (
               <div key={partner.name} className="text-center">
-                <div className="text-lg font-semibold text-stone-300 mb-1">{partner.name}</div>
-                <div className="text-sm text-stone-500">{partner.desc}</div>
+                <div className="text-lg font-semibold text-foreground mb-1">{partner.name}</div>
+                <div className="text-sm text-muted-foreground">{partner.desc}</div>
               </div>
             ))}
           </div>
 
-          <div className="text-center text-sm text-stone-500">
+          <div className="text-center text-sm text-muted-foreground">
             * Partnership discussions in progress
           </div>
         </div>
       </section>
 
       {/* Business Model Section (Investors) */}
-      <section className="py-24 border-t border-stone-800">
+      <section className="py-24 border-t border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Mission <span className="text-emerald-400">+ Money</span>
             </h2>
-            <p className="text-xl text-stone-400">
+            <p className="text-xl text-muted-foreground">
               Sustainable business model with exceptional unit economics
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <Card className="bg-stone-950/90 border-emerald-500/30 p-6">
+            <Card className="bg-card/90 border-emerald-500/30 p-6">
               <DollarSign className="w-12 h-12 text-emerald-400 mb-4" />
               <h3 className="text-2xl font-bold mb-2">$500K ARR</h3>
-              <p className="text-stone-400 mb-4">Year 1 Target</p>
-              <ul className="text-sm text-stone-500 space-y-1">
+              <p className="text-muted-foreground mb-4">Year 1 Target</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Education: $100k</li>
                 <li>• Government: $200k</li>
                 <li>• Corporate: $125k</li>
@@ -419,11 +419,11 @@ export default function MissionLanding() {
               </ul>
             </Card>
 
-            <Card className="bg-stone-950/90 border-teal-500/30 p-6">
+            <Card className="bg-card/90 border-teal-500/30 p-6">
               <TrendingUp className="w-12 h-12 text-teal-400 mb-4" />
               <h3 className="text-2xl font-bold mb-2">36:1</h3>
-              <p className="text-stone-400 mb-4">LTV:CAC Ratio</p>
-              <ul className="text-sm text-stone-500 space-y-1">
+              <p className="text-muted-foreground mb-4">LTV:CAC Ratio</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• CAC: $2,000</li>
                 <li>• LTV: $72,000</li>
                 <li>• Industry: 3:1</li>
@@ -431,11 +431,11 @@ export default function MissionLanding() {
               </ul>
             </Card>
 
-            <Card className="bg-stone-950/90 border-amber-500/30 p-6">
+            <Card className="bg-card/90 border-amber-500/30 p-6">
               <Zap className="w-12 h-12 text-amber-400 mb-4" />
               <h3 className="text-2xl font-bold mb-2">99%</h3>
-              <p className="text-stone-400 mb-4">Gross Margin</p>
-              <ul className="text-sm text-stone-500 space-y-1">
+              <p className="text-muted-foreground mb-4">Gross Margin</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• AI cost: $50/client</li>
                 <li>• Client pays: $10k</li>
                 <li>• Traditional: $50k</li>
@@ -456,13 +456,13 @@ export default function MissionLanding() {
       </section>
 
       {/* Career Paths Section */}
-      <section className="py-24 bg-stone-950/50 border-t border-stone-800">
+      <section className="py-24 bg-muted/50 border-t border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Launch Your <span className="text-amber-400">Career</span>
             </h2>
-            <p className="text-xl text-stone-400">
+            <p className="text-xl text-muted-foreground">
               Training leads directly to jobs in ethical hacking for social good
             </p>
           </div>
@@ -506,10 +506,10 @@ export default function MissionLanding() {
                 icon: Award
               }
             ].map((career) => (
-              <Card key={career.title} className="bg-stone-900/50 border-stone-800 p-6">
+              <Card key={career.title} className="bg-card/50 border-border p-6">
                 <career.icon className="w-10 h-10 text-amber-400 mb-4" />
                 <h3 className="text-lg font-bold mb-2">{career.title}</h3>
-                <p className="text-sm text-stone-400 mb-2">{career.org}</p>
+                <p className="text-sm text-muted-foreground mb-2">{career.org}</p>
                 <div className="text-xl font-bold text-emerald-400">{career.salary}</div>
               </Card>
             ))}
@@ -518,12 +518,12 @@ export default function MissionLanding() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 border-t border-stone-800">
+      <section className="py-24 border-t border-border">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Ready to Make an <span className="text-red-400">Impact</span>?
           </h2>
-          <p className="text-xl text-stone-400 mb-12">
+          <p className="text-xl text-muted-foreground mb-12">
             Join the fight against human trafficking. Learn skills that save lives.
           </p>
 
@@ -535,7 +535,7 @@ export default function MissionLanding() {
               </Button>
             </Link>
             <Link href="/investors">
-              <Button size="lg" variant="outline" className="border-stone-700 text-stone-300 hover:bg-stone-800 text-lg px-8 py-6 w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-border text-lg px-8 py-6 w-full sm:w-auto">
                 For Investors
               </Button>
             </Link>

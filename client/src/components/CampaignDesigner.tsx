@@ -119,7 +119,7 @@ const COLOR_MAP: Record<string, string> = {
   amber: 'border-amber-600 bg-amber-950/30',
   purple: 'border-purple-600 bg-purple-950/30',
   teal: 'border-teal-600 bg-teal-950/30',
-  stone: 'border-stone-600 bg-stone-900/30',
+  stone: 'border-muted bg-card/30',
 };
 
 const RELATION_TYPES: { type: RelationType; label: string; icon: string; color: string }[] = [
@@ -128,7 +128,7 @@ const RELATION_TYPES: { type: RelationType; label: string; icon: string; color: 
   { type: 'sibling', label: 'Sibling', icon: '↔', color: 'text-amber-400' },
   { type: 'next', label: 'Next', icon: '→', color: 'text-teal-400' },
   { type: 'prev', label: 'Previous', icon: '←', color: 'text-purple-400' },
-  { type: 'related', label: 'Related', icon: '◇', color: 'text-stone-400' },
+  { type: 'related', label: 'Related', icon: '◇', color: 'text-muted-foreground' },
 ];
 
 interface Props {
@@ -1909,7 +1909,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
       <div key={nodeId} style={{ marginLeft: depth * 16 }}>
         <div
           className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${
-            isSelected ? 'bg-amber-900/30 border border-amber-600' : 'hover:bg-stone-800/50'
+            isSelected ? 'bg-amber-900/30 border border-amber-600' : 'hover:bg-border/50'
           }`}
           onClick={() => setSelectedNode(nodeId)}
           data-testid={`tree-node-${nodeId}`}
@@ -1920,14 +1920,14 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             </button>
           )}
           <span className={`text-${node.color}-400`}>{nodeType?.icon}</span>
-          <span className="text-xs text-stone-300 truncate flex-1">{node.title}</span>
+          <span className="text-xs text-foreground truncate flex-1">{node.title}</span>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100">
-            <button onClick={(e) => { e.stopPropagation(); setEditingNode(node); }} className="p-1 hover:bg-stone-700 rounded">
-              <Edit3 className="w-3 h-3 text-stone-400" />
+            <button onClick={(e) => { e.stopPropagation(); setEditingNode(node); }} className="p-1 hover:bg-border rounded">
+              <Edit3 className="w-3 h-3 text-muted-foreground" />
             </button>
             {isFolder && (
-              <button onClick={(e) => { e.stopPropagation(); addNode('step', nodeId); }} className="p-1 hover:bg-stone-700 rounded">
-                <Plus className="w-3 h-3 text-stone-400" />
+              <button onClick={(e) => { e.stopPropagation(); addNode('step', nodeId); }} className="p-1 hover:bg-border rounded">
+                <Plus className="w-3 h-3 text-muted-foreground" />
               </button>
             )}
           </div>
@@ -2026,11 +2026,11 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
               onChange={(e) => updateNode(node.id, { title: e.target.value })}
               onBlur={() => setInlineEditNode(null)}
               onKeyDown={(e) => e.key === 'Enter' && setInlineEditNode(null)}
-              className="text-xs bg-transparent border-amber-600 h-6 p-1 text-stone-200"
+              className="text-xs bg-transparent border-amber-600 h-6 p-1 text-foreground"
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
-            <span className="text-xs font-bold text-stone-200 truncate flex-1">{node.title}</span>
+            <span className="text-xs font-bold text-foreground truncate flex-1">{node.title}</span>
           )}
           <Badge variant="outline" className={`text-[8px] border-${node.color}-600 text-${node.color}-400`}>
             {nodeType?.label}
@@ -2041,13 +2041,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           <textarea
             value={node.content}
             onChange={(e) => updateNode(node.id, { content: e.target.value })}
-            className="w-full text-[10px] bg-transparent border border-amber-600 rounded p-1 text-stone-300 resize-none"
+            className="w-full text-[10px] bg-transparent border border-amber-600 rounded p-1 text-foreground resize-none"
             rows={3}
             onClick={(e) => e.stopPropagation()}
             placeholder="Enter node content..."
           />
         ) : (
-          <p className="text-[10px] text-stone-400 line-clamp-3">{node.content || 'Double-click to edit'}</p>
+          <p className="text-[10px] text-muted-foreground line-clamp-3">{node.content || 'Double-click to edit'}</p>
         )}
         
         {/* Left input connector - for receiving links */}
@@ -2056,7 +2056,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
               isLinkTarget
                 ? 'bg-teal-500 border-teal-400 scale-125 animate-pulse' 
-                : 'bg-stone-900 border-stone-600 hover:border-teal-400 hover:bg-teal-900/50'
+                : 'bg-card border-muted hover:border-teal-400 hover:bg-teal-900/50'
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -2066,7 +2066,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             }}
             title="Drop link here"
           >
-            <ChevronRight className="w-3 h-3 text-stone-400" />
+            <ChevronRight className="w-3 h-3 text-muted-foreground" />
           </button>
         </div>
         
@@ -2076,7 +2076,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all text-sm font-bold ${
               isLinking 
                 ? 'bg-teal-500 border-teal-400 scale-110 text-black' 
-                : 'bg-stone-800 border-stone-600 hover:border-amber-500 hover:bg-amber-900/50 text-stone-300'
+                : 'bg-border border-muted hover:border-amber-500 hover:bg-amber-900/50 text-foreground'
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -2146,7 +2146,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           <circle cx={x2} cy={y2} r="6" fill={`var(--${link.color}-500, #f59e0b)`} className="animate-pulse" />
           <circle cx={x1} cy={y1} r="4" fill={`var(--${link.color}-500, #f59e0b)`} />
           {link.label && (
-            <text x={midX} y={(y1 + y2) / 2 - 8} className="text-[11px] fill-stone-300 font-bold" textAnchor="middle">
+            <text x={midX} y={(y1 + y2) / 2 - 8} className="text-[11px] fill-foreground font-bold" textAnchor="middle">
               {link.label}
             </text>
           )}
@@ -2182,7 +2182,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] bg-[#0a0500] border-amber-900/50 p-0 overflow-hidden rounded-none sm:rounded-lg">
+      <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] bg-[hsl(var(--card))] border-amber-900/50 p-0 overflow-hidden rounded-none sm:rounded-lg">
         <div className="flex flex-col h-full">
           <DialogHeader className="p-3 sm:p-4 border-b border-amber-900/30 shrink-0">
             <DialogTitle className="text-amber-500 font-orbitron flex items-center gap-2 text-sm sm:text-base">
@@ -2193,7 +2193,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
               <Input
                 value={campaign.name}
                 onChange={(e) => setCampaign(prev => ({ ...prev, name: e.target.value }))}
-                className="bg-transparent border-stone-700 text-stone-300 text-sm min-h-[44px]"
+                className="bg-transparent border-border text-foreground text-sm min-h-[44px]"
                 placeholder="Campaign name..."
               />
               <div className="flex gap-1.5 sm:gap-2 flex-wrap">
@@ -2201,7 +2201,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   size="sm"
                   variant={mode === 'tree' ? 'default' : 'outline'}
                   onClick={() => setMode('tree')}
-                  className={`min-h-[44px] min-w-[44px] px-3 ${mode === 'tree' ? 'bg-amber-700 text-black' : 'border-stone-700 text-stone-400'}`}
+                  className={`min-h-[44px] min-w-[44px] px-3 ${mode === 'tree' ? 'bg-amber-700 text-black' : 'border-border text-muted-foreground'}`}
                 >
                   <FolderTree className="w-4 h-4" />
                   <span className="ml-1 hidden sm:inline">Tree</span>
@@ -2210,7 +2210,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   size="sm"
                   variant={mode === 'graph' ? 'default' : 'outline'}
                   onClick={() => setMode('graph')}
-                  className={`min-h-[44px] min-w-[44px] px-3 ${mode === 'graph' ? 'bg-purple-700 text-white' : 'border-stone-700 text-stone-400'}`}
+                  className={`min-h-[44px] min-w-[44px] px-3 ${mode === 'graph' ? 'bg-purple-700 text-white' : 'border-border text-muted-foreground'}`}
                 >
                   <GitBranch className="w-4 h-4" />
                   <span className="ml-1 hidden sm:inline">Graph</span>
@@ -2225,11 +2225,11 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   <SelectTrigger className="border-amber-800 text-amber-400 min-h-[44px] min-w-[44px] w-auto px-2 bg-transparent" data-testid="export-dropdown">
                     <Download className="w-4 h-4" />
                   </SelectTrigger>
-                  <SelectContent className="bg-stone-900 border-stone-700">
-                    <SelectItem value="json" className="text-stone-300 min-h-[44px]">
+                  <SelectContent className="bg-card border-border">
+                    <SelectItem value="json" className="text-foreground min-h-[44px]">
                       Export JSON
                     </SelectItem>
-                    <SelectItem value="obsidian" className="text-stone-300 min-h-[44px]">
+                    <SelectItem value="obsidian" className="text-foreground min-h-[44px]">
                       Export Obsidian (Dataview/Breadcrumbs)
                     </SelectItem>
                   </SelectContent>
@@ -2262,7 +2262,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   {testRunMode ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                   <span className="ml-1 hidden sm:inline">{testRunMode ? 'Stop' : 'Test'}</span>
                 </Button>
-                <div className="border-l border-stone-700 h-6 mx-1" />
+                <div className="border-l border-border h-6 mx-1" />
                 {/* View Mode Selector */}
                 {(['story', 'canvas', 'clues', 'overview'] as const).map(v => (
                   <Button
@@ -2270,7 +2270,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     size="sm"
                     variant={viewMode === v ? 'default' : 'ghost'}
                     onClick={() => setViewMode(v)}
-                    className={`min-h-[44px] px-2 capitalize ${viewMode === v ? 'bg-cyan-800 text-white' : 'text-stone-500'}`}
+                    className={`min-h-[44px] px-2 capitalize ${viewMode === v ? 'bg-cyan-800 text-white' : 'text-muted-foreground'}`}
                   >
                     {v === 'story' ? <FileText className="w-4 h-4" /> : v === 'canvas' ? <Layers className="w-4 h-4" /> : v === 'clues' ? <Key className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     <span className="ml-1 hidden sm:inline text-xs">{v}</span>
@@ -2280,15 +2280,15 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
               {/* Breadcrumb Trail */}
               {breadcrumbTrail.length > 0 && viewMode === 'canvas' && (
                 <div className="flex items-center gap-1 text-xs mt-2 flex-wrap">
-                  <span className="text-stone-600">Path:</span>
+                  <span className="text-muted-foreground">Path:</span>
                   {breadcrumbTrail.map((nodeId, i) => {
                     const node = campaign.nodes.find(n => n.id === nodeId);
                     return (
                       <span key={nodeId} className="flex items-center">
-                        {i > 0 && <ChevronRight className="w-3 h-3 text-stone-600 mx-0.5" />}
+                        {i > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground mx-0.5" />}
                         <button
                           onClick={() => setSelectedNode(nodeId)}
-                          className={`px-1.5 py-0.5 rounded ${nodeId === selectedNode ? 'bg-amber-900/50 text-amber-400' : 'bg-stone-800/50 text-stone-400 hover:bg-stone-700'}`}
+                          className={`px-1.5 py-0.5 rounded ${nodeId === selectedNode ? 'bg-amber-900/50 text-amber-400' : 'bg-border/50 text-muted-foreground hover:bg-border'}`}
                         >
                           {node?.title || nodeId.slice(0, 8)}
                         </button>
@@ -2304,7 +2304,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             {/* Mobile File Tree Toggle */}
             <button
               onClick={() => setShowFileTree(!showFileTree)}
-              className="sm:hidden flex items-center justify-between w-full p-3 bg-stone-950/80 border-b border-amber-900/30 text-amber-500"
+              className="sm:hidden flex items-center justify-between w-full p-3 bg-card/80 border-b border-amber-900/30 text-amber-500"
               data-testid="mobile-file-tree-toggle"
             >
               <span className="flex items-center gap-2 text-sm font-bold">
@@ -2315,7 +2315,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             </button>
 
             {/* Campaign File Tree Sidebar - Collapsible on mobile */}
-            <div className={`border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0 sm:w-[200px] bg-stone-950/50 transition-all ${showFileTree ? 'max-h-[200px] sm:max-h-none' : 'max-h-0 sm:max-h-none overflow-hidden sm:overflow-visible'}`}>
+            <div className={`border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0 sm:w-[200px] bg-card/50 transition-all ${showFileTree ? 'max-h-[200px] sm:max-h-none' : 'max-h-0 sm:max-h-none overflow-hidden sm:overflow-visible'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] text-amber-500 uppercase tracking-wider font-bold flex items-center gap-1">
                     <FolderTree className="w-3 h-3" /> Campaigns
@@ -2327,7 +2327,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                 <ScrollArea className="h-[120px] sm:h-[200px]">
                   <div className="space-y-1">
                     {savedCampaigns.length === 0 ? (
-                      <p className="text-stone-600 text-xs text-center py-4">No saved campaigns</p>
+                      <p className="text-muted-foreground text-xs text-center py-4">No saved campaigns</p>
                     ) : (
                       savedCampaigns.map(c => (
                         <div 
@@ -2335,7 +2335,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           className={`group flex items-center gap-1 p-1.5 rounded cursor-pointer text-xs transition-all ${
                             c.id === campaign.id 
                               ? 'bg-amber-900/40 text-amber-300' 
-                              : 'hover:bg-stone-800 text-stone-400'
+                              : 'hover:bg-border text-muted-foreground'
                           }`}
                           onClick={() => loadCampaign(c.id)}
                           data-testid={`campaign-file-${c.id}`}
@@ -2364,7 +2364,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     )}
                   </div>
                 </ScrollArea>
-                <div className="border-t border-stone-800 mt-2 pt-2">
+                <div className="border-t border-border mt-2 pt-2">
                   <Button
                     size="sm"
                     variant="outline"
@@ -2375,7 +2375,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         ? 'border-teal-600 text-teal-400'
                         : isUnsaved 
                           ? 'border-amber-600 text-amber-400 animate-pulse' 
-                          : 'border-stone-700 text-stone-400'
+                          : 'border-border text-muted-foreground'
                     }`}
                     data-testid="save-campaign-btn"
                   >
@@ -2413,12 +2413,12 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             {/* Node Types Sidebar */}
             <div className="border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0">
               <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                <p className="text-[10px] text-stone-500 uppercase tracking-wider">Add Node</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Add Node</p>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => setShowFileTree(!showFileTree)}
-                  className="p-0 h-5 w-5 text-stone-500 hover:text-amber-400 sm:hidden"
+                  className="p-0 h-5 w-5 text-muted-foreground hover:text-amber-400 sm:hidden"
                   title="Toggle File Tree"
                 >
                   <FolderTree className="w-3 h-3" />
@@ -2430,7 +2430,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     amber: 'border-amber-800 text-amber-400 hover:bg-amber-950/30',
                     purple: 'border-purple-800 text-purple-400 hover:bg-purple-950/30',
                     teal: 'border-teal-800 text-teal-400 hover:bg-teal-950/30',
-                    stone: 'border-stone-800 text-stone-400 hover:bg-stone-950/30'
+                    stone: 'border-border text-muted-foreground hover:bg-card/30'
                   };
                   return (
                     <Button
@@ -2448,8 +2448,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                 })}
               </div>
 
-              <div className="border-t border-stone-800 mt-2 pt-2 hidden sm:block">
-                <p className="text-[10px] text-stone-500 uppercase tracking-wider mb-2">Actions</p>
+              <div className="border-t border-border mt-2 pt-2 hidden sm:block">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Actions</p>
                 {linkingFrom && (
                   <Badge className="bg-teal-900 text-teal-400 text-[10px] mb-2">
                     Linking mode: Click target node
@@ -2464,7 +2464,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         const node = campaign.nodes.find(n => n.id === selectedNode);
                         if (node) setEditingNode(node);
                       }}
-                      className="w-full justify-start text-xs border-stone-700 text-stone-400 mb-1"
+                      className="w-full justify-start text-xs border-border text-muted-foreground mb-1"
                     >
                       <Edit3 className="w-3 h-3 mr-2" /> Edit
                     </Button>
@@ -2489,8 +2489,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
               </div>
 
               {/* Obsidian-style Link Query */}
-              <div className="border-t border-stone-800 mt-2 pt-2 hidden sm:block">
-                <p className="text-[10px] text-stone-500 uppercase tracking-wider mb-2">Link by Query</p>
+              <div className="border-t border-border mt-2 pt-2 hidden sm:block">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Link by Query</p>
                 <div className="relative">
                   <Input
                     value={linkQuery}
@@ -2501,15 +2501,15 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     onFocus={() => linkQuery && setShowLinkSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowLinkSuggestions(false), 200)}
                     placeholder="[[name]] @type: #tool:"
-                    className="bg-black/30 border-stone-700 text-stone-300 text-xs h-8"
+                    className="bg-black/30 border-border text-foreground text-xs h-8"
                     data-testid="link-query-input"
                   />
                   {showLinkSuggestions && linkQueryResults.length > 0 && (
-                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-stone-900 border border-stone-700 rounded-md shadow-lg max-h-32 overflow-auto">
+                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-card border border-border rounded-md shadow-lg max-h-32 overflow-auto">
                       {linkQueryResults.slice(0, 5).map(node => (
                         <button
                           key={node.id}
-                          className="w-full text-left px-2 py-1.5 text-xs hover:bg-stone-800 flex items-center gap-2"
+                          className="w-full text-left px-2 py-1.5 text-xs hover:bg-border flex items-center gap-2"
                           onClick={() => {
                             if (selectedNode && selectedNode !== node.id) {
                               createLink(selectedNode, node.id);
@@ -2523,14 +2523,14 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           }}
                         >
                           <span className={`w-2 h-2 rounded-full bg-${node.color}-500`} />
-                          <span className="text-stone-300 truncate">{node.title}</span>
-                          <span className="text-stone-500 text-[10px]">@{node.type}</span>
+                          <span className="text-foreground truncate">{node.title}</span>
+                          <span className="text-muted-foreground text-[10px]">@{node.type}</span>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
-                <p className="text-[9px] text-stone-600 mt-1">
+                <p className="text-[9px] text-muted-foreground mt-1">
                   [[name]] @type:step #tool:nmap
                 </p>
               </div>
@@ -2539,16 +2539,16 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             <div className="flex-1 overflow-hidden relative flex flex-col">
               {/* Breadcrumbs - path to selected node */}
               {selectedNode && breadcrumbs.length > 0 && (
-                <div className="bg-stone-900/80 backdrop-blur border-b border-stone-800 px-3 py-1.5 flex items-center gap-1 overflow-x-auto shrink-0" data-testid="breadcrumbs">
+                <div className="bg-card/80 backdrop-blur border-b border-border px-3 py-1.5 flex items-center gap-1 overflow-x-auto shrink-0" data-testid="breadcrumbs">
                   {breadcrumbs.map((node, idx) => (
                     <div key={node.id} className="flex items-center gap-1 shrink-0">
-                      {idx > 0 && <ChevronRight className="w-3 h-3 text-stone-600" />}
+                      {idx > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground" />}
                       <button
                         onClick={() => setSelectedNode(node.id)}
                         className={`text-xs px-2 py-1 rounded transition-colors min-h-[32px] ${
                           node.id === selectedNode 
                             ? 'bg-amber-900/50 text-amber-400 font-medium' 
-                            : 'text-stone-400 hover:bg-stone-800 hover:text-stone-300'
+                            : 'text-muted-foreground hover:bg-border hover:text-foreground'
                         }`}
                       >
                         {node.title}
@@ -2560,7 +2560,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
               {/* Relations Panel - Excalibrain style */}
               {selectedNode && (nodeRelations.parents.length > 0 || nodeRelations.children.length > 0 || nodeRelations.siblings.length > 0) && (
-                <div className="bg-stone-900/60 border-b border-stone-800 px-3 py-2 shrink-0 overflow-x-auto" data-testid="relations-panel">
+                <div className="bg-card/60 border-b border-border px-3 py-2 shrink-0 overflow-x-auto" data-testid="relations-panel">
                   <div className="flex items-center gap-4 text-[10px]">
                     {nodeRelations.parents.length > 0 && (
                       <div className="flex items-center gap-1.5">
@@ -2610,8 +2610,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
               {/* Mobile action bar for selected node */}
               {selectedNode && (
-                <div className="sm:hidden sticky top-0 z-10 bg-[#0a0500]/95 backdrop-blur border-b border-amber-900/30 p-2 flex items-center gap-2 shrink-0" data-testid="mobile-action-bar">
-                  <span className="text-xs text-stone-400 truncate flex-1" data-testid="selected-node-title">
+                <div className="sm:hidden sticky top-0 z-10 bg-[hsl(var(--card))]/95 backdrop-blur border-b border-amber-900/30 p-2 flex items-center gap-2 shrink-0" data-testid="mobile-action-bar">
+                  <span className="text-xs text-muted-foreground truncate flex-1" data-testid="selected-node-title">
                     {campaign.nodes.find(n => n.id === selectedNode)?.title}
                   </span>
                   <Button
@@ -2648,7 +2648,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     size="sm"
                     variant="ghost"
                     onClick={() => setSelectedNode(null)}
-                    className="min-h-[44px] min-w-[44px] p-0 text-stone-400 text-xl"
+                    className="min-h-[44px] min-w-[44px] p-0 text-muted-foreground text-xl"
                     data-testid="mobile-close-btn"
                   >
                     ×
@@ -2674,8 +2674,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     </div>
 
                     {storyOrder.length === 0 ? (
-                      <Card className="bg-stone-900/30 border-stone-800">
-                        <CardContent className="p-6 text-center text-stone-500 text-sm">
+                      <Card className="bg-card/30 border-border">
+                        <CardContent className="p-6 text-center text-muted-foreground text-sm">
                           Start your story with the first step.
                         </CardContent>
                       </Card>
@@ -2692,19 +2692,19 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           const clueDatalistId = `clue-options-${node.id}`;
 
                           return (
-                            <Card key={node.id} className="bg-stone-900/30 border-stone-800">
+                            <Card key={node.id} className="bg-card/30 border-border">
                               <CardHeader className="pb-2">
                                 <div className="flex items-start justify-between gap-2">
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                      <Badge variant="outline" className="text-[10px] border-stone-700 text-stone-400">
+                                      <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                                         Step {index + 1}
                                       </Badge>
                                       <Badge className={
                                         node.color === 'amber' ? 'bg-amber-700 text-white' :
                                         node.color === 'purple' ? 'bg-purple-700 text-white' :
                                         node.color === 'teal' ? 'bg-teal-700 text-white' :
-                                        'bg-stone-700 text-white'
+                                        'bg-border text-white'
                                       }>
                                         {node.type}
                                       </Badge>
@@ -2715,7 +2715,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                                     >
                                       {node.title}
                                     </button>
-                                    <p className="text-stone-500 text-xs line-clamp-3">{node.content || 'No content yet.'}</p>
+                                    <p className="text-muted-foreground text-xs line-clamp-3">{node.content || 'No content yet.'}</p>
                                   </div>
                                   <div className="flex flex-col gap-2">
                                     <Button
@@ -2740,22 +2740,22 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                               <CardContent className="space-y-3 text-xs">
                                 <div className="flex flex-wrap gap-2">
                                   {prevNodes.length > 0 && (
-                                    <div className="text-stone-500">
+                                    <div className="text-muted-foreground">
                                       From: {prevNodes.map(n => n.title).join(', ')}
                                     </div>
                                   )}
                                   {nextNodes.length > 0 && (
-                                    <div className="text-stone-500">
+                                    <div className="text-muted-foreground">
                                       Next: {nextNodes.map(n => n.title).join(', ')}
                                     </div>
                                   )}
                                 </div>
 
                                 <div>
-                                  <Label className="text-[10px] text-stone-500 uppercase">Linked Clues</Label>
+                                  <Label className="text-[10px] text-muted-foreground uppercase">Linked Clues</Label>
                                   <div className="flex flex-wrap gap-1 mt-1">
                                     {linkedClues.length === 0 && (
-                                      <span className="text-[10px] text-stone-600">No clues linked</span>
+                                      <span className="text-[10px] text-muted-foreground">No clues linked</span>
                                     )}
                                     {linkedClues.map(clueId => (
                                       <Badge
@@ -2772,7 +2772,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                                     <Input
                                       list={clueDatalistId}
                                       placeholder="Link clue by ID..."
-                                      className="bg-black/50 border-stone-700 text-xs min-h-[36px]"
+                                      className="bg-black/50 border-border text-xs min-h-[36px]"
                                       onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                           const val = (e.target as HTMLInputElement).value.trim();
@@ -2810,24 +2810,24 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       </Badge>
                     </div>
                     {sharedClues.length === 0 ? (
-                      <p className="text-stone-500 text-center py-8">No clues defined yet. Add clues in Admin → Clues tab.</p>
+                      <p className="text-muted-foreground text-center py-8">No clues defined yet. Add clues in Admin → Clues tab.</p>
                     ) : (
                       <div className="grid gap-2">
                         {sharedClues.map(clue => {
                           const linkedNodes = campaign.nodes.filter(n => n.metadata?.linkedClues?.includes(clue.id));
                           return (
-                            <Card key={clue.id} className="bg-stone-900/30 border-stone-800">
+                            <Card key={clue.id} className="bg-card/30 border-border">
                               <CardContent className="p-3">
                                 <div className="flex items-start justify-between gap-2">
                                   <div>
                                     <p className="text-amber-400 font-medium text-sm">{clue.name}</p>
-                                    <p className="text-stone-500 text-xs">{clue.description}</p>
+                                    <p className="text-muted-foreground text-xs">{clue.description}</p>
                                     <div className="flex flex-wrap gap-1 mt-1">
-                                      {clue.tags?.map(t => <Badge key={t} variant="outline" className="text-[8px] border-stone-700 text-stone-500">{t}</Badge>)}
+                                      {clue.tags?.map(t => <Badge key={t} variant="outline" className="text-[8px] border-border text-muted-foreground">{t}</Badge>)}
                                     </div>
                                   </div>
                                   <div className="text-right shrink-0">
-                                    <p className="text-[10px] text-stone-600">Used in {linkedNodes.length} nodes</p>
+                                    <p className="text-[10px] text-muted-foreground">Used in {linkedNodes.length} nodes</p>
                                     {linkedNodes.slice(0, 3).map(n => (
                                       <button key={n.id} onClick={() => { setViewMode('canvas'); setSelectedNode(n.id); }} className="text-[9px] text-teal-400 hover:underline block">
                                         → {n.title}
@@ -2846,8 +2846,8 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       <h4 className="text-teal-400 text-sm font-bold mb-2">Nodes with Linked Clues</h4>
                       <div className="space-y-1">
                         {campaign.nodes.filter(n => n.metadata?.linkedClues?.length).map(node => (
-                          <div key={node.id} className="flex items-center justify-between p-2 bg-stone-900/30 rounded border border-stone-800">
-                            <button onClick={() => { setViewMode('canvas'); setSelectedNode(node.id); }} className="text-sm text-stone-300 hover:text-amber-400">
+                          <div key={node.id} className="flex items-center justify-between p-2 bg-card/30 rounded border border-border">
+                            <button onClick={() => { setViewMode('canvas'); setSelectedNode(node.id); }} className="text-sm text-foreground hover:text-amber-400">
                               {node.title}
                             </button>
                             <div className="flex gap-1">
@@ -2858,7 +2858,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           </div>
                         ))}
                         {campaign.nodes.filter(n => n.metadata?.linkedClues?.length).length === 0 && (
-                          <p className="text-stone-600 text-xs">No nodes have linked clues yet. Edit a node and add clue IDs.</p>
+                          <p className="text-muted-foreground text-xs">No nodes have linked clues yet. Edit a node and add clue IDs.</p>
                         )}
                       </div>
                     </div>
@@ -2874,59 +2874,59 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <Card className="bg-amber-950/20 border-amber-900/30"><CardContent className="p-3 text-center">
                         <p className="text-xl font-bold text-amber-400">{campaign.nodes.length}</p>
-                        <p className="text-[10px] text-stone-500">Nodes</p>
+                        <p className="text-[10px] text-muted-foreground">Nodes</p>
                       </CardContent></Card>
                       <Card className="bg-teal-950/20 border-teal-900/30"><CardContent className="p-3 text-center">
                         <p className="text-xl font-bold text-teal-400">{campaign.links.length}</p>
-                        <p className="text-[10px] text-stone-500">Links</p>
+                        <p className="text-[10px] text-muted-foreground">Links</p>
                       </CardContent></Card>
                       <Card className="bg-purple-950/20 border-purple-900/30"><CardContent className="p-3 text-center">
                         <p className="text-xl font-bold text-purple-400">{campaign.nodes.filter(n => n.type === 'decision').length}</p>
-                        <p className="text-[10px] text-stone-500">Decisions</p>
+                        <p className="text-[10px] text-muted-foreground">Decisions</p>
                       </CardContent></Card>
-                      <Card className="bg-stone-800/30 border-stone-700"><CardContent className="p-3 text-center">
-                        <p className="text-xl font-bold text-stone-400">{savedCampaigns.length}</p>
-                        <p className="text-[10px] text-stone-500">Campaigns</p>
+                      <Card className="bg-border/30 border-border"><CardContent className="p-3 text-center">
+                        <p className="text-xl font-bold text-muted-foreground">{savedCampaigns.length}</p>
+                        <p className="text-[10px] text-muted-foreground">Campaigns</p>
                       </CardContent></Card>
                     </div>
                     {/* Feature/Skill breakdown */}
                     <div className="grid sm:grid-cols-2 gap-4">
-                      <Card className="bg-stone-900/30 border-stone-800">
+                      <Card className="bg-card/30 border-border">
                         <CardHeader className="pb-2"><CardTitle className="text-sm text-amber-400">Features Used</CardTitle></CardHeader>
                         <CardContent className="flex flex-wrap gap-1">
                           {Array.from(new Set(campaign.nodes.map(n => n.metadata?.featureType).filter(Boolean))).map(f => (
                             <Badge key={f} variant="outline" className="border-amber-700 text-amber-400 capitalize">{f}</Badge>
                           ))}
-                          {campaign.nodes.every(n => !n.metadata?.featureType) && <span className="text-stone-600 text-xs">None set</span>}
+                          {campaign.nodes.every(n => !n.metadata?.featureType) && <span className="text-muted-foreground text-xs">None set</span>}
                         </CardContent>
                       </Card>
-                      <Card className="bg-stone-900/30 border-stone-800">
+                      <Card className="bg-card/30 border-border">
                         <CardHeader className="pb-2"><CardTitle className="text-sm text-teal-400">Skills Covered</CardTitle></CardHeader>
                         <CardContent className="flex flex-wrap gap-1">
                           {Array.from(new Set(campaign.nodes.flatMap(n => n.metadata?.skills || []))).slice(0, 10).map(s => (
                             <Badge key={s} variant="outline" className="border-teal-700 text-teal-400 text-[9px]">{s}</Badge>
                           ))}
-                          {campaign.nodes.every(n => !n.metadata?.skills?.length) && <span className="text-stone-600 text-xs">None set</span>}
+                          {campaign.nodes.every(n => !n.metadata?.skills?.length) && <span className="text-muted-foreground text-xs">None set</span>}
                         </CardContent>
                       </Card>
                     </div>
                     {/* All Campaigns List */}
-                    <Card className="bg-stone-900/30 border-stone-800">
+                    <Card className="bg-card/30 border-border">
                       <CardHeader className="pb-2"><CardTitle className="text-sm text-purple-400">All Campaigns</CardTitle></CardHeader>
                       <CardContent className="space-y-1">
                         {savedCampaigns.map(c => (
-                          <div key={c.id} className="flex items-center justify-between p-2 bg-stone-900/50 rounded">
-                            <button onClick={() => loadCampaign(c.id)} className={`text-sm ${c.id === campaign.id ? 'text-amber-400' : 'text-stone-400 hover:text-stone-300'}`}>
+                          <div key={c.id} className="flex items-center justify-between p-2 bg-card/50 rounded">
+                            <button onClick={() => loadCampaign(c.id)} className={`text-sm ${c.id === campaign.id ? 'text-amber-400' : 'text-muted-foreground hover:text-foreground'}`}>
                               {c.name}
                             </button>
-                            <span className="text-[10px] text-stone-600">{c.nodes.length} nodes</span>
+                            <span className="text-[10px] text-muted-foreground">{c.nodes.length} nodes</span>
                           </div>
                         ))}
-                        {savedCampaigns.length === 0 && <p className="text-stone-600 text-xs">No saved campaigns yet</p>}
+                        {savedCampaigns.length === 0 && <p className="text-muted-foreground text-xs">No saved campaigns yet</p>}
                       </CardContent>
                     </Card>
                     {/* Decision Tree Summary */}
-                    <Card className="bg-stone-900/30 border-stone-800">
+                    <Card className="bg-card/30 border-border">
                       <CardHeader className="pb-2"><CardTitle className="text-sm text-cyan-400">Decision Tree Paths</CardTitle></CardHeader>
                       <CardContent className="space-y-1 max-h-[200px] overflow-y-auto">
                         {campaign.nodes.filter(n => n.type === 'decision').map(node => {
@@ -2934,7 +2934,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           return (
                             <div key={node.id} className="text-xs p-2 bg-purple-950/20 rounded border border-purple-900/30">
                               <p className="text-purple-400 font-medium">{node.title}</p>
-                              <p className="text-stone-600 text-[10px]">{node.metadata?.condition || node.content}</p>
+                              <p className="text-muted-foreground text-[10px]">{node.metadata?.condition || node.content}</p>
                               <div className="mt-1 flex gap-1 flex-wrap">
                                 {children.map(l => {
                                   const target = campaign.nodes.find(n => n.id === l.target);
@@ -2948,7 +2948,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                             </div>
                           );
                         })}
-                        {campaign.nodes.filter(n => n.type === 'decision').length === 0 && <p className="text-stone-600 text-xs">No decision nodes yet</p>}
+                        {campaign.nodes.filter(n => n.type === 'decision').length === 0 && <p className="text-muted-foreground text-xs">No decision nodes yet</p>}
                       </CardContent>
                     </Card>
                   </div>
@@ -2957,7 +2957,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                 <ScrollArea className="h-full p-4">
                   <div className="space-y-1">
                     {campaign.rootNodes.length === 0 ? (
-                      <p className="text-stone-500 text-sm text-center py-8">
+                      <p className="text-muted-foreground text-sm text-center py-8">
                         Add nodes using the sidebar to build your campaign
                       </p>
                     ) : (
@@ -2969,7 +2969,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                 <div
                   ref={canvasRef}
                   tabIndex={0}
-                  className="absolute inset-0 overflow-auto bg-[#050200] outline-none"
+                  className="absolute inset-0 overflow-auto bg-[hsl(var(--card))] outline-none"
                   style={{ 
                     touchAction: draggedNode ? 'none' : 'manipulation',
                     backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)',
@@ -3029,43 +3029,43 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   onKeyDown={handleKeyboardNavigation}
                 >
                   {/* Zoom Controls - Fixed Position */}
-                  <div className="fixed bottom-20 right-4 sm:absolute sm:bottom-4 sm:right-4 z-50 flex flex-col gap-2 bg-stone-900/90 backdrop-blur rounded-lg p-2 border border-stone-700">
+                  <div className="fixed bottom-20 right-4 sm:absolute sm:bottom-4 sm:right-4 z-50 flex flex-col gap-2 bg-card/90 backdrop-blur rounded-lg p-2 border border-border">
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setZoom(z => Math.min(2, z + 0.25))}
-                      className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                      className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
                       data-testid="zoom-in-btn"
                     >
                       <ZoomIn className="w-5 h-5" />
                     </Button>
-                    <span className="text-center text-xs text-stone-500 font-mono">{Math.round(zoom * 100)}%</span>
+                    <span className="text-center text-xs text-muted-foreground font-mono">{Math.round(zoom * 100)}%</span>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setZoom(z => Math.max(0.25, z - 0.25))}
-                      className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                      className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
                       data-testid="zoom-out-btn"
                     >
                       <ZoomOut className="w-5 h-5" />
                     </Button>
-                    <div className="border-t border-stone-700 pt-2">
+                    <div className="border-t border-border pt-2">
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => setZoom(1)}
-                        className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-teal-400 text-xs"
+                        className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-400 text-xs"
                         data-testid="zoom-reset-btn"
                       >
                         Reset
                       </Button>
                     </div>
-                    <div className="border-t border-stone-700 pt-2">
+                    <div className="border-t border-border pt-2">
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={autoOrganize}
-                        className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-purple-400"
+                        className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-400"
                         title="Auto-organize nodes"
                         data-testid="auto-organize-btn"
                       >
@@ -3076,7 +3076,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
                   {/* Mobile Node Ordering Controls - Shows when node selected */}
                   {selectedNode && !editingNode && (
-                    <div className="fixed bottom-20 left-4 sm:absolute sm:bottom-4 sm:left-4 z-50 bg-stone-900/90 backdrop-blur rounded-lg p-2 border border-amber-700/50">
+                    <div className="fixed bottom-20 left-4 sm:absolute sm:bottom-4 sm:left-4 z-50 bg-card/90 backdrop-blur rounded-lg p-2 border border-amber-700/50">
                       <p className="text-[10px] text-amber-500 uppercase mb-2 text-center font-bold">Order</p>
                       <div className="grid grid-cols-3 gap-1">
                         {/* Top row - Move Up */}
@@ -3085,7 +3085,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => moveNodeUp(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
                           title="Move node up (↑)"
                           data-testid="move-up-btn"
                         >
@@ -3098,13 +3098,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => outdentNode(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-purple-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-400"
                           title="Outdent (←)"
                           data-testid="outdent-btn"
                         >
                           <ArrowLeft className="w-5 h-5" />
                         </Button>
-                        <div className="flex items-center justify-center text-[10px] text-stone-500">
+                        <div className="flex items-center justify-center text-[10px] text-muted-foreground">
                           {getNodeDepth(selectedNode) > 0 && (
                             <span className="bg-purple-900/50 px-1.5 py-0.5 rounded text-purple-400">
                               L{getNodeDepth(selectedNode)}
@@ -3115,7 +3115,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => indentNode(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-teal-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-400"
                           title="Indent (→)"
                           data-testid="indent-btn"
                         >
@@ -3128,7 +3128,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => moveNodeDown(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-stone-400 hover:text-amber-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
                           title="Move node down (↓)"
                           data-testid="move-down-btn"
                         >
@@ -3221,7 +3221,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   return currentNode ? (
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs text-stone-500">Start from</span>
+                        <span className="text-xs text-muted-foreground">Start from</span>
                         <Select
                           value={testStartNode || currentNode.id}
                           onValueChange={(nodeId) => {
@@ -3230,12 +3230,12 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                             setTestHistory([nodeId]);
                           }}
                         >
-                          <SelectTrigger className="bg-black/50 border-teal-700 text-stone-300 min-h-[36px] w-[220px]">
+                          <SelectTrigger className="bg-black/50 border-teal-700 text-foreground min-h-[36px] w-[220px]">
                             <SelectValue placeholder="Select start node..." />
                           </SelectTrigger>
-                          <SelectContent className="bg-stone-900 border-teal-700">
+                          <SelectContent className="bg-card border-teal-700">
                             {campaign.nodes.map(node => (
-                              <SelectItem key={node.id} value={node.id} className="text-stone-300">
+                              <SelectItem key={node.id} value={node.id} className="text-foreground">
                                 {node.title || node.id.slice(0, 8)}
                               </SelectItem>
                             ))}
@@ -3247,17 +3247,17 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           currentNode.color === 'amber' ? 'bg-amber-700 text-white' :
                           currentNode.color === 'purple' ? 'bg-purple-700 text-white' :
                           currentNode.color === 'teal' ? 'bg-teal-700 text-white' :
-                          'bg-stone-700 text-white'
+                          'bg-border text-white'
                         }>
                           {nodeType?.icon} {nodeType?.label}
                         </Badge>
-                        <span className="text-sm font-bold text-stone-200">{currentNode.title}</span>
+                        <span className="text-sm font-bold text-foreground">{currentNode.title}</span>
                       </div>
-                      <p className="text-sm text-stone-400">{currentNode.content || 'No content'}</p>
+                      <p className="text-sm text-muted-foreground">{currentNode.content || 'No content'}</p>
                       
                       {outgoingLinks.length > 0 ? (
                         <div>
-                          <p className="text-xs text-stone-500 mb-2">Choose next step:</p>
+                          <p className="text-xs text-muted-foreground mb-2">Choose next step:</p>
                           <Select
                             value=""
                             onValueChange={(nodeId) => {
@@ -3265,14 +3265,14 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                               setTestHistory(prev => [...prev, nodeId]);
                             }}
                           >
-                            <SelectTrigger className="bg-black/50 border-teal-700 text-stone-300 min-h-[44px]" data-testid="test-next-select">
+                            <SelectTrigger className="bg-black/50 border-teal-700 text-foreground min-h-[44px]" data-testid="test-next-select">
                               <SelectValue placeholder="Select next node..." />
                             </SelectTrigger>
-                            <SelectContent className="bg-stone-900 border-teal-700">
+                            <SelectContent className="bg-card border-teal-700">
                               {outgoingLinks.map(link => {
                                 const targetNode = campaign.nodes.find(n => n.id === link.target);
                                 return targetNode ? (
-                                  <SelectItem key={link.id} value={link.target} className="text-stone-300">
+                                  <SelectItem key={link.id} value={link.target} className="text-foreground">
                                     {link.label ? `${link.label}: ` : ''}{targetNode.title}
                                   </SelectItem>
                                 ) : null;
@@ -3285,7 +3285,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       )}
 
                       <div className="pt-2 border-t border-teal-900">
-                        <div className="flex items-center gap-2 text-xs text-stone-500">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>Step {testHistory.length}</span>
                           <span>•</span>
                           <span>History</span>
@@ -3304,7 +3304,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                                 className={`text-[10px] px-2 py-1 rounded border ${
                                   index === testHistory.length - 1
                                     ? 'border-teal-600 text-teal-300 bg-teal-900/30'
-                                    : 'border-stone-700 text-stone-400 hover:text-stone-200'
+                                    : 'border-border text-muted-foreground hover:text-foreground'
                                 }`}
                                 data-testid={`test-history-${index}`}
                               >
@@ -3321,15 +3321,15 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
             )}
 
             {editingNode && !testRunMode && (
-              <div className="fixed inset-x-0 bottom-0 max-h-[70vh] sm:relative sm:inset-auto sm:max-h-none z-50 sm:z-0 bg-[#0a0500] sm:bg-transparent sm:w-72 sm:border-l border-amber-900/30 border-t sm:border-t-0 rounded-t-2xl sm:rounded-none p-4 overflow-y-auto shadow-2xl sm:shadow-none">
+              <div className="fixed inset-x-0 bottom-0 max-h-[70vh] sm:relative sm:inset-auto sm:max-h-none z-50 sm:z-0 bg-[hsl(var(--card))] sm:bg-transparent sm:w-72 sm:border-l border-amber-900/30 border-t sm:border-t-0 rounded-t-2xl sm:rounded-none p-4 overflow-y-auto shadow-2xl sm:shadow-none">
                 {/* Mobile drag handle */}
-                <div className="sm:hidden w-12 h-1 bg-stone-600 rounded-full mx-auto mb-3" />
-                <div className="flex items-center justify-between mb-4 sticky top-0 bg-[#0a0500] py-2 z-10">
+                <div className="sm:hidden w-12 h-1 bg-muted rounded-full mx-auto mb-3" />
+                <div className="flex items-center justify-between mb-4 sticky top-0 bg-[hsl(var(--card))] py-2 z-10">
                   <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2">
                     <Edit3 className="w-4 h-4" /> Edit Node
                   </h3>
                   <Button size="sm" variant="ghost" onClick={() => setEditingNode(null)} className="min-h-[44px] min-w-[44px]">
-                    <span className="text-stone-500 text-xl">×</span>
+                    <span className="text-muted-foreground text-xl">×</span>
                   </Button>
                 </div>
 
@@ -3344,7 +3344,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     <Play className="w-4 h-4 mr-2" /> Playtest from this node
                   </Button>
                   <div>
-                    <label className="text-[10px] text-stone-500 uppercase">Node Type</label>
+                    <label className="text-[10px] text-muted-foreground uppercase">Node Type</label>
                     <Select
                       value={editingNode.type}
                       onValueChange={(type: CampaignNode['type']) => {
@@ -3353,12 +3353,12 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         updateNode(editingNode.id, { type, color: nodeType?.color || editingNode.color });
                       }}
                     >
-                      <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]" data-testid="node-type-select">
+                      <SelectTrigger className="bg-black/50 border-border text-foreground min-h-[44px]" data-testid="node-type-select">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-stone-900 border-stone-700">
+                      <SelectContent className="bg-card border-border">
                         {NODE_TYPES.map(nt => (
-                          <SelectItem key={nt.type} value={nt.type} className="text-stone-300">
+                          <SelectItem key={nt.type} value={nt.type} className="text-foreground">
                             <span className="flex items-center gap-2">
                               {nt.icon} {nt.label}
                             </span>
@@ -3369,7 +3369,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-stone-500 uppercase">Title</label>
+                    <label className="text-[10px] text-muted-foreground uppercase">Title</label>
                     <Input
                       value={editingNode.title}
                       onChange={(e) => {
@@ -3377,12 +3377,12 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         setEditingNode(prev => prev ? { ...prev, title: newTitle } : null);
                         updateNode(editingNode.id, { title: newTitle });
                       }}
-                      className="bg-black/50 border-stone-700 text-base min-h-[44px]"
+                      className="bg-black/50 border-border text-base min-h-[44px]"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-stone-500 uppercase">Content <span className="text-stone-600">(use [[Node Title]] for wikilinks)</span></label>
+                    <label className="text-[10px] text-muted-foreground uppercase">Content <span className="text-muted-foreground">(use [[Node Title]] for wikilinks)</span></label>
                     <Textarea
                       value={editingNode.content}
                       onChange={(e) => {
@@ -3393,13 +3393,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       onBlur={(e) => {
                         syncWikilinks(editingNode.id, e.target.value);
                       }}
-                      className="bg-black/50 border-stone-700 text-base min-h-[120px] font-mono"
+                      className="bg-black/50 border-border text-base min-h-[120px] font-mono"
                       placeholder="Describe this step... Use [[Other Node]] to link"
                     />
                     {/* Wikilinks detected */}
                     {parseWikilinks(editingNode.content).length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
-                        <span className="text-[9px] text-stone-600">Links:</span>
+                        <span className="text-[9px] text-muted-foreground">Links:</span>
                         {parseWikilinks(editingNode.content).map((link, i) => {
                           const target = findNodeByTitle(link);
                           return (
@@ -3420,13 +3420,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         href={campaign.isPublished ? `/api/campaigns/${campaign.id}/page/${editingNode.id}` : '#'}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-[10px] ${campaign.isPublished ? 'text-teal-400 hover:underline' : 'text-stone-600 pointer-events-none'}`}
+                        className={`text-[10px] ${campaign.isPublished ? 'text-teal-400 hover:underline' : 'text-muted-foreground pointer-events-none'}`}
                       >
                         {campaign.isPublished ? 'Preview as page ↗' : 'Publish to preview'}
                       </a>
                     </div>
                     <div>
-                      <label className="text-[10px] text-stone-500 uppercase">Page Layout</label>
+                      <label className="text-[10px] text-muted-foreground uppercase">Page Layout</label>
                       <Select
                         value={(editingNode as any).pageLayout || 'card'}
                         onValueChange={(val) => {
@@ -3434,10 +3434,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           updateNode(editingNode.id, { pageLayout: val } as any);
                         }}
                       >
-                        <SelectTrigger className="bg-black/50 border-stone-700 text-xs h-8">
+                        <SelectTrigger className="bg-black/50 border-border text-xs h-8">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0a0500] border-stone-700">
+                        <SelectContent className="bg-[hsl(var(--card))] border-border">
                           <SelectItem value="card">Card (default)</SelectItem>
                           <SelectItem value="full-page">Full Page</SelectItem>
                           <SelectItem value="terminal">Terminal Style</SelectItem>
@@ -3447,7 +3447,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       </Select>
                     </div>
                     <div>
-                      <label className="text-[10px] text-stone-500 uppercase">HTML Content <span className="text-amber-600">(renders as real web page)</span></label>
+                      <label className="text-[10px] text-muted-foreground uppercase">HTML Content <span className="text-amber-600">(renders as real web page)</span></label>
                       <Textarea
                         value={(editingNode as any).htmlContent || ''}
                         onChange={(e) => {
@@ -3455,15 +3455,15 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           setEditingNode(prev => prev ? { ...prev, htmlContent: val } as any : null);
                           updateNode(editingNode.id, { htmlContent: val } as any);
                         }}
-                        className="bg-black/50 border-stone-700 text-xs min-h-[100px] font-mono text-amber-400"
+                        className="bg-black/50 border-border text-xs min-h-[100px] font-mono text-amber-400"
                         placeholder={'<div class="mission-brief">\n  <h2>Operation Nightfall</h2>\n  <p>Your mission, should you accept...</p>\n  <!-- Hidden clues go in source -->\n</div>'}
                       />
-                      <p className="text-[9px] text-stone-600 mt-1">
+                      <p className="text-[9px] text-muted-foreground mt-1">
                         Write real HTML/CSS. Hidden clues are auto-injected. Published campaigns serve at /api/campaigns/{'{id}'}/page/{'{nodeId}'}
                       </p>
                     </div>
                     <div>
-                      <label className="text-[10px] text-stone-500 uppercase">Custom CSS <span className="text-stone-600">(scoped to this node)</span></label>
+                      <label className="text-[10px] text-muted-foreground uppercase">Custom CSS <span className="text-muted-foreground">(scoped to this node)</span></label>
                       <Textarea
                         value={(editingNode as any).customCss || ''}
                         onChange={(e) => {
@@ -3471,7 +3471,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           setEditingNode(prev => prev ? { ...prev, customCss: val } as any : null);
                           updateNode(editingNode.id, { customCss: val } as any);
                         }}
-                        className="bg-black/50 border-stone-700 text-xs min-h-[60px] font-mono text-teal-400"
+                        className="bg-black/50 border-border text-xs min-h-[60px] font-mono text-teal-400"
                         placeholder={'.mission-brief { border: 1px solid #d97706; padding: 2rem; }\n.mission-brief h2 { color: #d97706; }'}
                       />
                     </div>
@@ -3483,13 +3483,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     const forwardLinks = getForwardLinks(editingNode.id);
                     if (backlinks.length === 0 && forwardLinks.length === 0) return null;
                     return (
-                      <div className="bg-stone-900/50 rounded p-2 border border-stone-800">
-                        <p className="text-[10px] text-stone-500 uppercase mb-1">Links Graph</p>
+                      <div className="bg-card/50 rounded p-2 border border-border">
+                        <p className="text-[10px] text-muted-foreground uppercase mb-1">Links Graph</p>
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div>
                             <p className="text-purple-400 text-[9px] mb-1">← Backlinks ({backlinks.length})</p>
                             {backlinks.slice(0, 5).map(n => (
-                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-stone-400 hover:text-purple-400 text-[10px] truncate w-full text-left">
+                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-purple-400 text-[10px] truncate w-full text-left">
                                 {n.title}
                               </button>
                             ))}
@@ -3497,7 +3497,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <div>
                             <p className="text-teal-400 text-[9px] mb-1">→ Forward ({forwardLinks.length})</p>
                             {forwardLinks.slice(0, 5).map(n => (
-                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-stone-400 hover:text-teal-400 text-[10px] truncate w-full text-left">
+                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-teal-400 text-[10px] truncate w-full text-left">
                                 {n.title}
                               </button>
                             ))}
@@ -3508,7 +3508,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   })()}
 
                   <div>
-                    <label className="text-[10px] text-stone-500 uppercase">Color</label>
+                    <label className="text-[10px] text-muted-foreground uppercase">Color</label>
                     <Select
                       value={editingNode.color}
                       onValueChange={(color) => {
@@ -3516,17 +3516,17 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         updateNode(editingNode.id, { color });
                       }}
                     >
-                      <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]" data-testid="node-color-select">
+                      <SelectTrigger className="bg-black/50 border-border text-foreground min-h-[44px]" data-testid="node-color-select">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-stone-900 border-stone-700">
+                      <SelectContent className="bg-card border-border">
                         {[
                           { value: 'amber', label: 'Amber', bg: 'bg-amber-500' },
                           { value: 'teal', label: 'Teal', bg: 'bg-teal-500' },
                           { value: 'purple', label: 'Purple', bg: 'bg-purple-500' },
-                          { value: 'stone', label: 'Stone', bg: 'bg-stone-500' }
+                          { value: 'stone', label: 'Stone', bg: 'bg-muted' }
                         ].map(color => (
-                          <SelectItem key={color.value} value={color.value} className="text-stone-300">
+                          <SelectItem key={color.value} value={color.value} className="text-foreground">
                             <span className="flex items-center gap-2">
                               <span className={`w-4 h-4 rounded ${color.bg}`} />
                               {color.label}
@@ -3540,7 +3540,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   {/* Feature & Campaign Type Selection */}
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[10px] text-stone-500 uppercase">Feature</label>
+                      <label className="text-[10px] text-muted-foreground uppercase">Feature</label>
                       <Select
                         value={editingNode.metadata?.featureType || ''}
                         onValueChange={(value) => {
@@ -3550,18 +3550,18 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           updateNode(editingNode.id, { metadata: newMeta });
                         }}
                       >
-                        <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
+                        <SelectTrigger className="bg-black/50 border-border text-foreground min-h-[44px]">
                           <SelectValue placeholder="Select..." />
                         </SelectTrigger>
-                        <SelectContent className="bg-stone-900 border-stone-700">
+                        <SelectContent className="bg-card border-border">
                           {FEATURE_TYPES.map(f => (
-                            <SelectItem key={f} value={f} className="text-stone-300 capitalize">{f}</SelectItem>
+                            <SelectItem key={f} value={f} className="text-foreground capitalize">{f}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <label className="text-[10px] text-stone-500 uppercase">Campaign Type</label>
+                      <label className="text-[10px] text-muted-foreground uppercase">Campaign Type</label>
                       <Select
                         value={editingNode.metadata?.campaignType || ''}
                         onValueChange={(value) => {
@@ -3571,12 +3571,12 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           updateNode(editingNode.id, { metadata: newMeta });
                         }}
                       >
-                        <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
+                        <SelectTrigger className="bg-black/50 border-border text-foreground min-h-[44px]">
                           <SelectValue placeholder="Select..." />
                         </SelectTrigger>
-                        <SelectContent className="bg-stone-900 border-stone-700">
+                        <SelectContent className="bg-card border-border">
                           {CAMPAIGN_TYPES.map(c => (
-                            <SelectItem key={c} value={c} className="text-stone-300 capitalize">{c}</SelectItem>
+                            <SelectItem key={c} value={c} className="text-foreground capitalize">{c}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -3585,7 +3585,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
                   {/* Skills Selection */}
                   <div>
-                    <label className="text-[10px] text-stone-500 uppercase">Skills Required</label>
+                    <label className="text-[10px] text-muted-foreground uppercase">Skills Required</label>
                     <div className="grid grid-cols-2 gap-1 mt-1 max-h-[120px] overflow-y-auto">
                       {Object.entries(SKILL_CATEGORIES).map(([cat, subskills]) => (
                         <div key={cat} className="space-y-0.5">
@@ -3604,7 +3604,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                                   updateNode(editingNode.id, { metadata: newMeta });
                                 }}
                                 className={`text-[9px] px-1.5 py-0.5 rounded block w-full text-left touch-manipulation ${
-                                  isSelected ? 'bg-teal-900/50 text-teal-300' : 'bg-stone-800/50 text-stone-500 hover:bg-stone-800'
+                                  isSelected ? 'bg-teal-900/50 text-teal-300' : 'bg-border/50 text-muted-foreground hover:bg-border'
                                 }`}
                               >
                                 {skill}
@@ -3618,7 +3618,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
                   {/* Linked Clues */}
                   <div>
-                    <label className="text-[10px] text-stone-500 uppercase">Linked Clues (IDs)</label>
+                    <label className="text-[10px] text-muted-foreground uppercase">Linked Clues (IDs)</label>
                     <Select
                       onValueChange={(clueId) => {
                         const current = editingNode.metadata?.linkedClues || [];
@@ -3630,12 +3630,12 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         }
                       }}
                     >
-                      <SelectTrigger className="bg-black/50 border-stone-700 text-stone-300 min-h-[44px]">
+                      <SelectTrigger className="bg-black/50 border-border text-foreground min-h-[44px]">
                         <SelectValue placeholder="Select clue to link..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-stone-900 border-stone-700 max-h-[300px]">
+                      <SelectContent className="bg-card border-border max-h-[300px]">
                         {sharedClues.length === 0 ? (
-                          <div className="p-2 text-center text-stone-500 text-xs">
+                          <div className="p-2 text-center text-muted-foreground text-xs">
                             No clues available. Add clues in Admin → Clues tab.
                           </div>
                         ) : (
@@ -3645,14 +3645,14 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                               <SelectItem 
                                 key={clue.id} 
                                 value={clue.id} 
-                                className={`text-stone-300 ${isLinked ? 'opacity-50' : ''}`}
+                                className={`text-foreground ${isLinked ? 'opacity-50' : ''}`}
                                 disabled={isLinked}
                               >
                                 <span className="flex items-center gap-2">
                                   <span className="text-purple-400">🔗</span>
                                   <span>{clue.name}</span>
                                   {clue.tags?.length > 0 && (
-                                    <span className="text-[9px] text-stone-500">[{clue.tags.slice(0, 2).join(', ')}]</span>
+                                    <span className="text-[9px] text-muted-foreground">[{clue.tags.slice(0, 2).join(', ')}]</span>
                                   )}
                                   {isLinked && <span className="text-teal-400 text-[9px]">✓</span>}
                                 </span>
@@ -3684,7 +3684,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         );
                       })}
                       {(!editingNode.metadata?.linkedClues || editingNode.metadata.linkedClues.length === 0) && (
-                        <span className="text-stone-600 text-xs italic">No clues linked</span>
+                        <span className="text-muted-foreground text-xs italic">No clues linked</span>
                       )}
                     </div>
                   </div>
@@ -3692,7 +3692,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   {/* Decision Condition (for decision nodes) */}
                   {editingNode.type === 'decision' && (
                     <div>
-                      <label className="text-[10px] text-stone-500 uppercase">Branch Condition</label>
+                      <label className="text-[10px] text-muted-foreground uppercase">Branch Condition</label>
                       <Textarea
                         value={editingNode.metadata?.condition || ''}
                         onChange={(e) => {
@@ -3701,7 +3701,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           updateNode(editingNode.id, { metadata: newMeta });
                         }}
                         placeholder="e.g., if user finds vulnerability..."
-                        className="bg-black/50 border-stone-700 text-xs min-h-[60px]"
+                        className="bg-black/50 border-border text-xs min-h-[60px]"
                       />
                     </div>
                   )}
@@ -3709,10 +3709,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   {editingNode.type === 'step' && editingNode.metadata && (
                     <>
                       <div>
-                        <label className="text-[10px] text-stone-500 uppercase">Tools for Step</label>
+                        <label className="text-[10px] text-muted-foreground uppercase">Tools for Step</label>
                         <Input
                           placeholder="Shodan, Censys, nmap..."
-                          className="bg-black/50 border-stone-700 text-sm"
+                          className="bg-black/50 border-border text-sm"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               const val = (e.target as HTMLInputElement).value.trim();
@@ -3740,10 +3740,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       </div>
 
                       <div>
-                        <label className="text-[10px] text-stone-500 uppercase">Success Indicators</label>
+                        <label className="text-[10px] text-muted-foreground uppercase">Success Indicators</label>
                         <Input
                           placeholder="Add indicator..."
-                          className="bg-black/50 border-stone-700 text-sm"
+                          className="bg-black/50 border-border text-sm"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               const val = (e.target as HTMLInputElement).value.trim();
@@ -3772,10 +3772,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     </>
                   )}
 
-                  <div className="pt-4 border-t border-stone-800">
+                  <div className="pt-4 border-t border-border">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-[10px] text-stone-500">Width</label>
+                        <label className="text-[10px] text-muted-foreground">Width</label>
                         <Input
                           type="number"
                           value={editingNode.width}
@@ -3784,11 +3784,11 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                             setEditingNode(prev => prev ? { ...prev, width: w } : null);
                             updateNode(editingNode.id, { width: w });
                           }}
-                          className="bg-black/50 border-stone-700 text-xs"
+                          className="bg-black/50 border-border text-xs"
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-stone-500">Height</label>
+                        <label className="text-[10px] text-muted-foreground">Height</label>
                         <Input
                           type="number"
                           value={editingNode.height}
@@ -3797,7 +3797,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                             setEditingNode(prev => prev ? { ...prev, height: h } : null);
                             updateNode(editingNode.id, { height: h });
                           }}
-                          className="bg-black/50 border-stone-700 text-xs"
+                          className="bg-black/50 border-border text-xs"
                         />
                       </div>
                     </div>
@@ -3811,7 +3811,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     </div>
                     
                     <div>
-                      <label className="text-[10px] text-stone-500">Skill Level for this Step</label>
+                      <label className="text-[10px] text-muted-foreground">Skill Level for this Step</label>
                       <Select
                         value={editingNode.metadata?.skillLevel || 'intermediate'}
                         onValueChange={(level: 'beginner' | 'intermediate' | 'advanced' | 'expert') => {
@@ -3820,10 +3820,10 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           updateNode(editingNode.id, { metadata: newMetadata });
                         }}
                       >
-                        <SelectTrigger className="bg-black/50 border-stone-700 text-xs min-h-[44px]">
+                        <SelectTrigger className="bg-black/50 border-border text-xs min-h-[44px]">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-stone-900 border-stone-700">
+                        <SelectContent className="bg-card border-border">
                           {SKILL_LEVELS.map(level => (
                             <SelectItem key={level.id} value={level.id} className="text-xs">
                               {level.name} - {level.description}
@@ -3834,7 +3834,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     </div>
 
                     <div>
-                      <label className="text-[10px] text-stone-500">Learning Goals Covered</label>
+                      <label className="text-[10px] text-muted-foreground">Learning Goals Covered</label>
                       <div className="flex flex-wrap gap-1 mt-1 max-h-32 overflow-y-auto">
                         {LEARNING_GOALS.map(goal => {
                           const isSelected = editingNode.metadata?.learningGoals?.includes(goal.id);
@@ -3853,7 +3853,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                               className={`px-2 py-1 text-[10px] rounded border min-h-[32px] transition-colors ${
                                 isSelected
                                   ? CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-400 border-purple-700'
-                                  : 'bg-stone-900/50 text-stone-500 border-stone-700 hover:border-purple-700'
+                                  : 'bg-card/50 text-muted-foreground border-border hover:border-purple-700'
                               }`}
                             >
                               {goal.name}
@@ -3864,7 +3864,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     </div>
 
                     <div>
-                      <label className="text-[10px] text-stone-500">Teaching Notes</label>
+                      <label className="text-[10px] text-muted-foreground">Teaching Notes</label>
                       <Textarea
                         value={editingNode.metadata?.teachingNotes || ''}
                         onChange={(e) => {
@@ -3873,12 +3873,12 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           updateNode(editingNode.id, { metadata: newMetadata });
                         }}
                         placeholder="Notes for teaching this step (explanations, tips, common mistakes...)"
-                        className="bg-black/50 border-stone-700 text-xs min-h-[60px]"
+                        className="bg-black/50 border-border text-xs min-h-[60px]"
                       />
                     </div>
                   </div>
 
-                  <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0500] border-t border-amber-900/30 sm:relative sm:p-0 sm:bg-transparent sm:border-0 sm:mt-6">
+                  <div className="fixed bottom-0 left-0 right-0 p-4 bg-[hsl(var(--card))] border-t border-amber-900/30 sm:relative sm:p-0 sm:bg-transparent sm:border-0 sm:mt-6">
                     <Button 
                       onClick={() => setEditingNode(null)} 
                       className="w-full min-h-[50px] bg-amber-700 hover:bg-amber-600 text-black font-bold"
@@ -3894,7 +3894,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
         {/* Mobile Floating Action Bar */}
         {showMobileToolbar && (
-          <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0a0500]/95 backdrop-blur border-t border-amber-900/50 p-2 z-50 safe-area-inset-bottom" data-testid="mobile-campaign-toolbar">
+          <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[hsl(var(--card))]/95 backdrop-blur border-t border-amber-900/50 p-2 z-50 safe-area-inset-bottom" data-testid="mobile-campaign-toolbar">
             <div className="flex items-center justify-around gap-1 max-w-lg mx-auto">
               {/* Add Node Quick Actions */}
               <DropdownMenu>
@@ -3903,13 +3903,13 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     <Plus className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-stone-900 border-stone-700 mb-2">
+                <DropdownMenuContent className="bg-card border-border mb-2">
                   <DropdownMenuLabel className="text-amber-500">Add Node</DropdownMenuLabel>
                   {NODE_TYPES.map(nt => (
                     <DropdownMenuItem
                       key={nt.type}
                       onClick={() => addNode(nt.type)}
-                      className="text-stone-300 min-h-[44px]"
+                      className="text-foreground min-h-[44px]"
                       data-testid={`mobile-add-${nt.type}-btn`}
                     >
                       {nt.icon}
@@ -3927,7 +3927,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                 className={`h-12 w-12 rounded-full ${
                   linkingFrom 
                     ? 'bg-teal-600 text-white' 
-                    : 'bg-stone-800 border border-teal-700 text-teal-400'
+                    : 'bg-border border border-teal-700 text-teal-400'
                 }`}
                 data-testid="mobile-link-btn"
               >
@@ -3937,25 +3937,25 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
               {/* Quick Jump */}
               <DropdownMenu open={showQuickJump} onOpenChange={setShowQuickJump}>
                 <DropdownMenuTrigger asChild>
-                  <Button size="sm" className="h-12 w-12 rounded-full bg-stone-800 border border-purple-700 text-purple-400" data-testid="mobile-quick-jump-btn">
+                  <Button size="sm" className="h-12 w-12 rounded-full bg-border border border-purple-700 text-purple-400" data-testid="mobile-quick-jump-btn">
                     <Target className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-stone-900 border-stone-700 mb-2 max-h-[300px] overflow-y-auto w-56">
+                <DropdownMenuContent className="bg-card border-border mb-2 max-h-[300px] overflow-y-auto w-56">
                   <DropdownMenuLabel className="text-purple-400">Jump to Node</DropdownMenuLabel>
                   {campaign.nodes.length === 0 ? (
-                    <div className="p-2 text-stone-500 text-xs">No nodes yet</div>
+                    <div className="p-2 text-muted-foreground text-xs">No nodes yet</div>
                   ) : (
                     campaign.nodes.map(node => (
                       <DropdownMenuItem
                         key={node.id}
                         onClick={() => jumpToNode(node.id)}
-                        className={`text-stone-300 min-h-[40px] ${selectedNode === node.id ? 'bg-amber-900/30' : ''}`}
+                        className={`text-foreground min-h-[40px] ${selectedNode === node.id ? 'bg-amber-900/30' : ''}`}
                         data-testid={`quick-jump-item-${node.id}`}
                       >
                         <span className={`w-2 h-2 rounded-full mr-2 bg-${node.color}-500`} />
                         <span className="truncate flex-1">{node.title}</span>
-                        <span className="text-[10px] text-stone-500">@{node.type}</span>
+                        <span className="text-[10px] text-muted-foreground">@{node.type}</span>
                       </DropdownMenuItem>
                     ))
                   )}
@@ -3972,7 +3972,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     ? 'bg-teal-700 text-white'
                     : isUnsaved
                       ? 'bg-amber-600 text-black animate-pulse'
-                      : 'bg-stone-800 border border-stone-600 text-stone-400'
+                      : 'bg-border border border-muted text-muted-foreground'
                 }`}
                 data-testid="mobile-save-btn"
               >
@@ -3988,7 +3988,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
               <Button
                 size="sm"
                 onClick={() => setViewMode(viewMode === 'canvas' ? 'story' : 'canvas')}
-                className="h-12 w-12 rounded-full bg-stone-800 border border-stone-600 text-stone-400"
+                className="h-12 w-12 rounded-full bg-border border border-muted text-muted-foreground"
                 data-testid="mobile-view-toggle-btn"
               >
                 {viewMode === 'canvas' ? <FileText className="w-5 h-5" /> : <GitBranch className="w-5 h-5" />}
@@ -3997,7 +3997,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
             {/* Sync Status Indicator */}
             <div className="text-center mt-1">
-              <span className={`text-[10px] ${isSyncing ? 'text-teal-400' : isUnsaved ? 'text-amber-400' : 'text-stone-600'}`} data-testid="mobile-sync-status">
+              <span className={`text-[10px] ${isSyncing ? 'text-teal-400' : isUnsaved ? 'text-amber-400' : 'text-muted-foreground'}`} data-testid="mobile-sync-status">
                 {isSyncing ? 'Saving...' : isUnsaved ? 'Unsaved changes' : lastSavedAt ? `Saved ${lastSavedAt.toLocaleTimeString()}` : 'Ready'}
               </span>
             </div>
@@ -4009,7 +4009,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           <Button
             size="sm"
             onClick={() => setShowMiniMap(!showMiniMap)}
-            className="fixed bottom-20 right-4 sm:bottom-4 z-40 h-10 w-10 rounded-full bg-stone-800/90 border border-stone-600 text-stone-400"
+            className="fixed bottom-20 right-4 sm:bottom-4 z-40 h-10 w-10 rounded-full bg-border/90 border border-muted text-muted-foreground"
             data-testid="minimap-toggle-btn"
           >
             <Eye className="w-4 h-4" />
@@ -4018,7 +4018,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
         {/* Mini-map Overlay */}
         {showMiniMap && viewMode === 'canvas' && (
-          <div className="fixed bottom-32 right-4 sm:bottom-16 z-40 w-40 h-32 bg-stone-900/95 border border-stone-700 rounded-lg p-2 shadow-xl" data-testid="minimap-overlay">
+          <div className="fixed bottom-32 right-4 sm:bottom-16 z-40 w-40 h-32 bg-card/95 border border-border rounded-lg p-2 shadow-xl" data-testid="minimap-overlay">
             <div className="relative w-full h-full overflow-hidden">
               {campaign.nodes.map(node => {
                 const scale = 0.05;
@@ -4040,35 +4040,35 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                 );
               })}
             </div>
-            <p className="text-[8px] text-stone-500 text-center mt-1" data-testid="minimap-node-count">{campaign.nodes.length} nodes</p>
+            <p className="text-[8px] text-muted-foreground text-center mt-1" data-testid="minimap-node-count">{campaign.nodes.length} nodes</p>
           </div>
         )}
       </DialogContent>
     </Dialog>
 
     <Dialog open={!!ctfGenTemplate} onOpenChange={(v) => !v && setCtfGenTemplate(null)}>
-      <DialogContent className="bg-stone-950 border-teal-900/50 max-w-md">
+      <DialogContent className="bg-card border-teal-900/50 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-teal-400 font-mono flex items-center gap-2">
             {ctfGenTemplate?.icon} Generate: {ctfGenTemplate?.name}
           </DialogTitle>
-          <DialogDescription className="text-stone-500 text-xs">
+          <DialogDescription className="text-muted-foreground text-xs">
             This will create a playable investigation with hidden clues embedded in page source, network requests, console logs, and more.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div>
-            <Label className="text-stone-400 text-xs mb-1.5 block">Investigation Topic</Label>
+            <Label className="text-muted-foreground text-xs mb-1.5 block">Investigation Topic</Label>
             <Input
               value={ctfGenTopic}
               onChange={(e) => setCtfGenTopic(e.target.value)}
               placeholder="e.g., BGP Hijacking, API Security, Ransomware..."
-              className="bg-black/30 border-stone-700 text-stone-300"
+              className="bg-black/30 border-border text-foreground"
               data-testid="ctf-gen-topic"
             />
           </div>
           <div>
-            <Label className="text-stone-400 text-xs mb-1.5 block">Skill Level</Label>
+            <Label className="text-muted-foreground text-xs mb-1.5 block">Skill Level</Label>
             <div className="flex gap-2">
               {['beginner', 'intermediate', 'advanced'].map(s => (
                 <Button
@@ -4076,7 +4076,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   size="sm"
                   variant={ctfGenSkill === s ? 'default' : 'outline'}
                   onClick={() => setCtfGenSkill(s)}
-                  className={ctfGenSkill === s ? 'bg-teal-700 text-white' : 'border-stone-700 text-stone-400'}
+                  className={ctfGenSkill === s ? 'bg-teal-700 text-white' : 'border-border text-muted-foreground'}
                   data-testid={`ctf-skill-${s}`}
                 >
                   {s}
@@ -4086,7 +4086,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
           </div>
         </div>
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setCtfGenTemplate(null)} className="border-stone-700 text-stone-400">Cancel</Button>
+          <Button variant="outline" onClick={() => setCtfGenTemplate(null)} className="border-border text-muted-foreground">Cancel</Button>
           <Button
             onClick={generateFromCtfTemplate}
             disabled={!ctfGenTopic.trim() || ctfGenerating}
