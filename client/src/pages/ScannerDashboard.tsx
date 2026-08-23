@@ -79,7 +79,7 @@ const SEVERITY_COLORS: Record<string, string> = {
 const CATEGORY_LIST = ["osint", "vulnerability", "secret_detection", "threat_intel", "monitoring", "general"] as const;
 
 const SCAN_CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  osint: <Globe className="w-3.5 h-3.5 text-blue-400" />,
+  osint: <Globe className="w-3.5 h-3.5 text-blue-800" />,
   vuln: <AlertTriangle className="w-3.5 h-3.5 text-red-700" />,
   intel: <Shield className="w-3.5 h-3.5 text-purple-700" />,
   recon: <Target className="w-3.5 h-3.5 text-teal-800" />,
@@ -207,7 +207,7 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
                       className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
                         target === t
                           ? 'bg-orange-900/40 border-orange-700 text-orange-800'
-                          : 'bg-card/40 border-border text-muted-foreground hover:border-orange-700 hover:text-orange-400'
+                          : 'bg-card/40 border-border text-muted-foreground hover:border-orange-700 hover:text-orange-700'
                       }`}
                       data-testid={`pivot-target-${i}`}
                     >
@@ -300,7 +300,7 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
                 <Badge className={SEVERITY_COLORS[scanResult.summary.riskLevel] || SEVERITY_COLORS.info}>
                   Risk: {scanResult.summary.riskLevel.toUpperCase()} ({scanResult.summary.riskScore}/100)
                 </Badge>
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400" onClick={clearResults} title="Clear results">
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-red-700" onClick={clearResults} title="Clear results">
                   <X className="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -313,10 +313,10 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
               {[
-                { label: "Subdomains", value: scanResult.summary.subdomains, color: "text-amber-300" },
-                { label: "Open Ports", value: scanResult.summary.openPorts, color: "text-teal-300" },
-                { label: "Technologies", value: scanResult.summary.technologies, color: "text-blue-300" },
-                { label: "Vulnerabilities", value: scanResult.summary.vulnerabilities, color: "text-red-300" },
+                { label: "Subdomains", value: scanResult.summary.subdomains, color: "text-amber-700" },
+                { label: "Open Ports", value: scanResult.summary.openPorts, color: "text-teal-700" },
+                { label: "Technologies", value: scanResult.summary.technologies, color: "text-blue-700" },
+                { label: "Vulnerabilities", value: scanResult.summary.vulnerabilities, color: "text-red-700" },
               ].map((stat) => (
                 <div key={stat.label} className="bg-card/60 rounded-lg p-2">
                   <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
@@ -380,12 +380,12 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 };
 
 const CATEGORY_ICONS_MAP: Record<string, React.ReactNode> = {
-  recon: <Target className="w-4 h-4 text-blue-400" />,
+  recon: <Target className="w-4 h-4 text-blue-800" />,
   vulnerability: <AlertTriangle className="w-4 h-4 text-red-700" />,
   secret_detection: <Key className="w-4 h-4 text-amber-800" />,
   threat_intel: <Shield className="w-4 h-4 text-purple-700" />,
   monitoring: <Radar className="w-4 h-4 text-teal-800" />,
-  osint: <Globe className="w-4 h-4 text-blue-400" />,
+  osint: <Globe className="w-4 h-4 text-blue-800" />,
   general: <FileCode className="w-4 h-4 text-muted-foreground" />,
 };
 
@@ -641,7 +641,7 @@ function LuaScriptsTab() {
                     >
                       <CardContent className="p-3 space-y-2">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-amber-800 text-sm group-hover:text-amber-300">{t.name}</h4>
+                          <h4 className="font-bold text-amber-800 text-sm group-hover:text-amber-600">{t.name}</h4>
                           <Badge variant="outline" className={`text-[9px] ${DIFFICULTY_COLORS[t.difficulty]}`}>{t.difficulty}</Badge>
                         </div>
                         <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">{t.description}</p>
@@ -678,14 +678,14 @@ function LuaScriptsTab() {
                         <div className="flex items-center gap-1 shrink-0">
                           {deleteTarget === s.filename ? (
                             <div className="flex gap-1">
-                              <Button size="sm" variant="ghost" className="h-6 px-2 text-red-700 hover:text-red-300" onClick={(e) => { e.stopPropagation(); deleteScript(s.filename); }}>Yes</Button>
+                              <Button size="sm" variant="ghost" className="h-6 px-2 text-red-700 hover:text-red-800" onClick={(e) => { e.stopPropagation(); deleteScript(s.filename); }}>Yes</Button>
                               <Button size="sm" variant="ghost" className="h-6 px-2 text-muted-foreground" onClick={(e) => { e.stopPropagation(); setDeleteTarget(null); }}>No</Button>
                             </div>
                           ) : (
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6 text-muted-foreground hover:text-red-400"
+                              className="h-6 w-6 text-muted-foreground hover:text-red-700"
                               onClick={(e) => { e.stopPropagation(); setDeleteTarget(s.filename); }}
                             >
                               <Trash2 className="w-3 h-3" />
@@ -813,7 +813,7 @@ function ApiLookupsTab() {
     if (!result) return null;
     if (result.needsKey) {
       return (
-        <div className="mt-3 p-3 rounded-lg bg-amber-900/20 border border-amber-800/30 text-amber-300 text-sm flex items-center gap-2" data-testid={`${testId}-needs-key`}>
+        <div className="mt-3 p-3 rounded-lg bg-amber-900/20 border border-amber-800/30 text-amber-800 text-sm flex items-center gap-2" data-testid={`${testId}-needs-key`}>
           <Key className="w-4 h-4" /> API key needs to be configured for this service.
         </div>
       );
@@ -1031,7 +1031,7 @@ function ToolsTab() {
         "3. Choose the lookup service (VT, HA, or free DNS/WHOIS)",
         "4. Results appear inline - no external tools needed"
       ],
-      color: "text-blue-400 border-blue-500/30 bg-blue-500/10",
+      color: "text-blue-800 border-blue-500/30 bg-blue-500/10",
       navTarget: "lookups"
     }
   ];
@@ -1070,7 +1070,7 @@ function ToolsTab() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full border-border text-muted-foreground hover:text-amber-400 h-8 text-[11px]"
+                  className="w-full border-border text-muted-foreground hover:text-amber-700 h-8 text-[11px]"
                   onClick={() => window.location.href = tool.navTarget}
                   data-testid={`btn-nav-${tool.id}`}
                 >
@@ -1080,7 +1080,7 @@ function ToolsTab() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full border-border text-muted-foreground hover:text-amber-400 h-8 text-[11px]"
+                  className="w-full border-border text-muted-foreground hover:text-amber-700 h-8 text-[11px]"
                   onClick={() => {
                     const tabEl = document.querySelector(`[data-testid="tab-${tool.navTarget}"]`) as HTMLElement;
                     if (tabEl) tabEl.click();
@@ -1156,7 +1156,7 @@ function ToolsTab() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-amber-400"
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-amber-700"
                     onClick={() => {
                       navigator.clipboard.writeText(generatedScript.code);
                       toast({ title: "Copied", description: "Frida script copied to clipboard" });
@@ -1167,7 +1167,7 @@ function ToolsTab() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-amber-400"
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-amber-700"
                     onClick={() => {
                       const blob = new Blob([generatedScript.code], { type: "text/javascript" });
                       const url = URL.createObjectURL(blob);
@@ -1287,7 +1287,7 @@ function OsintToolkitTab() {
   const iocType = detectIocType(iocInput.trim());
 
   const IOC_TYPE_COLORS: Record<string, string> = {
-    ip: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    ip: "bg-blue-500/20 text-blue-800 border-blue-500/30",
     domain: "bg-teal-500/20 text-teal-800 border-teal-500/30",
     hash: "bg-purple-500/20 text-purple-700 border-purple-500/30",
     url: "bg-amber-500/20 text-amber-800 border-amber-500/30",
@@ -1548,10 +1548,10 @@ function OsintToolkitTab() {
               {reconResult.summary && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
                   {[
-                    { label: "Subdomains", value: reconResult.summary.subdomains || 0, color: "text-amber-300" },
-                    { label: "Open Ports", value: reconResult.summary.openPorts || 0, color: "text-teal-300" },
-                    { label: "Technologies", value: reconResult.summary.technologies || 0, color: "text-blue-300" },
-                    { label: "Vulnerabilities", value: reconResult.summary.vulnerabilities || 0, color: "text-red-300" },
+                    { label: "Subdomains", value: reconResult.summary.subdomains || 0, color: "text-amber-700" },
+                    { label: "Open Ports", value: reconResult.summary.openPorts || 0, color: "text-teal-700" },
+                    { label: "Technologies", value: reconResult.summary.technologies || 0, color: "text-blue-700" },
+                    { label: "Vulnerabilities", value: reconResult.summary.vulnerabilities || 0, color: "text-red-700" },
                   ].map((stat) => (
                     <div key={stat.label} className="bg-card/60 rounded-lg p-2">
                       <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
@@ -1620,7 +1620,7 @@ function OsintToolkitTab() {
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h4 className="text-sm font-semibold text-foreground leading-tight flex-1">{article.title}</h4>
                       {article.source && (
-                        <Badge variant="outline" className="text-[9px] shrink-0 bg-blue-500/10 text-blue-400 border-blue-500/30">{article.source}</Badge>
+                        <Badge variant="outline" className="text-[9px] shrink-0 bg-blue-500/10 text-blue-800 border-blue-500/30">{article.source}</Badge>
                       )}
                     </div>
                     {article.published && (
@@ -1699,7 +1699,7 @@ function OsintToolkitTab() {
           {defangResult && (
             <div className="flex items-center gap-2 bg-card/60 rounded-lg p-3 border border-border" data-testid="defang-result">
               <code className="text-sm text-foreground flex-1 break-all font-mono">{defangResult}</code>
-              <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-amber-400 shrink-0" onClick={() => copyToClipboard(defangResult)} data-testid="button-copy-defang">
+              <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-amber-700 shrink-0" onClick={() => copyToClipboard(defangResult)} data-testid="button-copy-defang">
                 <Copy className="w-4 h-4" />
               </Button>
             </div>
@@ -1727,19 +1727,19 @@ export function ScannerContent({ injectedTargets }: ScannerContentProps = {}) {
       <Tabs defaultValue="scripts" className="w-full flex-1 flex flex-col min-h-0">
         <div className="px-4 md:px-6 py-2 bg-card/50 border-b border-border shrink-0 overflow-x-auto no-scrollbar">
           <TabsList className="bg-transparent border-0 gap-4 md:gap-6 h-12 p-0 w-max" data-testid="scanner-tabs">
-            <TabsTrigger value="scripts" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-scripts">
+            <TabsTrigger value="scripts" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-800 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-scripts">
               <FileCode className="w-4 h-4 mr-2" /> Scripts
             </TabsTrigger>
-            <TabsTrigger value="scan" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-scan">
+            <TabsTrigger value="scan" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-800 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-scan">
               <Play className="w-4 h-4 mr-2" /> Live Scan
             </TabsTrigger>
-            <TabsTrigger value="tools" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-tools">
+            <TabsTrigger value="tools" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-800 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-tools">
               <Zap className="w-4 h-4 mr-2" /> Toolkit
             </TabsTrigger>
-            <TabsTrigger value="lookups" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-lookups">
+            <TabsTrigger value="lookups" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-800 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-lookups">
               <Globe className="w-4 h-4 mr-2" /> API Data
             </TabsTrigger>
-            <TabsTrigger value="history" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-history">
+            <TabsTrigger value="history" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-800 rounded-none px-0 h-full font-orbitron text-[10px] md:text-[11px] tracking-widest uppercase whitespace-nowrap" data-testid="tab-history">
               <Terminal className="w-4 h-4 mr-2" /> Logs
             </TabsTrigger>
           </TabsList>

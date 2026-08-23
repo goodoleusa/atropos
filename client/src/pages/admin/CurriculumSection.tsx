@@ -222,7 +222,7 @@ export function CurriculumSection() {
 
   const difficultyColor = (d: string) => {
     switch (d) {
-      case 'beginner': return 'bg-emerald-900/30 text-emerald-400 border-emerald-800/40';
+      case 'beginner': return 'bg-emerald-900/30 text-emerald-800 border-emerald-800/40';
       case 'intermediate': return 'bg-amber-900/30 text-amber-800 border-amber-800/40';
       case 'advanced': return 'bg-orange-900/30 text-orange-800 border-orange-800/40';
       case 'expert': return 'bg-red-900/30 text-red-700 border-red-800/40';
@@ -302,7 +302,7 @@ export function CurriculumSection() {
               { icon: <Sparkles className="w-3.5 h-3.5 text-amber-800" />, title: 'Spark to Campaign', desc: 'Idea → NEXUS → Recommendation → Content Generator → Publish' },
               { icon: <Target className="w-3.5 h-3.5 text-teal-800" />, title: 'Gap-Fill', desc: 'Stats → Identify gap → Content Generator → Test → Iterate' },
               { icon: <Zap className="w-3.5 h-3.5 text-purple-700" />, title: 'Quick Deploy', desc: 'Collectibles → Template → Zones → Push' },
-              { icon: <GraduationCap className="w-3.5 h-3.5 text-amber-300" />, title: 'Deep Dive Track', desc: 'Plan → Seed → Missions → Exercises → Styles → Activate' },
+              { icon: <GraduationCap className="w-3.5 h-3.5 text-amber-700" />, title: 'Deep Dive Track', desc: 'Plan → Seed → Missions → Exercises → Styles → Activate' },
             ].map(wf => (
               <div key={wf.title} className="flex items-center gap-2 p-2 bg-card/50 border border-border/30 rounded" data-testid={`workflow-${wf.title.toLowerCase().replace(/\s+/g, '-')}`}>
                 {wf.icon}
@@ -384,7 +384,7 @@ export function CurriculumSection() {
                         key={ct}
                         size="sm"
                         variant="ghost"
-                        className={`text-xs h-8 px-3 ${genContentType === ct ? 'bg-amber-700 text-black' : 'text-muted-foreground hover:text-amber-400'}`}
+                        className={`text-xs h-8 px-3 ${genContentType === ct ? 'bg-amber-700 text-black' : 'text-muted-foreground hover:text-amber-700'}`}
                         onClick={() => setGenContentType(ct)}
                         data-testid={`btn-content-type-${ct}`}
                       >
@@ -415,7 +415,7 @@ export function CurriculumSection() {
                         key={d}
                         size="sm"
                         variant="ghost"
-                        className={`text-xs h-8 px-3 ${genDifficulty === d ? 'bg-amber-700 text-black' : 'text-muted-foreground hover:text-amber-400'}`}
+                        className={`text-xs h-8 px-3 ${genDifficulty === d ? 'bg-amber-700 text-black' : 'text-muted-foreground hover:text-amber-700'}`}
                         onClick={() => setGenDifficulty(d)}
                         data-testid={`btn-difficulty-${d}`}
                       >
@@ -488,7 +488,7 @@ export function CurriculumSection() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-[9px] text-muted-foreground uppercase">Objectives</Label>
-                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: [...(d.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-300" data-testid="gen-add-objective">
+                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: [...(d.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-600" data-testid="gen-add-objective">
                       <Plus className="w-3 h-3 mr-1" /> Add
                     </Button>
                   </div>
@@ -501,7 +501,7 @@ export function CurriculumSection() {
                           className="h-7 text-xs bg-black/50 border-amber-900/30 flex-1"
                           data-testid={`input-gen-objective-${i}`}
                         />
-                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: d.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-objective-${i}`}>
+                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: d.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-800 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-objective-${i}`}>
                           <X className="w-3 h-3" />
                         </Button>
                       </div>
@@ -512,7 +512,7 @@ export function CurriculumSection() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-[9px] text-muted-foreground uppercase">Key Takeaways</Label>
-                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: [...(d.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-300" data-testid="gen-add-takeaway">
+                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: [...(d.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-600" data-testid="gen-add-takeaway">
                       <Plus className="w-3 h-3 mr-1" /> Add
                     </Button>
                   </div>
@@ -525,7 +525,7 @@ export function CurriculumSection() {
                           className="h-7 text-xs bg-black/50 border-amber-900/30 flex-1"
                           data-testid={`input-gen-takeaway-${i}`}
                         />
-                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: d.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-takeaway-${i}`}>
+                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: d.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-800 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-takeaway-${i}`}>
                           <X className="w-3 h-3" />
                         </Button>
                       </div>
@@ -536,7 +536,7 @@ export function CurriculumSection() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-[9px] text-teal-800 uppercase font-bold">Exercises</Label>
-                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: [...(d.exercises || []), { id: "", title: "", type: "observation", instructions: "", hints: [], successCriteria: [] }] }))} className="h-7 text-[10px] text-teal-800 hover:text-teal-300" data-testid="gen-add-exercise">
+                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: [...(d.exercises || []), { id: "", title: "", type: "observation", instructions: "", hints: [], successCriteria: [] }] }))} className="h-7 text-[10px] text-teal-800 hover:text-teal-800" data-testid="gen-add-exercise">
                       <Plus className="w-3 h-3 mr-1" /> Add Exercise
                     </Button>
                   </div>
@@ -545,7 +545,7 @@ export function CurriculumSection() {
                       <div key={ei} className="rounded border border-border/40 bg-card/30 p-2 space-y-1.5" data-testid={`gen-exercise-item-${ei}`}>
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-[9px] text-teal-800 uppercase font-bold">Exercise {ei + 1}</span>
-                          <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: d.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-exercise-${ei}`}>
+                          <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: d.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-800 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-exercise-${ei}`}>
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
@@ -624,7 +624,7 @@ export function CurriculumSection() {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
-                  <Button variant="ghost" onClick={() => setGenDraft(null)} className="text-red-700 hover:text-red-300 min-h-[44px]" data-testid="btn-discard-draft">
+                  <Button variant="ghost" onClick={() => setGenDraft(null)} className="text-red-700 hover:text-red-800 min-h-[44px]" data-testid="btn-discard-draft">
                     <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Discard Draft
                   </Button>
                   <div className="flex flex-col items-end gap-1">
@@ -693,7 +693,7 @@ export function CurriculumSection() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-10 w-10 p-0 min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+                          className="h-10 w-10 p-0 min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
                           onClick={(e) => { e.stopPropagation(); isEditing ? setEditingTrack(null) : startEditTrack(track); }}
                           data-testid={`edit-track-${track.trackId}`}
                         >
@@ -771,7 +771,7 @@ export function CurriculumSection() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className={`h-9 w-9 p-0 min-h-[44px] min-w-[44px] shrink-0 ${isMissionEditing ? 'text-amber-800' : 'text-muted-foreground hover:text-amber-400'}`}
+                                className={`h-9 w-9 p-0 min-h-[44px] min-w-[44px] shrink-0 ${isMissionEditing ? 'text-amber-800' : 'text-muted-foreground hover:text-amber-700'}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (isMissionEditing) {
@@ -799,7 +799,7 @@ export function CurriculumSection() {
                                       <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="h-7 text-[10px] text-amber-800 hover:text-amber-300"
+                                        className="h-7 text-[10px] text-amber-800 hover:text-amber-600"
                                         onClick={(e) => { e.stopPropagation(); startEditMission(track.trackId, mission, mi); setExpandedMission(mKey); }}
                                         data-testid={`quick-edit-objectives-${mission.id}`}
                                       >
@@ -894,7 +894,7 @@ export function CurriculumSection() {
                                 <div>
                                   <div className="flex items-center justify-between mb-1">
                                     <label className="text-[9px] text-amber-800 uppercase font-bold">Objectives ({(missionEditForm.objectives || []).length})</label>
-                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: [...(f.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-300" data-testid="add-objective">
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: [...(f.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-600" data-testid="add-objective">
                                       <Plus className="w-3 h-3 mr-1" /> Add
                                     </Button>
                                   </div>
@@ -915,7 +915,7 @@ export function CurriculumSection() {
                                           placeholder="Learning objective..."
                                           data-testid={`input-objective-${i}`}
                                         />
-                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: f.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-700 hover:text-red-300 shrink-0" data-testid={`delete-objective-${i}`}>
+                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: f.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-700 hover:text-red-800 shrink-0" data-testid={`delete-objective-${i}`}>
                                           <X className="w-3 h-3" />
                                         </Button>
                                       </div>
@@ -929,7 +929,7 @@ export function CurriculumSection() {
                                 <div>
                                   <div className="flex items-center justify-between mb-1">
                                     <label className="text-[9px] text-emerald-500 uppercase font-bold">Key Takeaways ({(missionEditForm.keyTakeaways || []).length})</label>
-                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: [...(f.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-emerald-400 hover:text-emerald-300" data-testid="add-takeaway">
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: [...(f.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-emerald-800 hover:text-emerald-600" data-testid="add-takeaway">
                                       <Plus className="w-3 h-3 mr-1" /> Add
                                     </Button>
                                   </div>
@@ -950,7 +950,7 @@ export function CurriculumSection() {
                                           placeholder="Key takeaway..."
                                           data-testid={`input-takeaway-${i}`}
                                         />
-                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: f.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-700 hover:text-red-300 shrink-0" data-testid={`delete-takeaway-${i}`}>
+                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: f.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-700 hover:text-red-800 shrink-0" data-testid={`delete-takeaway-${i}`}>
                                           <X className="w-3 h-3" />
                                         </Button>
                                       </div>
@@ -964,7 +964,7 @@ export function CurriculumSection() {
                                 <div>
                                   <div className="flex items-center justify-between mb-1">
                                     <label className="text-[9px] text-teal-800 uppercase font-bold">Exercises ({(missionEditForm.exercises || []).length})</label>
-                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: [...(f.exercises || []), { title: "", type: "", instructions: "", hints: [], successCriteria: "" }] }))} className="h-7 text-[10px] text-teal-800 hover:text-teal-300" data-testid="add-exercise">
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: [...(f.exercises || []), { title: "", type: "", instructions: "", hints: [], successCriteria: "" }] }))} className="h-7 text-[10px] text-teal-800 hover:text-teal-800" data-testid="add-exercise">
                                       <Plus className="w-3 h-3 mr-1" /> Add
                                     </Button>
                                   </div>
@@ -973,7 +973,7 @@ export function CurriculumSection() {
                                       <div key={ei} className="rounded border border-border/40 bg-card/30 p-2.5 space-y-1.5" data-testid={`exercise-item-${ei}`}>
                                         <div className="flex items-center justify-between gap-2">
                                           <span className="text-[9px] text-teal-800 uppercase font-bold">Exercise {ei + 1}</span>
-                                          <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: f.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300" data-testid={`delete-exercise-${ei}`}>
+                                          <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: f.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-800" data-testid={`delete-exercise-${ei}`}>
                                             <Trash2 className="w-3 h-3" />
                                           </Button>
                                         </div>

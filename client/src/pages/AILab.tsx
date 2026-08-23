@@ -727,7 +727,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     className={`cursor-pointer px-3 py-1 text-xs sm:text-sm transition-all ${
                       selectedModel === model.id 
                         ? 'bg-amber-600 text-white shadow-[0_0_10px_rgba(217,119,6,0.5)]' 
-                        : 'bg-border text-foreground hover:border-amber-500 hover:text-amber-400'
+                        : 'bg-border text-foreground hover:border-amber-500 hover:text-amber-700'
                     }`}
                     onClick={() => setSelectedModel(model.id)}
                   >
@@ -917,7 +917,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 </div>
                 {selectedChallenge && (
                   <div className="p-3 bg-teal-900/20 rounded-lg border border-teal-800">
-                    <p className="text-xs text-teal-300 flex items-center gap-2">
+                    <p className="text-xs text-teal-800 flex items-center gap-2">
                       <Target className="w-4 h-4" />
                       <span className="font-bold">Learning Goal:</span> {selectedChallenge.learningGoal}
                     </p>
@@ -970,7 +970,7 @@ ${modelRankings.slice(0, 3).map(m => {
                           <SelectItem key={m.id} value={m.id} className="min-h-[40px]">
                             <span className="flex items-center gap-2">
                               {m.name}
-                              <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-800'}`}>
+                              <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-800' : 'border-amber-600 text-amber-800'}`}>
                                 {m.tier.toUpperCase()}
                               </Badge>
                             </span>
@@ -1009,7 +1009,7 @@ ${modelRankings.slice(0, 3).map(m => {
                             <SelectItem key={m.id} value={m.id} className="min-h-[40px]" disabled={m.id === selectedModel}>
                               <span className="flex items-center gap-2">
                                 {m.name}
-                                <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-800'}`}>
+                                <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-800' : 'border-amber-600 text-amber-800'}`}>
                                   {m.tier.toUpperCase()}
                                 </Badge>
                                 {m.id === selectedModel && <span className="text-muted-foreground">(Model A)</span>}
@@ -1252,7 +1252,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     </div>
                     <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{run.prompt}</p>
                     <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="text-green-400">${run.costUsd.toFixed(4)}</span>
+                      <span className="text-green-800">${run.costUsd.toFixed(4)}</span>
                       <span className="text-purple-700">{run.latencyMs}ms</span>
                       <span className="text-teal-800">{run.totalTokens} tok</span>
                     </div>
@@ -1349,7 +1349,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="mt-2 h-6 text-[10px] text-muted-foreground hover:text-amber-400"
+                  className="mt-2 h-6 text-[10px] text-muted-foreground hover:text-amber-700"
                   onClick={() => {
                     navigator.clipboard.writeText(guide.example);
                     toast({ title: 'Copied', description: `${guide.title} example copied to clipboard` });
@@ -1458,7 +1458,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(2000); setCacheSimUserTokens(200); setCacheSimOutputTokens(500); setCacheSimRequests(20); }}
-                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-light"
               >
                 Light Chat (2K sys)
@@ -1467,7 +1467,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(5000); setCacheSimUserTokens(500); setCacheSimOutputTokens(1000); setCacheSimRequests(50); }}
-                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-agent"
               >
                 NEXUS Agent (5K sys)
@@ -1476,7 +1476,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(15000); setCacheSimUserTokens(2000); setCacheSimOutputTokens(2000); setCacheSimRequests(100); }}
-                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-codebase"
               >
                 Codebase Review (15K sys)
@@ -1485,7 +1485,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 size="sm"
                 variant="outline"
                 onClick={() => { setCacheSimSystemTokens(50000); setCacheSimUserTokens(5000); setCacheSimOutputTokens(4000); setCacheSimRequests(200); }}
-                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-400"
+                className="text-xs min-h-[36px] border-border text-muted-foreground hover:text-amber-700"
                 data-testid="cache-sim-preset-heavy"
               >
                 Heavy Analysis (50K sys)

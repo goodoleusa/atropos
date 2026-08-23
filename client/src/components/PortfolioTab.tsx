@@ -320,7 +320,7 @@ function EmbedCard({ type, title, content, id, color }: { type: string; title: s
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 px-2 text-[9px] text-muted-foreground hover:text-amber-400"
+          className="h-6 px-2 text-[9px] text-muted-foreground hover:text-amber-700"
           onClick={handleCopy}
           data-testid={`copy-embed-${type.toLowerCase().replace(/\s+/g, "-")}-${id}`}
         >
@@ -501,7 +501,7 @@ function EditEntryForm({ entry, onSave, onCancel }: {
           size="sm"
           onClick={handleSubmit}
           disabled={!title.trim()}
-          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
           data-testid={`save-edit-${entry.id}`}
         >
           Save Changes
@@ -589,7 +589,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-700"
                 onClick={() => setEditing(!editing)}
                 data-testid={`edit-entry-${entry.id}`}
               >
@@ -598,7 +598,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-700"
                 onClick={() => onToggleFeatured(entry.id, !entry.featured)}
                 data-testid={`toggle-featured-${entry.id}`}
               >
@@ -607,7 +607,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-teal-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-teal-700"
                 onClick={() => onToggleVisibility(entry.id, entry.visibility === "public" ? "private" : "public")}
                 data-testid={`toggle-visibility-${entry.id}`}
               >
@@ -616,7 +616,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-amber-700"
                 onClick={() => onCopyLink(entry.shareId)}
                 data-testid={`copy-link-${entry.id}`}
               >
@@ -625,7 +625,7 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-red-700"
                 onClick={() => onDelete(entry.id)}
                 data-testid={`delete-entry-${entry.id}`}
               >
@@ -640,13 +640,13 @@ function PortfolioCard({ entry, onToggleVisibility, onToggleFeatured, onDelete, 
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 w-5 p-0 text-muted-foreground hover:text-amber-400"
+              className="h-5 w-5 p-0 text-muted-foreground hover:text-amber-700"
               onClick={handleCopyUrl}
             >
               {urlCopied ? <Check className="w-3 h-3 text-teal-800" /> : <Copy className="w-3 h-3" />}
             </Button>
             <a href={shareUrl} target="_blank" rel="noopener noreferrer" data-testid={`open-share-${entry.id}`}>
-              <Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-muted-foreground hover:text-teal-400">
+              <Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-muted-foreground hover:text-teal-700">
                 <ExternalLink className="w-3 h-3" />
               </Button>
             </a>
@@ -1317,7 +1317,7 @@ function CreateEntryForm({ sources, onClose, sessionToken }: {
             size="sm"
             onClick={handleSubmit}
             disabled={!title.trim() || createMutation.isPending}
-            className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+            className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
             data-testid="create-portfolio-entry-btn"
           >
             {createMutation.isPending ? "Saving..." : "Save to Portfolio"}
@@ -1540,7 +1540,7 @@ export default function PortfolioTab() {
         <Button
           size="sm"
           onClick={() => setShowCreate(!showCreate)}
-          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+          className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
           data-testid="add-portfolio-entry-btn"
         >
           <Plus className="w-3 h-3 mr-1" /> Add Entry
@@ -1566,7 +1566,7 @@ export default function PortfolioTab() {
             <Button
               size="sm"
               onClick={() => setShowCreate(true)}
-              className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-300 border border-amber-700/50 text-xs"
+              className="bg-amber-900/30 hover:bg-amber-900/50 text-amber-800 border border-amber-700/50 text-xs"
               data-testid="empty-add-entry-btn"
             >
               <Plus className="w-3 h-3 mr-1" /> Create First Entry

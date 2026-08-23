@@ -438,7 +438,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="ml-auto h-6 px-2 text-red-700 hover:text-red-300 min-h-0"
+                    className="ml-auto h-6 px-2 text-red-700 hover:text-red-800 min-h-0"
                     onClick={() => {
                       fetch(`/api/spiderfoot/scan/${activeScanId}/cancel`, { method: 'POST' });
                       setActiveScanId(null);
@@ -485,7 +485,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 w-6 p-0 text-muted-foreground hover:text-amber-400"
+                              className="h-6 w-6 p-0 text-muted-foreground hover:text-amber-700"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.open(`/api/spiderfoot/scan/${entry.scanId}/export?format=json`, '_blank');
@@ -522,7 +522,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                   )}
                 </CardTitle>
                 {scanResult && (
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400" onClick={() => setActiveScanId(null)} data-testid="button-clear-results">
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-red-700" onClick={() => setActiveScanId(null)} data-testid="button-clear-results">
                     <X className="w-3.5 h-3.5" />
                   </Button>
                 )}
@@ -532,10 +532,10 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
               )}
               {hasResults && (
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground hover:text-amber-400 hover:border-amber-700 gap-1" onClick={exportAsJSON} data-testid="button-export-json">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground hover:text-amber-700 hover:border-amber-700 gap-1" onClick={exportAsJSON} data-testid="button-export-json">
                     <FileJson className="w-3 h-3" /> JSON
                   </Button>
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground hover:text-amber-400 hover:border-amber-700 gap-1" onClick={exportAsCSV} data-testid="button-export-csv">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground hover:text-amber-700 hover:border-amber-700 gap-1" onClick={exportAsCSV} data-testid="button-export-csv">
                     <FileSpreadsheet className="w-3 h-3" /> CSV
                   </Button>
                   <div className="w-px h-4 bg-border mx-1" />
@@ -640,7 +640,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                         )}
                         {svc.free && <Badge variant="outline" className="text-[10px] border-teal-800 text-teal-600">Free</Badge>}
                       </div>
-                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-amber-400 transition-colors">
+                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-amber-700 transition-colors">
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     </div>
@@ -670,7 +670,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-9 w-9 p-0 text-muted-foreground hover:text-red-400"
+                          className="h-9 w-9 p-0 text-muted-foreground hover:text-red-700"
                           onClick={() => removeKeyMutation.mutate(svc.key)}
                           data-testid={`button-remove-key-${svc.key}`}
                         >

@@ -2320,7 +2320,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   <p className="text-[10px] text-amber-800 uppercase tracking-wider font-bold flex items-center gap-1">
                     <FolderTree className="w-3 h-3" /> Campaigns
                   </p>
-                  <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-800 hover:text-amber-300 touch-manipulation" onClick={() => setShowTemplateGallery(true)} data-testid="new-campaign-btn">
+                  <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-800 hover:text-amber-800 touch-manipulation" onClick={() => setShowTemplateGallery(true)} data-testid="new-campaign-btn">
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
@@ -2334,7 +2334,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           key={c.id}
                           className={`group flex items-center gap-1 p-1.5 rounded cursor-pointer text-xs transition-all ${
                             c.id === campaign.id 
-                              ? 'bg-amber-900/40 text-amber-300' 
+                              ? 'bg-amber-900/40 text-amber-800' 
                               : 'hover:bg-border text-muted-foreground'
                           }`}
                           onClick={() => loadCampaign(c.id)}
@@ -2346,14 +2346,14 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <div className="hidden group-hover:flex gap-0.5">
                             <button 
                               onClick={(e) => { e.stopPropagation(); duplicateCampaign(c.id); }}
-                              className="p-0.5 hover:text-teal-400"
+                              className="p-0.5 hover:text-teal-700"
                               title="Duplicate"
                             >
                               <Copy className="w-3 h-3" />
                             </button>
                             <button 
                               onClick={(e) => { e.stopPropagation(); deleteCampaign(c.id); }}
-                              className="p-0.5 hover:text-red-400"
+                              className="p-0.5 hover:text-red-700"
                               title="Delete"
                             >
                               <Trash2 className="w-3 h-3" />
@@ -2393,7 +2393,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     disabled={isPublishing || !campaign.nodes.length}
                     className={`w-full justify-start text-xs mt-1.5 min-h-[36px] ${
                       campaign.isPublished
-                        ? 'border-teal-600 text-teal-800 hover:border-red-600 hover:text-red-400'
+                        ? 'border-teal-600 text-teal-800 hover:border-red-600 hover:text-red-700'
                         : 'border-amber-700 text-amber-800'
                     }`}
                     data-testid="publish-campaign-btn"
@@ -2418,7 +2418,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                   size="sm"
                   variant="ghost"
                   onClick={() => setShowFileTree(!showFileTree)}
-                  className="p-0 h-5 w-5 text-muted-foreground hover:text-amber-400 sm:hidden"
+                  className="p-0 h-5 w-5 text-muted-foreground hover:text-amber-700 sm:hidden"
                   title="Toggle File Tree"
                 >
                   <FolderTree className="w-3 h-3" />
@@ -2569,7 +2569,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <button
                             key={node.id}
                             onClick={() => setSelectedNode(node.id)}
-                            className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-300 hover:bg-purple-800/50 min-h-[24px]"
+                            className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-800 hover:bg-purple-800/50 min-h-[24px]"
                           >
                             {node.title}
                           </button>
@@ -2583,7 +2583,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <button
                             key={node.id}
                             onClick={() => setSelectedNode(node.id)}
-                            className="px-1.5 py-0.5 rounded bg-teal-900/30 text-teal-300 hover:bg-teal-800/50 min-h-[24px]"
+                            className="px-1.5 py-0.5 rounded bg-teal-900/30 text-teal-800 hover:bg-teal-800/50 min-h-[24px]"
                           >
                             {node.title}
                           </button>
@@ -2597,7 +2597,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <button
                             key={node.id}
                             onClick={() => setSelectedNode(node.id)}
-                            className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-300 hover:bg-amber-800/50 min-h-[24px]"
+                            className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-800 hover:bg-amber-800/50 min-h-[24px]"
                           >
                             {node.title}
                           </button>
@@ -2711,7 +2711,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                                     </div>
                                     <button
                                       onClick={() => setEditingNode(node)}
-                                      className="text-amber-800 text-sm font-bold hover:text-amber-300 text-left"
+                                      className="text-amber-800 text-sm font-bold hover:text-amber-800 text-left"
                                     >
                                       {node.title}
                                     </button>
@@ -2847,7 +2847,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       <div className="space-y-1">
                         {campaign.nodes.filter(n => n.metadata?.linkedClues?.length).map(node => (
                           <div key={node.id} className="flex items-center justify-between p-2 bg-card/30 rounded border border-border">
-                            <button onClick={() => { setViewMode('canvas'); setSelectedNode(node.id); }} className="text-sm text-foreground hover:text-amber-400">
+                            <button onClick={() => { setViewMode('canvas'); setSelectedNode(node.id); }} className="text-sm text-foreground hover:text-amber-700">
                               {node.title}
                             </button>
                             <div className="flex gap-1">
@@ -2867,7 +2867,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
               ) : viewMode === 'overview' ? (
                 <ScrollArea className="h-full p-4">
                   <div className="space-y-4">
-                    <h3 className="text-cyan-400 font-bold flex items-center gap-2">
+                    <h3 className="text-cyan-700 font-bold flex items-center gap-2">
                       <Eye className="w-4 h-4" /> Campaign Overview
                     </h3>
                     {/* Stats */}
@@ -2927,7 +2927,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     </Card>
                     {/* Decision Tree Summary */}
                     <Card className="bg-card/30 border-border">
-                      <CardHeader className="pb-2"><CardTitle className="text-sm text-cyan-400">Decision Tree Paths</CardTitle></CardHeader>
+                      <CardHeader className="pb-2"><CardTitle className="text-sm text-cyan-700">Decision Tree Paths</CardTitle></CardHeader>
                       <CardContent className="space-y-1 max-h-[200px] overflow-y-auto">
                         {campaign.nodes.filter(n => n.type === 'decision').map(node => {
                           const children = campaign.links.filter(l => l.source === node.id);
@@ -3034,7 +3034,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       size="sm"
                       variant="ghost"
                       onClick={() => setZoom(z => Math.min(2, z + 0.25))}
-                      className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+                      className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
                       data-testid="zoom-in-btn"
                     >
                       <ZoomIn className="w-5 h-5" />
@@ -3044,7 +3044,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                       size="sm"
                       variant="ghost"
                       onClick={() => setZoom(z => Math.max(0.25, z - 0.25))}
-                      className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+                      className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
                       data-testid="zoom-out-btn"
                     >
                       <ZoomOut className="w-5 h-5" />
@@ -3054,7 +3054,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         size="sm"
                         variant="ghost"
                         onClick={() => setZoom(1)}
-                        className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-400 text-xs"
+                        className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-700 text-xs"
                         data-testid="zoom-reset-btn"
                       >
                         Reset
@@ -3065,7 +3065,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         size="sm"
                         variant="ghost"
                         onClick={autoOrganize}
-                        className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-400"
+                        className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-700"
                         title="Auto-organize nodes"
                         data-testid="auto-organize-btn"
                       >
@@ -3085,7 +3085,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => moveNodeUp(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
                           title="Move node up (↑)"
                           data-testid="move-up-btn"
                         >
@@ -3098,7 +3098,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => outdentNode(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-purple-700"
                           title="Outdent (←)"
                           data-testid="outdent-btn"
                         >
@@ -3115,7 +3115,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => indentNode(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-teal-700"
                           title="Indent (→)"
                           data-testid="indent-btn"
                         >
@@ -3128,7 +3128,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           size="sm"
                           variant="ghost"
                           onClick={() => moveNodeDown(selectedNode)}
-                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-400"
+                          className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-amber-700"
                           title="Move node down (↓)"
                           data-testid="move-down-btn"
                         >
@@ -3141,7 +3141,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
 
                   {/* Linking mode indicator */}
                   {linkingFrom && (
-                    <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-50 bg-teal-900/90 text-teal-300 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
+                    <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-50 bg-teal-900/90 text-teal-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
                       <Link2 className="w-4 h-4" />
                       Click target node or canvas to cancel
                     </div>
@@ -3281,7 +3281,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           </Select>
                         </div>
                       ) : (
-                        <Badge className="bg-amber-900 text-amber-300">End of flow - no outgoing links</Badge>
+                        <Badge className="bg-amber-900 text-amber-800">End of flow - no outgoing links</Badge>
                       )}
 
                       <div className="pt-2 border-t border-teal-900">
@@ -3303,7 +3303,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                                 }}
                                 className={`text-[10px] px-2 py-1 rounded border ${
                                   index === testHistory.length - 1
-                                    ? 'border-teal-600 text-teal-300 bg-teal-900/30'
+                                    ? 'border-teal-600 text-teal-800 bg-teal-900/30'
                                     : 'border-border text-muted-foreground hover:text-foreground'
                                 }`}
                                 data-testid={`test-history-${index}`}
@@ -3338,7 +3338,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                     size="sm"
                     variant="outline"
                     onClick={() => startTestRun(editingNode.id)}
-                    className="w-full border-teal-800 text-teal-300 hover:bg-teal-900/30 min-h-[44px]"
+                    className="w-full border-teal-800 text-teal-800 hover:bg-teal-900/30 min-h-[44px]"
                     data-testid="test-from-node-btn"
                   >
                     <Play className="w-4 h-4 mr-2" /> Playtest from this node
@@ -3489,7 +3489,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <div>
                             <p className="text-purple-700 text-[9px] mb-1">← Backlinks ({backlinks.length})</p>
                             {backlinks.slice(0, 5).map(n => (
-                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-purple-400 text-[10px] truncate w-full text-left">
+                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-purple-700 text-[10px] truncate w-full text-left">
                                 {n.title}
                               </button>
                             ))}
@@ -3497,7 +3497,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                           <div>
                             <p className="text-teal-800 text-[9px] mb-1">→ Forward ({forwardLinks.length})</p>
                             {forwardLinks.slice(0, 5).map(n => (
-                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-teal-400 text-[10px] truncate w-full text-left">
+                              <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-teal-700 text-[10px] truncate w-full text-left">
                                 {n.title}
                               </button>
                             ))}
@@ -3604,7 +3604,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                                   updateNode(editingNode.id, { metadata: newMeta });
                                 }}
                                 className={`text-[9px] px-1.5 py-0.5 rounded block w-full text-left touch-manipulation ${
-                                  isSelected ? 'bg-teal-900/50 text-teal-300' : 'bg-border/50 text-muted-foreground hover:bg-border'
+                                  isSelected ? 'bg-teal-900/50 text-teal-800' : 'bg-border/50 text-muted-foreground hover:bg-border'
                                 }`}
                               >
                                 {skill}
@@ -3763,7 +3763,7 @@ export default function CampaignDesigner({ open, onOpenChange, sessionToken }: P
                         />
                         <div className="flex flex-wrap gap-1 mt-1">
                           {editingNode.metadata.successIndicators?.map((ind, i) => (
-                            <Badge key={i} variant="outline" className="text-[8px] border-green-600 text-green-400">
+                            <Badge key={i} variant="outline" className="text-[8px] border-green-600 text-green-700">
                               {ind}
                             </Badge>
                           ))}
