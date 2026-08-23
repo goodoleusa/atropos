@@ -146,7 +146,7 @@ export default function Dashboard() {
 
   const rarityColors: Record<string, string> = {
     common: 'border-muted bg-card/30 text-muted-foreground',
-    rare: 'border-blue-600 bg-blue-900/30 text-blue-400',
+    rare: 'border-blue-600 bg-blue-900/30 text-blue-800',
     epic: 'border-purple-600 bg-purple-900/30 text-purple-700',
     legendary: 'border-amber-600 bg-amber-900/30 text-amber-800'
   };
@@ -329,7 +329,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2 p-3 bg-cyan-950/20 rounded-lg border border-cyan-900/30">
                   <span className="text-2xl">{learningStyle?.icon}</span>
                   <div>
-                    <div className="font-bold text-cyan-400">{learningStyle?.name}</div>
+                    <div className="font-bold text-cyan-800">{learningStyle?.name}</div>
                     <div className="text-xs text-muted-foreground">{learningStyle?.description}</div>
                   </div>
                 </div>
@@ -339,7 +339,7 @@ export default function Dashboard() {
                 <div className="text-xs text-muted-foreground uppercase mb-2">Learning Goals</div>
                 <div className="flex flex-wrap gap-2">
                   {learningGoalNames.map(goal => (
-                    <Badge key={goal} variant="outline" className="border-cyan-800 text-cyan-400">
+                    <Badge key={goal} variant="outline" className="border-cyan-800 text-cyan-800">
                       {goal}
                     </Badge>
                   ))}
@@ -351,13 +351,13 @@ export default function Dashboard() {
 
               <div>
                 <div className="text-xs text-muted-foreground uppercase mb-2">Skill Level</div>
-                <Badge className="bg-cyan-900/30 text-cyan-400 capitalize">
+                <Badge className="bg-cyan-900/30 text-cyan-800 capitalize">
                   {learningProfile.skillLevel}
                 </Badge>
               </div>
 
               <Link href="/investigate">
-                <Button className="w-full bg-cyan-900/30 text-cyan-400 border border-cyan-700/50 hover:bg-cyan-900/50">
+                <Button className="w-full bg-cyan-900/30 text-cyan-800 border border-cyan-700/50 hover:bg-cyan-900/50">
                   Update Learning Preferences
                 </Button>
               </Link>
@@ -447,7 +447,7 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-[hsl(var(--card))] border-blue-900/30">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-blue-400">{stats.questsCompleted}</div>
+                <div className="text-2xl font-bold text-blue-800">{stats.questsCompleted}</div>
                 <div className="text-xs text-muted-foreground">Quests</div>
               </CardContent>
             </Card>
@@ -542,7 +542,7 @@ export default function Dashboard() {
                           className={`text-[9px] capitalize ${
                             def.rarity === 'legendary' ? 'border-amber-600 text-amber-800' :
                             def.rarity === 'epic' ? 'border-purple-600 text-purple-700' :
-                            def.rarity === 'rare' ? 'border-blue-600 text-blue-400' :
+                            def.rarity === 'rare' ? 'border-blue-600 text-blue-800' :
                             'border-muted text-muted-foreground'
                           }`}
                         >

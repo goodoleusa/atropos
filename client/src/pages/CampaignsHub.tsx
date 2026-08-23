@@ -33,20 +33,20 @@ const CATEGORY_META: Record<string, { icon: any; label: string; color: string; b
   all: { icon: <Layers className="w-3.5 h-3.5" />, label: 'All', color: 'text-foreground', bg: 'bg-border border-muted' },
   civic: { icon: <Users className="w-3.5 h-3.5" />, label: 'Civic', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
   movements: { icon: <Users className="w-3.5 h-3.5" />, label: 'Movements', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
-  organizing: { icon: <Users className="w-3.5 h-3.5" />, label: 'Organizing', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
+  organizing: { icon: <Users className="w-3.5 h-3.5" />, label: 'Organizing', color: 'text-emerald-800', bg: 'bg-emerald-900/30 border-emerald-800' },
   apt: { icon: <Skull className="w-3.5 h-3.5" />, label: 'APT', color: 'text-red-700', bg: 'bg-red-900/30 border-red-800' },
   osint: { icon: <Globe className="w-3.5 h-3.5" />, label: 'OSINT', color: 'text-teal-800', bg: 'bg-teal-900/30 border-teal-800' },
-  forensics: { icon: <Search className="w-3.5 h-3.5" />, label: 'Forensics', color: 'text-blue-400', bg: 'bg-blue-900/30 border-blue-800' },
+  forensics: { icon: <Search className="w-3.5 h-3.5" />, label: 'Forensics', color: 'text-blue-800', bg: 'bg-blue-900/30 border-blue-800' },
   exploit: { icon: <Bug className="w-3.5 h-3.5" />, label: 'Exploit', color: 'text-red-700', bg: 'bg-red-900/30 border-red-800' },
   defense: { icon: <Shield className="w-3.5 h-3.5" />, label: 'Defense', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
-  recon: { icon: <Network className="w-3.5 h-3.5" />, label: 'Recon', color: 'text-cyan-400', bg: 'bg-cyan-900/30 border-cyan-800' },
+  recon: { icon: <Network className="w-3.5 h-3.5" />, label: 'Recon', color: 'text-cyan-800', bg: 'bg-cyan-900/30 border-cyan-800' },
   social: { icon: <Users className="w-3.5 h-3.5" />, label: 'Social', color: 'text-purple-700', bg: 'bg-purple-900/30 border-purple-800' },
-  curriculum: { icon: <BookOpen className="w-3.5 h-3.5" />, label: 'Learning', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
-  lab: { icon: <FlaskConical className="w-3.5 h-3.5" />, label: 'Labs', color: 'text-violet-400', bg: 'bg-violet-900/30 border-violet-800' },
+  curriculum: { icon: <BookOpen className="w-3.5 h-3.5" />, label: 'Learning', color: 'text-emerald-800', bg: 'bg-emerald-900/30 border-emerald-800' },
+  lab: { icon: <FlaskConical className="w-3.5 h-3.5" />, label: 'Labs', color: 'text-violet-800', bg: 'bg-violet-900/30 border-violet-800' },
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: 'border-emerald-700/60 text-emerald-400 bg-emerald-950/30',
+  beginner: 'border-emerald-700/60 text-emerald-800 bg-emerald-950/30',
   intermediate: 'border-amber-700/60 text-amber-800 bg-amber-950/30',
   advanced: 'border-red-700/60 text-red-700 bg-red-950/30',
   expert: 'border-purple-700/60 text-purple-700 bg-purple-950/30',
@@ -55,8 +55,8 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 const NATION_STATE_FLAGS: Record<string, { label: string; color: string }> = {
   Russia: { label: 'RUS', color: 'text-red-700' },
   China: { label: 'CHN', color: 'text-orange-800' },
-  DPRK: { label: 'DPRK', color: 'text-yellow-400' },
-  Iran: { label: 'IRN', color: 'text-emerald-400' },
+  DPRK: { label: 'DPRK', color: 'text-yellow-800' },
+  Iran: { label: 'IRN', color: 'text-emerald-800' },
 };
 
 const getAptInfo = (tags: string[]) => {
@@ -296,8 +296,8 @@ export default function CampaignsHub() {
                             catMeta.bg
                           }`}>
                             {campaign.icon || (aptInfo.isApt ? <Skull className="w-3.5 h-3.5 text-red-700" /> :
-                              campaign.source === 'lab' ? <FlaskConical className="w-3.5 h-3.5 text-violet-400" /> :
-                              campaign.source === 'curriculum' ? <BookOpen className="w-3.5 h-3.5 text-emerald-400" /> :
+                              campaign.source === 'lab' ? <FlaskConical className="w-3.5 h-3.5 text-violet-700" /> :
+                              campaign.source === 'curriculum' ? <BookOpen className="w-3.5 h-3.5 text-emerald-700" /> :
                               catMeta.icon)}
                           </div>
                           <div className="flex items-center gap-1.5">
@@ -317,7 +317,7 @@ export default function CampaignsHub() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-mono text-sm font-bold text-foreground group-hover:text-amber-400 transition-colors mb-1.5 line-clamp-1" data-testid={`campaign-name-${campaign.campaignId}`}>
+                      <h3 className="font-mono text-sm font-bold text-foreground group-hover:text-amber-600 transition-colors mb-1.5 line-clamp-1" data-testid={`campaign-name-${campaign.campaignId}`}>
                         {campaign.name}
                       </h3>
 
@@ -346,8 +346,8 @@ export default function CampaignsHub() {
                               className={`text-[9px] px-1.5 py-0.5 rounded ${
                                 tag === 'APT' ? 'text-red-700 bg-red-950/40' :
                                 NATION_STATE_FLAGS[tag] ? `${NATION_STATE_FLAGS[tag].color} bg-card/60` :
-                                tag === 'curriculum' ? 'text-emerald-400 bg-emerald-950/30' :
-                                tag === 'lab' ? 'text-violet-400 bg-violet-950/30' :
+                                tag === 'curriculum' ? 'text-emerald-800 bg-emerald-950/30' :
+                                tag === 'lab' ? 'text-violet-800 bg-violet-950/30' :
                                 'text-muted-foreground bg-card/50'
                               }`}
                             >

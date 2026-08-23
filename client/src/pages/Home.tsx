@@ -344,7 +344,7 @@ export default function Home() {
                   className="p-5 bg-[hsl(var(--muted))]/80 border border-amber-900/30 rounded-lg hover:border-amber-600/50 transition-all cursor-pointer group"
                 >
                   <span className="text-2xl block mb-2">{c.icon}</span>
-                  <h3 className="font-orbitron text-amber-800 group-hover:text-amber-300">{c.name}</h3>
+                  <h3 className="font-orbitron text-amber-800 group-hover:text-amber-600">{c.name}</h3>
                   <p className="text-muted-foreground text-xs mt-1">{c.desc}</p>
                 </motion.div>
               </Link>
