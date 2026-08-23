@@ -35,6 +35,12 @@
   --font-mono: "JetBrains Mono", monospace;
   --font-display: "Exo 2", sans-serif;
   --font-sans: "Inter", sans-serif;
+  /* Nav/menu label face — deliberately distinct from the Exo 2 display
+     font used for marketing headings. Share Tech Mono reads as early-
+     web/BBS-terminal rather than generic-AI-SaaS, matching the retro-
+     techy-but-polished direction for chrome the player is in constantly
+     (nav items, section labels) rather than body copy. */
+  --font-nav: "Share Tech Mono", monospace;
 
   --radius: 0rem;
 }
@@ -77,6 +83,43 @@
   --border: 30 22% 50%;          /* darkened from 84% — 3.5:1 non-text contrast on paper */
   --input: 30 22% 50%;
   --ring: 30 80% 32%;
+}
+
+/* Dark mode — same Annealed Bronze family (bronze/amber + teal hues,
+   font stack, radius), leaning back toward the original Molten Bronze
+   identity for the dark ground. Toggled via .dark on <html> (see
+   useTheme.ts); Tailwind's `@custom-variant dark (&:is(.dark *))`
+   above reads this. All ratios below are computed against the dark
+   background/card, not eyeballed. */
+:root.dark {
+  color-scheme: dark;
+  --background: 20 10% 6%;        /* Deep warm black, like the original Molten Bronze ground */
+  --foreground: 35 35% 90%;
+
+  --card: 20 13% 9%;
+  --card-foreground: 35 35% 90%;
+
+  --popover: 20 13% 9%;
+  --popover-foreground: 35 35% 90%;
+
+  --primary: 32 85% 60%;          /* Bright bronze/gold — 8.9:1 on dark ground */
+  --primary-foreground: 20 15% 8%;
+
+  --secondary: 175 55% 58%;       /* Bright teal — 10.2:1 on dark ground */
+  --secondary-foreground: 20 15% 8%;
+
+  --muted: 25 12% 16%;
+  --muted-foreground: 30 15% 68%;
+
+  --accent: 175 60% 55%;
+  --accent-foreground: 20 15% 8%;
+
+  --destructive: 5 75% 64%;
+  --destructive-foreground: 20 15% 8%;
+
+  --border: 30 20% 38%;           /* 3.2:1 non-text contrast on dark ground */
+  --input: 30 20% 38%;
+  --ring: 32 85% 60%;
 }
 
 /* Scoped dark terminal/console treatment. The overall app is light, but a
@@ -295,6 +338,10 @@
 
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
+  }
+
+  .font-nav {
+    font-family: var(--font-nav);
   }
 
   h1, h2, h3 {

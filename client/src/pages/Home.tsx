@@ -98,7 +98,7 @@ export default function Home() {
         >
           <div className="flex items-center gap-2">
             <Server className={`w-6 h-6 transition-all duration-1000 group-hover:scale-110 ${videoLoaded ? 'text-white/80' : 'text-amber-400'}`} />
-            <span className={`font-orbitron font-bold text-xl tracking-wider transition-colors duration-1000 group-hover:text-amber-500 ${videoLoaded ? 'text-white/80' : 'text-amber-400'}`}>
+            <span className={`font-nav font-bold text-xl tracking-wider transition-colors duration-1000 group-hover:text-amber-500 ${videoLoaded ? 'text-white/80' : 'text-amber-400'}`}>
               ATROPOS
             </span>
           </div>

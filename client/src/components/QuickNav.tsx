@@ -7,9 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useGame } from '@/hooks/useGameSession';
 import { useReportContext } from '@/hooks/useReportContext';
-import { QrCode, Trophy, Server } from 'lucide-react';
+import { QrCode, Trophy, Server, Sun, Moon } from 'lucide-react';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
 import { Switch } from '@/components/ui/switch';
+import { useTheme } from '@/hooks/useTheme';
 import { USER_NAV, ADMIN_NAV, type NavItem } from '@/config/navConfig';
 
 const NAV_STYLES = {
@@ -44,7 +45,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
           )}
           <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/8 transition-colors duration-300" />
           <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? 'text-amber-800 scale-110' : 'text-amber-800 group-hover:text-amber-400'}`} />
-          <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest font-bold">
+          <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-nav text-[10px] tracking-widest font-bold">
             {item.label}
           </span>
         </Button>
@@ -72,7 +73,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
         )}
         <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/5 transition-colors duration-300" />
         <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? styles.icon + ' scale-110' : 'group-hover:text-amber-400'}`} />
-        <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest">
+        <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-nav text-[10px] tracking-widest">
           {item.label}
         </span>
       </Button>
@@ -85,6 +86,7 @@ export default function QuickNav() {
   const [location] = useLocation();
   const { gameState, toggleDevMode } = useGame();
   const { pendingFindings, currentSession, targets } = useReportContext();
+  const { theme, toggleTheme } = useTheme();
 
   const handleToggle = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -158,14 +160,14 @@ export default function QuickNav() {
           )}
 
           <div className="pb-2">
-            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-orbitron tracking-widest">{USER_NAV.title}</p>
+            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-nav tracking-widest">{USER_NAV.title}</p>
             {USER_NAV.items.map(item => (
               <NavItemButton key={item.path} item={item} isActive={location === item.path} />
             ))}
           </div>
 
           <div className="border-t border-border pt-2 pb-2">
-            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-orbitron tracking-widest">{ADMIN_NAV.title}</p>
+            <p className="text-[9px] text-muted-foreground uppercase px-3 mb-1 font-nav tracking-widest">{ADMIN_NAV.title}</p>
             {ADMIN_NAV.items.map(item => (
               <NavItemButton key={item.path} item={item} isActive={location === item.path} />
             ))}
@@ -180,7 +182,7 @@ export default function QuickNav() {
               data-testid="quicknav-qr-tool"
             >
               <QrCode className="w-4 h-4 mr-2" />
-              <span className="uppercase font-orbitron text-[10px] tracking-widest">QR Tool</span>
+              <span className="uppercase font-nav text-[10px] tracking-widest">QR Tool</span>
             </Button>
           </div>
 
@@ -206,13 +208,27 @@ export default function QuickNav() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2 border-t border-border mt-2">
-            <span className="text-[10px] text-muted-foreground uppercase font-orbitron tracking-tighter">Dev Mode</span>
+          <div className="flex items-center justify-between px-3 py-2 border-t border-border">
+            <span className="text-[10px] text-muted-foreground uppercase font-nav tracking-tighter">Dev Mode</span>
             <Switch
               checked={gameState.devMode}
               onCheckedChange={toggleDevMode}
               className="scale-75 data-[state=checked]:bg-amber-600"
             />
+          </div>
+
+          <div className="flex items-center justify-between px-3 py-2 border-t border-border mt-2">
+            <span className="text-[10px] text-muted-foreground uppercase font-nav tracking-tighter">Display Mode</span>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 rounded border border-border px-2 py-1 text-[10px] font-nav uppercase tracking-widest text-foreground hover:border-amber-700/60 hover:text-amber-800 transition-colors min-h-[32px]"
+              data-testid="theme-toggle"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
+              {theme === 'dark' ? 'Dark' : 'Light'}
+            </button>
           </div>
         </div>
       )}
