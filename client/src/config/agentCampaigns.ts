@@ -1052,8 +1052,8 @@ export const CAMPAIGN_CATEGORIES = [
 
 export const getDifficultyColor = (difficulty: Campaign['difficulty']): string => {
   switch (difficulty) {
-    case 'beginner': return 'text-green-400';
-    case 'intermediate': return 'text-yellow-400';
+    case 'beginner': return 'text-green-700';
+    case 'intermediate': return 'text-yellow-800';
     case 'advanced': return 'text-orange-800';
     case 'expert': return 'text-red-700';
     default: return 'text-muted-foreground';

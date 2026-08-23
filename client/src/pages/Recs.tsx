@@ -739,7 +739,7 @@ export default function SuggestionsPage() {
                           <div className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Pain Points Addressed</div>
                           <div className="space-y-1">
                             {selectedRec.painPointsAddressed.map((p, i) => (
-                              <div key={i} className="flex items-start gap-1.5 text-xs text-orange-300">
+                              <div key={i} className="flex items-start gap-1.5 text-xs text-orange-800">
                                 <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5 text-orange-800" />{p}
                               </div>
                             ))}

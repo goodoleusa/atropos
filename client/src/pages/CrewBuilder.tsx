@@ -56,10 +56,10 @@ const COST_TIER_META: Record<CostTier, { label: string; color: string; bg: strin
 
 const CATEGORY_META: Record<ModelCategory, { label: string; icon: any; color: string }> = {
   all:       { label: 'All Models',   icon: Globe,    color: 'text-muted-foreground' },
-  free:      { label: 'Free',         icon: Zap,      color: 'text-emerald-400' },
-  coding:    { label: 'Coding',       icon: Code,     color: 'text-sky-400' },
+  free:      { label: 'Free',         icon: Zap,      color: 'text-emerald-700' },
+  coding:    { label: 'Coding',       icon: Code,     color: 'text-sky-700' },
   reasoning: { label: 'Reasoning',    icon: Brain,    color: 'text-purple-700' },
-  speed:     { label: 'Speed',        icon: Zap,      color: 'text-yellow-400' },
+  speed:     { label: 'Speed',        icon: Zap,      color: 'text-yellow-800' },
   trending:  { label: 'Trending',     icon: Flame,    color: 'text-orange-800' },
   security:  { label: 'Security',     icon: Shield,   color: 'text-red-700' },
 };
