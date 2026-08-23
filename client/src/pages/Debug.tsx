@@ -160,7 +160,7 @@ export default function Debug() {
   const clearLogs = () => setLogs([]);
 
   return (
-    <div className={`min-h-screen bg-[hsl(var(--card))] text-foreground font-mono ${glitchMode ? 'animate-pulse' : ''}`}>
+    <div className={`terminal-panel min-h-screen bg-[hsl(var(--card))] text-foreground font-mono ${glitchMode ? 'animate-pulse' : ''}`}>
       {/* Header */}
       <header className="border-b border-amber-900/30 bg-[hsl(var(--card))]">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">

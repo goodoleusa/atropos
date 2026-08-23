@@ -395,7 +395,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
       </Tabs>
 
       {scanResult && (
-        <Card className="bg-card/50 border-amber-900/30">
+        <Card className="terminal-panel bg-card/50 border-amber-900/30">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-amber-200 flex items-center gap-2">

@@ -1286,7 +1286,7 @@ export const CustomTerminal = () => {
 
   return (
     <div 
-      className="w-full h-[50vh] sm:h-[60vh] md:h-[600px] max-h-[80vh] bg-[hsl(var(--card))]/95 border border-amber-900/50 rounded-lg p-2 sm:p-4 font-mono text-xs sm:text-sm shadow-[0_0_30px_rgba(184,115,51,0.1)] relative overflow-hidden backdrop-blur-md flex flex-col"
+      className="terminal-panel w-full h-[50vh] sm:h-[60vh] md:h-[600px] max-h-[80vh] bg-[hsl(var(--card))]/95 border border-amber-900/50 rounded-lg p-2 sm:p-4 font-mono text-xs sm:text-sm shadow-[0_0_30px_rgba(184,115,51,0.1)] relative overflow-hidden backdrop-blur-md flex flex-col"
       onClick={() => inputRef.current?.focus()}
       data-testid="terminal-container"
     >

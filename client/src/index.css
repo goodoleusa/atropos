@@ -79,6 +79,28 @@
   --ring: 30 78% 38%;
 }
 
+/* Scoped dark terminal/console treatment. The overall app is light, but a
+   genuine terminal, scan/log output, or code-console widget still needs to
+   read like a terminal. Re-declaring the same semantic var names locally
+   means every Tailwind class that already reads them (bg-card, bg-muted,
+   text-foreground, text-muted-foreground, border-border, bg-background)
+   automatically renders dark for anything nested inside .terminal-panel,
+   without needing a separate class vocabulary. Apply to the terminal/
+   console/log-output surface itself, not the whole page it lives on. */
+.terminal-panel {
+  color-scheme: dark;
+  --background: 20 12% 7%;
+  --foreground: 35 40% 85%;
+  --card: 20 14% 9%;
+  --card-foreground: 35 40% 85%;
+  --popover: 20 14% 9%;
+  --popover-foreground: 35 40% 85%;
+  --muted: 25 12% 15%;
+  --muted-foreground: 30 15% 60%;
+  --border: 30 30% 22%;
+  --input: 30 30% 14%;
+}
+
 @layer base {
   * {
     @apply border-border;
