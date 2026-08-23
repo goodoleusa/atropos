@@ -51,9 +51,9 @@ export default function Leaderboards() {
   ];
 
   const getRankBadge = (rank: number) => {
-    if (rank === 1) return <Crown className="w-5 h-5 text-amber-400" />;
+    if (rank === 1) return <Crown className="w-5 h-5 text-amber-800" />;
     if (rank === 2) return <Medal className="w-5 h-5 text-muted-foreground" />;
-    if (rank === 3) return <Medal className="w-5 h-5 text-orange-600" />;
+    if (rank === 3) return <Medal className="w-5 h-5 text-orange-800" />;
     return <span className="text-muted-foreground font-mono text-sm">#{rank}</span>;
   };
 
@@ -76,14 +76,14 @@ export default function Leaderboards() {
               </Button>
             </Link>
             <h1 className="font-orbitron text-xl font-bold">
-              <span className="text-amber-600">LEADERBOARDS</span>
+              <span className="text-amber-800">LEADERBOARDS</span>
             </h1>
           </div>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => refetchGlobal()}
-            className="border-amber-900/50 text-amber-500"
+            className="border-amber-900/50 text-amber-800"
           >
             <RefreshCw className="w-4 h-4 mr-1" />
             Refresh
@@ -104,13 +104,13 @@ export default function Leaderboards() {
                   </div>
                   <div>
                     <p className="text-muted-foreground text-sm">Your Global Rank</p>
-                    <p className="text-3xl font-bold text-amber-400">#{playerRank.rank}</p>
+                    <p className="text-3xl font-bold text-amber-800">#{playerRank.rank}</p>
                     <p className="text-muted-foreground text-xs mt-1">{gameState.username || 'Guest'}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-muted-foreground text-sm">Your Score</p>
-                  <p className="text-2xl font-bold text-teal-400">{playerRank.entry.score.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-teal-800">{playerRank.entry.score.toLocaleString()}</p>
                   <p className="text-muted-foreground text-xs mt-1">Total XP</p>
                 </div>
               </div>
@@ -139,7 +139,7 @@ export default function Leaderboards() {
           <TabsContent value="global_xp">
             <Card className="bg-[hsl(var(--card))] border-amber-900/30">
               <CardHeader>
-                <CardTitle className="text-amber-500 font-orbitron flex items-center gap-2">
+                <CardTitle className="text-amber-800 font-orbitron flex items-center gap-2">
                   <Trophy className="w-5 h-5" />
                   Global XP Rankings
                 </CardTitle>
@@ -175,7 +175,7 @@ export default function Leaderboards() {
                           </div>
                           
                           <div className="flex-1">
-                            <p className={`font-bold ${isPlayer ? 'text-amber-400' : 'text-foreground'}`}>
+                            <p className={`font-bold ${isPlayer ? 'text-amber-800' : 'text-foreground'}`}>
                               {entry.username || 'Anonymous'}
                               {isPlayer && <Badge className="ml-2 text-[10px] bg-amber-900/50 text-amber-300">YOU</Badge>}
                             </p>
@@ -185,7 +185,7 @@ export default function Leaderboards() {
                           </div>
                           
                           <div className="text-right">
-                            <p className="text-xl font-bold text-teal-400">
+                            <p className="text-xl font-bold text-teal-800">
                               {entry.score.toLocaleString()}
                             </p>
                             <p className="text-xs text-muted-foreground">Total XP</p>
@@ -224,7 +224,7 @@ export default function Leaderboards() {
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-amber-500 text-sm flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
                 <Trophy className="w-4 h-4" />
                 How Rankings Work
               </CardTitle>
@@ -239,7 +239,7 @@ export default function Leaderboards() {
 
           <Card className="bg-[hsl(var(--card))] border-teal-900/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-teal-500 text-sm flex items-center gap-2">
+              <CardTitle className="text-teal-800 text-sm flex items-center gap-2">
                 <Zap className="w-4 h-4" />
                 Earn More XP
               </CardTitle>
@@ -254,7 +254,7 @@ export default function Leaderboards() {
 
           <Card className="bg-[hsl(var(--card))] border-purple-900/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-purple-500 text-sm flex items-center gap-2">
+              <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                 <Target className="w-4 h-4" />
                 Compete
               </CardTitle>
@@ -277,7 +277,7 @@ export default function Leaderboards() {
             </Button>
           </Link>
           <Link href="/profile">
-            <Button variant="outline" className="border-teal-900/50 text-teal-400 min-h-[48px]">
+            <Button variant="outline" className="border-teal-900/50 text-teal-800 min-h-[48px]">
               <TrendingUp className="w-4 h-4 mr-2" />
               View Your Profile
             </Button>

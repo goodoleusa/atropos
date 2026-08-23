@@ -39,7 +39,7 @@ export const ChaosOverlay = () => {
             className="fixed inset-0 flex items-center justify-center z-[100] cursor-pointer"
             onClick={() => setMessage(null)}
           >
-            <h1 className="text-4xl md:text-8xl font-black text-amber-600/50 tracking-widest uppercase font-display blur-sm px-4 text-center">
+            <h1 className="text-4xl md:text-8xl font-black text-amber-800/50 tracking-widest uppercase font-display blur-sm px-4 text-center">
               {message}
             </h1>
           </motion.div>
@@ -47,7 +47,7 @@ export const ChaosOverlay = () => {
       </AnimatePresence>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="border-amber-900/50 bg-[hsl(var(--card))] text-amber-500 font-mono">
+        <DialogContent className="border-amber-900/50 bg-[hsl(var(--card))] text-amber-800 font-mono">
           <DialogHeader>
             <DialogTitle className="uppercase tracking-widest text-glitch" data-text="Connection Unstable">Connection Unstable</DialogTitle>
           </DialogHeader>

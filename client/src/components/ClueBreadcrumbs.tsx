@@ -68,8 +68,8 @@ export function ClueBreadcrumbs({
               className="flex items-center gap-1 px-2 py-1 rounded hover:bg-amber-900/20 transition-colors"
               data-testid="breadcrumb-home"
             >
-              <Home className="w-3 h-3 text-amber-600" />
-              <span className="text-xs text-amber-500">Root</span>
+              <Home className="w-3 h-3 text-amber-800" />
+              <span className="text-xs text-amber-800">Root</span>
             </button>
             
             {trail.map((clueId, index) => {
@@ -85,7 +85,7 @@ export function ClueBreadcrumbs({
                     onClick={() => navigateToIndex(index)}
                     className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${
                       isLast 
-                        ? 'bg-amber-900/30 text-amber-400 border border-amber-700/50' 
+                        ? 'bg-amber-900/30 text-amber-800 border border-amber-700/50' 
                         : 'hover:bg-amber-900/20 text-muted-foreground hover:text-amber-500'
                     }`}
                     data-testid={`breadcrumb-${clueId}`}
@@ -119,7 +119,7 @@ export function ClueBreadcrumbs({
                       className="w-full flex items-center gap-2 px-2 py-1.5 bg-black/30 rounded border border-amber-900/20 hover:border-amber-600/50 transition-colors text-left"
                       data-testid={`backlink-${id}`}
                     >
-                      <Link2 className="w-3 h-3 text-teal-500" />
+                      <Link2 className="w-3 h-3 text-teal-800" />
                       <span className="text-xs text-muted-foreground truncate">{linked.name}</span>
                     </button>
                   ) : null;
@@ -145,7 +145,7 @@ export function ClueBreadcrumbs({
                       className="w-full flex items-center gap-2 px-2 py-1.5 bg-black/30 rounded border border-amber-900/20 hover:border-amber-600/50 transition-colors text-left"
                       data-testid={`forwardlink-${id}`}
                     >
-                      <Link2 className="w-3 h-3 text-amber-500" />
+                      <Link2 className="w-3 h-3 text-amber-800" />
                       <span className="text-xs text-muted-foreground truncate">{linked.name}</span>
                     </button>
                   ) : null;

@@ -1383,7 +1383,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-amber-600 font-orbitron flex items-center gap-2">
+          <DialogTitle className="text-amber-800 font-orbitron flex items-center gap-2">
             <QrCode className="w-5 h-5" />
             QR SIGNAL GENERATOR
           </DialogTitle>
@@ -1417,23 +1417,23 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
           <TabsContent value="session" className="space-y-4 mt-4">
             {/* Current Session Info */}
             <div className="p-4 bg-teal-950/20 rounded border border-teal-900/30">
-              <h3 className="text-teal-400 font-bold mb-3 flex items-center gap-2">
+              <h3 className="text-teal-800 font-bold mb-3 flex items-center gap-2">
                 <Key className="w-4 h-4" /> Current Session
               </h3>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">Token:</span>
-                  <code className="text-xs text-teal-400 bg-black/50 px-2 py-1 rounded max-w-[200px] truncate">
+                  <code className="text-xs text-teal-800 bg-black/50 px-2 py-1 rounded max-w-[200px] truncate">
                     {gameState.sessionToken}
                   </code>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">Fragments:</span>
-                  <span className="text-xs text-teal-400">{gameState.inventory.length}</span>
+                  <span className="text-xs text-teal-800">{gameState.inventory.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">Username:</span>
-                  <span className="text-xs text-teal-400">{gameState.username}</span>
+                  <span className="text-xs text-teal-800">{gameState.username}</span>
                 </div>
               </div>
             </div>
@@ -1451,8 +1451,8 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
             {sessionStatus !== 'idle' && (
               <div className={`p-3 rounded border font-mono text-sm flex items-center gap-2 ${
                 sessionStatus === 'success'
-                  ? 'bg-teal-950/30 border-teal-800/50 text-teal-400' 
-                  : 'bg-red-950/30 border-red-800/50 text-red-400'
+                  ? 'bg-teal-950/30 border-teal-800/50 text-teal-800' 
+                  : 'bg-red-950/30 border-red-800/50 text-red-700'
               }`}>
                 {sessionStatus === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
                 {sessionMessage}
@@ -1461,12 +1461,12 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
             {/* Import Session */}
             <div className="pt-4 border-t border-border">
-              <h4 className="text-sm text-amber-600 font-bold mb-3">Import Existing Session</h4>
+              <h4 className="text-sm text-amber-800 font-bold mb-3">Import Existing Session</h4>
               <div className="space-y-3">
                 <Input
                   value={sessionInput}
                   onChange={(e) => setSessionInput(e.target.value)}
-                  className="bg-black/50 border-amber-900/30 text-amber-500 font-mono"
+                  className="bg-black/50 border-amber-900/30 text-amber-800 font-mono"
                   placeholder="Paste session token here..."
                   data-testid="session-input"
                 />
@@ -1501,7 +1501,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                   if (preset) setCode(preset.template);
                 }}
               >
-                <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500">
+                <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-800">
                   <SelectValue placeholder="Select action type" />
                 </SelectTrigger>
                 <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">
@@ -1509,7 +1509,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                     <SelectItem 
                       key={preset.id} 
                       value={preset.id}
-                      className="text-amber-500 focus:bg-amber-900/30 focus:text-amber-400"
+                      className="text-amber-800 focus:bg-amber-900/30 focus:text-amber-400"
                     >
                       {preset.name}
                     </SelectItem>
@@ -1529,7 +1529,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
               <Textarea
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                className="bg-black/50 border-amber-900/30 text-amber-500 font-mono h-32 resize-none"
+                className="bg-black/50 border-amber-900/30 text-amber-800 font-mono h-32 resize-none"
                 placeholder='{"type":"secret","data":"your_message"}'
               />
               <p className="text-xs text-muted-foreground">
@@ -1549,19 +1549,19 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
               <div className="flex flex-col items-center gap-4 p-4 bg-black/30 rounded border border-amber-900/20">
                 <img src={qrImage} alt="Generated QR Code" className="w-48 h-48" />
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={downloadQR} className="border-amber-800 text-amber-600">
+                  <Button variant="outline" size="sm" onClick={downloadQR} className="border-amber-800 text-amber-800">
                     <Download className="w-4 h-4 mr-2" /> Download
                   </Button>
-                  <Button variant="outline" size="sm" onClick={copyToClipboard} className="border-amber-800 text-amber-600">
+                  <Button variant="outline" size="sm" onClick={copyToClipboard} className="border-amber-800 text-amber-800">
                     <Copy className="w-4 h-4 mr-2" /> Copy Data URL
                   </Button>
                 </div>
                 
                 {/* Agent Execution Info */}
                 <div className="w-full mt-2 p-3 bg-amber-950/20 rounded border border-amber-900/30 text-left">
-                  <p className="text-xs text-amber-600 font-bold mb-1">AGENT EXECUTION</p>
+                  <p className="text-xs text-amber-800 font-bold mb-1">AGENT EXECUTION</p>
                   <p className="text-xs text-muted-foreground mb-2">Give this payload to an agent to execute elsewhere:</p>
-                  <code className="block text-xs text-amber-500/80 bg-black/50 p-2 rounded overflow-x-auto">
+                  <code className="block text-xs text-amber-800/80 bg-black/50 p-2 rounded overflow-x-auto">
                     POST /api/agent/execute<br/>
                     {`{ "payload": ${code.substring(0, 50)}${code.length > 50 ? '...' : ''} }`}
                   </code>
@@ -1572,7 +1572,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
           <TabsContent value="export" className="space-y-4 mt-4">
             <div className="p-4 bg-amber-950/20 rounded border border-amber-900/30">
-              <h3 className="text-amber-500 font-bold mb-2">Current Session</h3>
+              <h3 className="text-amber-800 font-bold mb-2">Current Session</h3>
               <p className="text-xs text-muted-foreground">Token: {gameState.sessionToken.substring(0, 16)}...</p>
               <p className="text-xs text-muted-foreground">Clues Collected: {gameState.inventory.length}</p>
               <p className="text-xs text-muted-foreground">Username: {gameState.username}</p>
@@ -1590,7 +1590,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
               <div className="flex flex-col items-center gap-4 p-4 bg-black/30 rounded border border-amber-900/20">
                 <img src={qrImage} alt="Session QR Code" className="w-48 h-48" />
                 <p className="text-xs text-muted-foreground">Share this QR to transfer your progress</p>
-                <Button variant="outline" size="sm" onClick={downloadQR} className="border-amber-800 text-amber-600">
+                <Button variant="outline" size="sm" onClick={downloadQR} className="border-amber-800 text-amber-800">
                   <Download className="w-4 h-4 mr-2" /> Download
                 </Button>
               </div>
@@ -1599,7 +1599,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
           <TabsContent value="agent" className="space-y-4 mt-4">
             <div className="p-4 bg-amber-950/20 rounded border border-amber-900/30">
-              <h3 className="text-amber-500 font-bold mb-2 flex items-center gap-2">
+              <h3 className="text-amber-800 font-bold mb-2 flex items-center gap-2">
                 <Bot className="w-4 h-4" /> Agent Execution API
               </h3>
               <p className="text-xs text-muted-foreground mb-2">
@@ -1615,7 +1615,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
               <Textarea
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                className="bg-black/50 border-amber-900/30 text-amber-500 font-mono h-24 resize-none text-xs"
+                className="bg-black/50 border-amber-900/30 text-amber-800 font-mono h-24 resize-none text-xs"
               />
             </div>
 
@@ -1631,7 +1631,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
               <Button 
                 onClick={copyPayloadForAgent}
                 variant="outline"
-                className="border-amber-800 text-amber-600"
+                className="border-amber-800 text-amber-800"
               >
                 <Copy className="w-4 h-4 mr-2" /> Copy for Agent
               </Button>
@@ -1639,8 +1639,8 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
             {agentResult && (
               <div className="p-3 rounded border bg-black/50 border-amber-800/50">
-                <p className="text-xs text-amber-600 font-bold mb-1">EXECUTION RESULT</p>
-                <pre className="text-xs text-amber-500/80 overflow-x-auto whitespace-pre-wrap max-h-40 overflow-y-auto">
+                <p className="text-xs text-amber-800 font-bold mb-1">EXECUTION RESULT</p>
+                <pre className="text-xs text-amber-800/80 overflow-x-auto whitespace-pre-wrap max-h-40 overflow-y-auto">
                   {agentResult}
                 </pre>
               </div>
@@ -1669,7 +1669,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 variant={c2Section === 'missions' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('missions')}
-                className={`shrink-0 min-h-[44px] ${c2Section === 'missions' ? 'bg-amber-700 text-white' : 'text-amber-400 hover:bg-amber-950/30'}`}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'missions' ? 'bg-amber-700 text-white' : 'text-amber-800 hover:bg-amber-950/30'}`}
                 data-testid="c2-section-missions"
               >
                 <Zap className="w-3 h-3 mr-1" /> Missions
@@ -1678,7 +1678,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 variant={c2Section === 'encode' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('encode')}
-                className={`shrink-0 min-h-[44px] ${c2Section === 'encode' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'encode' ? 'bg-red-700 text-white' : 'text-red-700 hover:bg-red-950/30'}`}
                 data-testid="c2-section-encode"
               >
                 <Terminal className="w-3 h-3 mr-1" /> Encode
@@ -1687,7 +1687,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 variant={c2Section === 'vectors' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('vectors')}
-                className={`shrink-0 min-h-[44px] ${c2Section === 'vectors' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'vectors' ? 'bg-red-700 text-white' : 'text-red-700 hover:bg-red-950/30'}`}
                 data-testid="c2-section-vectors"
               >
                 <Zap className="w-3 h-3 mr-1" /> Vectors
@@ -1696,7 +1696,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 variant={c2Section === 'labs' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setC2Section('labs')}
-                className={`shrink-0 min-h-[44px] ${c2Section === 'labs' ? 'bg-red-700 text-white' : 'text-red-400 hover:bg-red-950/30'}`}
+                className={`shrink-0 min-h-[44px] ${c2Section === 'labs' ? 'bg-red-700 text-white' : 'text-red-700 hover:bg-red-950/30'}`}
                 data-testid="c2-section-labs"
               >
                 <Key className="w-3 h-3 mr-1" /> Labs
@@ -1718,7 +1718,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                         onClick={() => setSelectedTarget(target.id)}
                         className={`text-xs h-auto py-2 ${selectedTarget === target.id 
                           ? 'bg-red-700 text-white' 
-                          : 'border-red-900/30 text-red-400 hover:bg-red-950/30'}`}
+                          : 'border-red-900/30 text-red-700 hover:bg-red-950/30'}`}
                       >
                         <span className="mr-1">{target.icon}</span>
                         <span className="truncate">{target.name}</span>
@@ -1743,7 +1743,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       if (template && template.template) setC2Command(template.template);
                     }}
                   >
-                    <SelectTrigger className="bg-black/50 border-red-900/30 text-red-500">
+                    <SelectTrigger className="bg-black/50 border-red-900/30 text-red-700">
                       <SelectValue placeholder="Select command template" />
                     </SelectTrigger>
                     <SelectContent className="bg-[hsl(var(--card))] border-red-900/50">
@@ -1751,7 +1751,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                         <SelectItem 
                           key={template.id} 
                           value={template.id}
-                          className="text-red-500 focus:bg-red-900/30 focus:text-red-400"
+                          className="text-red-700 focus:bg-red-900/30 focus:text-red-400"
                         >
                           {template.name}
                         </SelectItem>
@@ -1766,7 +1766,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                   <Input
                     value={c2Command}
                     onChange={(e) => setC2Command(e.target.value)}
-                    className="bg-black/50 border-red-900/30 text-red-500 font-mono"
+                    className="bg-black/50 border-red-900/30 text-red-700 font-mono"
                     placeholder="Enter shell command..."
                     data-testid="c2-command-input"
                   />
@@ -1819,10 +1819,10 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       {c2Results.slice(-3).reverse().map((result) => (
                         <div key={result.id} className="p-3 bg-black/50 rounded border border-red-900/20 text-xs font-mono">
                           <div className="flex justify-between text-muted-foreground mb-2 border-b border-red-900/20 pb-1">
-                            <code className="text-red-400">$ {result.command}</code>
+                            <code className="text-red-700">$ {result.command}</code>
                             <span className="text-muted-foreground">{TARGET_MACHINES.find(t => t.id === selectedTarget)?.name}</span>
                           </div>
-                          <pre className="text-amber-400/90 whitespace-pre-wrap">{result.result}</pre>
+                          <pre className="text-amber-800/90 whitespace-pre-wrap">{result.result}</pre>
                         </div>
                       ))}
                     </div>
@@ -1835,15 +1835,15 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
             {c2Section === 'missions' && (
               <div className="space-y-3">
                 <div className="p-3 bg-amber-950/20 rounded border border-amber-900/30">
-                  <h4 className="text-amber-400 font-bold text-sm mb-1">C2 Training Missions</h4>
+                  <h4 className="text-amber-800 font-bold text-sm mb-1">C2 Training Missions</h4>
                   <p className="text-xs text-muted-foreground">
                     Step-by-step guided missions teaching real C2 techniques. Complete missions to earn XP, collect intel clues, and unlock campaign progress.
                   </p>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/50 border border-amber-800/30 text-amber-400">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/50 border border-amber-800/30 text-amber-800">
                       {missionCompleted.size}/{C2_GUIDED_MISSIONS.length} Completed
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950/50 border border-teal-800/30 text-teal-400">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950/50 border border-teal-800/30 text-teal-800">
                       {C2_GUIDED_MISSIONS.reduce((sum, m) => sum + (missionCompleted.has(m.id) ? m.xpReward : 0), 0)} XP Earned
                     </span>
                   </div>
@@ -1866,22 +1866,22 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                         >
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <span className="text-lg">{mission.icon}</span>
-                            <span className={`text-sm font-bold ${completed ? 'text-teal-400' : 'text-amber-400'}`}>
+                            <span className={`text-sm font-bold ${completed ? 'text-teal-800' : 'text-amber-800'}`}>
                               {mission.name}
                             </span>
                             <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                               mission.difficulty === 'beginner' ? 'bg-green-950 text-green-400' :
                               mission.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
-                              mission.difficulty === 'advanced' ? 'bg-red-950 text-red-400' :
-                              'bg-purple-950 text-purple-400'
+                              mission.difficulty === 'advanced' ? 'bg-red-950 text-red-700' :
+                              'bg-purple-950 text-purple-700'
                             }`}>
                               {mission.difficulty}
                             </span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/50 text-amber-500 border border-amber-900/30">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/50 text-amber-800 border border-amber-900/30">
                               +{mission.xpReward} XP
                             </span>
                             {completed && (
-                              <CheckCircle className="w-4 h-4 text-teal-500 ml-auto" />
+                              <CheckCircle className="w-4 h-4 text-teal-800 ml-auto" />
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground">{mission.description}</p>
@@ -1917,29 +1917,29 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                             Back
                           </Button>
                           <span className="text-lg">{mission.icon}</span>
-                          <span className="text-sm text-amber-400 font-bold">{mission.name}</span>
+                          <span className="text-sm text-amber-800 font-bold">{mission.name}</span>
                           <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                             mission.difficulty === 'beginner' ? 'bg-green-950 text-green-400' :
                             mission.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
-                            mission.difficulty === 'advanced' ? 'bg-red-950 text-red-400' :
-                            'bg-purple-950 text-purple-400'
+                            mission.difficulty === 'advanced' ? 'bg-red-950 text-red-700' :
+                            'bg-purple-950 text-purple-700'
                           }`}>
                             {mission.difficulty}
                           </span>
                         </div>
 
                         <div className="p-3 bg-amber-950/20 rounded border border-amber-900/30">
-                          <p className="text-xs text-amber-600 font-bold mb-1">MISSION BRIEFING</p>
+                          <p className="text-xs text-amber-800 font-bold mb-1">MISSION BRIEFING</p>
                           <p className="text-xs text-foreground">{mission.briefing}</p>
                           <div className="mt-2">
                             <p className="text-[10px] text-amber-700 font-bold mb-1">OBJECTIVES:</p>
                             <ul className="text-xs text-muted-foreground space-y-0.5">
                               {mission.objectives.map((obj, i) => (
                                 <li key={i} className="flex gap-2">
-                                  <span className={`${i <= missionStep ? 'text-teal-500' : 'text-muted-foreground'}`}>
+                                  <span className={`${i <= missionStep ? 'text-teal-800' : 'text-muted-foreground'}`}>
                                     {i <= missionStep ? '✓' : '○'}
                                   </span>
-                                  <span className={i <= missionStep ? 'text-teal-400' : ''}>{obj}</span>
+                                  <span className={i <= missionStep ? 'text-teal-800' : ''}>{obj}</span>
                                 </li>
                               ))}
                             </ul>
@@ -1955,7 +1955,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                               onClick={() => setMissionStep(i)}
                               className={`shrink-0 min-h-[36px] min-w-[36px] ${
                                 i === missionStep ? 'bg-amber-700 text-white' :
-                                i < missionStep ? 'text-teal-400 bg-teal-950/30' :
+                                i < missionStep ? 'text-teal-800 bg-teal-950/30' :
                                 'text-muted-foreground'
                               }`}
                             >
@@ -1967,23 +1967,23 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                         {step && (
                           <div className="space-y-3">
                             <div className="p-3 bg-black/50 rounded border border-amber-900/20">
-                              <p className="text-xs text-amber-500 font-bold mb-2">
+                              <p className="text-xs text-amber-800 font-bold mb-2">
                                 Step {missionStep + 1} of {mission.steps.length}
                               </p>
                               <p className="text-xs text-foreground mb-3">{step.instruction}</p>
 
                               <div className="p-2 bg-black/50 rounded border border-red-900/20 mb-2">
                                 <p className="text-[10px] text-red-700 font-bold mb-1">COMMAND:</p>
-                                <code className="text-xs text-red-400 break-all">{step.command}</code>
+                                <code className="text-xs text-red-700 break-all">{step.command}</code>
                               </div>
 
                               <div className="p-2 bg-black/50 rounded border border-teal-900/20 mb-2">
                                 <p className="text-[10px] text-teal-700 font-bold mb-1">EXPECTED OUTPUT:</p>
-                                <pre className="text-xs text-teal-400/80 whitespace-pre-wrap">{step.expectedOutput}</pre>
+                                <pre className="text-xs text-teal-800/80 whitespace-pre-wrap">{step.expectedOutput}</pre>
                               </div>
 
                               <div className="p-2 bg-amber-950/20 rounded border border-amber-900/20">
-                                <p className="text-[10px] text-amber-600 font-bold mb-1">WHY THIS MATTERS:</p>
+                                <p className="text-[10px] text-amber-800 font-bold mb-1">WHY THIS MATTERS:</p>
                                 <p className="text-xs text-foreground">{step.teaching}</p>
                               </div>
                             </div>
@@ -2018,7 +2018,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                                   }
                                 }}
                                 variant="outline"
-                                className="border-amber-800 text-amber-600 min-h-[44px]"
+                                className="border-amber-800 text-amber-800 min-h-[44px]"
                                 data-testid="mission-encode-qr"
                               >
                                 <QrCode className="w-4 h-4 mr-2" /> Encode QR
@@ -2072,7 +2072,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
                         <div className="space-y-2 mt-2">
                           <div className="p-3 bg-red-950/20 rounded border border-red-900/20">
-                            <p className="text-xs text-red-400 font-bold mb-1">REAL-WORLD CASE:</p>
+                            <p className="text-xs text-red-700 font-bold mb-1">REAL-WORLD CASE:</p>
                             <p className="text-xs text-foreground">{mission.realWorldCase}</p>
                           </div>
                           <div className="p-3 bg-blue-950/20 rounded border border-blue-900/20">
@@ -2087,7 +2087,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
                 {!activeMission && (
                   <div className="p-3 bg-black/30 rounded border border-border">
-                    <p className="text-xs text-amber-600 font-bold mb-2">ATTACK FLOW TEMPLATES</p>
+                    <p className="text-xs text-amber-800 font-bold mb-2">ATTACK FLOW TEMPLATES</p>
                     <p className="text-xs text-muted-foreground mb-2">Pre-built multi-step attack sequences. Click to explore each phase.</p>
                     <div className="grid gap-2">
                       {ATTACK_FLOW_TEMPLATES.map((flow) => (
@@ -2099,12 +2099,12 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                             onClick={() => setSelectedFlow(selectedFlow === flow.id ? null : flow.id)}
                           >
                             <span>{flow.icon}</span>
-                            <span className="text-xs text-red-400 font-bold">{flow.name}</span>
+                            <span className="text-xs text-red-700 font-bold">{flow.name}</span>
                             <span className={`text-[10px] ml-auto px-1.5 py-0.5 rounded ${
                               flow.phase === 'recon' ? 'bg-blue-950 text-blue-400' :
-                              flow.phase === 'access' ? 'bg-orange-950 text-orange-400' :
-                              flow.phase === 'persist' ? 'bg-purple-950 text-purple-400' :
-                              'bg-red-950 text-red-400'
+                              flow.phase === 'access' ? 'bg-orange-950 text-orange-800' :
+                              flow.phase === 'persist' ? 'bg-purple-950 text-purple-700' :
+                              'bg-red-950 text-red-700'
                             }`}>
                               {flow.phase}
                             </span>
@@ -2115,7 +2115,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                               {flow.commands.map((cmd, i) => (
                                 <div key={i} className="p-1.5 bg-black/50 rounded">
                                   <p className="text-[10px] text-muted-foreground">{cmd.desc}</p>
-                                  <code className="text-[11px] text-red-400">{cmd.cmd}</code>
+                                  <code className="text-[11px] text-red-700">{cmd.cmd}</code>
                                 </div>
                               ))}
                               <Button
@@ -2151,9 +2151,9 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                   {['physical', 'digital', 'social', 'supply_chain'].map((cat) => (
                     <span key={cat} className={`text-xs px-2 py-1 rounded border ${
                       cat === 'physical' ? 'border-blue-800 text-blue-400' :
-                      cat === 'digital' ? 'border-purple-800 text-purple-400' :
+                      cat === 'digital' ? 'border-purple-800 text-purple-700' :
                       cat === 'social' ? 'border-pink-800 text-pink-400' :
-                      'border-orange-800 text-orange-400'
+                      'border-orange-800 text-orange-800'
                     }`}>
                       {cat.replace('_', ' ')}
                     </span>
@@ -2174,11 +2174,11 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-lg">{vector.icon}</span>
-                        <span className="text-sm text-red-400 font-bold">{vector.name}</span>
+                        <span className="text-sm text-red-700 font-bold">{vector.name}</span>
                         <span className={`text-xs px-1.5 py-0.5 rounded ${
                           vector.difficulty === 'beginner' ? 'bg-green-950 text-green-400' :
                           vector.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
-                          'bg-red-950 text-red-400'
+                          'bg-red-950 text-red-700'
                         }`}>
                           {vector.difficulty}
                         </span>
@@ -2188,7 +2188,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       {selectedVector === vector.id && (
                         <div className="mt-3 pt-3 border-t border-red-900/30 space-y-3">
                           <div>
-                            <p className="text-xs text-red-500 font-bold mb-1">Real-World Cases:</p>
+                            <p className="text-xs text-red-700 font-bold mb-1">Real-World Cases:</p>
                             <ul className="text-xs text-muted-foreground space-y-1">
                               {vector.realExamples.map((ex, i) => (
                                 <li key={i} className="flex gap-2">
@@ -2199,7 +2199,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                             </ul>
                           </div>
                           <div className="p-2 bg-black/50 rounded">
-                            <p className="text-xs text-amber-500 font-bold mb-1">Lab Scenario:</p>
+                            <p className="text-xs text-amber-800 font-bold mb-1">Lab Scenario:</p>
                             <p className="text-xs text-foreground">{vector.labScenario}</p>
                           </div>
                         </div>
@@ -2215,7 +2215,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
               <div className="space-y-3">
                 <div className="p-3 bg-amber-950/20 rounded border border-amber-900/30">
                   <div className="flex items-center justify-between mb-1">
-                    <h4 className="text-amber-400 font-bold text-sm">QR-in-QR Hijacking Labs</h4>
+                    <h4 className="text-amber-800 font-bold text-sm">QR-in-QR Hijacking Labs</h4>
                     <span className="text-xs text-muted-foreground">
                       {Array.from(labCompleted).length}/{QR_INCEPTION_LABS.length} Complete
                     </span>
@@ -2248,11 +2248,11 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                         >
                           <ChevronLeft className="w-3 h-3" /> Back to Labs
                         </button>
-                        <span className="text-xs text-amber-600">{xpReward} XP</span>
+                        <span className="text-xs text-amber-800">{xpReward} XP</span>
                       </div>
 
                       <div className="p-3 bg-amber-950/30 rounded border border-amber-700">
-                        <h4 className="text-amber-400 font-bold text-sm mb-1">{lab.title}</h4>
+                        <h4 className="text-amber-800 font-bold text-sm mb-1">{lab.title}</h4>
                         <p className="text-xs text-foreground mb-2">{lab.objective}</p>
                         <div className="flex gap-1">
                           {Array.from({ length: totalSteps }).map((_, i) => (
@@ -2265,9 +2265,9 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       {labStep === 0 && (
                         <div className="space-y-3" data-testid="lab-step-0">
                           <div className="p-3 bg-black/40 rounded border border-border">
-                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 1: Understand the Attack</p>
+                            <p className="text-xs text-amber-800 font-bold mb-2">STEP 1: Understand the Attack</p>
                             <div className="p-2 bg-red-950/20 rounded border border-red-900/20 mb-2">
-                              <p className="text-xs text-red-400 font-bold mb-1">Real-World Case:</p>
+                              <p className="text-xs text-red-700 font-bold mb-1">Real-World Case:</p>
                               <p className="text-xs text-foreground">{lab.realWorldCase}</p>
                             </div>
                             <p className="text-xs text-muted-foreground mb-2">{lab.concept}</p>
@@ -2285,12 +2285,12 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       {labStep === 1 && (
                         <div className="space-y-3" data-testid="lab-step-1">
                           <div className="p-3 bg-black/40 rounded border border-border">
-                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 2: Generate QR Codes</p>
+                            <p className="text-xs text-amber-800 font-bold mb-2">STEP 2: Generate QR Codes</p>
                             <p className="text-xs text-muted-foreground mb-3">Generate both the legitimate and malicious QR codes to understand how the attack works.</p>
                             
                             <div className="grid grid-cols-2 gap-3">
                               <div className="space-y-2">
-                                <p className="text-xs text-teal-400 font-bold">Legitimate QR</p>
+                                <p className="text-xs text-teal-800 font-bold">Legitimate QR</p>
                                 <p className="text-xs text-muted-foreground font-mono break-all">{sim?.safeUrl}</p>
                                 <Button
                                   onClick={() => sim && generateLabQR(activeLabId, sim.safeUrl, 'safe')}
@@ -2305,7 +2305,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                                 )}
                               </div>
                               <div className="space-y-2">
-                                <p className="text-xs text-red-400 font-bold">Malicious QR</p>
+                                <p className="text-xs text-red-700 font-bold">Malicious QR</p>
                                 <p className="text-xs text-muted-foreground font-mono break-all">{sim?.maliciousUrl}</p>
                                 <Button
                                   onClick={() => sim && generateLabQR(activeLabId, sim.maliciousUrl, 'evil')}
@@ -2336,7 +2336,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       {labStep === 2 && (
                         <div className="space-y-3" data-testid="lab-step-2">
                           <div className="p-3 bg-black/40 rounded border border-border">
-                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 3: Multi-Scanner Simulation</p>
+                            <p className="text-xs text-amber-800 font-bold mb-2">STEP 3: Multi-Scanner Simulation</p>
                             <p className="text-xs text-muted-foreground mb-3">
                               Watch how different QR scanners interpret the same hijacked QR code differently. This is why the attack works.
                             </p>
@@ -2354,8 +2354,8 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
                             {labSimulating && (
                               <div className="flex items-center gap-2 p-3 bg-purple-950/30 rounded border border-purple-800/50">
-                                <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
-                                <span className="text-xs text-purple-400">Simulating scanner responses...</span>
+                                <Loader2 className="w-4 h-4 animate-spin text-purple-700" />
+                                <span className="text-xs text-purple-700">Simulating scanner responses...</span>
                               </div>
                             )}
 
@@ -2372,7 +2372,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                                     data-testid={`lab-scan-result-${i}`}
                                   >
                                     <div className="flex items-center justify-between mb-1">
-                                      <span className={scan.isMalicious ? 'text-red-400' : 'text-teal-400'}>
+                                      <span className={scan.isMalicious ? 'text-red-700' : 'text-teal-800'}>
                                         {scan.scanner}
                                       </span>
                                       <span className={`px-1.5 py-0.5 rounded text-[10px] ${
@@ -2405,7 +2405,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       {labStep === 3 && (
                         <div className="space-y-3" data-testid="lab-step-3">
                           <div className="p-3 bg-black/40 rounded border border-border">
-                            <p className="text-xs text-amber-500 font-bold mb-2">STEP 4: Detection & Mitigation</p>
+                            <p className="text-xs text-amber-800 font-bold mb-2">STEP 4: Detection & Mitigation</p>
                             
                             <div className="grid grid-cols-1 gap-3 mb-3">
                               <div className="p-2 bg-blue-950/20 rounded border border-blue-900/30">
@@ -2413,17 +2413,17 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                                 <p className="text-xs text-foreground">{lab.detection}</p>
                               </div>
                               <div className="p-2 bg-teal-950/20 rounded border border-teal-900/30">
-                                <p className="text-xs text-teal-400 font-bold mb-1">Mitigation Strategy:</p>
+                                <p className="text-xs text-teal-800 font-bold mb-1">Mitigation Strategy:</p>
                                 <p className="text-xs text-foreground">{lab.mitigation}</p>
                               </div>
                             </div>
 
                             <div className="p-2 bg-amber-950/20 rounded border border-amber-900/30 mb-3">
-                              <p className="text-xs text-amber-400 font-bold mb-1">Key Takeaways:</p>
+                              <p className="text-xs text-amber-800 font-bold mb-1">Key Takeaways:</p>
                               <ul className="text-xs text-foreground space-y-1 list-disc list-inside">
                                 {lab.steps.map((step, i) => (
                                   <li key={i} className="flex items-start gap-1">
-                                    <Check className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                                    <Check className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" />
                                     <span>{step}</span>
                                   </li>
                                 ))}
@@ -2432,7 +2432,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
                             {labCompleted.has(activeLabId) ? (
                               <div className="p-3 bg-amber-950/30 rounded border border-amber-700 text-center">
-                                <p className="text-xs text-amber-400 font-bold">Lab Already Completed</p>
+                                <p className="text-xs text-amber-800 font-bold">Lab Already Completed</p>
                               </div>
                             ) : (
                               <Button
@@ -2467,15 +2467,15 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                           <div className="p-3">
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
-                                {isComplete && <Check className="w-3.5 h-3.5 text-amber-500" />}
-                                <span className="text-sm text-amber-400 font-bold">{lab.title}</span>
+                                {isComplete && <Check className="w-3.5 h-3.5 text-amber-800" />}
+                                <span className="text-sm text-amber-800 font-bold">{lab.title}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-xs text-muted-foreground">{xp} XP</span>
                                 <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                  lab.difficulty === 'beginner' ? 'bg-teal-950 text-teal-400' :
+                                  lab.difficulty === 'beginner' ? 'bg-teal-950 text-teal-800' :
                                   lab.difficulty === 'intermediate' ? 'bg-yellow-950 text-yellow-400' :
-                                  'bg-red-950 text-red-400'
+                                  'bg-red-950 text-red-700'
                                 }`}>
                                   {lab.difficulty}
                                 </span>
@@ -2487,7 +2487,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                               variant={isComplete ? 'outline' : 'default'}
                               className={`w-full text-xs min-h-[36px] ${
                                 isComplete 
-                                  ? 'border-amber-800/50 text-amber-500 hover:bg-amber-950/30' 
+                                  ? 'border-amber-800/50 text-amber-800 hover:bg-amber-950/30' 
                                   : 'bg-amber-800 hover:bg-amber-700 text-black'
                               }`}
                               data-testid={`lab-start-${lab.id}`}
@@ -2503,13 +2503,13 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
                 {!activeLabId && (
                   <div className="p-3 bg-card/30 rounded border border-border">
-                    <h4 className="text-amber-500 font-bold text-sm mb-2">Challenge Modes</h4>
+                    <h4 className="text-amber-800 font-bold text-sm mb-2">Challenge Modes</h4>
                     <div className="grid gap-2">
                       {QR_CHALLENGE_MODES.map((mode) => (
                         <div key={mode.id} className="p-2 bg-black/30 rounded border border-border/50">
                           <div className="flex items-center gap-2 mb-1">
                             <span>{mode.icon}</span>
-                            <span className="text-xs text-teal-400 font-bold">{mode.name}</span>
+                            <span className="text-xs text-teal-800 font-bold">{mode.name}</span>
                             <span className="text-xs text-muted-foreground">({mode.technique})</span>
                           </div>
                           <p className="text-xs text-muted-foreground">{mode.description}</p>
@@ -2531,7 +2531,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 <li>Result QR uploaded, attacker decodes response</li>
                 <li>All traffic appears as normal image downloads</li>
               </ol>
-              <p className="text-xs text-red-400 mt-2 italic">
+              <p className="text-xs text-red-700 mt-2 italic">
                 * In NEXUS, this is simulated for educational purposes. No real systems are targeted.
               </p>
             </div>
@@ -2543,7 +2543,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
               <Input
                 value={importCode}
                 onChange={(e) => setImportCode(e.target.value)}
-                className="bg-black/50 border-amber-900/30 text-amber-500 font-mono"
+                className="bg-black/50 border-amber-900/30 text-amber-800 font-mono"
                 placeholder="Paste encoded QR data here..."
               />
             </div>
@@ -2562,8 +2562,8 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 importResult.startsWith('SUCCESS') 
                   ? 'bg-green-950/30 border-green-800/50 text-green-500' 
                   : importResult.startsWith('ERROR')
-                    ? 'bg-red-950/30 border-red-800/50 text-red-500'
-                    : 'bg-amber-950/30 border-amber-800/50 text-amber-500'
+                    ? 'bg-red-950/30 border-red-800/50 text-red-700'
+                    : 'bg-amber-950/30 border-amber-800/50 text-amber-800'
               }`}>
                 {importResult}
               </div>

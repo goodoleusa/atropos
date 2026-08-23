@@ -85,7 +85,7 @@ export function ParallaxHero({ backgroundImage, title, subtitle, className = '' 
           data-atropos-offset="5"
           className="absolute bottom-8 left-8 right-8"
         >
-          <h2 className="font-orbitron text-3xl md:text-5xl font-bold text-amber-500 mb-2">
+          <h2 className="font-orbitron text-3xl md:text-5xl font-bold text-amber-800 mb-2">
             {title}
           </h2>
           {subtitle && (
@@ -127,17 +127,17 @@ export function ParallaxMissionCard({
   onClick 
 }: ParallaxMissionCardProps) {
   const statusColors = {
-    active: 'bg-teal-500/20 text-teal-400 border-teal-500/50',
-    pending: 'bg-amber-500/20 text-amber-400 border-amber-500/50',
+    active: 'bg-teal-500/20 text-teal-800 border-teal-500/50',
+    pending: 'bg-amber-500/20 text-amber-800 border-amber-500/50',
     complete: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50',
-    classified: 'bg-red-500/20 text-red-400 border-red-500/50'
+    classified: 'bg-red-500/20 text-red-700 border-red-500/50'
   };
 
   const difficultyColors = {
     easy: 'text-emerald-400',
-    medium: 'text-amber-400',
-    hard: 'text-orange-400',
-    expert: 'text-red-400'
+    medium: 'text-amber-800',
+    hard: 'text-orange-800',
+    expert: 'text-red-700'
   };
 
   return (
@@ -163,7 +163,7 @@ export function ParallaxMissionCard({
             </span>
           </div>
           
-          <h3 data-atropos-offset="4" className="font-orbitron text-lg font-bold text-amber-500 mb-1">
+          <h3 data-atropos-offset="4" className="font-orbitron text-lg font-bold text-amber-800 mb-1">
             {missionName}
           </h3>
           
@@ -176,7 +176,7 @@ export function ParallaxMissionCard({
           </p>
           
           {clueCount > 0 && (
-            <div data-atropos-offset="5" className="flex items-center gap-2 text-xs text-teal-400">
+            <div data-atropos-offset="5" className="flex items-center gap-2 text-xs text-teal-800">
               <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
               {clueCount} clues available
             </div>
@@ -304,10 +304,10 @@ export function HiddenClueReveal({
             className="absolute inset-0 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md rounded-lg border border-amber-500/50"
           >
             <div className="text-center">
-              <span className="text-[10px] text-teal-400 uppercase tracking-wider">
+              <span className="text-[10px] text-teal-800 uppercase tracking-wider">
                 {collected ? '✓ COLLECTED' : 'CLUE DISCOVERED'}
               </span>
-              <h4 className="text-amber-500 font-orbitron font-bold mt-1">{hiddenClue.name}</h4>
+              <h4 className="text-amber-800 font-orbitron font-bold mt-1">{hiddenClue.name}</h4>
               <p className="text-foreground text-sm mt-2 font-mono">{hiddenClue.content}</p>
             </div>
           </motion.div>
@@ -316,7 +316,7 @@ export function HiddenClueReveal({
 
       {/* Hint indicator for hold method */}
       {revealMethod === 'hold' && !revealed && (
-        <div className="absolute top-1 right-1 text-[8px] text-amber-600/50 font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-1 right-1 text-[8px] text-amber-800/50 font-mono opacity-0 group-hover:opacity-100 transition-opacity">
           HOLD TO REVEAL
         </div>
       )}
@@ -505,12 +505,12 @@ export function GlitchReveal({
       className={`relative inline-block ${className}`}
       onMouseEnter={() => triggerOnHover && setIsGlitching(true)}
     >
-      <span className={`${isGlitching ? 'animate-pulse text-teal-400' : ''} transition-colors`}>
+      <span className={`${isGlitching ? 'animate-pulse text-teal-800' : ''} transition-colors`}>
         {displayText}
       </span>
       {isGlitching && (
         <>
-          <span className="absolute inset-0 text-red-500/50 translate-x-[2px] translate-y-[1px] clip-glitch-1">
+          <span className="absolute inset-0 text-red-700/50 translate-x-[2px] translate-y-[1px] clip-glitch-1">
             {displayText}
           </span>
           <span className="absolute inset-0 text-cyan-500/50 -translate-x-[2px] -translate-y-[1px] clip-glitch-2">
@@ -579,8 +579,8 @@ export function TiltReveal({
               className="absolute inset-0 flex items-center justify-center bg-purple-950/90 backdrop-blur rounded-lg p-4"
             >
               <div className="text-center">
-                <span className="text-purple-400 text-xs uppercase tracking-wider">ANGLE UNLOCKED</span>
-                <h4 className="text-amber-400 font-orbitron font-bold mt-1">{hiddenClue.name}</h4>
+                <span className="text-purple-700 text-xs uppercase tracking-wider">ANGLE UNLOCKED</span>
+                <h4 className="text-amber-800 font-orbitron font-bold mt-1">{hiddenClue.name}</h4>
                 <p className="text-foreground text-sm mt-2">{hiddenClue.content}</p>
               </div>
             </motion.div>
@@ -664,7 +664,7 @@ export function SpotlightReveal({
       {hiddenElements.map((elem, index) => (
         <motion.div
           key={index}
-          className="absolute text-xs font-mono text-amber-400 pointer-events-none"
+          className="absolute text-xs font-mono text-amber-800 pointer-events-none"
           style={{ left: `${elem.x}%`, top: `${elem.y}%`, transform: 'translate(-50%, -50%)' }}
           animate={{
             opacity: visibleElements.has(index) ? 1 : 
@@ -1009,7 +1009,7 @@ export function ChromaticText({
     <span className={`relative inline-block ${className}`}>
       <span className="relative z-10">{text}</span>
       <span 
-        className="absolute inset-0 text-red-500/50" 
+        className="absolute inset-0 text-red-700/50" 
         style={{ transform: 'translate(-1px, 0)' }}
         aria-hidden="true"
       >

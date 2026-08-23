@@ -38,12 +38,12 @@ interface LabRun {
 }
 
 const CATEGORY_META: Record<string, { label: string; color: string; icon: typeof Brain; desc: string }> = {
-  hallucination: { label: 'Hallucination', color: 'text-red-400 bg-red-900/20 border-red-800/30', icon: Skull, desc: 'Model invents facts, citations, or data' },
-  sycophancy: { label: 'Sycophancy', color: 'text-amber-400 bg-amber-900/20 border-amber-800/30', icon: Shield, desc: 'Model agrees with you even when wrong' },
-  leading: { label: 'Leading Questions', color: 'text-purple-400 bg-purple-900/20 border-purple-800/30', icon: Target, desc: 'Prompt presupposes an answer' },
+  hallucination: { label: 'Hallucination', color: 'text-red-700 bg-red-900/20 border-red-800/30', icon: Skull, desc: 'Model invents facts, citations, or data' },
+  sycophancy: { label: 'Sycophancy', color: 'text-amber-800 bg-amber-900/20 border-amber-800/30', icon: Shield, desc: 'Model agrees with you even when wrong' },
+  leading: { label: 'Leading Questions', color: 'text-purple-700 bg-purple-900/20 border-purple-800/30', icon: Target, desc: 'Prompt presupposes an answer' },
   anchoring: { label: 'Anchoring Bias', color: 'text-sky-400 bg-sky-900/20 border-sky-800/30', icon: Brain, desc: 'First information dominates reasoning' },
-  contradiction: { label: 'Contradiction', color: 'text-orange-400 bg-orange-900/20 border-orange-800/30', icon: AlertTriangle, desc: 'Model contradicts itself within a response' },
-  boundary: { label: 'Boundary Testing', color: 'text-teal-400 bg-teal-900/20 border-teal-800/30', icon: Eye, desc: 'Model hallucinates beyond its knowledge cutoff' },
+  contradiction: { label: 'Contradiction', color: 'text-orange-800 bg-orange-900/20 border-orange-800/30', icon: AlertTriangle, desc: 'Model contradicts itself within a response' },
+  boundary: { label: 'Boundary Testing', color: 'text-teal-800 bg-teal-900/20 border-teal-800/30', icon: Eye, desc: 'Model hallucinates beyond its knowledge cutoff' },
 };
 
 const EXERCISES: DecoherenceExercise[] = [
@@ -219,8 +219,8 @@ const EXERCISES: DecoherenceExercise[] = [
 
 const DIFFICULTY_COLOR: Record<string, string> = {
   beginner: 'text-emerald-400',
-  intermediate: 'text-amber-400',
-  advanced: 'text-red-400',
+  intermediate: 'text-amber-800',
+  advanced: 'text-red-700',
 };
 
 const MODELS = [
@@ -357,7 +357,7 @@ export function DecoherenceLab() {
 
         <Card className="bg-card/50 border-amber-900/30">
           <CardHeader className="p-3 md:p-4 pb-2">
-            <CardTitle className="text-sm md:text-base text-amber-400 flex items-center gap-2">
+            <CardTitle className="text-sm md:text-base text-amber-800 flex items-center gap-2">
               <FlaskConical className="w-4 h-4" />
               {selectedExercise.title}
             </CardTitle>
@@ -389,12 +389,12 @@ export function DecoherenceLab() {
 
         <div className="flex flex-col sm:flex-row gap-2">
           <Select value={selectedModel} onValueChange={setSelectedModel}>
-            <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-8 md:h-7 w-full sm:w-auto sm:min-w-[180px]" data-testid="decoherence-model-select">
+            <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-800 text-xs h-8 md:h-7 w-full sm:w-auto sm:min-w-[180px]" data-testid="decoherence-model-select">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50">
               {MODELS.map(m => (
-                <SelectItem key={m.id} value={m.id} className="text-amber-500 text-xs">
+                <SelectItem key={m.id} value={m.id} className="text-amber-800 text-xs">
                   [{m.short}] {m.name}
                 </SelectItem>
               ))}
@@ -515,7 +515,7 @@ export function DecoherenceLab() {
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">{new Date(run.timestamp).toLocaleTimeString()}</span>
                     <span className="text-muted-foreground truncate flex-1">{run.model.split('/').pop()}</span>
-                    {run.failureDetected && <Badge className="text-[7px] bg-red-900/30 text-red-400 border-0">Failure</Badge>}
+                    {run.failureDetected && <Badge className="text-[7px] bg-red-900/30 text-red-700 border-0">Failure</Badge>}
                   </div>
                 </div>
               ))}
@@ -530,7 +530,7 @@ export function DecoherenceLab() {
     <div className="space-y-3 md:space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <h3 className="text-sm md:text-base font-orbitron text-red-400 flex items-center gap-2" data-testid="decoherence-lab-title">
+          <h3 className="text-sm md:text-base font-orbitron text-red-700 flex items-center gap-2" data-testid="decoherence-lab-title">
             <Skull className="w-4 h-4 md:w-5 md:h-5" />
             Decoherence Lab
           </h3>

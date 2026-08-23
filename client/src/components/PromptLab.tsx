@@ -217,13 +217,13 @@ export function PromptLab({
         <CollapsibleTrigger asChild>
           <button className="w-full flex items-center justify-between px-3 py-2 hover:bg-amber-900/10 transition-colors">
             <div className="flex items-center gap-2">
-              <FlaskConical className="w-4 h-4 text-purple-500" />
-              <span className="text-xs font-bold text-purple-400">PROMPT LAB</span>
-              <Badge variant="outline" className="text-[9px] border-purple-800 text-purple-500">
+              <FlaskConical className="w-4 h-4 text-purple-700" />
+              <span className="text-xs font-bold text-purple-700">PROMPT LAB</span>
+              <Badge variant="outline" className="text-[9px] border-purple-800 text-purple-700">
                 {config.modules.length} modules
               </Badge>
               {isAdmin && (
-                <Badge className="text-[9px] bg-red-900/30 text-red-400 border-red-800">
+                <Badge className="text-[9px] bg-red-900/30 text-red-700 border-red-800">
                   ADMIN
                 </Badge>
               )}
@@ -231,7 +231,7 @@ export function PromptLab({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Gauge className="w-3 h-3 text-muted-foreground" />
-                <span className={`text-[10px] ${tokenBudgetPercent > 80 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                <span className={`text-[10px] ${tokenBudgetPercent > 80 ? 'text-red-700' : 'text-muted-foreground'}`}>
                   ~{estimatedTokens.total} tokens
                 </span>
               </div>
@@ -269,7 +269,7 @@ export function PromptLab({
                         onClick={() => toggleModule(mod)}
                         className={`px-2 py-1 rounded text-[10px] transition-all flex items-center gap-1 ${
                           config.modules.includes(mod)
-                            ? 'bg-purple-700/30 border border-purple-600/50 text-purple-400'
+                            ? 'bg-purple-700/30 border border-purple-600/50 text-purple-700'
                             : 'bg-black/30 border border-border text-muted-foreground hover:border-muted'
                         }`}
                         title={moduleInfo[mod].desc}
@@ -345,7 +345,7 @@ export function PromptLab({
                     size="sm"
                     variant="outline"
                     onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-                    className="flex-1 border-purple-800 text-purple-400 h-8 text-xs"
+                    className="flex-1 border-purple-800 text-purple-700 h-8 text-xs"
                   >
                     {showSystemPrompt ? <EyeOff className="w-3 h-3 mr-1" /> : <Eye className="w-3 h-3 mr-1" />}
                     {showSystemPrompt ? 'Hide' : 'Preview'} Prompt
@@ -354,7 +354,7 @@ export function PromptLab({
                     size="sm"
                     variant="outline"
                     onClick={copyFullPrompt}
-                    className="border-purple-800 text-purple-400 h-8"
+                    className="border-purple-800 text-purple-700 h-8"
                   >
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                   </Button>
@@ -376,7 +376,7 @@ export function PromptLab({
               <TabsContent value="compare" className="p-3 space-y-4 m-0">
                 <div className="flex items-center justify-between">
                   <Label className="text-purple-700 text-[10px] uppercase">Select Models (2-4)</Label>
-                  <Badge variant="outline" className="border-purple-700 text-purple-400 text-[9px]">
+                  <Badge variant="outline" className="border-purple-700 text-purple-700 text-[9px]">
                     {selectedModels.length}/4
                   </Badge>
                 </div>
@@ -432,7 +432,7 @@ export function PromptLab({
                       return (
                         <div key={modelId} className="bg-black/30 border border-border rounded p-3">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-purple-400 font-bold">
+                            <span className="text-xs text-purple-700 font-bold">
                               {availableModels.find(m => m.id === modelId)?.name || modelId}
                             </span>
                             <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
@@ -455,14 +455,14 @@ export function PromptLab({
               {isAdmin && (
                 <TabsContent value="admin" className="p-3 space-y-4 m-0">
                   <div className="flex items-center gap-2 p-2 bg-red-950/20 border border-red-900/30 rounded">
-                    <Lock className="w-4 h-4 text-red-500" />
-                    <span className="text-xs text-red-400">Master System Prompt - applies to ALL agents</span>
+                    <Lock className="w-4 h-4 text-red-700" />
+                    <span className="text-xs text-red-700">Master System Prompt - applies to ALL agents</span>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <Label className="text-red-700 text-[10px] uppercase">Master Prompt (v{masterPrompt?.version || 1})</Label>
-                      <Badge variant="outline" className="text-[9px] border-red-800 text-red-400">
+                      <Badge variant="outline" className="text-[9px] border-red-800 text-red-700">
                         {Math.ceil((editingMaster?.length || 0) / 4)} tokens
                       </Badge>
                     </div>

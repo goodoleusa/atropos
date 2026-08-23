@@ -55,7 +55,7 @@ export default function NodePropertiesPanel({
       </div>
 
       <div className="space-y-1">
-        <label className="text-[9px] text-amber-500/70 font-bold uppercase">Title</label>
+        <label className="text-[9px] text-amber-800/70 font-bold uppercase">Title</label>
         <Input
           data-testid="prop-node-title"
           value={node.title}
@@ -65,7 +65,7 @@ export default function NodePropertiesPanel({
       </div>
 
       <div className="space-y-1">
-        <label className="text-[9px] text-amber-500/70 font-bold uppercase">Type</label>
+        <label className="text-[9px] text-amber-800/70 font-bold uppercase">Type</label>
         <div className="grid grid-cols-3 gap-1">
           {NODE_TYPES.map(t => (
             <Button
@@ -83,7 +83,7 @@ export default function NodePropertiesPanel({
       </div>
 
       <div className="space-y-1">
-        <label className="text-[9px] text-amber-500/70 font-bold uppercase">Color</label>
+        <label className="text-[9px] text-amber-800/70 font-bold uppercase">Color</label>
         <div className="flex gap-1 flex-wrap">
           {COLORS.map(c => (
             <button
@@ -101,7 +101,7 @@ export default function NodePropertiesPanel({
       </div>
 
       <div className="space-y-1">
-        <label className="text-[9px] text-amber-500/70 font-bold uppercase">Page Layout</label>
+        <label className="text-[9px] text-amber-800/70 font-bold uppercase">Page Layout</label>
         <Select value={node.pageLayout || 'card'} onValueChange={v => onUpdateNode(node.id, { pageLayout: v as any })}>
           <SelectTrigger data-testid="select-layout" className="bg-card border-border h-7 text-[10px]">
             <SelectValue />
@@ -148,7 +148,7 @@ export default function NodePropertiesPanel({
       <Separator className="bg-border" />
 
       <div className="space-y-2">
-        <label className="text-[9px] text-amber-500/70 font-bold uppercase flex items-center gap-1">
+        <label className="text-[9px] text-amber-800/70 font-bold uppercase flex items-center gap-1">
           <Sparkles className="w-3 h-3" /> UI Effects
         </label>
 
@@ -232,7 +232,7 @@ export default function NodePropertiesPanel({
         data-testid="delete-node"
         variant="destructive"
         size="sm"
-        className="w-full bg-red-950/20 text-red-500 border border-red-900/30 hover:bg-red-900/30 h-8 text-[10px] uppercase font-bold"
+        className="w-full bg-red-950/20 text-red-700 border border-red-900/30 hover:bg-red-900/30 h-8 text-[10px] uppercase font-bold"
         onClick={() => onDeleteNode(node.id)}
       >
         <Trash2 className="w-3 h-3 mr-1.5" />Delete Node

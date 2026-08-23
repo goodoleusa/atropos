@@ -187,7 +187,7 @@ export const MysticalPopups = () => {
                 <div className="text-xs text-amber-700 font-mono mb-1">
                   {(activeCard.data as typeof DEFAULT_TAROT[0]).symbol}
                 </div>
-                <h3 className="text-amber-500 font-orbitron text-lg mb-3">
+                <h3 className="text-amber-800 font-orbitron text-lg mb-3">
                   {activeCard.data.name}
                 </h3>
                 <p className="text-muted-foreground text-sm italic mb-4">
@@ -195,7 +195,7 @@ export const MysticalPopups = () => {
                 </p>
                 <button
                   onClick={handleCollect}
-                  className="px-4 py-2 bg-amber-900/50 hover:bg-amber-800/50 text-amber-400 text-xs font-mono rounded border border-amber-700/30 transition-colors"
+                  className="px-4 py-2 bg-amber-900/50 hover:bg-amber-800/50 text-amber-800 text-xs font-mono rounded border border-amber-700/30 transition-colors"
                   data-testid="mystical-collect"
                 >
                   ARCHIVE VISION
@@ -204,13 +204,13 @@ export const MysticalPopups = () => {
             ) : (
               // Zodiac Sign Design
               <div className="text-center">
-                <div className="text-5xl mb-2 text-purple-400">
+                <div className="text-5xl mb-2 text-purple-700">
                   {(activeCard.data as typeof DEFAULT_ZODIAC[0]).symbol}
                 </div>
                 <div className="text-xs text-purple-700 font-mono mb-1">
                   {(activeCard.data as typeof DEFAULT_ZODIAC[0]).element}
                 </div>
-                <h3 className="text-purple-400 font-orbitron text-lg mb-3">
+                <h3 className="text-purple-700 font-orbitron text-lg mb-3">
                   {activeCard.data.name}
                 </h3>
                 <p className="text-muted-foreground text-sm italic mb-4">
@@ -218,7 +218,7 @@ export const MysticalPopups = () => {
                 </p>
                 <button
                   onClick={handleCollect}
-                  className="px-4 py-2 bg-purple-900/50 hover:bg-purple-800/50 text-purple-400 text-xs font-mono rounded border border-purple-700/30 transition-colors"
+                  className="px-4 py-2 bg-purple-900/50 hover:bg-purple-800/50 text-purple-700 text-xs font-mono rounded border border-purple-700/30 transition-colors"
                   data-testid="mystical-collect-zodiac"
                 >
                   ARCHIVE OMEN

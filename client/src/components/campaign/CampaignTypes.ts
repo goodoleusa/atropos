@@ -148,11 +148,11 @@ export const COLOR_MAP: Record<string, string> = {
 };
 
 export const RELATION_TYPES: { type: RelationType; label: string; icon: string; color: string }[] = [
-  { type: 'parent', label: 'Parent', icon: '↑', color: 'text-purple-400' },
-  { type: 'child', label: 'Child', icon: '↓', color: 'text-teal-400' },
-  { type: 'sibling', label: 'Sibling', icon: '↔', color: 'text-amber-400' },
-  { type: 'next', label: 'Next', icon: '→', color: 'text-teal-400' },
-  { type: 'prev', label: 'Previous', icon: '←', color: 'text-purple-400' },
+  { type: 'parent', label: 'Parent', icon: '↑', color: 'text-purple-700' },
+  { type: 'child', label: 'Child', icon: '↓', color: 'text-teal-800' },
+  { type: 'sibling', label: 'Sibling', icon: '↔', color: 'text-amber-800' },
+  { type: 'next', label: 'Next', icon: '→', color: 'text-teal-800' },
+  { type: 'prev', label: 'Previous', icon: '←', color: 'text-purple-700' },
   { type: 'related', label: 'Related', icon: '◇', color: 'text-muted-foreground' },
 ];
 

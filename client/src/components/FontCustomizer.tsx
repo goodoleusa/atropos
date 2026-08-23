@@ -19,9 +19,9 @@ const FONT_OPTIONS = [
 
 const VIBE_COLORS: Record<string, string> = {
   clean: "text-sky-400",
-  modern: "text-amber-400",
-  techy: "text-teal-400",
-  hacker: "text-red-400",
+  modern: "text-amber-800",
+  techy: "text-teal-800",
+  hacker: "text-red-700",
 };
 
 const SIZE_OPTIONS = [
@@ -116,7 +116,7 @@ export default function FontCustomizer() {
     <div className="fixed bottom-4 left-4 z-50" data-testid="font-customizer">
       <button
         onClick={() => setOpen(!open)}
-        className="w-10 h-10 rounded-full bg-card/90 border border-amber-800/40 flex items-center justify-center text-amber-500 hover:text-amber-400 hover:border-amber-600/60 transition-all shadow-lg backdrop-blur-sm"
+        className="w-10 h-10 rounded-full bg-card/90 border border-amber-800/40 flex items-center justify-center text-amber-800 hover:text-amber-400 hover:border-amber-600/60 transition-all shadow-lg backdrop-blur-sm"
         title="Font Settings"
         data-testid="font-customizer-toggle"
       >
@@ -140,11 +140,11 @@ export default function FontCustomizer() {
           <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
             <span className="text-sky-400">clean</span>
             <span>→</span>
-            <span className="text-amber-400">modern</span>
+            <span className="text-amber-800">modern</span>
             <span>→</span>
-            <span className="text-teal-400">techy</span>
+            <span className="text-teal-800">techy</span>
             <span>→</span>
-            <span className="text-red-400">hacker</span>
+            <span className="text-red-700">hacker</span>
           </div>
 
           {["headingFont", "bodyFont"].map(target => (
@@ -184,7 +184,7 @@ export default function FontCustomizer() {
                   onClick={() => update({ headingWeight: w.value })}
                   className={`px-2 py-1 text-[10px] rounded border transition-all ${
                     settings.headingWeight === w.value
-                      ? "bg-border/80 border-muted/80 text-amber-400"
+                      ? "bg-border/80 border-muted/80 text-amber-800"
                       : "bg-card/50 border-border/40 text-muted-foreground hover:text-foreground"
                   }`}
                   data-testid={`font-weight-${w.label.toLowerCase()}`}
@@ -204,7 +204,7 @@ export default function FontCustomizer() {
                   onClick={() => update({ sizeScale: s.value })}
                   className={`px-3 py-1 text-[10px] rounded border transition-all ${
                     settings.sizeScale === s.value
-                      ? "bg-border/80 border-muted/80 text-amber-400"
+                      ? "bg-border/80 border-muted/80 text-amber-800"
                       : "bg-card/50 border-border/40 text-muted-foreground hover:text-foreground"
                   }`}
                   data-testid={`font-size-${s.label.toLowerCase()}`}

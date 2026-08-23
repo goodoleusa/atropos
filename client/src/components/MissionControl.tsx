@@ -82,7 +82,7 @@ const CATEGORY_CONFIG: Record<string, {
   campaigns: {
     label: "Investigation Campaigns",
     icon: Target,
-    color: "text-amber-400",
+    color: "text-amber-800",
     border: "border-amber-900/40",
     bg: "bg-amber-950/20",
     isLive: false,
@@ -92,7 +92,7 @@ const CATEGORY_CONFIG: Record<string, {
   c2missions: {
     label: "C2 Guided Missions",
     icon: Terminal,
-    color: "text-teal-400",
+    color: "text-teal-800",
     border: "border-teal-900/40",
     bg: "bg-teal-950/20",
     isLive: false,
@@ -102,7 +102,7 @@ const CATEGORY_CONFIG: Record<string, {
   labs: {
     label: "QR Hijacking Labs",
     icon: FlaskConical,
-    color: "text-purple-400",
+    color: "text-purple-700",
     border: "border-purple-900/40",
     bg: "bg-purple-950/20",
     isLive: false,
@@ -122,7 +122,7 @@ const CATEGORY_CONFIG: Record<string, {
   investigations: {
     label: "Live Investigations",
     icon: Search,
-    color: "text-red-400",
+    color: "text-red-700",
     border: "border-red-900/40",
     bg: "bg-red-950/20",
     isLive: true,
@@ -132,7 +132,7 @@ const CATEGORY_CONFIG: Record<string, {
   scans: {
     label: "Scanner & SpiderFoot",
     icon: Radar,
-    color: "text-red-400",
+    color: "text-red-700",
     border: "border-red-900/40",
     bg: "bg-red-950/20",
     isLive: true,
@@ -142,7 +142,7 @@ const CATEGORY_CONFIG: Record<string, {
   agents: {
     label: "Agent Conversations",
     icon: Globe,
-    color: "text-orange-400",
+    color: "text-orange-800",
     border: "border-orange-900/40",
     bg: "bg-orange-950/20",
     isLive: true,
@@ -152,18 +152,18 @@ const CATEGORY_CONFIG: Record<string, {
 };
 
 const STATUS_STYLES: Record<string, { dot: string; text: string; label: string }> = {
-  active: { dot: "bg-teal-400 animate-pulse", text: "text-teal-400", label: "In Progress" },
-  accepted: { dot: "bg-amber-400", text: "text-amber-400", label: "Accepted" },
-  in_progress: { dot: "bg-teal-400 animate-pulse", text: "text-teal-400", label: "In Progress" },
+  active: { dot: "bg-teal-400 animate-pulse", text: "text-teal-800", label: "In Progress" },
+  accepted: { dot: "bg-amber-400", text: "text-amber-800", label: "Accepted" },
+  in_progress: { dot: "bg-teal-400 animate-pulse", text: "text-teal-800", label: "In Progress" },
   completed: { dot: "bg-muted", text: "text-muted-foreground", label: "Completed" },
-  abandoned: { dot: "bg-red-600", text: "text-red-500", label: "Abandoned" },
+  abandoned: { dot: "bg-red-600", text: "text-red-700", label: "Abandoned" },
 };
 
 const STYLE_CONFIG: Record<LearningStyle, { label: string; desc: string; icon: typeof Brain; color: string; border: string; bg: string }> = {
   experiential: { label: 'Experiential', desc: 'Hands-on labs, try first, theory later', icon: FlaskConical, color: 'text-emerald-400', border: 'border-emerald-800/40', bg: 'bg-emerald-900/15' },
   visual: { label: 'Visual', desc: 'Diagrams, flowcharts, visual mapping', icon: Eye, color: 'text-sky-400', border: 'border-sky-800/40', bg: 'bg-sky-900/15' },
-  analytical: { label: 'Analytical', desc: 'Deep theory, citations, detailed why', icon: Brain, color: 'text-purple-400', border: 'border-purple-800/40', bg: 'bg-purple-900/15' },
-  social: { label: 'Social', desc: 'Community, discussion, collaboration', icon: Users, color: 'text-amber-400', border: 'border-amber-800/40', bg: 'bg-amber-900/15' },
+  analytical: { label: 'Analytical', desc: 'Deep theory, citations, detailed why', icon: Brain, color: 'text-purple-700', border: 'border-purple-800/40', bg: 'bg-purple-900/15' },
+  social: { label: 'Social', desc: 'Community, discussion, collaboration', icon: Users, color: 'text-amber-800', border: 'border-amber-800/40', bg: 'bg-amber-900/15' },
   pragmatic: { label: 'Pragmatic', desc: 'Quick wins, cheat sheets, shortcuts', icon: Wrench, color: 'text-rose-400', border: 'border-rose-800/40', bg: 'bg-rose-900/15' },
 };
 
@@ -219,7 +219,7 @@ export default function MissionControl() {
     <div className="space-y-6" data-testid="mission-control-tab">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-orbitron text-amber-500" data-testid="mission-control-title">
+          <h3 className="text-lg font-orbitron text-amber-800" data-testid="mission-control-title">
             Mission Control
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
@@ -248,7 +248,7 @@ export default function MissionControl() {
           <TabsTrigger value="activity" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-400 text-xs" data-testid="activity-tab">
             Activity Feed
             {newFindings > 0 && (
-              <Badge variant="outline" className="ml-1.5 text-[9px] px-1 py-0 border-teal-700 text-teal-400">{newFindings}</Badge>
+              <Badge variant="outline" className="ml-1.5 text-[9px] px-1 py-0 border-teal-700 text-teal-800">{newFindings}</Badge>
             )}
           </TabsTrigger>
         </TabsList>
@@ -256,7 +256,7 @@ export default function MissionControl() {
         <TabsContent value="activity" className="mt-4">
           <Card className="bg-[hsl(var(--card))] border-teal-900/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-teal-400 text-sm flex items-center gap-2">
+              <CardTitle className="text-teal-800 text-sm flex items-center gap-2">
                 <Zap className="w-4 h-4" /> Cross-Module Activity
               </CardTitle>
             </CardHeader>
@@ -270,19 +270,19 @@ export default function MissionControl() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Card className="bg-[hsl(var(--card))] border-teal-900/30">
           <CardContent className="p-3 text-center">
-            <p className="text-2xl font-bold text-teal-400" data-testid="active-count">{totalActive}</p>
+            <p className="text-2xl font-bold text-teal-800" data-testid="active-count">{totalActive}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Active</p>
           </CardContent>
         </Card>
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardContent className="p-3 text-center">
-            <p className="text-2xl font-bold text-amber-400" data-testid="completed-count">{totalCompleted}</p>
+            <p className="text-2xl font-bold text-amber-800" data-testid="completed-count">{totalCompleted}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Completed</p>
           </CardContent>
         </Card>
         <Card className="bg-[hsl(var(--card))] border-purple-900/30">
           <CardContent className="p-3 text-center">
-            <p className="text-2xl font-bold text-purple-400">{campaignRuns.length}</p>
+            <p className="text-2xl font-bold text-purple-700">{campaignRuns.length}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Campaigns</p>
           </CardContent>
         </Card>
@@ -298,7 +298,7 @@ export default function MissionControl() {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-mono flex items-center gap-2 text-foreground">
-              <GraduationCap className="w-4 h-4 text-teal-500" />
+              <GraduationCap className="w-4 h-4 text-teal-800" />
               Learning Profile
             </CardTitle>
             <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
@@ -348,7 +348,7 @@ export default function MissionControl() {
                     onClick={() => setSkillLevel(level)}
                     className={`px-2.5 py-1.5 md:py-1 rounded text-[10px] md:text-[9px] font-medium transition-colors min-h-[36px] md:min-h-0 ${
                       skillLevel === level
-                        ? 'bg-teal-900/30 border border-teal-800/40 text-teal-400'
+                        ? 'bg-teal-900/30 border border-teal-800/40 text-teal-800'
                         : 'bg-card/30 border border-border text-muted-foreground hover:text-foreground active:bg-border/40'
                     }`}
                     data-testid={`skill-level-${level}`}
@@ -363,7 +363,7 @@ export default function MissionControl() {
                 {STYLE_CONFIG[learningStyle].label}
               </span>
               {' · '}
-              <span className="text-teal-500">{skillLevel}</span>
+              <span className="text-teal-800">{skillLevel}</span>
             </div>
           </div>
         </CardContent>
@@ -437,7 +437,7 @@ export default function MissionControl() {
             <Button
               size="sm"
               variant="outline"
-              className="border-teal-800/50 text-teal-400 hover:bg-teal-950/30 text-xs"
+              className="border-teal-800/50 text-teal-800 hover:bg-teal-950/30 text-xs"
               data-testid="go-to-c2"
             >
               <Terminal className="w-3 h-3 mr-1" />
@@ -457,7 +457,7 @@ export default function MissionControl() {
             <Button
               size="sm"
               variant="outline"
-              className="border-purple-800/50 text-purple-400 hover:bg-purple-950/30 text-xs"
+              className="border-purple-800/50 text-purple-700 hover:bg-purple-950/30 text-xs"
               data-testid="go-to-labs"
             >
               <FlaskConical className="w-3 h-3 mr-1" />
@@ -471,13 +471,13 @@ export default function MissionControl() {
       <div className="pt-2">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-px h-4 bg-red-600/50" />
-          <h4 className="text-xs font-mono text-red-400 uppercase tracking-widest">
+          <h4 className="text-xs font-mono text-red-700 uppercase tracking-widest">
             Live Operations
           </h4>
           <div className="flex-1 h-px bg-red-900/20" />
           {LIVE_BADGE}
         </div>
-        <p className="text-[10px] text-red-400/60 mb-4 font-mono">
+        <p className="text-[10px] text-red-700/60 mb-4 font-mono">
           These tools hit real targets. Only scan systems you have permission to test.
         </p>
       </div>
@@ -491,7 +491,7 @@ export default function MissionControl() {
             <Button
               size="sm"
               variant="outline"
-              className="border-red-800/50 text-red-400 hover:bg-red-950/30 text-xs"
+              className="border-red-800/50 text-red-700 hover:bg-red-950/30 text-xs"
               data-testid="go-to-investigate"
             >
               <Search className="w-3 h-3 mr-1" />
@@ -527,7 +527,7 @@ export default function MissionControl() {
             <Button
               size="sm"
               variant="outline"
-              className="border-orange-800/50 text-orange-400 hover:bg-orange-950/30 text-xs"
+              className="border-orange-800/50 text-orange-800 hover:bg-orange-950/30 text-xs"
               data-testid="go-to-agents"
             >
               <Globe className="w-3 h-3 mr-1" />
@@ -548,17 +548,17 @@ export default function MissionControl() {
             </p>
             <div className="flex flex-wrap justify-center gap-2">
               <Link href="/campaigns">
-                <Button size="sm" variant="outline" className="border-amber-800/50 text-amber-400 text-xs">
+                <Button size="sm" variant="outline" className="border-amber-800/50 text-amber-800 text-xs">
                   Browse Campaigns
                 </Button>
               </Link>
               <Link href="/void">
-                <Button size="sm" variant="outline" className="border-purple-800/50 text-purple-400 text-xs">
+                <Button size="sm" variant="outline" className="border-purple-800/50 text-purple-700 text-xs">
                   Enter The Void
                 </Button>
               </Link>
               <Link href="/investigate">
-                <Button size="sm" variant="outline" className="border-red-800/50 text-red-400 text-xs">
+                <Button size="sm" variant="outline" className="border-red-800/50 text-red-700 text-xs">
                   Investigation Hub
                 </Button>
               </Link>
@@ -653,7 +653,7 @@ function MissionCard({
           <Button
             size="sm"
             variant="ghost"
-            className="text-teal-500 hover:text-teal-400 text-[10px] h-6 px-2"
+            className="text-teal-800 hover:text-teal-400 text-[10px] h-6 px-2"
             onClick={(e) => {
               e.preventDefault();
               onComplete();
@@ -668,7 +668,7 @@ function MissionCard({
           <Button
             size="sm"
             variant="ghost"
-            className="text-amber-600 hover:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity h-6 px-2"
+            className="text-amber-800 hover:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity h-6 px-2"
           >
             <Play className="w-3 h-3 mr-1" />
             <span className="text-[10px]">Go</span>

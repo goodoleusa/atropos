@@ -34,20 +34,20 @@ export function QuickAccessSection() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-red-500" />
+                <ShieldAlert className="w-4 h-4 text-red-700" />
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">Scanner Status</span>
               </div>
               {health?.status === "ok" ? (
                 <Badge className="bg-emerald-950/30 text-emerald-500 border-emerald-900/30 text-[9px] h-5 px-1.5 font-bold uppercase">Online</Badge>
               ) : (
-                <Badge variant="outline" className="border-red-900/30 text-red-500 text-[9px] h-5 px-1.5 font-bold uppercase">Offline</Badge>
+                <Badge variant="outline" className="border-red-900/30 text-red-700 text-[9px] h-5 px-1.5 font-bold uppercase">Offline</Badge>
               )}
             </div>
             
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-muted-foreground">Binary Engine</span>
-                <span className={`text-[10px] font-mono ${health?.binary?.available ? 'text-emerald-500' : 'text-red-500'}`}>
+                <span className={`text-[10px] font-mono ${health?.binary?.available ? 'text-emerald-500' : 'text-red-700'}`}>
                   {health?.binary?.available ? 'READY' : 'MISSING'}
                 </span>
               </div>
@@ -64,17 +64,17 @@ export function QuickAccessSection() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-teal-500" />
+                <Users className="w-4 h-4 text-teal-800" />
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">Active Matrix</span>
               </div>
-              <Badge variant="outline" className="border-teal-900/30 text-teal-500 text-[9px] h-5 px-1.5 font-bold">
+              <Badge variant="outline" className="border-teal-900/30 text-teal-800 text-[9px] h-5 px-1.5 font-bold">
                 {sessions?.length || 0} TOTAL
               </Badge>
             </div>
 
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-2xl font-orbitron font-bold text-teal-400 leading-none">
+                <p className="text-2xl font-orbitron font-bold text-teal-800 leading-none">
                   {activeSessions.length}
                 </p>
                 <p className="text-[9px] text-muted-foreground uppercase mt-1 font-bold tracking-tighter">Players Connected</p>
@@ -82,7 +82,7 @@ export function QuickAccessSection() {
               <div className="flex -space-x-1">
                 {[...Array(Math.min(activeSessions.length, 5))].map((_, i) => (
                   <div key={i} className="w-5 h-5 rounded-full bg-teal-950 border border-teal-900 flex items-center justify-center">
-                    <Users className="w-2.5 h-2.5 text-teal-500" />
+                    <Users className="w-2.5 h-2.5 text-teal-800" />
                   </div>
                 ))}
                 {activeSessions.length > 5 && (
@@ -99,12 +99,12 @@ export function QuickAccessSection() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-amber-500" />
+                <Activity className="w-4 h-4 text-amber-800" />
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">Telemetry Stream</span>
               </div>
               <div className="flex gap-1">
                 <div className="w-1 h-1 rounded-full bg-amber-500 animate-ping" />
-                <span className="text-[8px] text-amber-600 font-mono font-bold uppercase tracking-widest">Live</span>
+                <span className="text-[8px] text-amber-800 font-mono font-bold uppercase tracking-widest">Live</span>
               </div>
             </div>
 

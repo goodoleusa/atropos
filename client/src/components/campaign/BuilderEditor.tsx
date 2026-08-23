@@ -25,13 +25,13 @@ export default function BuilderEditor({ node, onUpdateNode }: BuilderEditorProps
           data-testid="edit-node-title"
           value={node.title}
           onChange={e => onUpdateNode(node.id, { title: e.target.value })}
-          className="text-2xl font-black bg-transparent border-none p-0 focus-visible:ring-0 text-amber-500 h-auto uppercase tracking-tighter"
+          className="text-2xl font-black bg-transparent border-none p-0 focus-visible:ring-0 text-amber-800 h-auto uppercase tracking-tighter"
         />
         <div className="flex gap-2">
           <Badge className="bg-card text-muted-foreground border-border h-5 text-[9px] font-mono">{node.id}</Badge>
-          <Badge className="bg-amber-950/30 text-amber-500 border-amber-900/30 h-5 text-[9px] uppercase">{node.type}</Badge>
+          <Badge className="bg-amber-950/30 text-amber-800 border-amber-900/30 h-5 text-[9px] uppercase">{node.type}</Badge>
           {node.pageLayout && (
-            <Badge className="bg-teal-950/30 text-teal-400 border-teal-900/30 h-5 text-[9px]">{node.pageLayout}</Badge>
+            <Badge className="bg-teal-950/30 text-teal-800 border-teal-900/30 h-5 text-[9px]">{node.pageLayout}</Badge>
           )}
         </div>
         <Textarea

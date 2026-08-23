@@ -33,14 +33,14 @@ export default function MissionLanding() {
 
         <div className="relative max-w-7xl mx-auto px-6 py-24 text-center">
           {/* Alert Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-sm font-semibold mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-700 text-sm font-semibold mb-8">
             <AlertTriangle className="w-4 h-4" />
             40 MILLION PEOPLE ENSLAVED RIGHT NOW
           </div>
 
           {/* Main Headline */}
           <h1 className="text-5xl md:text-7xl font-semibold mb-6 leading-tight tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <span className="text-amber-400">
+            <span className="text-amber-800">
               Train Ethical Hackers
             </span>
             <br />
@@ -63,7 +63,7 @@ export default function MissionLanding() {
               </Button>
             </Link>
             <Link href="/investors">
-              <Button size="lg" variant="outline" className="border-amber-500 text-amber-400 hover:bg-amber-500/10 text-lg px-8 py-6">
+              <Button size="lg" variant="outline" className="border-amber-500 text-amber-800 hover:bg-amber-500/10 text-lg px-8 py-6">
                 <Play className="w-5 h-5 mr-2" />
                 Watch Demo
               </Button>
@@ -73,11 +73,11 @@ export default function MissionLanding() {
           {/* Stats Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <div>
-              <div className="text-4xl font-bold text-amber-400">10,000+</div>
+              <div className="text-4xl font-bold text-amber-800">10,000+</div>
               <div className="text-sm text-muted-foreground">Investigators Trained</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-teal-400">50+</div>
+              <div className="text-4xl font-bold text-teal-800">50+</div>
               <div className="text-sm text-muted-foreground">Cases Supported</div>
             </div>
             <div>
@@ -85,7 +85,7 @@ export default function MissionLanding() {
               <div className="text-sm text-muted-foreground">Victims Helped</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-red-400">5+</div>
+              <div className="text-4xl font-bold text-red-700">5+</div>
               <div className="text-sm text-muted-foreground">Networks Disrupted</div>
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function MissionLanding() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              The <span className="text-red-400">Problem</span> We're Solving
+              The <span className="text-red-700">Problem</span> We're Solving
             </h2>
             <p className="text-xl text-muted-foreground">
               Human trafficking is a $150 billion industry. Technology enables it. Technology can stop it.
@@ -113,7 +113,7 @@ export default function MissionLanding() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="bg-card/90 border-red-500/30 p-8">
-              <AlertTriangle className="w-12 h-12 text-red-400 mb-4" />
+              <AlertTriangle className="w-12 h-12 text-red-700 mb-4" />
               <h3 className="text-2xl font-bold mb-3">The Crisis</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li>• 40.3M victims globally</li>
@@ -124,7 +124,7 @@ export default function MissionLanding() {
             </Card>
 
             <Card className="bg-card/90 border-amber-500/30 p-8">
-              <Users className="w-12 h-12 text-amber-400 mb-4" />
+              <Users className="w-12 h-12 text-amber-800 mb-4" />
               <h3 className="text-2xl font-bold mb-3">The Gap</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li>• 100,000+ open cases</li>
@@ -153,7 +153,7 @@ export default function MissionLanding() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              How <span className="text-teal-400">It Works</span>
+              How <span className="text-teal-800">It Works</span>
             </h2>
             <p className="text-xl text-muted-foreground">
               From student to professional investigator in months, not years
@@ -168,7 +168,7 @@ export default function MissionLanding() {
               </div>
               <Card className="bg-card/50 border-border p-6 flex-1">
                 <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                  <Target className="w-6 h-6 text-amber-400" />
+                  <Target className="w-6 h-6 text-amber-800" />
                   Learn Real Investigation Techniques
                 </h3>
                 <p className="text-muted-foreground mb-4">
@@ -176,13 +176,13 @@ export default function MissionLanding() {
                   dark web analysis, and corporate intelligence - the same methods used by FBI and Interpol.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="border-teal-500/30 text-teal-400">
+                  <Badge variant="outline" className="border-teal-500/30 text-teal-800">
                     Social Media Investigation
                   </Badge>
-                  <Badge variant="outline" className="border-teal-500/30 text-teal-400">
+                  <Badge variant="outline" className="border-teal-500/30 text-teal-800">
                     Blockchain Forensics
                   </Badge>
-                  <Badge variant="outline" className="border-teal-500/30 text-teal-400">
+                  <Badge variant="outline" className="border-teal-500/30 text-teal-800">
                     Dark Web OSINT
                   </Badge>
                 </div>
@@ -196,7 +196,7 @@ export default function MissionLanding() {
               </div>
               <Card className="bg-card/50 border-border p-6 flex-1">
                 <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                  <Award className="w-6 h-6 text-teal-400" />
+                  <Award className="w-6 h-6 text-teal-800" />
                   Get Certified & Build Portfolio
                 </h3>
                 <p className="text-muted-foreground mb-4">
@@ -224,7 +224,7 @@ export default function MissionLanding() {
               </div>
               <Card className="bg-card/50 border-border p-6 flex-1">
                 <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                  <Shield className="w-6 h-6 text-red-400" />
+                  <Shield className="w-6 h-6 text-red-700" />
                   Support Real Cases & Get Paid
                 </h3>
                 <p className="text-muted-foreground mb-4">
@@ -232,13 +232,13 @@ export default function MissionLanding() {
                   Get paid while making an impact. Direct path to careers at Polaris, Thorn, FBI, or HSI.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="border-red-500/30 text-red-400">
+                  <Badge variant="outline" className="border-red-500/30 text-red-700">
                     Paid Investigations
                   </Badge>
-                  <Badge variant="outline" className="border-red-500/30 text-red-400">
+                  <Badge variant="outline" className="border-red-500/30 text-red-700">
                     Real-World Impact
                   </Badge>
-                  <Badge variant="outline" className="border-red-500/30 text-red-400">
+                  <Badge variant="outline" className="border-red-500/30 text-red-700">
                     Career Pipeline
                   </Badge>
                 </div>
@@ -252,11 +252,11 @@ export default function MissionLanding() {
       <section className="py-24 border-t border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <Badge className="bg-red-500/20 text-red-400 border-red-500/30 mb-4">
+            <Badge className="bg-red-500/20 text-red-700 border-red-500/30 mb-4">
               OSINT for Good
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Investigation <span className="text-amber-400">Campaigns</span>
+              Investigation <span className="text-amber-800">Campaigns</span>
             </h2>
             <p className="text-xl text-muted-foreground">
               Master real-world techniques through realistic scenarios
@@ -311,9 +311,9 @@ export default function MissionLanding() {
                   <div className="text-4xl">{campaign.icon}</div>
                   <Badge className={
                     campaign.difficulty === 'beginner' ? 'bg-emerald-500/20 text-emerald-400' :
-                    campaign.difficulty === 'intermediate' ? 'bg-amber-500/20 text-amber-400' :
-                    campaign.difficulty === 'advanced' ? 'bg-orange-500/20 text-orange-400' :
-                    'bg-red-500/20 text-red-400'
+                    campaign.difficulty === 'intermediate' ? 'bg-amber-500/20 text-amber-800' :
+                    campaign.difficulty === 'advanced' ? 'bg-orange-500/20 text-orange-800' :
+                    'bg-red-500/20 text-red-700'
                   }>
                     {campaign.difficulty}
                   </Badge>
@@ -337,7 +337,7 @@ export default function MissionLanding() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">{campaign.time}</span>
                   <Link href={`/play/${campaign.id}`}>
-                    <Button size="sm" className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/30">
+                    <Button size="sm" className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-800 border border-amber-500/30">
                       Start Mission
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -363,7 +363,7 @@ export default function MissionLanding() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Trusted <span className="text-teal-400">Partners</span>
+              Trusted <span className="text-teal-800">Partners</span>
             </h2>
             <p className="text-xl text-muted-foreground">
               Working with leading organizations to combat trafficking
@@ -420,7 +420,7 @@ export default function MissionLanding() {
             </Card>
 
             <Card className="bg-card/90 border-teal-500/30 p-6">
-              <TrendingUp className="w-12 h-12 text-teal-400 mb-4" />
+              <TrendingUp className="w-12 h-12 text-teal-800 mb-4" />
               <h3 className="text-2xl font-bold mb-2">36:1</h3>
               <p className="text-muted-foreground mb-4">LTV:CAC Ratio</p>
               <ul className="text-sm text-muted-foreground space-y-1">
@@ -432,7 +432,7 @@ export default function MissionLanding() {
             </Card>
 
             <Card className="bg-card/90 border-amber-500/30 p-6">
-              <Zap className="w-12 h-12 text-amber-400 mb-4" />
+              <Zap className="w-12 h-12 text-amber-800 mb-4" />
               <h3 className="text-2xl font-bold mb-2">99%</h3>
               <p className="text-muted-foreground mb-4">Gross Margin</p>
               <ul className="text-sm text-muted-foreground space-y-1">
@@ -460,7 +460,7 @@ export default function MissionLanding() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Launch Your <span className="text-amber-400">Career</span>
+              Launch Your <span className="text-amber-800">Career</span>
             </h2>
             <p className="text-xl text-muted-foreground">
               Training leads directly to jobs in ethical hacking for social good
@@ -507,7 +507,7 @@ export default function MissionLanding() {
               }
             ].map((career) => (
               <Card key={career.title} className="bg-card/50 border-border p-6">
-                <career.icon className="w-10 h-10 text-amber-400 mb-4" />
+                <career.icon className="w-10 h-10 text-amber-800 mb-4" />
                 <h3 className="text-lg font-bold mb-2">{career.title}</h3>
                 <p className="text-sm text-muted-foreground mb-2">{career.org}</p>
                 <div className="text-xl font-bold text-emerald-400">{career.salary}</div>
@@ -521,7 +521,7 @@ export default function MissionLanding() {
       <section className="py-24 border-t border-border">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Make an <span className="text-red-400">Impact</span>?
+            Ready to Make an <span className="text-red-700">Impact</span>?
           </h2>
           <p className="text-xl text-muted-foreground mb-12">
             Join the fight against human trafficking. Learn skills that save lives.

@@ -69,7 +69,7 @@ const DifficultyStars = ({ value, onChange }: { value: number; onChange?: (v: nu
     {[1, 2, 3, 4, 5].map((i) => (
       <Star
         key={i}
-        className={`w-3.5 h-3.5 ${i <= value ? "text-amber-500 fill-amber-500" : "text-muted-foreground"} ${onChange ? "cursor-pointer" : ""}`}
+        className={`w-3.5 h-3.5 ${i <= value ? "text-amber-800 fill-amber-500" : "text-muted-foreground"} ${onChange ? "cursor-pointer" : ""}`}
         onClick={() => onChange?.(i)}
         data-testid={`difficulty-star-${i}`}
       />
@@ -447,10 +447,10 @@ export function CollectiblesSection() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-amber-600 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
           <Database className="w-5 h-5" /> Collectibles Library
         </h3>
-        <Badge variant="outline" className="border-amber-700 text-amber-400">
+        <Badge variant="outline" className="border-amber-700 text-amber-800">
           {sharedClues.length} Clues · {artifacts.length} Artifacts · Popups
         </Badge>
       </div>
@@ -459,7 +459,7 @@ export function CollectiblesSection() {
       <Card className="bg-[hsl(var(--card))] border-amber-900/30">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
               <Key className="w-4 h-4" /> Clue Library ({sharedClues.length})
             </CardTitle>
             <CardDescription className="text-muted-foreground text-xs">
@@ -478,7 +478,7 @@ export function CollectiblesSection() {
           {sharedClues.map((clue) => (
             <Card key={clue.clueId} className="bg-black/30 border-amber-900/30" data-testid={`clue-card-${clue.clueId}`}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+                <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                   <Key className="w-3 h-3" /> {clue.name}
                 </CardTitle>
                 <CardDescription className="text-muted-foreground text-xs font-mono">{clue.clueId}</CardDescription>
@@ -486,7 +486,7 @@ export function CollectiblesSection() {
               <CardContent className="space-y-2">
                 <p className="text-muted-foreground line-clamp-2">{clue.description}</p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="outline" className="border-amber-700 text-amber-400 text-[10px]">
+                  <Badge variant="outline" className="border-amber-700 text-amber-800 text-[10px]">
                     {clue.category || "general"}
                   </Badge>
                   <DifficultyStars value={clue.difficulty || 1} />
@@ -503,7 +503,7 @@ export function CollectiblesSection() {
                     size="sm"
                     variant="outline"
                     onClick={() => openClueDialog(clue)}
-                    className="border-amber-700 text-amber-400"
+                    className="border-amber-700 text-amber-800"
                     data-testid={`edit-clue-${clue.clueId}`}
                   >
                     <Edit className="w-3 h-3 mr-1" /> Edit
@@ -512,7 +512,7 @@ export function CollectiblesSection() {
                     size="sm"
                     variant="ghost"
                     onClick={() => deleteClue.mutate(clue.clueId)}
-                    className="text-red-400"
+                    className="text-red-700"
                     data-testid={`delete-clue-${clue.clueId}`}
                   >
                     <Trash2 className="w-3 h-3" />
@@ -531,14 +531,14 @@ export function CollectiblesSection() {
       <Dialog open={clueDialogOpen} onOpenChange={setClueDialogOpen}>
         <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-amber-600 font-orbitron">{editingClue ? "Edit Clue" : "Create Clue"}</DialogTitle>
+            <DialogTitle className="text-amber-800 font-orbitron">{editingClue ? "Edit Clue" : "Create Clue"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <Input
               placeholder="Clue ID (e.g., clue-osint-01)"
               value={newClue.clueId}
               onChange={(e) => setNewClue({ ...newClue, clueId: e.target.value })}
-              className="bg-black/50 border-amber-900/30 text-amber-400"
+              className="bg-black/50 border-amber-900/30 text-amber-800"
               disabled={!!editingClue}
               data-testid="input-clue-id"
             />
@@ -546,28 +546,28 @@ export function CollectiblesSection() {
               placeholder="Name"
               value={newClue.name}
               onChange={(e) => setNewClue({ ...newClue, name: e.target.value })}
-              className="bg-black/50 border-amber-900/30 text-amber-400"
+              className="bg-black/50 border-amber-900/30 text-amber-800"
               data-testid="input-clue-name"
             />
             <Textarea
               placeholder="Description"
               value={newClue.description}
               onChange={(e) => setNewClue({ ...newClue, description: e.target.value })}
-              className="bg-black/50 border-amber-900/30 text-amber-400"
+              className="bg-black/50 border-amber-900/30 text-amber-800"
               data-testid="input-clue-description"
             />
             <Textarea
               placeholder="Content"
               value={newClue.content}
               onChange={(e) => setNewClue({ ...newClue, content: e.target.value })}
-              className="bg-black/50 border-amber-900/30 text-amber-400"
+              className="bg-black/50 border-amber-900/30 text-amber-800"
               data-testid="input-clue-content"
             />
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-amber-600 text-[10px] uppercase font-bold">Category</Label>
+                <Label className="text-amber-800 text-[10px] uppercase font-bold">Category</Label>
                 <Select value={newClue.category} onValueChange={(v) => setNewClue({ ...newClue, category: v })}>
-                  <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-400" data-testid="select-clue-category">
+                  <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-800" data-testid="select-clue-category">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-card border-amber-900/30">
@@ -578,7 +578,7 @@ export function CollectiblesSection() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-amber-600 text-[10px] uppercase font-bold">Difficulty</Label>
+                <Label className="text-amber-800 text-[10px] uppercase font-bold">Difficulty</Label>
                 <div className="pt-2">
                   <DifficultyStars value={newClue.difficulty} onChange={(v) => setNewClue({ ...newClue, difficulty: v })} />
                 </div>
@@ -588,7 +588,7 @@ export function CollectiblesSection() {
               placeholder="Tags (comma-separated)"
               value={newClue.tags.join(", ")}
               onChange={(e) => setNewClue({ ...newClue, tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean) })}
-              className="bg-black/50 border-amber-900/30 text-amber-400"
+              className="bg-black/50 border-amber-900/30 text-amber-800"
               data-testid="input-clue-tags"
             />
             <Button
@@ -606,7 +606,7 @@ export function CollectiblesSection() {
       {/* Quick Push to Zone */}
       <Card className="bg-[hsl(var(--card))] border-teal-900/30">
         <CardHeader className="pb-3">
-          <CardTitle className="text-teal-400 text-sm font-mono flex items-center gap-2">
+          <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
             <Send className="w-4 h-4" /> Quick Push to Zone
           </CardTitle>
           <CardDescription className="text-muted-foreground text-xs">
@@ -615,7 +615,7 @@ export function CollectiblesSection() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <Label className="text-[10px] text-teal-500 uppercase">Template</Label>
+            <Label className="text-[10px] text-teal-800 uppercase">Template</Label>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 mt-1">
               {CLUE_TEMPLATES.map((t) => (
                 <button
@@ -629,13 +629,13 @@ export function CollectiblesSection() {
                   data-testid={`qp-template-${t.id}`}
                 >
                   <p className="font-medium truncate">{t.name}</p>
-                  <span className="text-amber-500">{"★".repeat(t.difficulty)}</span>
+                  <span className="text-amber-800">{"★".repeat(t.difficulty)}</span>
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label className="text-[10px] text-teal-500 uppercase flex items-center gap-1">
+            <Label className="text-[10px] text-teal-800 uppercase flex items-center gap-1">
               <Map className="w-3 h-3" /> Zones
             </Label>
             <div className="flex flex-wrap gap-1.5 mt-1">
@@ -687,7 +687,7 @@ export function CollectiblesSection() {
       <Card className="bg-[hsl(var(--card))] border-purple-900/30">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-purple-400 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-purple-700 text-sm font-mono flex items-center gap-2">
               <Database className="w-4 h-4" /> Artifacts ({artifacts.length})
             </CardTitle>
             <CardDescription className="text-muted-foreground text-xs">
@@ -702,38 +702,38 @@ export function CollectiblesSection() {
             </DialogTrigger>
             <DialogContent className="bg-[hsl(var(--card))] border-purple-900/50 text-foreground">
               <DialogHeader>
-                <DialogTitle className="text-purple-400 font-orbitron">Create Artifact</DialogTitle>
+                <DialogTitle className="text-purple-700 font-orbitron">Create Artifact</DialogTitle>
               </DialogHeader>
               <div className="space-y-3">
                 <Input
                   placeholder="Artifact ID (e.g., artifact-01)"
                   value={newArtifact.id || ""}
                   onChange={(e) => setNewArtifact({ ...newArtifact, id: e.target.value })}
-                  className="bg-black/50 border-purple-900/30 text-purple-400"
+                  className="bg-black/50 border-purple-900/30 text-purple-700"
                 />
                 <Input
                   placeholder="Name"
                   value={newArtifact.name || ""}
                   onChange={(e) => setNewArtifact({ ...newArtifact, name: e.target.value })}
-                  className="bg-black/50 border-purple-900/30 text-purple-400"
+                  className="bg-black/50 border-purple-900/30 text-purple-700"
                 />
                 <Textarea
                   placeholder="Description"
                   value={newArtifact.description || ""}
                   onChange={(e) => setNewArtifact({ ...newArtifact, description: e.target.value })}
-                  className="bg-black/50 border-purple-900/30 text-purple-400"
+                  className="bg-black/50 border-purple-900/30 text-purple-700"
                 />
                 <Input
                   placeholder="Content"
                   value={newArtifact.content || ""}
                   onChange={(e) => setNewArtifact({ ...newArtifact, content: e.target.value })}
-                  className="bg-black/50 border-purple-900/30 text-purple-400"
+                  className="bg-black/50 border-purple-900/30 text-purple-700"
                 />
                 <Input
                   placeholder="Category (file, log, intel...)"
                   value={newArtifact.category || ""}
                   onChange={(e) => setNewArtifact({ ...newArtifact, category: e.target.value })}
-                  className="bg-black/50 border-purple-900/30 text-purple-400"
+                  className="bg-black/50 border-purple-900/30 text-purple-700"
                 />
                 <Input
                   placeholder="Tags (comma-separated)"
@@ -744,7 +744,7 @@ export function CollectiblesSection() {
                       tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean)
                     })
                   }
-                  className="bg-black/50 border-purple-900/30 text-purple-400"
+                  className="bg-black/50 border-purple-900/30 text-purple-700"
                 />
                 <Button
                   onClick={() => createArtifact.mutate(newArtifact)}
@@ -760,13 +760,13 @@ export function CollectiblesSection() {
           {artifacts.map((artifact) => (
             <Card key={artifact.id} className="bg-black/30 border-purple-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-purple-400 text-sm font-mono">{artifact.name}</CardTitle>
+                <CardTitle className="text-purple-700 text-sm font-mono">{artifact.name}</CardTitle>
                 <CardDescription className="text-muted-foreground text-xs">{artifact.id}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-muted-foreground">{artifact.description}</p>
                 <div className="flex flex-wrap gap-1">
-                  <Badge variant="outline" className="border-purple-700 text-purple-400 text-[8px]">
+                  <Badge variant="outline" className="border-purple-700 text-purple-700 text-[8px]">
                     {artifact.category || "general"}
                   </Badge>
                   {artifact.tags?.map((tag) => (
@@ -780,7 +780,7 @@ export function CollectiblesSection() {
                     size="sm"
                     variant="outline"
                     onClick={() => setEditingArtifact(artifact)}
-                    className="border-purple-700 text-purple-400"
+                    className="border-purple-700 text-purple-700"
                   >
                     <Edit className="w-3 h-3 mr-1" /> Edit
                   </Button>
@@ -788,7 +788,7 @@ export function CollectiblesSection() {
                     size="sm"
                     variant="ghost"
                     onClick={() => deleteArtifact.mutate(artifact.id)}
-                    className="text-red-400"
+                    className="text-red-700"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
@@ -804,27 +804,27 @@ export function CollectiblesSection() {
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                 <Sparkles className="w-4 h-4" /> Mystical Popups
               </CardTitle>
               <CardDescription className="text-muted-foreground text-xs">
                 Tarot + Zodiac collectibles
               </CardDescription>
             </div>
-            <Button size="sm" variant="outline" onClick={seedMysticalDefaults} className="border-amber-700 text-amber-400">
+            <Button size="sm" variant="outline" onClick={seedMysticalDefaults} className="border-amber-700 text-amber-800">
               Seed Defaults
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label className="text-[10px] text-amber-600 uppercase">Tarot Cards</Label>
+              <Label className="text-[10px] text-amber-800 uppercase">Tarot Cards</Label>
               <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
                 {tarotCards.map((card) => (
                   <div key={card.cardId} className="flex items-center justify-between gap-2 bg-black/40 p-2 rounded border border-amber-900/20">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-lg">{card.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-amber-500 text-xs font-bold">{card.name} <span className="text-muted-foreground">({card.symbol})</span></p>
+                        <p className="text-amber-800 text-xs font-bold">{card.name} <span className="text-muted-foreground">({card.symbol})</span></p>
                         <p className="text-muted-foreground text-[10px] line-clamp-1">{card.hint}</p>
                       </div>
                     </div>
@@ -833,7 +833,7 @@ export function CollectiblesSection() {
                         size="sm" 
                         variant="ghost" 
                         onClick={() => setEditingMysticalCard(card)}
-                        className="text-amber-400 h-7 w-7 p-0"
+                        className="text-amber-800 h-7 w-7 p-0"
                       >
                         <Edit className="w-3 h-3" />
                       </Button>
@@ -848,14 +848,14 @@ export function CollectiblesSection() {
             </div>
 
             <div>
-              <Label className="text-[10px] text-purple-500 uppercase">Zodiac Signs</Label>
+              <Label className="text-[10px] text-purple-700 uppercase">Zodiac Signs</Label>
               <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
                 {zodiacCards.map((card) => (
                   <div key={card.cardId} className="flex items-center justify-between gap-2 bg-black/40 p-2 rounded border border-purple-900/20">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-xl text-purple-400">{card.symbol}</span>
+                      <span className="text-xl text-purple-700">{card.symbol}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-purple-400 text-xs font-bold">{card.name} <span className="text-muted-foreground">({card.element})</span></p>
+                        <p className="text-purple-700 text-xs font-bold">{card.name} <span className="text-muted-foreground">({card.element})</span></p>
                         <p className="text-muted-foreground text-[10px] line-clamp-1">{card.hint}</p>
                       </div>
                     </div>
@@ -864,7 +864,7 @@ export function CollectiblesSection() {
                         size="sm" 
                         variant="ghost" 
                         onClick={() => setEditingMysticalCard(card)}
-                        className="text-purple-400 h-7 w-7 p-0"
+                        className="text-purple-700 h-7 w-7 p-0"
                       >
                         <Edit className="w-3 h-3" />
                       </Button>
@@ -883,20 +883,20 @@ export function CollectiblesSection() {
         <Card className="bg-[hsl(var(--card))] border-teal-900/30">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-teal-400 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
                 <Zap className="w-4 h-4" /> Quantum Popups
               </CardTitle>
               <CardDescription className="text-muted-foreground text-xs">
                 Probability events + quantum messages
               </CardDescription>
             </div>
-            <Button size="sm" variant="outline" onClick={seedQuantumDefaults} className="border-teal-700 text-teal-400">
+            <Button size="sm" variant="outline" onClick={seedQuantumDefaults} className="border-teal-700 text-teal-800">
               Seed Defaults
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label className="text-[10px] text-teal-500 uppercase">Events</Label>
+              <Label className="text-[10px] text-teal-800 uppercase">Events</Label>
               <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
                 {quantumEvents.map((event) => (
                   <div key={event.id} className="bg-black/40 p-2 rounded border border-teal-900/20">
@@ -904,7 +904,7 @@ export function CollectiblesSection() {
                       <div>
                         <p className="text-teal-300 text-xs font-bold">{event.name}</p>
                         <p className="text-muted-foreground text-[10px]">{event.description}</p>
-                        <p className="text-teal-500 text-[10px]">Base: {event.baseProb}%</p>
+                        <p className="text-teal-800 text-[10px]">Base: {event.baseProb}%</p>
                       </div>
                       <Switch
                         checked={event.enabled}
@@ -917,7 +917,7 @@ export function CollectiblesSection() {
             </div>
 
             <div>
-              <Label className="text-[10px] text-teal-500 uppercase">Messages</Label>
+              <Label className="text-[10px] text-teal-800 uppercase">Messages</Label>
               <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
                 {quantumMessages.map((msg) => (
                   <div key={msg.id} className="flex items-center justify-between gap-2 bg-black/40 p-2 rounded border border-teal-900/20">
@@ -931,7 +931,7 @@ export function CollectiblesSection() {
                         size="sm"
                         variant="ghost"
                         onClick={() => deleteQuantumMessage.mutate(msg.id)}
-                        className="text-red-400"
+                        className="text-red-700"
                       >
                         <Trash2 className="w-3 h-3" />
                       </Button>
@@ -963,7 +963,7 @@ export function CollectiblesSection() {
       <Dialog open={!!editingArtifact} onOpenChange={(open) => !open && setEditingArtifact(null)}>
         <DialogContent className="bg-[hsl(var(--card))] border-purple-900/50 text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-purple-400 font-orbitron">Edit Artifact</DialogTitle>
+            <DialogTitle className="text-purple-700 font-orbitron">Edit Artifact</DialogTitle>
           </DialogHeader>
           {editingArtifact && (
             <div className="space-y-3">
@@ -992,7 +992,7 @@ export function CollectiblesSection() {
       <Dialog open={!!editingMysticalCard} onOpenChange={(open) => !open && setEditingMysticalCard(null)}>
         <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground">
           <DialogHeader>
-            <DialogTitle className={`font-orbitron ${editingMysticalCard?.type === 'tarot' ? 'text-amber-500' : 'text-purple-400'}`}>
+            <DialogTitle className={`font-orbitron ${editingMysticalCard?.type === 'tarot' ? 'text-amber-800' : 'text-purple-700'}`}>
               Edit {editingMysticalCard?.type === 'tarot' ? 'Tarot Card' : 'Zodiac Sign'}
             </DialogTitle>
           </DialogHeader>

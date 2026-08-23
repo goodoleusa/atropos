@@ -69,10 +69,10 @@ interface ScanResult {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: "bg-red-500/20 text-red-400 border-red-500/30",
-  high: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  medium: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  low: "bg-teal-500/20 text-teal-400 border-teal-500/30",
+  critical: "bg-red-500/20 text-red-700 border-red-500/30",
+  high: "bg-orange-500/20 text-orange-800 border-orange-500/30",
+  medium: "bg-amber-500/20 text-amber-800 border-amber-500/30",
+  low: "bg-teal-500/20 text-teal-800 border-teal-500/30",
   info: "bg-muted/20 text-muted-foreground border-muted/30",
 };
 
@@ -80,10 +80,10 @@ const CATEGORY_LIST = ["osint", "vulnerability", "secret_detection", "threat_int
 
 const SCAN_CATEGORY_ICONS: Record<string, React.ReactNode> = {
   osint: <Globe className="w-3.5 h-3.5 text-blue-400" />,
-  vuln: <AlertTriangle className="w-3.5 h-3.5 text-red-400" />,
-  intel: <Shield className="w-3.5 h-3.5 text-purple-400" />,
-  recon: <Target className="w-3.5 h-3.5 text-teal-400" />,
-  api: <Terminal className="w-3.5 h-3.5 text-amber-400" />,
+  vuln: <AlertTriangle className="w-3.5 h-3.5 text-red-700" />,
+  intel: <Shield className="w-3.5 h-3.5 text-purple-700" />,
+  recon: <Target className="w-3.5 h-3.5 text-teal-800" />,
+  api: <Terminal className="w-3.5 h-3.5 text-amber-800" />,
 };
 
 function mergeScanResults(existing: ScanResult | null, incoming: ScanResult): ScanResult {
@@ -180,7 +180,7 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
     <div className="space-y-4">
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2">
+          <CardTitle className="text-amber-800 flex items-center gap-2">
             <Radar className="w-5 h-5" /> Run Scan
           </CardTitle>
           <CardDescription className="text-muted-foreground">Enter a target and select a scan script. Results accumulate across multiple scans.</CardDescription>
@@ -206,7 +206,7 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
                       onClick={() => setTarget(t)}
                       className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
                         target === t
-                          ? 'bg-orange-900/40 border-orange-700 text-orange-400'
+                          ? 'bg-orange-900/40 border-orange-700 text-orange-800'
                           : 'bg-card/40 border-border text-muted-foreground hover:border-orange-700 hover:text-orange-400'
                       }`}
                       data-testid={`pivot-target-${i}`}
@@ -233,9 +233,9 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
                             <span className="font-medium text-sm">{s.name}</span>
                             {s.difficulty && (
                               <span className={`text-[9px] px-1.5 py-0 rounded-full font-bold ${
-                                s.difficulty === 'beginner' ? 'bg-teal-900/50 text-teal-400' :
-                                s.difficulty === 'intermediate' ? 'bg-amber-900/50 text-amber-400' :
-                                'bg-red-900/50 text-red-400'
+                                s.difficulty === 'beginner' ? 'bg-teal-900/50 text-teal-800' :
+                                s.difficulty === 'intermediate' ? 'bg-amber-900/50 text-amber-800' :
+                                'bg-red-900/50 text-red-700'
                               }`}>{s.difficulty}</span>
                             )}
                             {s.installed === false && (
@@ -257,13 +257,13 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
             return (
               <div className="p-3 rounded-lg bg-card/40 border border-border/50 space-y-2" data-testid="tool-education-panel">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">About This Tool</span>
+                  <BookOpen className="w-4 h-4 text-amber-800 shrink-0" />
+                  <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">About This Tool</span>
                   {selected.difficulty && (
                     <Badge variant="outline" className={`text-[10px] ml-auto ${
-                      selected.difficulty === 'beginner' ? 'border-teal-700 text-teal-400' :
-                      selected.difficulty === 'intermediate' ? 'border-amber-700 text-amber-400' :
-                      'border-red-700 text-red-400'
+                      selected.difficulty === 'beginner' ? 'border-teal-700 text-teal-800' :
+                      selected.difficulty === 'intermediate' ? 'border-amber-700 text-amber-800' :
+                      'border-red-700 text-red-700'
                     }`}>{selected.difficulty}</Badge>
                   )}
                 </div>
@@ -292,9 +292,9 @@ function ScanTab({ injectedTargets }: ScanTabProps) {
         <Card className="bg-card/80 border-border" data-testid="card-scan-result">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <CardTitle className="text-amber-400 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-teal-400" /> Scan Results
-                {scanCount > 1 && <Badge variant="outline" className="text-[10px] border-teal-500/30 text-teal-400">{scanCount} scans merged</Badge>}
+              <CardTitle className="text-amber-800 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-teal-800" /> Scan Results
+                {scanCount > 1 && <Badge variant="outline" className="text-[10px] border-teal-500/30 text-teal-800">{scanCount} scans merged</Badge>}
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Badge className={SEVERITY_COLORS[scanResult.summary.riskLevel] || SEVERITY_COLORS.info}>
@@ -368,23 +368,23 @@ interface LuaTemplate {
 }
 
 const FOCUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  bug_bounty: { label: "Bug Bounty", icon: <Bug className="w-3.5 h-3.5" />, color: "text-red-400 border-red-500/30 bg-red-500/10" },
-  threat_hunting: { label: "Threat Hunting", icon: <Crosshair className="w-3.5 h-3.5" />, color: "text-amber-400 border-amber-500/30 bg-amber-500/10" },
+  bug_bounty: { label: "Bug Bounty", icon: <Bug className="w-3.5 h-3.5" />, color: "text-red-700 border-red-500/30 bg-red-500/10" },
+  threat_hunting: { label: "Threat Hunting", icon: <Crosshair className="w-3.5 h-3.5" />, color: "text-amber-800 border-amber-500/30 bg-amber-500/10" },
   general: { label: "General", icon: <Code2 className="w-3.5 h-3.5" />, color: "text-muted-foreground border-muted/30 bg-muted/10" },
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: "text-teal-400 bg-teal-500/10",
-  intermediate: "text-amber-400 bg-amber-500/10",
-  advanced: "text-red-400 bg-red-500/10",
+  beginner: "text-teal-800 bg-teal-500/10",
+  intermediate: "text-amber-800 bg-amber-500/10",
+  advanced: "text-red-700 bg-red-500/10",
 };
 
 const CATEGORY_ICONS_MAP: Record<string, React.ReactNode> = {
   recon: <Target className="w-4 h-4 text-blue-400" />,
-  vulnerability: <AlertTriangle className="w-4 h-4 text-red-400" />,
-  secret_detection: <Key className="w-4 h-4 text-amber-400" />,
-  threat_intel: <Shield className="w-4 h-4 text-purple-400" />,
-  monitoring: <Radar className="w-4 h-4 text-teal-400" />,
+  vulnerability: <AlertTriangle className="w-4 h-4 text-red-700" />,
+  secret_detection: <Key className="w-4 h-4 text-amber-800" />,
+  threat_intel: <Shield className="w-4 h-4 text-purple-700" />,
+  monitoring: <Radar className="w-4 h-4 text-teal-800" />,
   osint: <Globe className="w-4 h-4 text-blue-400" />,
   general: <FileCode className="w-4 h-4 text-muted-foreground" />,
 };
@@ -539,17 +539,17 @@ function LuaScriptsTab() {
         <Card className="bg-amber-900/10 border-amber-900/30">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
                 <BookOpen className="w-4 h-4" /> ATROPOS SCRIPTING GUIDE
               </CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => setShowGuide(false)} className="h-6 w-6 p-0 text-amber-600">
+              <Button variant="ghost" size="sm" onClick={() => setShowGuide(false)} className="h-6 w-6 p-0 text-amber-800">
                 <X className="w-3 h-3" />
               </Button>
             </div>
           </CardHeader>
           <CardContent className="text-[11px] text-muted-foreground space-y-2">
-            <p><span className="text-amber-500 font-bold">LUA:</span> Core scanner logic. Use Lua to write custom OSINT & vulnerability checks. These scripts run on the Rust back-end scanner.</p>
-            <p><span className="text-teal-500 font-bold">FRIDA (JS):</span> Located in 'Toolkit'. Used for dynamic instrumentation of live processes. Use JS to hook functions and bypass protections.</p>
+            <p><span className="text-amber-800 font-bold">LUA:</span> Core scanner logic. Use Lua to write custom OSINT & vulnerability checks. These scripts run on the Rust back-end scanner.</p>
+            <p><span className="text-teal-800 font-bold">FRIDA (JS):</span> Located in 'Toolkit'. Used for dynamic instrumentation of live processes. Use JS to hook functions and bypass protections.</p>
             <p><span className="text-foreground font-bold">HOW TO LOAD:</span> Select a script from the list or choose a 'Template' to start. Modify code in the editor, then 'Save' to apply changes instantly.</p>
           </CardContent>
         </Card>
@@ -570,7 +570,7 @@ function LuaScriptsTab() {
           <Button
             size="sm"
             variant={showTemplates ? "default" : "outline"}
-            className={showTemplates ? "bg-amber-700 hover:bg-amber-600 text-black" : "border-border text-amber-400 hover:border-amber-700"}
+            className={showTemplates ? "bg-amber-700 hover:bg-amber-600 text-black" : "border-border text-amber-800 hover:border-amber-700"}
             onClick={() => { setShowTemplates(!showTemplates); setShowNewForm(false); }}
             data-testid="button-show-templates"
           >
@@ -641,7 +641,7 @@ function LuaScriptsTab() {
                     >
                       <CardContent className="p-3 space-y-2">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-amber-400 text-sm group-hover:text-amber-300">{t.name}</h4>
+                          <h4 className="font-bold text-amber-800 text-sm group-hover:text-amber-300">{t.name}</h4>
                           <Badge variant="outline" className={`text-[9px] ${DIFFICULTY_COLORS[t.difficulty]}`}>{t.difficulty}</Badge>
                         </div>
                         <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">{t.description}</p>
@@ -671,14 +671,14 @@ function LuaScriptsTab() {
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2 overflow-hidden">
                           {CATEGORY_ICONS_MAP[s.category] || <FileCode className="w-3.5 h-3.5 text-muted-foreground" />}
-                          <span className={`text-sm font-bold truncate ${selectedScript?.filename === s.filename ? 'text-amber-400' : 'text-foreground group-hover:text-foreground'}`}>
+                          <span className={`text-sm font-bold truncate ${selectedScript?.filename === s.filename ? 'text-amber-800' : 'text-foreground group-hover:text-foreground'}`}>
                             {s.name}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           {deleteTarget === s.filename ? (
                             <div className="flex gap-1">
-                              <Button size="sm" variant="ghost" className="h-6 px-2 text-red-400 hover:text-red-300" onClick={(e) => { e.stopPropagation(); deleteScript(s.filename); }}>Yes</Button>
+                              <Button size="sm" variant="ghost" className="h-6 px-2 text-red-700 hover:text-red-300" onClick={(e) => { e.stopPropagation(); deleteScript(s.filename); }}>Yes</Button>
                               <Button size="sm" variant="ghost" className="h-6 px-2 text-muted-foreground" onClick={(e) => { e.stopPropagation(); setDeleteTarget(null); }}>No</Button>
                             </div>
                           ) : (
@@ -709,7 +709,7 @@ function LuaScriptsTab() {
             <Card className={`bg-card/20 border-border flex flex-col ${editorExpanded ? 'fixed inset-4 z-50' : 'h-full min-h-[500px]'}`}>
               <CardHeader className="p-4 border-b border-border flex flex-row items-center justify-between shrink-0">
                 <div>
-                  <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
+                  <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
                     <Code2 className="w-4 h-4" />
                     {showNewForm ? (
                       <div className="flex items-center gap-2">
@@ -747,7 +747,7 @@ function LuaScriptsTab() {
                 <Textarea
                   value={showNewForm ? newContent : editContent}
                   onChange={(e) => showNewForm ? setNewContent(e.target.value) : setEditContent(e.target.value)}
-                  className="absolute inset-0 w-full h-full bg-card border-0 rounded-none font-mono text-xs p-4 resize-none focus-visible:ring-0 text-amber-500/90 leading-relaxed"
+                  className="absolute inset-0 w-full h-full bg-card border-0 rounded-none font-mono text-xs p-4 resize-none focus-visible:ring-0 text-amber-800/90 leading-relaxed"
                   placeholder="-- Write your Lua script here..."
                 />
               </CardContent>
@@ -829,7 +829,7 @@ function ApiLookupsTab() {
     <div className="space-y-4">
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2 text-sm">
+          <CardTitle className="text-amber-800 flex items-center gap-2 text-sm">
             <Shield className="w-4 h-4" /> VirusTotal Lookup
           </CardTitle>
         </CardHeader>
@@ -866,7 +866,7 @@ function ApiLookupsTab() {
 
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2 text-sm">
+          <CardTitle className="text-amber-800 flex items-center gap-2 text-sm">
             <AlertTriangle className="w-4 h-4" /> Hybrid Analysis Lookup
           </CardTitle>
         </CardHeader>
@@ -902,7 +902,7 @@ function ApiLookupsTab() {
 
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2 text-sm">
+          <CardTitle className="text-amber-800 flex items-center gap-2 text-sm">
             <Globe className="w-4 h-4" /> Free Lookups
           </CardTitle>
           <CardDescription className="text-muted-foreground">DNS, WHOIS, HTTP Headers — no API key needed</CardDescription>
@@ -989,7 +989,7 @@ function ToolsTab() {
       icon: <Bug className="w-5 h-5" />,
       lang: "JavaScript",
       status: fridaStatus?.installed ? "active" : "simulated",
-      statusColor: fridaStatus?.installed ? "text-teal-400 bg-teal-500/20" : "text-amber-400 bg-amber-500/20",
+      statusColor: fridaStatus?.installed ? "text-teal-800 bg-teal-500/20" : "text-amber-800 bg-amber-500/20",
       description: "Dynamic instrumentation for hooking live processes, tracing API calls, and bypassing protections.",
       howToUse: [
         "1. Choose a script type below (SSL bypass, crypto trace, etc.)",
@@ -997,7 +997,7 @@ function ToolsTab() {
         "3. Click 'Generate Script' to get ready-to-use Frida JS",
         "4. Copy the script and run with: frida -l script.js <target>"
       ],
-      color: "text-teal-400 border-teal-500/30 bg-teal-500/10",
+      color: "text-teal-800 border-teal-500/30 bg-teal-500/10",
       navTarget: "/wiki"
     },
     {
@@ -1006,7 +1006,7 @@ function ToolsTab() {
       icon: <Code2 className="w-5 h-5" />,
       lang: "Lua",
       status: "active",
-      statusColor: "text-teal-400 bg-teal-500/20",
+      statusColor: "text-teal-800 bg-teal-500/20",
       description: "Core scanner logic. Write custom OSINT & vulnerability checks that run on the Rust back-end.",
       howToUse: [
         "1. Go to the 'Scripts' tab above",
@@ -1014,7 +1014,7 @@ function ToolsTab() {
         "3. Write Lua code using atropos.emit() and atropos.http.get()",
         "4. Click 'Save' - your script is instantly available in Live Scan"
       ],
-      color: "text-amber-400 border-amber-500/30 bg-amber-500/10",
+      color: "text-amber-800 border-amber-500/30 bg-amber-500/10",
       navTarget: "scripts"
     },
     {
@@ -1023,7 +1023,7 @@ function ToolsTab() {
       icon: <RefreshCw className="w-5 h-5" />,
       lang: "JSON",
       status: "active",
-      statusColor: "text-teal-400 bg-teal-500/20",
+      statusColor: "text-teal-800 bg-teal-500/20",
       description: "Query VirusTotal, Hybrid Analysis, DNS, WHOIS, and HTTP headers from one place.",
       howToUse: [
         "1. Go to the 'API Data' tab above",
@@ -1098,11 +1098,11 @@ function ToolsTab() {
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-amber-400 flex items-center gap-2 text-sm">
+            <CardTitle className="text-amber-800 flex items-center gap-2 text-sm">
               <Bug className="w-4 h-4" /> Frida Script Generator
             </CardTitle>
             {fridaStatus && (
-              <Badge variant="outline" className={`text-[10px] ${fridaStatus.installed ? 'border-teal-700 text-teal-400' : 'border-amber-700 text-amber-400'}`}>
+              <Badge variant="outline" className={`text-[10px] ${fridaStatus.installed ? 'border-teal-700 text-teal-800' : 'border-amber-700 text-amber-800'}`}>
                 {fridaStatus.installed ? `v${fridaStatus.version}` : 'Simulated Mode'}
               </Badge>
             )}
@@ -1151,7 +1151,7 @@ function ToolsTab() {
           {generatedScript && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="text-amber-400 text-xs font-bold">{generatedScript.name}</Label>
+                <Label className="text-amber-800 text-xs font-bold">{generatedScript.name}</Label>
                 <div className="flex gap-1">
                   <Button
                     variant="ghost"
@@ -1186,10 +1186,10 @@ function ToolsTab() {
                 <p className="text-[11px] text-muted-foreground">{generatedScript.description}</p>
               )}
               <ScrollArea className="h-64 rounded-lg border border-border bg-card/40">
-                <pre className="p-3 text-xs font-mono text-teal-400/80 whitespace-pre-wrap">{generatedScript.code}</pre>
+                <pre className="p-3 text-xs font-mono text-teal-800/80 whitespace-pre-wrap">{generatedScript.code}</pre>
               </ScrollArea>
               {generatedScript.usage && (
-                <div className="p-2 rounded bg-card border border-border font-mono text-[10px] text-amber-500/80">
+                <div className="p-2 rounded bg-card border border-border font-mono text-[10px] text-amber-800/80">
                   $ {generatedScript.usage}
                 </div>
               )}
@@ -1211,7 +1211,7 @@ function ScanHistoryTab() {
     <div className="space-y-4">
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2 text-sm uppercase tracking-widest font-orbitron">
+          <CardTitle className="text-amber-800 flex items-center gap-2 text-sm uppercase tracking-widest font-orbitron">
             <Terminal className="w-4 h-4" /> RECENT SCAN OPERATIONS
           </CardTitle>
         </CardHeader>
@@ -1229,7 +1229,7 @@ function ScanHistoryTab() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-amber-500 font-bold">{r.target}</span>
+                          <span className="font-mono text-xs text-amber-800 font-bold">{r.target}</span>
                           <Badge variant="outline" className="text-[9px] px-1 py-0 border-border text-muted-foreground uppercase tracking-tighter">
                             {r.scanType}
                           </Badge>
@@ -1288,11 +1288,11 @@ function OsintToolkitTab() {
 
   const IOC_TYPE_COLORS: Record<string, string> = {
     ip: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    domain: "bg-teal-500/20 text-teal-400 border-teal-500/30",
-    hash: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-    url: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-    email: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-    cve: "bg-red-500/20 text-red-400 border-red-500/30",
+    domain: "bg-teal-500/20 text-teal-800 border-teal-500/30",
+    hash: "bg-purple-500/20 text-purple-700 border-purple-500/30",
+    url: "bg-amber-500/20 text-amber-800 border-amber-500/30",
+    email: "bg-orange-500/20 text-orange-800 border-orange-500/30",
+    cve: "bg-red-500/20 text-red-700 border-red-500/30",
     unknown: "bg-muted/20 text-muted-foreground border-muted/30",
   };
 
@@ -1428,7 +1428,7 @@ function OsintToolkitTab() {
     <div className="space-y-6">
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2">
+          <CardTitle className="text-amber-800 flex items-center gap-2">
             <Search className="w-5 h-5" /> IOC Analyzer
           </CardTitle>
           <CardDescription className="text-muted-foreground">Analyze any Indicator of Compromise — IP, domain, hash, URL, email, or CVE</CardDescription>
@@ -1465,49 +1465,49 @@ function OsintToolkitTab() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {iocResult.dns && (
                   <div className="bg-card/60 rounded-lg p-3 border border-border">
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> DNS</div>
+                    <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> DNS</div>
                     <pre className="text-[11px] text-foreground whitespace-pre-wrap break-all">{typeof iocResult.dns === 'string' ? iocResult.dns : JSON.stringify(iocResult.dns, null, 2)}</pre>
                   </div>
                 )}
                 {iocResult.whois && (
                   <div className="bg-card/60 rounded-lg p-3 border border-border">
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> WHOIS</div>
+                    <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> WHOIS</div>
                     <pre className="text-[11px] text-foreground whitespace-pre-wrap break-all">{typeof iocResult.whois === 'string' ? iocResult.whois : JSON.stringify(iocResult.whois, null, 2)}</pre>
                   </div>
                 )}
                 {iocResult.headers && (
                   <div className="bg-card/60 rounded-lg p-3 border border-border">
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><FileCode className="w-3.5 h-3.5" /> Headers</div>
+                    <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><FileCode className="w-3.5 h-3.5" /> Headers</div>
                     <pre className="text-[11px] text-foreground whitespace-pre-wrap break-all">{typeof iocResult.headers === 'string' ? iocResult.headers : JSON.stringify(iocResult.headers, null, 2)}</pre>
                   </div>
                 )}
                 {iocResult.ssl && (
                   <div className="bg-card/60 rounded-lg p-3 border border-border">
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Key className="w-3.5 h-3.5" /> SSL</div>
+                    <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Key className="w-3.5 h-3.5" /> SSL</div>
                     <pre className="text-[11px] text-foreground whitespace-pre-wrap break-all">{typeof iocResult.ssl === 'string' ? iocResult.ssl : JSON.stringify(iocResult.ssl, null, 2)}</pre>
                   </div>
                 )}
                 {iocResult.certTransparency && (
                   <div className="bg-card/60 rounded-lg p-3 border border-border">
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Radar className="w-3.5 h-3.5" /> Cert Transparency</div>
+                    <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Radar className="w-3.5 h-3.5" /> Cert Transparency</div>
                     <pre className="text-[11px] text-foreground whitespace-pre-wrap break-all">{typeof iocResult.certTransparency === 'string' ? iocResult.certTransparency : JSON.stringify(iocResult.certTransparency, null, 2)}</pre>
                   </div>
                 )}
                 {iocResult.ports && (
                   <div className="bg-card/60 rounded-lg p-3 border border-border">
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Ports</div>
+                    <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Ports</div>
                     <pre className="text-[11px] text-foreground whitespace-pre-wrap break-all">{typeof iocResult.ports === 'string' ? iocResult.ports : JSON.stringify(iocResult.ports, null, 2)}</pre>
                   </div>
                 )}
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 hover:bg-amber-900/30" onClick={sendIocToReport} data-testid="button-ioc-to-report">
+                <Button size="sm" variant="outline" className="border-amber-700 text-amber-800 hover:bg-amber-900/30" onClick={sendIocToReport} data-testid="button-ioc-to-report">
                   <Download className="w-3.5 h-3.5 mr-1.5" /> Send to Report
                 </Button>
-                <Button size="sm" variant="outline" className="border-teal-700 text-teal-400 hover:bg-teal-900/30" onClick={() => analyzeInNexus(iocResult)} data-testid="button-ioc-to-nexus">
+                <Button size="sm" variant="outline" className="border-teal-700 text-teal-800 hover:bg-teal-900/30" onClick={() => analyzeInNexus(iocResult)} data-testid="button-ioc-to-nexus">
                   <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Analyze in NEXUS
                 </Button>
-                <Button size="sm" variant="outline" className="border-purple-700 text-purple-400 hover:bg-purple-900/30" onClick={addIocToPortfolio} data-testid="button-ioc-to-portfolio">
+                <Button size="sm" variant="outline" className="border-purple-700 text-purple-700 hover:bg-purple-900/30" onClick={addIocToPortfolio} data-testid="button-ioc-to-portfolio">
                   <Tag className="w-3.5 h-3.5 mr-1.5" /> Add to Portfolio
                 </Button>
               </div>
@@ -1518,7 +1518,7 @@ function OsintToolkitTab() {
 
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2">
+          <CardTitle className="text-amber-800 flex items-center gap-2">
             <Radar className="w-5 h-5" /> Live Domain Recon
           </CardTitle>
           <CardDescription className="text-muted-foreground">Full reconnaissance scan on a target domain</CardDescription>
@@ -1578,7 +1578,7 @@ function OsintToolkitTab() {
               )}
 
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 hover:bg-amber-900/30" onClick={() => {
+                <Button size="sm" variant="outline" className="border-amber-700 text-amber-800 hover:bg-amber-900/30" onClick={() => {
                   addToolOutput({
                     type: 'scan',
                     source: 'osint-toolkit',
@@ -1589,7 +1589,7 @@ function OsintToolkitTab() {
                 }} data-testid="button-recon-to-report">
                   <Download className="w-3.5 h-3.5 mr-1.5" /> Export to Report
                 </Button>
-                <Button size="sm" variant="outline" className="border-teal-700 text-teal-400 hover:bg-teal-900/30" onClick={() => analyzeInNexus(reconResult)} data-testid="button-recon-to-nexus">
+                <Button size="sm" variant="outline" className="border-teal-700 text-teal-800 hover:bg-teal-900/30" onClick={() => analyzeInNexus(reconResult)} data-testid="button-recon-to-nexus">
                   <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Load into NEXUS
                 </Button>
               </div>
@@ -1600,7 +1600,7 @@ function OsintToolkitTab() {
 
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2">
+          <CardTitle className="text-amber-800 flex items-center gap-2">
             <Newspaper className="w-5 h-5" /> Cybersecurity Newsfeed
           </CardTitle>
           <CardDescription className="text-muted-foreground">Latest cybersecurity news with IOC extraction</CardDescription>
@@ -1633,7 +1633,7 @@ function OsintToolkitTab() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-6 text-[10px] text-amber-400 hover:bg-amber-900/20 px-2"
+                        className="h-6 text-[10px] text-amber-800 hover:bg-amber-900/20 px-2"
                         onClick={() => extractArticleIocs(article.id || String(idx), article.summary || article.title)}
                         disabled={extractingIoc === (article.id || String(idx))}
                         data-testid={`button-extract-iocs-${idx}`}
@@ -1649,7 +1649,7 @@ function OsintToolkitTab() {
                     </div>
                     {extractedIocs[article.id || String(idx)] && (
                       <div className="mt-2 p-2 rounded bg-border/50 border border-border">
-                        <div className="text-[10px] font-bold text-amber-400 mb-1">Extracted IOCs:</div>
+                        <div className="text-[10px] font-bold text-amber-800 mb-1">Extracted IOCs:</div>
                         <pre className="text-[10px] text-foreground whitespace-pre-wrap break-all">{JSON.stringify(extractedIocs[article.id || String(idx)], null, 2)}</pre>
                       </div>
                     )}
@@ -1663,7 +1663,7 @@ function OsintToolkitTab() {
 
       <Card className="bg-card/80 border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-amber-400 flex items-center gap-2">
+          <CardTitle className="text-amber-800 flex items-center gap-2">
             <Shield className="w-5 h-5" /> IOC Defanger / Refanger
           </CardTitle>
           <CardDescription className="text-muted-foreground">Safely defang or refang indicators for sharing</CardDescription>
@@ -1681,7 +1681,7 @@ function OsintToolkitTab() {
             <Button
               size="sm"
               variant="outline"
-              className={`border-border text-foreground min-w-[90px] ${defangMode === "defang" ? "bg-amber-900/20 border-amber-700 text-amber-400" : "bg-teal-900/20 border-teal-700 text-teal-400"}`}
+              className={`border-border text-foreground min-w-[90px] ${defangMode === "defang" ? "bg-amber-900/20 border-amber-700 text-amber-800" : "bg-teal-900/20 border-teal-700 text-teal-800"}`}
               onClick={() => setDefangMode(defangMode === "defang" ? "refang" : "defang")}
               data-testid="button-toggle-defang-mode"
             >
@@ -1718,8 +1718,8 @@ export function ScannerContent({ injectedTargets }: ScannerContentProps = {}) {
   return (
     <div className="flex flex-col h-full min-h-0 bg-card border border-border rounded-xl overflow-hidden shadow-2xl shadow-amber-900/10">
       <div className="p-4 md:p-6 border-b border-border bg-card/30 shrink-0">
-        <h1 className="text-xl md:text-2xl font-bold font-orbitron tracking-tighter text-amber-500 flex items-center gap-3">
-          <Shield className="w-6 h-6 md:w-8 h-8 text-amber-600" /> ATROPOS ADMIN TERMINAL
+        <h1 className="text-xl md:text-2xl font-bold font-orbitron tracking-tighter text-amber-800 flex items-center gap-3">
+          <Shield className="w-6 h-6 md:w-8 h-8 text-amber-800" /> ATROPOS ADMIN TERMINAL
         </h1>
         <p className="text-[10px] md:text-xs text-muted-foreground mt-1 uppercase tracking-widest font-medium">Scanner Management & Script Development Environment</p>
       </div>

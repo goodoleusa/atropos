@@ -48,11 +48,11 @@ export function ModmailPanel() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
           <MessageSquare className="w-5 h-5" /> Modmail Inbox
         </h3>
         <div className="flex gap-2">
-          <Badge className="bg-amber-900/50 text-amber-400">{openTickets.length} Open</Badge>
+          <Badge className="bg-amber-900/50 text-amber-800">{openTickets.length} Open</Badge>
           <Badge className="bg-border text-muted-foreground">{closedTickets.length} Closed</Badge>
         </div>
       </div>
@@ -60,7 +60,7 @@ export function ModmailPanel() {
       <div className="grid lg:grid-cols-2 gap-4">
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader>
-            <CardTitle className="text-amber-400 text-sm">Tickets</CardTitle>
+            <CardTitle className="text-amber-800 text-sm">Tickets</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 max-h-[400px] overflow-y-auto">
             {tickets?.length === 0 && (
@@ -80,7 +80,7 @@ export function ModmailPanel() {
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-mono text-muted-foreground">{ticket.ticketId}</span>
                   <Badge variant="outline" className={`text-[10px] ${
-                    ticket.status === 'open' ? 'border-amber-600 text-amber-400' :
+                    ticket.status === 'open' ? 'border-amber-600 text-amber-800' :
                     ticket.status === 'in_progress' ? 'border-blue-600 text-blue-400' :
                     'border-muted text-muted-foreground'
                   }`}>
@@ -99,7 +99,7 @@ export function ModmailPanel() {
 
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader>
-            <CardTitle className="text-amber-400 text-sm">
+            <CardTitle className="text-amber-800 text-sm">
               {selectedTicket ? `Ticket: ${selectedTicket.ticketId}` : 'Select a ticket'}
             </CardTitle>
           </CardHeader>

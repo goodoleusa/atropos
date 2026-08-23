@@ -77,25 +77,25 @@ interface RecStats {
 }
 
 const TYPE_CONFIG: Record<string, { icon: any; color: string; label: string; chartColor: string }> = {
-  bug: { icon: Bug, color: "text-red-400 bg-red-900/30 border-red-800/50", label: "Bug", chartColor: "#f87171" },
+  bug: { icon: Bug, color: "text-red-700 bg-red-900/30 border-red-800/50", label: "Bug", chartColor: "#f87171" },
   feature: { icon: Zap, color: "text-cyan-400 bg-cyan-900/30 border-cyan-800/50", label: "Feature", chartColor: "#22d3ee" },
-  idea: { icon: Lightbulb, color: "text-amber-400 bg-amber-900/30 border-amber-800/50", label: "Idea", chartColor: "#fbbf24" },
-  pain_point: { icon: AlertTriangle, color: "text-orange-400 bg-orange-900/30 border-orange-800/50", label: "Pain Point", chartColor: "#fb923c" },
+  idea: { icon: Lightbulb, color: "text-amber-800 bg-amber-900/30 border-amber-800/50", label: "Idea", chartColor: "#fbbf24" },
+  pain_point: { icon: AlertTriangle, color: "text-orange-800 bg-orange-900/30 border-orange-800/50", label: "Pain Point", chartColor: "#fb923c" },
 };
 
 const CAT_CONFIG: Record<string, { icon: any; color: string; label: string; chartColor: string }> = {
   code_snippet: { icon: Code, color: "text-cyan-400 bg-cyan-900/30 border-cyan-800/50", label: "Code Snippet", chartColor: "#22d3ee" },
-  file_edit: { icon: FileCode, color: "text-purple-400 bg-purple-900/30 border-purple-800/50", label: "File Edit", chartColor: "#c084fc" },
-  systemic: { icon: Settings, color: "text-amber-400 bg-amber-900/30 border-amber-800/50", label: "Systemic", chartColor: "#fbbf24" },
-  integration: { icon: Puzzle, color: "text-teal-400 bg-teal-900/30 border-teal-800/50", label: "Integration", chartColor: "#2dd4bf" },
-  new_tool: { icon: Wrench, color: "text-orange-400 bg-orange-900/30 border-orange-800/50", label: "New Tool", chartColor: "#fb923c" },
+  file_edit: { icon: FileCode, color: "text-purple-700 bg-purple-900/30 border-purple-800/50", label: "File Edit", chartColor: "#c084fc" },
+  systemic: { icon: Settings, color: "text-amber-800 bg-amber-900/30 border-amber-800/50", label: "Systemic", chartColor: "#fbbf24" },
+  integration: { icon: Puzzle, color: "text-teal-800 bg-teal-900/30 border-teal-800/50", label: "Integration", chartColor: "#2dd4bf" },
+  new_tool: { icon: Wrench, color: "text-orange-800 bg-orange-900/30 border-orange-800/50", label: "New Tool", chartColor: "#fb923c" },
 };
 
 const STATUS_CONFIG: Record<string, { icon: any; color: string; label: string; chartColor: string }> = {
   open: { icon: Clock, color: "text-muted-foreground", label: "Open", chartColor: "#a8a29e" },
-  proposed: { icon: Lightbulb, color: "text-amber-400", label: "Proposed", chartColor: "#fbbf24" },
-  accepted: { icon: CheckCircle, color: "text-teal-400", label: "Accepted", chartColor: "#2dd4bf" },
-  in_progress: { icon: ArrowUpCircle, color: "text-amber-400", label: "In Progress", chartColor: "#fbbf24" },
+  proposed: { icon: Lightbulb, color: "text-amber-800", label: "Proposed", chartColor: "#fbbf24" },
+  accepted: { icon: CheckCircle, color: "text-teal-800", label: "Accepted", chartColor: "#2dd4bf" },
+  in_progress: { icon: ArrowUpCircle, color: "text-amber-800", label: "In Progress", chartColor: "#fbbf24" },
   implemented: { icon: CheckCircle, color: "text-green-400", label: "Implemented", chartColor: "#4ade80" },
   resolved: { icon: CheckCircle, color: "text-green-400", label: "Resolved", chartColor: "#4ade80" },
   shipped: { icon: CheckCircle, color: "text-cyan-400", label: "Shipped", chartColor: "#22d3ee" },
@@ -368,7 +368,7 @@ export default function SuggestionsPage() {
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8" data-testid="suggestions-page">
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="border-b border-amber-900/30 pb-4">
-          <div className="flex items-center gap-2 text-amber-500 mb-1 font-orbitron tracking-tighter">
+          <div className="flex items-center gap-2 text-amber-800 mb-1 font-orbitron tracking-tighter">
             <Bot className="w-5 h-5" />
             <span className="text-sm">AGENT INSIGHTS</span>
           </div>
@@ -432,27 +432,27 @@ export default function SuggestionsPage() {
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <Card className="bg-card/40 border-border/50" data-testid="rec-stat-total">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-amber-900/30 rounded-lg"><Code className="w-5 h-5 text-amber-400" /></div>
+                  <div className="p-2 bg-amber-900/30 rounded-lg"><Code className="w-5 h-5 text-amber-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-amber-400 font-orbitron">{recStats?.total || 0}</div>
+                    <div className="text-2xl font-bold text-amber-800 font-orbitron">{recStats?.total || 0}</div>
                     <div className="text-[10px] text-muted-foreground uppercase">RECS</div>
                   </div>
                 </CardContent>
               </Card>
               <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-orange-900/30 rounded-lg"><Wrench className="w-5 h-5 text-orange-400" /></div>
+                  <div className="p-2 bg-orange-900/30 rounded-lg"><Wrench className="w-5 h-5 text-orange-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-orange-400 font-orbitron">{recStats?.byCategory?.new_tool || 0}</div>
+                    <div className="text-2xl font-bold text-orange-800 font-orbitron">{recStats?.byCategory?.new_tool || 0}</div>
                     <div className="text-[10px] text-muted-foreground uppercase">New Tools</div>
                   </div>
                 </CardContent>
               </Card>
               <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-teal-900/30 rounded-lg"><Puzzle className="w-5 h-5 text-teal-400" /></div>
+                  <div className="p-2 bg-teal-900/30 rounded-lg"><Puzzle className="w-5 h-5 text-teal-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-teal-400 font-orbitron">{recStats?.painPointsCovered?.length || 0}</div>
+                    <div className="text-2xl font-bold text-teal-800 font-orbitron">{recStats?.painPointsCovered?.length || 0}</div>
                     <div className="text-[10px] text-muted-foreground uppercase">Pain Points</div>
                   </div>
                 </CardContent>
@@ -508,7 +508,7 @@ export default function SuggestionsPage() {
                       <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-auto">
                         {recStats.painPointsCovered.map((p, i) => (
                           <Badge key={i} variant="outline"
-                            className={`text-[10px] cursor-pointer transition-all ${filterPainPoint === p ? 'text-amber-400 border-amber-600/60 bg-amber-900/30' : 'text-orange-400 border-orange-800/50 bg-orange-900/10 hover:border-orange-600/60'}`}
+                            className={`text-[10px] cursor-pointer transition-all ${filterPainPoint === p ? 'text-amber-800 border-amber-600/60 bg-amber-900/30' : 'text-orange-800 border-orange-800/50 bg-orange-900/10 hover:border-orange-600/60'}`}
                             onClick={() => setFilterPainPoint(filterPainPoint === p ? "all" : p)}
                             data-testid={`pain-point-badge-${i}`}
                           >{p}</Badge>
@@ -572,8 +572,8 @@ export default function SuggestionsPage() {
 
             {/* Agent batch action bar */}
             <div className="flex items-center gap-2 bg-gradient-to-r from-amber-950/40 to-card/40 p-3 rounded-lg border border-amber-900/30" data-testid="agent-action-bar">
-              <Rocket className="w-4 h-4 text-amber-400 shrink-0" />
-              <span className="text-xs text-amber-400 font-bold uppercase tracking-wide shrink-0">Agent</span>
+              <Rocket className="w-4 h-4 text-amber-800 shrink-0" />
+              <span className="text-xs text-amber-800 font-bold uppercase tracking-wide shrink-0">Agent</span>
               <div className="flex items-center gap-1.5 flex-wrap flex-1">
                 <Button
                   variant="outline" size="sm"
@@ -656,7 +656,7 @@ export default function SuggestionsPage() {
                                     data-testid={`check-rec-${rec.id}`}
                                   />
                                   <Button variant="ghost" size="sm"
-                                    className={`h-8 w-8 flex-col gap-0 border border-border hover:border-amber-500/50 hover:bg-amber-500/10 ${rec.votes > 1 ? 'text-amber-500 border-amber-500/20 bg-amber-500/5' : 'text-muted-foreground'}`}
+                                    className={`h-8 w-8 flex-col gap-0 border border-border hover:border-amber-500/50 hover:bg-amber-500/10 ${rec.votes > 1 ? 'text-amber-800 border-amber-500/20 bg-amber-500/5' : 'text-muted-foreground'}`}
                                     onClick={(e) => { e.stopPropagation(); voteRec.mutate(rec.id); }}
                                     data-testid={`vote-rec-${rec.id}`}>
                                     <ThumbsUp className="w-2.5 h-2.5" />
@@ -670,7 +670,7 @@ export default function SuggestionsPage() {
                                     </Badge>
                                     <Badge className={`text-[9px] px-1.5 py-0 ${PRIORITY_CONFIG[rec.priority]?.color || ''}`}>{rec.priority}</Badge>
                                     {rec.codeSnippet && <Badge className="text-[9px] px-1.5 py-0 bg-cyan-900/20 text-cyan-500 border-cyan-800/50"><Code className="w-2.5 h-2.5 mr-0.5" />code</Badge>}
-                                    {rec.painPointsAddressed.length >= 3 && <Badge className="text-[9px] px-1.5 py-0 bg-orange-900/20 text-orange-400 border-orange-800/50">{rec.painPointsAddressed.length} fixes</Badge>}
+                                    {rec.painPointsAddressed.length >= 3 && <Badge className="text-[9px] px-1.5 py-0 bg-orange-900/20 text-orange-800 border-orange-800/50">{rec.painPointsAddressed.length} fixes</Badge>}
                                   </div>
                                   <h3 className="text-sm font-medium text-foreground truncate">{rec.title}</h3>
                                   <p className="text-xs text-muted-foreground line-clamp-1">{rec.description}</p>
@@ -696,7 +696,7 @@ export default function SuggestionsPage() {
                   <Card className="bg-card/40 border-amber-900/30 sticky top-4" data-testid="rec-detail-panel">
                     <CardHeader className="pb-2 pt-3 px-4">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-xs text-amber-500 uppercase font-orbitron tracking-widest">Rec #{selectedRec.id}</CardTitle>
+                        <CardTitle className="text-xs text-amber-800 uppercase font-orbitron tracking-widest">Rec #{selectedRec.id}</CardTitle>
                         <Button variant="ghost" size="sm" className="h-6 px-2 text-muted-foreground" onClick={() => setSelectedRec(null)}><XCircle className="w-3 h-3" /></Button>
                       </div>
                     </CardHeader>
@@ -740,7 +740,7 @@ export default function SuggestionsPage() {
                           <div className="space-y-1">
                             {selectedRec.painPointsAddressed.map((p, i) => (
                               <div key={i} className="flex items-start gap-1.5 text-xs text-orange-300">
-                                <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5 text-orange-500" />{p}
+                                <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5 text-orange-800" />{p}
                               </div>
                             ))}
                           </div>
@@ -749,7 +749,7 @@ export default function SuggestionsPage() {
 
                       {selectedRec.estimatedImpact && (
                         <div className="bg-teal-950/20 p-2 rounded border border-teal-800/20">
-                          <div className="text-[10px] text-teal-500 uppercase font-bold mb-1">Impact</div>
+                          <div className="text-[10px] text-teal-800 uppercase font-bold mb-1">Impact</div>
                           <p className="text-xs text-teal-300">{selectedRec.estimatedImpact}</p>
                         </div>
                       )}
@@ -757,7 +757,7 @@ export default function SuggestionsPage() {
                       <div className="border-t border-border/50 pt-3">
                         <div className="text-[10px] text-muted-foreground uppercase font-bold mb-2">Push / Export</div>
                         <div className="grid grid-cols-2 gap-1.5">
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-amber-400 hover:bg-amber-900/20"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-amber-800 hover:bg-amber-900/20"
                             onClick={() => copyToClipboard(recToPrompt(selectedRec), toast, "AI prompt")} data-testid="btn-copy-prompt">
                             <Clipboard className="w-3 h-3 mr-1" />AI Prompt
                           </Button>
@@ -765,11 +765,11 @@ export default function SuggestionsPage() {
                             onClick={() => copyToClipboard(selectedRec.codeSnippet || '// No code', toast, "code")} data-testid="btn-copy-code-only">
                             <Code className="w-3 h-3 mr-1" />Code Only
                           </Button>
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-purple-400 hover:bg-purple-900/20"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-purple-700 hover:bg-purple-900/20"
                             onClick={() => copyToClipboard(recToGitPatch(selectedRec), toast, "git patch")} data-testid="btn-copy-patch">
                             <GitBranch className="w-3 h-3 mr-1" />Git Patch
                           </Button>
-                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-teal-400 hover:bg-teal-900/20"
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] border-border text-teal-800 hover:bg-teal-900/20"
                             onClick={() => copyToClipboard(recToCurl(selectedRec, baseUrl), toast, "curl command")} data-testid="btn-copy-curl">
                             <Terminal className="w-3 h-3 mr-1" />curl
                           </Button>
@@ -793,13 +793,13 @@ export default function SuggestionsPage() {
                 <Card className="bg-card/30 border-border/50">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Download className="w-4 h-4 text-amber-500" />
+                      <Download className="w-4 h-4 text-amber-800" />
                       <span className="text-xs text-muted-foreground font-bold uppercase">Bulk Export</span>
                     </div>
                     <div className="space-y-1.5">
                       <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-border text-foreground justify-start hover:border-amber-700"
                         onClick={() => syncFiles.mutate()} disabled={syncFiles.isPending} data-testid="btn-sync-github">
-                        <GitBranch className="w-3 h-3 mr-2 text-amber-500" />
+                        <GitBranch className="w-3 h-3 mr-2 text-amber-800" />
                         Sync to .github/RECOMMENDATIONS.md
                       </Button>
                       <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-border text-foreground justify-start hover:border-cyan-700"
@@ -809,7 +809,7 @@ export default function SuggestionsPage() {
                       </Button>
                       <Button variant="outline" size="sm" className="w-full h-7 text-[10px] border-border text-foreground justify-start hover:border-purple-700"
                         onClick={() => copyToClipboard(`curl -s "${baseUrl}/api/recs/export?format=json" | jq .`, toast, "bulk curl")} data-testid="btn-bulk-curl">
-                        <Terminal className="w-3 h-3 mr-2 text-purple-500" />
+                        <Terminal className="w-3 h-3 mr-2 text-purple-700" />
                         Copy Bulk curl Command
                       </Button>
                     </div>
@@ -819,14 +819,14 @@ export default function SuggestionsPage() {
                 <Card className="bg-card/30 border-border/50">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <Sparkles className="w-4 h-4 text-amber-800" />
                       <span className="text-xs text-muted-foreground font-bold uppercase">How it works</span>
                     </div>
                     <div className="space-y-2 text-[11px] text-muted-foreground">
-                      <p>NEXUS agents generate actionable code recs during conversations using <code className="text-amber-500/80 bg-border px-1 rounded">```recommendation</code> blocks.</p>
+                      <p>NEXUS agents generate actionable code recs during conversations using <code className="text-amber-800/80 bg-border px-1 rounded">```recommendation</code> blocks.</p>
                       <p>Each rec includes starter code, target files, pain points addressed, and impact estimates.</p>
                       <p>Use the export buttons to pipe recs into Replit Agent, Cursor, Copilot, or any coding tool.</p>
-                      <p>Hit <strong className="text-amber-400">Sync to .github</strong> to write all recs as a markdown file any agent can discover in your repo.</p>
+                      <p>Hit <strong className="text-amber-800">Sync to .github</strong> to write all recs as a markdown file any agent can discover in your repo.</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -839,36 +839,36 @@ export default function SuggestionsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-amber-900/30 rounded-lg"><Activity className="w-5 h-5 text-amber-400" /></div>
+                  <div className="p-2 bg-amber-900/30 rounded-lg"><Activity className="w-5 h-5 text-amber-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-amber-400 font-orbitron">{feedbackStats?.total || 0}</div>
+                    <div className="text-2xl font-bold text-amber-800 font-orbitron">{feedbackStats?.total || 0}</div>
                     <div className="text-[10px] text-muted-foreground uppercase">Reports</div>
                   </div>
                 </CardContent>
               </Card>
               <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-teal-900/30 rounded-lg"><Bot className="w-5 h-5 text-teal-400" /></div>
+                  <div className="p-2 bg-teal-900/30 rounded-lg"><Bot className="w-5 h-5 text-teal-800" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-teal-400 font-orbitron">{feedbackItems.filter(i => i.source.startsWith("agent:")).length}</div>
+                    <div className="text-2xl font-bold text-teal-800 font-orbitron">{feedbackItems.filter(i => i.source.startsWith("agent:")).length}</div>
                     <div className="text-[10px] text-muted-foreground uppercase">Agent-Found</div>
                   </div>
                 </CardContent>
               </Card>
               <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-red-900/30 rounded-lg"><Bug className="w-5 h-5 text-red-400" /></div>
+                  <div className="p-2 bg-red-900/30 rounded-lg"><Bug className="w-5 h-5 text-red-700" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-red-400 font-orbitron">{feedbackStats?.byType?.bug || 0}</div>
+                    <div className="text-2xl font-bold text-red-700 font-orbitron">{feedbackStats?.byType?.bug || 0}</div>
                     <div className="text-[10px] text-muted-foreground uppercase">Bugs</div>
                   </div>
                 </CardContent>
               </Card>
               <Card className="bg-card/40 border-border/50">
                 <CardContent className="p-3 flex items-center gap-3">
-                  <div className="p-2 bg-red-900/30 rounded-lg"><AlertTriangle className="w-5 h-5 text-red-400" /></div>
+                  <div className="p-2 bg-red-900/30 rounded-lg"><AlertTriangle className="w-5 h-5 text-red-700" /></div>
                   <div>
-                    <div className="text-2xl font-bold text-red-400 font-orbitron">{feedbackStats?.byPriority?.critical || 0}</div>
+                    <div className="text-2xl font-bold text-red-700 font-orbitron">{feedbackStats?.byPriority?.critical || 0}</div>
                     <div className="text-[10px] text-muted-foreground uppercase">Critical</div>
                   </div>
                 </CardContent>
@@ -949,7 +949,7 @@ export default function SuggestionsPage() {
                         <CardContent className="p-3">
                           <div className="flex items-start gap-3">
                             <Button variant="ghost" size="sm"
-                              className={`h-10 w-10 flex-col gap-0.5 border border-border hover:border-amber-500/50 shrink-0 ${item.votes > 1 ? 'text-amber-500' : 'text-muted-foreground'}`}
+                              className={`h-10 w-10 flex-col gap-0.5 border border-border hover:border-amber-500/50 shrink-0 ${item.votes > 1 ? 'text-amber-800' : 'text-muted-foreground'}`}
                               onClick={(e) => { e.stopPropagation(); voteFeedback.mutate(item.id); }}
                               data-testid={`vote-${item.id}`}>
                               <ThumbsUp className="w-3 h-3" />

@@ -58,11 +58,11 @@ export function SitemapPanel() {
   }, {});
 
   const categoryColors: Record<string, { border: string; bg: string; text: string; dot: string; hover: string }> = {
-    teal: { border: 'border-teal-900/40', bg: 'bg-teal-950/20', text: 'text-teal-400', dot: 'bg-teal-500', hover: 'hover:border-teal-700/60 hover:bg-teal-950/30' },
-    purple: { border: 'border-purple-900/40', bg: 'bg-purple-950/20', text: 'text-purple-400', dot: 'bg-purple-500', hover: 'hover:border-purple-700/60 hover:bg-purple-950/30' },
-    amber: { border: 'border-amber-900/40', bg: 'bg-amber-950/20', text: 'text-amber-400', dot: 'bg-amber-500', hover: 'hover:border-amber-700/60 hover:bg-amber-950/30' },
-    orange: { border: 'border-orange-900/40', bg: 'bg-orange-950/20', text: 'text-orange-400', dot: 'bg-orange-500', hover: 'hover:border-orange-700/60 hover:bg-orange-950/30' },
-    red: { border: 'border-red-900/40', bg: 'bg-red-950/20', text: 'text-red-400', dot: 'bg-red-500', hover: 'hover:border-red-700/60 hover:bg-red-950/30' },
+    teal: { border: 'border-teal-900/40', bg: 'bg-teal-950/20', text: 'text-teal-800', dot: 'bg-teal-500', hover: 'hover:border-teal-700/60 hover:bg-teal-950/30' },
+    purple: { border: 'border-purple-900/40', bg: 'bg-purple-950/20', text: 'text-purple-700', dot: 'bg-purple-500', hover: 'hover:border-purple-700/60 hover:bg-purple-950/30' },
+    amber: { border: 'border-amber-900/40', bg: 'bg-amber-950/20', text: 'text-amber-800', dot: 'bg-amber-500', hover: 'hover:border-amber-700/60 hover:bg-amber-950/30' },
+    orange: { border: 'border-orange-900/40', bg: 'bg-orange-950/20', text: 'text-orange-800', dot: 'bg-orange-500', hover: 'hover:border-orange-700/60 hover:bg-orange-950/30' },
+    red: { border: 'border-red-900/40', bg: 'bg-red-950/20', text: 'text-red-700', dot: 'bg-red-500', hover: 'hover:border-red-700/60 hover:bg-red-950/30' },
   };
 
   const handleCreate = async () => {
@@ -151,7 +151,7 @@ export function SitemapPanel() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2 mb-1">
+          <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2 mb-1">
             <Map className="w-5 h-5" /> Platform Sitemap
           </h3>
           <p className="text-xs text-muted-foreground">Interactive map of all pages. Add pages, apply arc templates, open in Campaign Builder.</p>
@@ -170,15 +170,15 @@ export function SitemapPanel() {
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        <button onClick={() => setFilterCategory('')} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${!filterCategory ? 'bg-amber-900/30 border-amber-700/50 text-amber-400' : 'bg-card/20 border-border text-muted-foreground'}`}>All</button>
+        <button onClick={() => setFilterCategory('')} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${!filterCategory ? 'bg-amber-900/30 border-amber-700/50 text-amber-800' : 'bg-card/20 border-border text-muted-foreground'}`}>All</button>
         {SITEMAP_CATEGORIES.map(cat => (
-          <button key={cat} onClick={() => setFilterCategory(cat === filterCategory ? '' : cat)} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${filterCategory === cat ? 'bg-amber-900/30 border-amber-700/50 text-amber-400' : 'bg-card/20 border-border text-muted-foreground'}`}>{cat}</button>
+          <button key={cat} onClick={() => setFilterCategory(cat === filterCategory ? '' : cat)} className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${filterCategory === cat ? 'bg-amber-900/30 border-amber-700/50 text-amber-800' : 'bg-card/20 border-border text-muted-foreground'}`}>{cat}</button>
         ))}
       </div>
 
       {showAdd && (
         <div className="p-4 rounded-lg border border-amber-900/40 bg-amber-950/10 space-y-3" data-testid="sitemap-add-form">
-          <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5"><Plus className="w-3 h-3" /> New Page</h4>
+          <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5"><Plus className="w-3 h-3" /> New Page</h4>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
@@ -247,7 +247,7 @@ export function SitemapPanel() {
               <Save className="w-3 h-3 mr-1" /> Save Page
             </Button>
             {newEntry.arcTemplateId && (
-              <Button size="sm" variant="outline" onClick={() => { handleCreate().then(() => openInBuilder({ ...newEntry, metadata: { arcTemplate: newEntry.arcTemplateId } })); }} className="text-xs border-purple-700 text-purple-400 hover:bg-purple-950/30">
+              <Button size="sm" variant="outline" onClick={() => { handleCreate().then(() => openInBuilder({ ...newEntry, metadata: { arcTemplate: newEntry.arcTemplateId } })); }} className="text-xs border-purple-700 text-purple-700 hover:bg-purple-950/30">
                 <Layers className="w-3 h-3 mr-1" /> Save & Open in Builder
               </Button>
             )}
@@ -314,7 +314,7 @@ export function SitemapPanel() {
                         </Link>
                         <span className="text-[8px] text-muted-foreground font-mono shrink-0">{item.path}</span>
                         <Badge variant="outline" className="text-[7px] px-1 py-0 border-border text-muted-foreground shrink-0">{item.pageLayout}</Badge>
-                        {item.isCustom && <Badge variant="outline" className="text-[7px] px-1 py-0 border-amber-800 text-amber-600 shrink-0">custom</Badge>}
+                        {item.isCustom && <Badge variant="outline" className="text-[7px] px-1 py-0 border-amber-800 text-amber-800 shrink-0">custom</Badge>}
                         <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                           <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-amber-400" onClick={() => { setEditingId(item.id); setEditEntry({ ...item }); }} data-testid={`sitemap-edit-${item.id}`}>
                             <Edit className="w-2.5 h-2.5" />
@@ -394,7 +394,7 @@ export function SitemapPanel() {
           <div className="flex items-center gap-1.5 ml-auto">
             <span className="text-muted-foreground font-bold">{entries.length} total pages</span>
             <span className="text-muted-foreground">|</span>
-            <span className="text-amber-600">{entries.filter((e: any) => e.isCustom).length} custom</span>
+            <span className="text-amber-800">{entries.filter((e: any) => e.isCustom).length} custom</span>
           </div>
         </div>
       </div>

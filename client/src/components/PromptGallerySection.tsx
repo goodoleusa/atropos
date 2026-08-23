@@ -194,12 +194,12 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
       <div key={entry.id} className="border border-amber-900/30 rounded-lg p-3 bg-black/40 space-y-2">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-amber-400 text-sm font-bold">{entry.title}</p>
+            <p className="text-amber-800 text-sm font-bold">{entry.title}</p>
             {entry.description && (
               <p className="text-muted-foreground text-xs mt-1">{entry.description}</p>
             )}
             <div className="flex flex-wrap gap-1 mt-2">
-              <Badge variant="outline" className="text-[9px] border-amber-700 text-amber-500">
+              <Badge variant="outline" className="text-[9px] border-amber-700 text-amber-800">
                 {entry.category}
               </Badge>
               {entry.tags?.map((tag) => (
@@ -212,10 +212,10 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                   variant="outline"
                   className={`text-[9px] ${
                     entry.status === 'published'
-                      ? 'border-teal-700 text-teal-400'
+                      ? 'border-teal-700 text-teal-800'
                       : entry.status === 'pending'
-                        ? 'border-amber-700 text-amber-400'
-                        : 'border-red-700 text-red-400'
+                        ? 'border-amber-700 text-amber-800'
+                        : 'border-red-700 text-red-700'
                   }`}
                 >
                   {entry.status}
@@ -236,7 +236,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
           {entry.prompt}
         </pre>
         {showStatus && entry.riskFlags && entry.riskFlags.length > 0 && (
-          <p className="text-[10px] text-amber-500 flex items-center gap-1">
+          <p className="text-[10px] text-amber-800 flex items-center gap-1">
             <AlertTriangle className="w-3 h-3" /> Flagged: {entry.riskFlags.join(', ')}
           </p>
         )}
@@ -247,7 +247,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
   return (
     <Card className="bg-black/50 border-amber-900/30">
       <CardHeader>
-        <CardTitle className="text-amber-500 flex items-center gap-2">
+        <CardTitle className="text-amber-800 flex items-center gap-2">
           <Users className="w-5 h-5" /> Community Prompt Gallery
         </CardTitle>
         <CardDescription className="text-muted-foreground">
@@ -258,7 +258,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-4">
           <div className="space-y-3">
             <div>
-              <Label className="text-amber-600 text-sm">Title</Label>
+              <Label className="text-amber-800 text-sm">Title</Label>
               <Input
                 value={draft.title}
                 onChange={(e) => setDraft((prev) => ({ ...prev, title: e.target.value }))}
@@ -267,7 +267,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
               />
             </div>
             <div>
-              <Label className="text-amber-600 text-sm">Description</Label>
+              <Label className="text-amber-800 text-sm">Description</Label>
               <Textarea
                 value={draft.description}
                 onChange={(e) => setDraft((prev) => ({ ...prev, description: e.target.value }))}
@@ -277,7 +277,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
             </div>
             <div className="grid md:grid-cols-2 gap-3">
               <div>
-                <Label className="text-amber-600 text-sm">Category</Label>
+                <Label className="text-amber-800 text-sm">Category</Label>
                 <Input
                   list="prompt-gallery-categories"
                   value={draft.category}
@@ -291,7 +291,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
                 </datalist>
               </div>
               <div>
-                <Label className="text-amber-600 text-sm">Tool</Label>
+                <Label className="text-amber-800 text-sm">Tool</Label>
                 <Input
                   list="prompt-gallery-tools"
                   value={draft.tool}
@@ -306,7 +306,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
               </div>
             </div>
             <div>
-              <Label className="text-amber-600 text-sm">Tags (comma separated)</Label>
+              <Label className="text-amber-800 text-sm">Tags (comma separated)</Label>
               <Input
                 value={draft.tags}
                 onChange={(e) => setDraft((prev) => ({ ...prev, tags: e.target.value }))}
@@ -315,7 +315,7 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
               />
             </div>
             <div>
-              <Label className="text-amber-600 text-sm">Prompt Content</Label>
+              <Label className="text-amber-800 text-sm">Prompt Content</Label>
               <Textarea
                 value={draft.prompt}
                 onChange={(e) => setDraft((prev) => ({ ...prev, prompt: e.target.value }))}
@@ -335,11 +335,11 @@ export function PromptGallerySection({ defaultPrompt = '', defaultTitle = '' }: 
               <div
                 className={`text-xs border rounded p-2 ${
                   submissionNote.type === 'success'
-                    ? 'border-teal-900/40 text-teal-400 bg-teal-900/10'
+                    ? 'border-teal-900/40 text-teal-800 bg-teal-900/10'
                     : submissionNote.type === 'warning'
-                      ? 'border-amber-900/40 text-amber-400 bg-amber-900/10'
+                      ? 'border-amber-900/40 text-amber-800 bg-amber-900/10'
                       : submissionNote.type === 'error'
-                        ? 'border-red-900/40 text-red-400 bg-red-900/10'
+                        ? 'border-red-900/40 text-red-700 bg-red-900/10'
                         : 'border-border text-muted-foreground'
                 }`}
               >

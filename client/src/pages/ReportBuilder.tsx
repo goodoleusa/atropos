@@ -265,10 +265,10 @@ export default function ReportBuilder() {
               <CardContent className="p-4 flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-teal-900/50 flex items-center justify-center">
-                    <Radar className="w-5 h-5 text-teal-400 animate-pulse" />
+                    <Radar className="w-5 h-5 text-teal-800 animate-pulse" />
                   </div>
                   <div>
-                    <p className="text-teal-400 text-xs uppercase font-bold">Investigation Active</p>
+                    <p className="text-teal-800 text-xs uppercase font-bold">Investigation Active</p>
                     <p className="text-foreground text-sm font-semibold">
                       {activeModule?.name || currentSession?.name || 'Active Module'}
                     </p>
@@ -288,9 +288,9 @@ export default function ReportBuilder() {
             <Card className="bg-amber-950/20 border-amber-900/40 border-dashed">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3">
-                  <Bot className="w-6 h-6 text-amber-500" />
+                  <Bot className="w-6 h-6 text-amber-800" />
                 </div>
-                <h3 className="text-amber-400 font-bold mb-2">No Active Investigation</h3>
+                <h3 className="text-amber-800 font-bold mb-2">No Active Investigation</h3>
                 <p className="text-muted-foreground text-sm mb-4 max-w-md mx-auto">
                   Start an investigation in the NEXUS Agent to auto-populate this report with your findings, targets, and tool outputs.
                 </p>
@@ -306,7 +306,7 @@ export default function ReportBuilder() {
         )}
         <div className="flex items-center justify-between mb-4">
           <Link href="/">
-            <Button variant="ghost" className="text-amber-600 hover:text-amber-500" data-testid="back-button">
+            <Button variant="ghost" className="text-amber-800 hover:text-amber-500" data-testid="back-button">
               <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
           </Link>
@@ -314,7 +314,7 @@ export default function ReportBuilder() {
             <Button 
               onClick={copyToClipboard}
               variant="outline" 
-              className="border-amber-900/30 text-amber-600"
+              className="border-amber-900/30 text-amber-800"
               data-testid="copy-report-button"
             >
               {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
@@ -330,7 +330,7 @@ export default function ReportBuilder() {
             <Button 
               onClick={() => exportReport('json')}
               variant="outline"
-              className="border-teal-700 text-teal-500"
+              className="border-teal-700 text-teal-800"
               data-testid="export-json-button"
             >
               <Download className="w-4 h-4 mr-2" /> Export JSON
@@ -341,8 +341,8 @@ export default function ReportBuilder() {
         <div className="grid lg:grid-cols-4 gap-4 mb-4">
           <Card className="bg-black/50 border-amber-900/30">
             <CardContent className="p-4">
-              <div className="text-amber-600 text-xs uppercase mb-1">Findings</div>
-              <div className="text-2xl font-bold text-amber-500">{findings.length}</div>
+              <div className="text-amber-800 text-xs uppercase mb-1">Findings</div>
+              <div className="text-2xl font-bold text-amber-800">{findings.length}</div>
               <div className="text-xs text-muted-foreground">
                 {findings.filter(f => f.severity === 'critical').length} Critical, {findings.filter(f => f.severity === 'high').length} High
               </div>
@@ -350,8 +350,8 @@ export default function ReportBuilder() {
           </Card>
           <Card className="bg-black/50 border-teal-900/30">
             <CardContent className="p-4">
-              <div className="text-teal-400 text-xs uppercase mb-1">Est. Bounty Range</div>
-              <div className="text-2xl font-bold text-teal-400">
+              <div className="text-teal-800 text-xs uppercase mb-1">Est. Bounty Range</div>
+              <div className="text-2xl font-bold text-teal-800">
                 ${bountyEstimate.min.toLocaleString()} - ${bountyEstimate.max.toLocaleString()}
               </div>
               <div className="text-xs text-muted-foreground">Based on category averages</div>
@@ -359,8 +359,8 @@ export default function ReportBuilder() {
           </Card>
           <Card className="bg-black/50 border-purple-900/30">
             <CardContent className="p-4">
-              <div className="text-purple-400 text-xs uppercase mb-1">Sections Complete</div>
-              <div className="text-2xl font-bold text-purple-400">
+              <div className="text-purple-700 text-xs uppercase mb-1">Sections Complete</div>
+              <div className="text-2xl font-bold text-purple-700">
                 {Object.keys(reportData).length} / {REPORT_SECTIONS.reduce((acc, s) => acc + s.fields.length, 0)}
               </div>
               <div className="text-xs text-muted-foreground">Fields filled</div>
@@ -368,8 +368,8 @@ export default function ReportBuilder() {
           </Card>
           <Card className="bg-black/50 border-red-900/30">
             <CardContent className="p-4">
-              <div className="text-red-400 text-xs uppercase mb-1">High-Value Leads</div>
-              <div className="text-2xl font-bold text-red-400">
+              <div className="text-red-700 text-xs uppercase mb-1">High-Value Leads</div>
+              <div className="text-2xl font-bold text-red-700">
                 {findings.filter(f => f.severity === 'critical' || f.severity === 'high').length}
               </div>
               <div className="text-xs text-muted-foreground">Priority targets</div>
@@ -381,7 +381,7 @@ export default function ReportBuilder() {
           <div className="lg:col-span-2">
             <Card className="bg-black/50 border-amber-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <FileText className="w-5 h-5" /> Report Sections
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -406,9 +406,9 @@ export default function ReportBuilder() {
                   {REPORT_SECTIONS.map((section) => (
                     <TabsContent key={section.id} value={section.id} className="mt-4 space-y-4">
                       <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-3">
-                        <p className="text-amber-400 text-sm font-bold mb-1">{section.title}</p>
+                        <p className="text-amber-800 text-sm font-bold mb-1">{section.title}</p>
                         <p className="text-muted-foreground text-xs">{section.description}</p>
-                        <p className="text-teal-400 text-xs mt-1">
+                        <p className="text-teal-800 text-xs mt-1">
                           <Lightbulb className="w-3 h-3 inline mr-1" />
                           <strong>Bounty Tip:</strong> {section.bountyImpact}
                         </p>
@@ -416,7 +416,7 @@ export default function ReportBuilder() {
 
                       {section.fields.map((field) => (
                         <div key={field.id} className="space-y-1">
-                          <Label className="text-amber-600 text-sm">{field.label}</Label>
+                          <Label className="text-amber-800 text-sm">{field.label}</Label>
                           {field.tip && (
                             <p className="text-muted-foreground text-xs">{field.tip}</p>
                           )}
@@ -489,7 +489,7 @@ export default function ReportBuilder() {
             <Card className="bg-black/50 border-red-900/30">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-red-400 flex items-center gap-2 text-sm">
+                  <CardTitle className="text-red-700 flex items-center gap-2 text-sm">
                     <AlertTriangle className="w-4 h-4" /> Findings ({findings.length})
                   </CardTitle>
                   <Button 
@@ -607,7 +607,7 @@ export default function ReportBuilder() {
                               >
                                 {finding.severity.toUpperCase()}
                               </Badge>
-                              <span className="text-amber-400 text-xs font-bold truncate">
+                              <span className="text-amber-800 text-xs font-bold truncate">
                                 {finding.title}
                               </span>
                             </div>
@@ -619,7 +619,7 @@ export default function ReportBuilder() {
                             variant="ghost" 
                             size="sm"
                             onClick={() => removeFinding(finding.id)}
-                            className="text-red-500 hover:text-red-400 h-6 w-6 p-0"
+                            className="text-red-700 hover:text-red-400 h-6 w-6 p-0"
                           >
                             <Trash2 className="w-3 h-3" />
                           </Button>
@@ -638,7 +638,7 @@ export default function ReportBuilder() {
 
             <Card className="bg-black/50 border-teal-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-teal-400 flex items-center gap-2 text-sm">
+                <CardTitle className="text-teal-800 flex items-center gap-2 text-sm">
                   <TrendingUp className="w-4 h-4" /> High-Value Lead Tips
                 </CardTitle>
               </CardHeader>
@@ -648,7 +648,7 @@ export default function ReportBuilder() {
                     <div key={ind.indicator} className="flex items-center gap-2 text-xs">
                       <span>{ind.icon}</span>
                       <span className="text-muted-foreground flex-1">{ind.indicator}</span>
-                      <Badge variant="outline" className="text-teal-400 border-teal-700 text-[10px]">
+                      <Badge variant="outline" className="text-teal-800 border-teal-700 text-[10px]">
                         {ind.multiplier}x
                       </Badge>
                     </div>
@@ -662,7 +662,7 @@ export default function ReportBuilder() {
 
             <Card className="bg-black/50 border-purple-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-purple-400 flex items-center gap-2 text-sm">
+                <CardTitle className="text-purple-700 flex items-center gap-2 text-sm">
                   <Target className="w-4 h-4" /> Vuln Categories by Value
                 </CardTitle>
               </CardHeader>
@@ -672,7 +672,7 @@ export default function ReportBuilder() {
                     {VULNERABILITY_CATEGORIES.map((cat) => (
                       <div key={cat.id} className="flex items-center justify-between text-xs py-1 border-b border-border last:border-0">
                         <span className="text-muted-foreground">{cat.name}</span>
-                        <span className="text-amber-500 font-mono">{cat.avgBounty}</span>
+                        <span className="text-amber-800 font-mono">{cat.avgBounty}</span>
                       </div>
                     ))}
                   </div>

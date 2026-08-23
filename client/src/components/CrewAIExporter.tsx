@@ -362,7 +362,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] bg-card border-amber-800/50">
         <DialogHeader>
-          <DialogTitle className="text-amber-500 flex items-center gap-2">
+          <DialogTitle className="text-amber-800 flex items-center gap-2">
             <Zap className="w-5 h-5" />
             Export to CrewAI
           </DialogTitle>
@@ -406,7 +406,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                     data-testid={`agent-card-${agent.id}`}
                   >
                     <CardHeader className="p-4">
-                      <CardTitle className="text-sm text-amber-400 flex items-center gap-2">
+                      <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                         <input 
                           type="checkbox" 
                           checked={selectedAgents.includes(agent.id)}
@@ -457,7 +457,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                   data-testid={`template-card-${template.id}`}
                 >
                   <CardHeader className="p-4">
-                    <CardTitle className="text-amber-400 flex items-center gap-2">
+                    <CardTitle className="text-amber-800 flex items-center gap-2">
                       <input 
                         type="radio" 
                         checked={selectedTemplate === template.id}
@@ -474,7 +474,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                     <div className="flex gap-2 mb-2">
                       <span className="text-xs text-muted-foreground">Agents:</span>
                       {template.agents.map(a => (
-                        <span key={a.id} className="text-xs bg-amber-900/30 px-2 py-0.5 rounded text-amber-400">
+                        <span key={a.id} className="text-xs bg-amber-900/30 px-2 py-0.5 rounded text-amber-800">
                           {a.name}
                         </span>
                       ))}
@@ -497,7 +497,7 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
                   id="crew-name"
                   value={crewName}
                   onChange={(e) => setCrewName(e.target.value.replace(/\s+/g, '_').toLowerCase())}
-                  className="bg-border border-border text-amber-400"
+                  className="bg-border border-border text-amber-800"
                   data-testid="crew-name-input"
                 />
               </div>
@@ -532,14 +532,14 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
               <div className="space-y-4">
                 <Card className="border-border bg-border/50">
                   <CardHeader className="p-4 flex flex-row items-center justify-between">
-                    <CardTitle className="text-amber-400 text-sm">
+                    <CardTitle className="text-amber-800 text-sm">
                       {crewName}.py
                     </CardTitle>
                     <div className="flex gap-2">
                       <Button 
                         size="sm" 
                         variant="outline"
-                        className="border-amber-800 text-amber-400 hover:bg-amber-950"
+                        className="border-amber-800 text-amber-800 hover:bg-amber-950"
                         onClick={() => copyToClipboard(generateFullCrewCode(), 'Python code')}
                         data-testid="copy-python-btn"
                       >
@@ -566,13 +566,13 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
 
                 <Card className="border-border bg-border/50">
                   <CardHeader className="p-4 flex flex-row items-center justify-between">
-                    <CardTitle className="text-amber-400 text-sm">
+                    <CardTitle className="text-amber-800 text-sm">
                       requirements.txt
                     </CardTitle>
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="border-amber-800 text-amber-400 hover:bg-amber-950"
+                      className="border-amber-800 text-amber-800 hover:bg-amber-950"
                       onClick={() => copyToClipboard(generateRequirementsTxt(), 'requirements.txt')}
                       data-testid="copy-requirements-btn"
                     >
@@ -589,13 +589,13 @@ ${llmProvider === 'anthropic' ? 'ANTHROPIC_API_KEY=sk-ant-your-key-here' : ''}
 
                 <Card className="border-border bg-border/50">
                   <CardHeader className="p-4 flex flex-row items-center justify-between">
-                    <CardTitle className="text-amber-400 text-sm">
+                    <CardTitle className="text-amber-800 text-sm">
                       .env.template
                     </CardTitle>
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="border-amber-800 text-amber-400 hover:bg-amber-950"
+                      className="border-amber-800 text-amber-800 hover:bg-amber-950"
                       onClick={() => copyToClipboard(generateEnvTemplate(), '.env template')}
                       data-testid="copy-env-btn"
                     >

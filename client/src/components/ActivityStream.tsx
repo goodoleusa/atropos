@@ -14,21 +14,21 @@ import { SendToMenu } from './SendToMenu';
 import type { MissionFinding } from '@/hooks/useMissionBus';
 
 const SOURCE_CONFIG: Record<string, { icon: typeof Bot; color: string; label: string }> = {
-  nexus: { icon: Bot, color: 'text-teal-400', label: 'NEXUS' },
-  agent: { icon: Shield, color: 'text-amber-400', label: 'Agent' },
+  nexus: { icon: Bot, color: 'text-teal-800', label: 'NEXUS' },
+  agent: { icon: Shield, color: 'text-amber-800', label: 'Agent' },
   scanner: { icon: Radar, color: 'text-blue-400', label: 'Scanner' },
-  spiderfoot: { icon: Globe, color: 'text-purple-400', label: 'SpiderFoot' },
+  spiderfoot: { icon: Globe, color: 'text-purple-700', label: 'SpiderFoot' },
   manual: { icon: FileText, color: 'text-muted-foreground', label: 'Manual' },
-  agent_analysis: { icon: Shield, color: 'text-amber-400', label: 'Analysis' },
+  agent_analysis: { icon: Shield, color: 'text-amber-800', label: 'Analysis' },
   scan: { icon: Radar, color: 'text-blue-400', label: 'Scan' },
   compression: { icon: Archive, color: 'text-muted-foreground', label: 'Memory' },
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: 'bg-red-900/30 text-red-400 border-red-700',
-  high: 'bg-orange-900/30 text-orange-400 border-orange-700',
-  medium: 'bg-amber-900/30 text-amber-400 border-amber-700',
-  low: 'bg-teal-900/30 text-teal-400 border-teal-700',
+  critical: 'bg-red-900/30 text-red-700 border-red-700',
+  high: 'bg-orange-900/30 text-orange-800 border-orange-700',
+  medium: 'bg-amber-900/30 text-amber-800 border-amber-700',
+  low: 'bg-teal-900/30 text-teal-800 border-teal-700',
   info: 'bg-border/50 text-muted-foreground border-border',
 };
 
@@ -92,9 +92,9 @@ function ActivityItemRow({ item }: { item: ActivityItem }) {
           {item.sourceAgent && <span>· {item.sourceAgent}</span>}
           <span>· {timeAgo(item.timestamp)}</span>
           {isTask && item.progress !== undefined && item.status === 'running' && (
-            <span className="text-amber-400">{item.progress}%</span>
+            <span className="text-amber-800">{item.progress}%</span>
           )}
-          <StatusIcon className={`w-3 h-3 ${item.status === 'running' ? 'animate-spin text-amber-400' : item.status === 'completed' ? 'text-emerald-400' : item.status === 'failed' ? 'text-red-400' : 'text-muted-foreground'}`} />
+          <StatusIcon className={`w-3 h-3 ${item.status === 'running' ? 'animate-spin text-amber-800' : item.status === 'completed' ? 'text-emerald-400' : item.status === 'failed' ? 'text-red-700' : 'text-muted-foreground'}`} />
         </div>
         {item.content && (
           <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">{item.content.slice(0, 150)}</p>
@@ -130,9 +130,9 @@ export function ActivityStream({ limit = 30 }: { limit?: number }) {
         <div className="space-y-1">
           {runningTasks.map(task => (
             <div key={task.id} className="flex items-center gap-2 px-3 py-2 bg-amber-900/10 border border-amber-900/20 rounded text-xs">
-              <Loader2 className="w-3 h-3 animate-spin text-amber-400" />
+              <Loader2 className="w-3 h-3 animate-spin text-amber-800" />
               <span className="text-amber-300">{task.taskName}</span>
-              <span className="text-amber-600 ml-auto">{task.progress}%</span>
+              <span className="text-amber-800 ml-auto">{task.progress}%</span>
             </div>
           ))}
         </div>

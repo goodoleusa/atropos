@@ -64,12 +64,12 @@ const SITEMAP: RouteInfo[] = [
 ];
 
 const colorClasses: Record<string, string> = {
-  amber: 'border-amber-800 text-amber-400 hover:bg-amber-950/50',
-  teal: 'border-teal-800 text-teal-400 hover:bg-teal-950/50',
-  purple: 'border-purple-800 text-purple-400 hover:bg-purple-950/50',
-  red: 'border-red-800 text-red-400 hover:bg-red-950/50',
+  amber: 'border-amber-800 text-amber-800 hover:bg-amber-950/50',
+  teal: 'border-teal-800 text-teal-800 hover:bg-teal-950/50',
+  purple: 'border-purple-800 text-purple-700 hover:bg-purple-950/50',
+  red: 'border-red-800 text-red-700 hover:bg-red-950/50',
   blue: 'border-blue-800 text-blue-400 hover:bg-blue-950/50',
-  orange: 'border-orange-800 text-orange-400 hover:bg-orange-950/50',
+  orange: 'border-orange-800 text-orange-800 hover:bg-orange-950/50',
   stone: 'border-border text-muted-foreground hover:bg-card/50',
 };
 
@@ -102,7 +102,7 @@ export default function DevModePanel() {
             <Button
               size="sm"
               variant="outline"
-              className="border-teal-700 text-teal-400 hover:bg-teal-950/50 shadow-lg min-h-[44px]"
+              className="border-teal-700 text-teal-800 hover:bg-teal-950/50 shadow-lg min-h-[44px]"
               data-testid="quick-terminal-button"
             >
               <Terminal className="w-4 h-4" />
@@ -130,8 +130,8 @@ export default function DevModePanel() {
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-amber-500" />
-                  <span className="font-mono text-sm text-amber-500 font-bold">DEV PANEL</span>
+                  <Settings className="w-4 h-4 text-amber-800" />
+                  <span className="font-mono text-sm text-amber-800 font-bold">DEV PANEL</span>
                 </div>
                 <Button 
                   size="sm" 
@@ -147,7 +147,7 @@ export default function DevModePanel() {
               <div className="flex items-center justify-between p-2 bg-black/50 rounded border border-amber-900/30 mb-4">
                 <div className="flex items-center gap-2">
                   {gameState.devMode ? (
-                    <Eye className="w-4 h-4 text-teal-400" />
+                    <Eye className="w-4 h-4 text-teal-800" />
                   ) : (
                     <EyeOff className="w-4 h-4 text-muted-foreground" />
                   )}
@@ -156,7 +156,7 @@ export default function DevModePanel() {
                 <div className="flex items-center gap-2">
                   <Badge 
                     variant="outline" 
-                    className={`text-[10px] ${gameState.devMode ? 'border-teal-600 text-teal-400' : 'border-muted text-muted-foreground'}`}
+                    className={`text-[10px] ${gameState.devMode ? 'border-teal-600 text-teal-800' : 'border-muted text-muted-foreground'}`}
                   >
                     {gameState.devMode ? 'ON' : 'OFF'}
                   </Badge>
@@ -172,11 +172,11 @@ export default function DevModePanel() {
               <div className="text-xs text-muted-foreground mb-4 p-2 bg-black/30 rounded">
                 <div className="flex justify-between">
                   <span>Session:</span>
-                  <span className="text-amber-600 font-mono">{gameState.sessionToken.slice(0, 8)}...</span>
+                  <span className="text-amber-800 font-mono">{gameState.sessionToken.slice(0, 8)}...</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Clues:</span>
-                  <span className="text-teal-500">{gameState.inventory.length}</span>
+                  <span className="text-teal-800">{gameState.inventory.length}</span>
                 </div>
               </div>
 
@@ -185,7 +185,7 @@ export default function DevModePanel() {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowSitemap(!showSitemap)}
-                className="w-full mb-3 border-amber-900/50 text-amber-500 hover:bg-amber-950/30"
+                className="w-full mb-3 border-amber-900/50 text-amber-800 hover:bg-amber-950/30"
               >
                 <Map className="w-3 h-3 mr-2" />
                 {showSitemap ? 'Hide Sitemap' : 'Show Sitemap'}
@@ -209,7 +209,7 @@ export default function DevModePanel() {
                             {route.icon}
                             <span className="flex-1 text-left">{route.name}</span>
                             {route.hidden && (
-                              <Badge variant="outline" className="text-[8px] border-purple-800 text-purple-400">
+                              <Badge variant="outline" className="text-[8px] border-purple-800 text-purple-700">
                                 HIDDEN
                               </Badge>
                             )}
@@ -224,7 +224,7 @@ export default function DevModePanel() {
               {/* Quick Actions */}
               <div className="flex gap-2 mt-3 pt-3 border-t border-amber-900/30">
                 <Link href="/admin">
-                  <Button size="sm" variant="outline" className="flex-1 h-7 text-xs border-amber-800 text-amber-400">
+                  <Button size="sm" variant="outline" className="flex-1 h-7 text-xs border-amber-800 text-amber-800">
                     <Database className="w-3 h-3 mr-1" /> Admin
                   </Button>
                 </Link>
@@ -244,8 +244,8 @@ export default function DevModePanel() {
               onClick={() => setExpanded(true)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full border shadow-lg transition-all ${
                 gameState.devMode 
-                  ? 'bg-teal-950/80 border-teal-600 text-teal-400' 
-                  : 'bg-[hsl(var(--card))] border-amber-900/50 text-amber-500'
+                  ? 'bg-teal-950/80 border-teal-600 text-teal-800' 
+                  : 'bg-[hsl(var(--card))] border-amber-900/50 text-amber-800'
               }`}
               data-testid="dev-mode-panel-button"
             >
@@ -271,12 +271,12 @@ export default function DevModePanel() {
               <Badge className="bg-teal-600 text-black text-[8px] sm:text-[10px] px-1.5 sm:px-2">
                 <Zap className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> DEV
               </Badge>
-              <span className="text-teal-400 text-[10px] sm:text-xs hidden sm:inline">All routes visible • Debug info enabled</span>
+              <span className="text-teal-800 text-[10px] sm:text-xs hidden sm:inline">All routes visible • Debug info enabled</span>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
               {SITEMAP.filter(r => r.hidden).slice(0, 3).map(route => (
                 <Link key={route.path} href={route.path}>
-                  <Button size="sm" variant="ghost" className="h-6 min-w-[36px] sm:min-w-0 text-[10px] text-teal-400 hover:text-teal-300 px-1 sm:px-2">
+                  <Button size="sm" variant="ghost" className="h-6 min-w-[36px] sm:min-w-0 text-[10px] text-teal-800 hover:text-teal-300 px-1 sm:px-2">
                     {route.icon}
                     <span className="ml-1 hidden sm:inline">{route.name}</span>
                   </Button>

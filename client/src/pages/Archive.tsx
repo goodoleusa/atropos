@@ -82,10 +82,10 @@ export default function Archive() {
 
   const getClassColor = (classification: ArchivedFile["classification"]) => {
     switch (classification) {
-      case "PUBLIC": return "text-amber-500 border-amber-900/50";
-      case "CLASSIFIED": return "text-orange-500 border-orange-900/50";
-      case "REDACTED": return "text-red-500 border-red-900/50";
-      case "VOID": return "text-purple-500 border-purple-900/50";
+      case "PUBLIC": return "text-amber-800 border-amber-900/50";
+      case "CLASSIFIED": return "text-orange-800 border-orange-900/50";
+      case "REDACTED": return "text-red-700 border-red-900/50";
+      case "VOID": return "text-purple-700 border-purple-900/50";
     }
   };
 
@@ -100,9 +100,9 @@ export default function Archive() {
       <header className="border-b border-amber-900/30 bg-[hsl(var(--card))]/90 backdrop-blur-sm relative z-10">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ArchiveIcon className="w-6 h-6 text-amber-600" />
-            <h1 className={`font-orbitron text-xl font-bold ${glitchText ? 'text-red-500' : ''}`}>
-              <span className="text-amber-600">DATA</span> ARCHIVE
+            <ArchiveIcon className="w-6 h-6 text-amber-800" />
+            <h1 className={`font-orbitron text-xl font-bold ${glitchText ? 'text-red-700' : ''}`}>
+              <span className="text-amber-800">DATA</span> ARCHIVE
             </h1>
           </div>
           <Link href="/">
@@ -116,8 +116,8 @@ export default function Archive() {
       <div className="container mx-auto px-6 py-8 relative z-10">
         {/* Access Level Indicator */}
         <div className="mb-8 p-4 bg-[hsl(var(--card))] border border-amber-900/30 rounded-lg">
-          <p className="text-amber-600 text-sm">
-            ACCESS LEVEL: <span className="text-amber-500 font-bold">{clueCount} DATA FRAGMENTS</span>
+          <p className="text-amber-800 text-sm">
+            ACCESS LEVEL: <span className="text-amber-800 font-bold">{clueCount} DATA FRAGMENTS</span>
           </p>
           <p className="text-muted-foreground text-xs mt-1">
             Collect more fragments to unlock classified documents.
@@ -138,11 +138,11 @@ export default function Archive() {
                 <Card className={`bg-[hsl(var(--card))] ${getClassColor(file.classification)} transition-all hover:shadow-lg`} data-testid={`card-file-${file.id}`}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+                      <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                         <FileText className="w-4 h-4" /> {file.name}
                       </CardTitle>
                       {accessible ? (
-                        <Unlock className="w-4 h-4 text-amber-500" />
+                        <Unlock className="w-4 h-4 text-amber-800" />
                       ) : (
                         <Lock className="w-4 h-4 text-red-600" />
                       )}
@@ -185,7 +185,7 @@ export default function Archive() {
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-amber-600 font-orbitron flex items-center gap-2">
+                <h3 className="text-amber-800 font-orbitron flex items-center gap-2">
                   <Eye className="w-5 h-5" /> {selectedFile.name}
                 </h3>
                 <span className={`text-xs ${getClassColor(selectedFile.classification).split(' ')[0]}`}>

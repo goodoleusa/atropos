@@ -428,7 +428,7 @@ export default function Agents() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-orbitron font-bold text-amber-500 flex items-center gap-2">
+              <h1 className="text-2xl font-orbitron font-bold text-amber-800 flex items-center gap-2">
                 <Bot className="w-6 h-6" /> Security Agents
               </h1>
               <p className="text-muted-foreground text-sm">Specialized AI agents for security analysis</p>
@@ -458,7 +458,7 @@ export default function Agents() {
                 disabled={step.num > wizardStep}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all w-full ${
                   wizardStep === step.num
-                    ? 'bg-amber-600/20 border border-amber-500/40 text-amber-400'
+                    ? 'bg-amber-600/20 border border-amber-500/40 text-amber-800'
                     : wizardStep > step.num
                     ? 'bg-border/50 border border-border text-foreground hover:border-amber-500/30 cursor-pointer'
                     : 'bg-card/30 border border-border text-muted-foreground cursor-not-allowed'
@@ -477,7 +477,7 @@ export default function Agents() {
                 {step.icon}
               </button>
               {idx < WIZARD_STEPS.length - 1 && (
-                <ChevronRight className={`w-4 h-4 mx-1 shrink-0 ${wizardStep > step.num ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                <ChevronRight className={`w-4 h-4 mx-1 shrink-0 ${wizardStep > step.num ? 'text-amber-800' : 'text-muted-foreground'}`} />
               )}
             </div>
           ))}
@@ -505,7 +505,7 @@ export default function Agents() {
 
             {agentsLoading ? (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-amber-800" />
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -572,7 +572,7 @@ export default function Agents() {
               {/* Left: Config */}
               <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
-                  <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
+                  <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                     <Settings className="w-5 h-5" /> Configuration
                   </CardTitle>
                 </CardHeader>
@@ -598,7 +598,7 @@ export default function Agents() {
 
                   <div>
                     <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-teal-400" />
+                      <Zap className="w-4 h-4 text-teal-800" />
                       Custom Instructions (Optional)
                     </label>
                     <Textarea
@@ -615,9 +615,9 @@ export default function Agents() {
                   {selectedAgent && (
                     <div className="p-3 rounded-lg bg-border/50 border border-border">
                       <div className="flex items-center gap-2 mb-2">
-                        <Lock className="w-4 h-4 text-amber-500" />
-                        <span className="text-sm font-medium text-amber-400">Base Instructions</span>
-                        <Badge variant="outline" className="text-xs border-red-500/50 text-red-400">Protected</Badge>
+                        <Lock className="w-4 h-4 text-amber-800" />
+                        <span className="text-sm font-medium text-amber-800">Base Instructions</span>
+                        <Badge variant="outline" className="text-xs border-red-500/50 text-red-700">Protected</Badge>
                       </div>
                       <ScrollArea className="h-20">
                         <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
@@ -636,7 +636,7 @@ export default function Agents() {
                         variant="outline" 
                         onClick={fetchLatestScan}
                         disabled={loadingScan}
-                        className="w-full justify-start border-border text-teal-400 hover:text-teal-300 hover:border-teal-500/40 h-11"
+                        className="w-full justify-start border-border text-teal-800 hover:text-teal-300 hover:border-teal-500/40 h-11"
                         data-testid="import-atropos-scan"
                       >
                         {loadingScan ? <Loader2 className="w-4 h-4 mr-3 animate-spin" /> : <Radar className="w-4 h-4 mr-3" />}
@@ -669,7 +669,7 @@ export default function Agents() {
               {/* Right: Data preview + run */}
               <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
-                  <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
+                  <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                     <Play className="w-5 h-5" /> Data Input
                   </CardTitle>
                 </CardHeader>
@@ -684,7 +684,7 @@ export default function Agents() {
 
                   {testInput && (
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Check className="w-3 h-3 text-teal-500" />
+                      <Check className="w-3 h-3 text-teal-800" />
                       <span>{testInput.length.toLocaleString()} characters loaded</span>
                       <Button variant="ghost" size="sm" onClick={() => setTestInput('')} className="text-muted-foreground ml-auto h-6 px-2">
                         Clear
@@ -715,7 +715,7 @@ export default function Agents() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-orbitron text-white flex items-center gap-2">
-                <Brain className="w-5 h-5 text-amber-500" />
+                <Brain className="w-5 h-5 text-amber-800" />
                 {selectedAgent?.name} - Analysis
               </h2>
               <div className="flex gap-2">
@@ -733,8 +733,8 @@ export default function Agents() {
                 {isRunning ? (
                   <div className="py-24 flex flex-col items-center justify-center gap-4 text-muted-foreground">
                     <div className="relative">
-                      <Loader2 className="w-16 h-16 animate-spin text-amber-500" />
-                      <Bot className="w-6 h-6 text-amber-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                      <Loader2 className="w-16 h-16 animate-spin text-amber-800" />
+                      <Bot className="w-6 h-6 text-amber-800 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                     </div>
                     <p className="font-orbitron animate-pulse tracking-widest uppercase text-xs mt-4">
                       {selectedAgent?.name} processing via {FREE_MODELS.find(m => m.id === selectedModel)?.name}...
@@ -744,7 +744,7 @@ export default function Agents() {
                   <div className="relative group">
                     <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                       <Button variant="secondary" size="sm" onClick={() => copyToClipboard(testOutput)} className="h-8">
-                        {copied ? <Check className="w-4 h-4 mr-1 text-teal-500" /> : <Copy className="w-4 h-4 mr-1" />}
+                        {copied ? <Check className="w-4 h-4 mr-1 text-teal-800" /> : <Copy className="w-4 h-4 mr-1" />}
                         {copied ? 'Copied' : 'Copy'}
                       </Button>
                       <Button
@@ -786,7 +786,7 @@ export default function Agents() {
             <div className="grid lg:grid-cols-2 gap-4">
               <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
-                  <CardTitle className="text-amber-500 flex items-center gap-2">
+                  <CardTitle className="text-amber-800 flex items-center gap-2">
                     <Download className="w-5 h-5" /> Export Configuration
                   </CardTitle>
                   <CardDescription>Export agents to CrewAI or LangChain format</CardDescription>
@@ -838,7 +838,7 @@ export default function Agents() {
 
               <Card className="bg-card/50 border-amber-900/30">
                 <CardHeader>
-                  <CardTitle className="text-amber-500">Export Preview</CardTitle>
+                  <CardTitle className="text-amber-800">Export Preview</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[300px]">
@@ -883,7 +883,7 @@ ${agents.slice(0, 2).map(a => `  {
         {agentRuns.length > 0 && (
           <Card className="mt-6 bg-card/50 border-amber-900/30">
             <CardHeader>
-              <CardTitle className="text-amber-500 flex items-center gap-2 text-base">
+              <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                 <FileText className="w-5 h-5" /> Recent Analyses
               </CardTitle>
             </CardHeader>

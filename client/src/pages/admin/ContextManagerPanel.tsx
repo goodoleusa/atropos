@@ -87,25 +87,25 @@ interface BatchQualityResult {
 }
 
 const CREW_AGENTS = [
-  { id: 'vuln_analyst', name: 'VulnAnalyst', role: 'Vulnerability Analysis', icon: Bug, color: 'text-red-400' },
+  { id: 'vuln_analyst', name: 'VulnAnalyst', role: 'Vulnerability Analysis', icon: Bug, color: 'text-red-700' },
   { id: 'osint_analyst', name: 'OSINTAnalyst', role: 'OSINT & Recon', icon: Eye, color: 'text-blue-400' },
-  { id: 'threat_intel', name: 'ThreatIntel', role: 'Threat Intelligence', icon: Shield, color: 'text-purple-400' },
-  { id: 'secret_hunter', name: 'SecretHunter', role: 'Credential Analysis', icon: Lock, color: 'text-amber-400' },
-  { id: 'network_recon', name: 'NetworkRecon', role: 'Network Analysis', icon: Network, color: 'text-teal-400' },
+  { id: 'threat_intel', name: 'ThreatIntel', role: 'Threat Intelligence', icon: Shield, color: 'text-purple-700' },
+  { id: 'secret_hunter', name: 'SecretHunter', role: 'Credential Analysis', icon: Lock, color: 'text-amber-800' },
+  { id: 'network_recon', name: 'NetworkRecon', role: 'Network Analysis', icon: Network, color: 'text-teal-800' },
   { id: 'synthesis', name: 'Synthesis', role: 'Executive Synthesis', icon: Brain, color: 'text-indigo-400' },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
   auto_compress: 'bg-cyan-900/30 text-cyan-400 border-cyan-800/40',
-  checkpoint: 'bg-amber-900/30 text-amber-400 border-amber-800/40',
-  handoff: 'bg-purple-900/30 text-purple-400 border-purple-800/40',
+  checkpoint: 'bg-amber-900/30 text-amber-800 border-amber-800/40',
+  handoff: 'bg-purple-900/30 text-purple-700 border-purple-800/40',
   milestone: 'bg-emerald-900/30 text-emerald-400 border-emerald-800/40',
 };
 
 const VERDICT_CONFIG = {
   pass: { icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-900/20 border-emerald-800/30', label: 'PASS' },
-  warn: { icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-900/20 border-amber-800/30', label: 'WARN' },
-  fail: { icon: XCircle, color: 'text-red-400', bg: 'bg-red-900/20 border-red-800/30', label: 'FAIL' },
+  warn: { icon: AlertTriangle, color: 'text-amber-800', bg: 'bg-amber-900/20 border-amber-800/30', label: 'WARN' },
+  fail: { icon: XCircle, color: 'text-red-700', bg: 'bg-red-900/20 border-red-800/30', label: 'FAIL' },
 };
 
 function ScoreBar({ label, score, max = 10 }: { label: string; score: number; max?: number }) {
@@ -211,19 +211,19 @@ export function ContextManagerPanel() {
     <div className="space-y-6" data-testid="context-manager-panel">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Brain className="w-5 h-5 text-amber-500" />
+          <Brain className="w-5 h-5 text-amber-800" />
           <div>
-            <h2 className="text-lg font-bold text-amber-500">NEXUS Context Manager</h2>
+            <h2 className="text-lg font-bold text-amber-800">NEXUS Context Manager</h2>
             <p className="text-xs text-muted-foreground">Auto memory compression, quality auditing & crew orchestration</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {wandbEnabled && (
-            <Badge className="bg-purple-900/30 text-purple-400 border-purple-800/40 text-[9px]">W&B Active</Badge>
+            <Badge className="bg-purple-900/30 text-purple-700 border-purple-800/40 text-[9px]">W&B Active</Badge>
           )}
           <Button
             size="sm" variant="outline"
-            className="border-amber-900/50 text-amber-500 hover:bg-amber-900/20 text-xs"
+            className="border-amber-900/50 text-amber-800 hover:bg-amber-900/20 text-xs"
             onClick={() => {
               queryClient.invalidateQueries({ queryKey: ['/api/chat/memory/stats'] });
               queryClient.invalidateQueries({ queryKey: ['/api/chat/memory/capsules'] });
@@ -242,7 +242,7 @@ export function ContextManagerPanel() {
               <Zap className="w-3.5 h-3.5 text-cyan-400" />
               <span className="text-[10px] text-muted-foreground uppercase">Compressions</span>
             </div>
-            <div className="text-xl font-bold text-amber-400">{totalCompressions}</div>
+            <div className="text-xl font-bold text-amber-800">{totalCompressions}</div>
             <div className="text-[9px] text-muted-foreground">{stats?.autoCompressions || 0} auto / {stats?.manualCompressions || 0} manual</div>
           </CardContent>
         </Card>
@@ -259,20 +259,20 @@ export function ContextManagerPanel() {
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardContent className="p-3" data-testid="stat-handoffs">
             <div className="flex items-center gap-2 mb-1">
-              <Activity className="w-3.5 h-3.5 text-purple-400" />
+              <Activity className="w-3.5 h-3.5 text-purple-700" />
               <span className="text-[10px] text-muted-foreground uppercase">Handoffs</span>
             </div>
-            <div className="text-xl font-bold text-purple-400">{stats?.handoffs || 0}</div>
+            <div className="text-xl font-bold text-purple-700">{stats?.handoffs || 0}</div>
             <div className="text-[9px] text-muted-foreground">Seamless transitions</div>
           </CardContent>
         </Card>
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardContent className="p-3" data-testid="stat-avg-latency">
             <div className="flex items-center gap-2 mb-1">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <Clock className="w-3.5 h-3.5 text-amber-800" />
               <span className="text-[10px] text-muted-foreground uppercase">Avg Latency</span>
             </div>
-            <div className="text-xl font-bold text-amber-400">{stats?.avgLatencyMs ? `${(stats.avgLatencyMs / 1000).toFixed(1)}s` : '—'}</div>
+            <div className="text-xl font-bold text-amber-800">{stats?.avgLatencyMs ? `${(stats.avgLatencyMs / 1000).toFixed(1)}s` : '—'}</div>
             <div className="text-[9px] text-muted-foreground">Compression time</div>
           </CardContent>
         </Card>
@@ -290,7 +290,7 @@ export function ContextManagerPanel() {
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                   <Search className="w-4 h-4" />
                   Quality Audit
                 </CardTitle>
@@ -311,13 +311,13 @@ export function ContextManagerPanel() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-4 p-3 bg-card/30 border border-border/30 rounded">
                     <div className="text-center">
-                      <div className={`text-2xl font-bold ${batchResult.summary.avgOverall >= 7 ? 'text-emerald-400' : batchResult.summary.avgOverall >= 4 ? 'text-amber-400' : 'text-red-400'}`}>
+                      <div className={`text-2xl font-bold ${batchResult.summary.avgOverall >= 7 ? 'text-emerald-400' : batchResult.summary.avgOverall >= 4 ? 'text-amber-800' : 'text-red-700'}`}>
                         {batchResult.summary.avgOverall}/10
                       </div>
                       <div className="text-[9px] text-muted-foreground">Avg Quality</div>
                     </div>
                     <div className="text-center">
-                      <div className={`text-2xl font-bold ${batchResult.summary.passRate >= 70 ? 'text-emerald-400' : batchResult.summary.passRate >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                      <div className={`text-2xl font-bold ${batchResult.summary.passRate >= 70 ? 'text-emerald-400' : batchResult.summary.passRate >= 40 ? 'text-amber-800' : 'text-red-700'}`}>
                         {batchResult.summary.passRate}%
                       </div>
                       <div className="text-[9px] text-muted-foreground">Pass Rate</div>
@@ -330,7 +330,7 @@ export function ContextManagerPanel() {
                   <div className="space-y-2">
                     {batchResult.results.map(r => {
                       if (r.error) return (
-                        <div key={r.capsuleId} className="text-[10px] text-red-400 p-2 border border-red-900/20 rounded">
+                        <div key={r.capsuleId} className="text-[10px] text-red-700 p-2 border border-red-900/20 rounded">
                           Capsule #{r.capsuleId}: {r.error}
                         </div>
                       );
@@ -355,7 +355,7 @@ export function ContextManagerPanel() {
                           {r.quality.notes && <div className="text-[9px] text-muted-foreground mt-1">{r.quality.notes}</div>}
                           {r.quality.critical_loss && r.quality.critical_loss.length > 0 && (
                             <div className="mt-1">
-                              <span className="text-[9px] text-red-400">Missing: </span>
+                              <span className="text-[9px] text-red-700">Missing: </span>
                               <span className="text-[9px] text-muted-foreground">{r.quality.critical_loss.join(', ')}</span>
                             </div>
                           )}
@@ -375,7 +375,7 @@ export function ContextManagerPanel() {
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                   <Database className="w-4 h-4" />
                   State Capsules
                 </CardTitle>
@@ -384,7 +384,7 @@ export function ContextManagerPanel() {
             </CardHeader>
             <CardContent>
               {capsulesLoading ? (
-                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-amber-500" /></div>
+                <div className="flex items-center justify-center py-6"><Loader2 className="w-4 h-4 animate-spin text-amber-800" /></div>
               ) : capsules && capsules.length > 0 ? (
                 <ScrollArea className="max-h-[500px]">
                   <div className="space-y-2">
@@ -422,7 +422,7 @@ export function ContextManagerPanel() {
                           {expandedCapsule === capsule.id && (
                             <div className="mt-3 space-y-2">
                               <div className="grid grid-cols-3 gap-2 text-[10px]">
-                                <div className="text-muted-foreground">Compressed: <span className="text-amber-400">{capsule.metadata.compressedTokens || capsule.metadata.tokensEstimate} tok</span></div>
+                                <div className="text-muted-foreground">Compressed: <span className="text-amber-800">{capsule.metadata.compressedTokens || capsule.metadata.tokensEstimate} tok</span></div>
                                 <div className="text-muted-foreground">Original: <span className="text-foreground">{capsule.metadata.originalTokens || '—'} tok</span></div>
                                 <div className="text-muted-foreground">Messages: <span className="text-foreground">{capsule.metadata.messageCount || '—'}</span></div>
                                 <div className="text-muted-foreground">Model: <span className="text-foreground">{capsule.metadata.model?.split('/').pop() || '—'}</span></div>
@@ -446,7 +446,7 @@ export function ContextManagerPanel() {
                                     </div>
                                     {qr.quality.critical_loss && qr.quality.critical_loss.length > 0 && (
                                       <div className="text-[9px]">
-                                        <span className="text-red-400">Info lost: </span>
+                                        <span className="text-red-700">Info lost: </span>
                                         <span className="text-muted-foreground">{qr.quality.critical_loss.join(', ')}</span>
                                       </div>
                                     )}
@@ -490,7 +490,7 @@ export function ContextManagerPanel() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card className="bg-[hsl(var(--card))] border-amber-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                   <BarChart3 className="w-4 h-4" />
                   Model Performance
                 </CardTitle>
@@ -509,13 +509,13 @@ export function ContextManagerPanel() {
                             </div>
                             <div className="flex items-center gap-3 text-right">
                               <div>
-                                <div className={`text-sm font-bold ${savingsPct >= 60 ? 'text-emerald-400' : savingsPct >= 30 ? 'text-amber-400' : 'text-red-400'}`}>
+                                <div className={`text-sm font-bold ${savingsPct >= 60 ? 'text-emerald-400' : savingsPct >= 30 ? 'text-amber-800' : 'text-red-700'}`}>
                                   {savingsPct}%
                                 </div>
                                 <div className="text-[9px] text-muted-foreground">savings</div>
                               </div>
                               <div>
-                                <div className="text-sm font-bold text-amber-400">{(data.avgLatency / 1000).toFixed(1)}s</div>
+                                <div className="text-sm font-bold text-amber-800">{(data.avgLatency / 1000).toFixed(1)}s</div>
                                 <div className="text-[9px] text-muted-foreground">latency</div>
                               </div>
                             </div>
@@ -533,7 +533,7 @@ export function ContextManagerPanel() {
 
             <Card className="bg-[hsl(var(--card))] border-amber-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                   <Activity className="w-4 h-4" />
                   Trigger Breakdown
                 </CardTitle>
@@ -567,7 +567,7 @@ export function ContextManagerPanel() {
 
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+              <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 Recent Compression Runs
               </CardTitle>
@@ -595,7 +595,7 @@ export function ContextManagerPanel() {
                             <Badge className={`text-[8px] ${TYPE_COLORS[c.type] || 'bg-border text-muted-foreground'}`}>{c.type}</Badge>
                           </td>
                           <td className="py-1.5 pr-3 text-muted-foreground">{c.createdBy}</td>
-                          <td className="py-1.5 pr-3 text-right text-amber-400">{c.tokens || '—'}</td>
+                          <td className="py-1.5 pr-3 text-right text-amber-800">{c.tokens || '—'}</td>
                           <td className="py-1.5 pr-3 text-right text-emerald-400">{c.ratio ? `${Math.round((1 - c.ratio) * 100)}%` : '—'}</td>
                           <td className="py-1.5 pr-3 text-muted-foreground truncate max-w-[100px]">{c.model?.split('/').pop() || '—'}</td>
                           <td className="py-1.5 text-right text-muted-foreground">{new Date(c.createdAt).toLocaleDateString()}</td>
@@ -613,7 +613,7 @@ export function ContextManagerPanel() {
           {wandbEnabled && (
             <Card className="bg-[hsl(var(--card))] border-purple-900/30">
               <CardContent className="p-3">
-                <div className="flex items-center gap-2 text-xs text-purple-400">
+                <div className="flex items-center gap-2 text-xs text-purple-700">
                   <BarChart3 className="w-3.5 h-3.5" />
                   W&B Dashboard syncing — compression_ratio, token_savings, latency_ms, savings_percent tracked per run.
                   Check your W&B project <span className="font-bold">nexus-context-manager</span> for trends and optimization insights.
@@ -626,7 +626,7 @@ export function ContextManagerPanel() {
         <TabsContent value="config" className="mt-4">
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+              <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                 <Settings2 className="w-4 h-4" />
                 Auto-Compression Settings
               </CardTitle>
@@ -643,7 +643,7 @@ export function ContextManagerPanel() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <Label className="text-xs text-muted-foreground">Message Threshold</Label>
-                  <span className="text-xs text-amber-400">{thresholds.messageCount} messages</span>
+                  <span className="text-xs text-amber-800">{thresholds.messageCount} messages</span>
                 </div>
                 <Slider
                   value={[thresholds.messageCount]}
@@ -656,7 +656,7 @@ export function ContextManagerPanel() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <Label className="text-xs text-muted-foreground">Token Threshold</Label>
-                  <span className="text-xs text-amber-400">{thresholds.tokenEstimate.toLocaleString()} tokens</span>
+                  <span className="text-xs text-amber-800">{thresholds.tokenEstimate.toLocaleString()} tokens</span>
                 </div>
                 <Slider
                   value={[thresholds.tokenEstimate]}
@@ -668,7 +668,7 @@ export function ContextManagerPanel() {
               </div>
               <Button
                 size="sm"
-                className="w-full bg-amber-900/30 text-amber-400 border border-amber-800/40 hover:bg-amber-900/50 text-xs"
+                className="w-full bg-amber-900/30 text-amber-800 border border-amber-800/40 hover:bg-amber-900/50 text-xs"
                 onClick={() => {
                   localStorage.setItem('nexus_memory_thresholds', JSON.stringify(thresholds));
                   toast({ title: "Thresholds Saved", description: `Messages: ${thresholds.messageCount}, Tokens: ${thresholds.tokenEstimate}` });
@@ -684,7 +684,7 @@ export function ContextManagerPanel() {
         <TabsContent value="crew" className="mt-4">
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+              <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 Specialist Crew (NEXUS Orchestrates)
               </CardTitle>
@@ -708,7 +708,7 @@ export function ContextManagerPanel() {
               </div>
               <Separator className="my-3 bg-border/30" />
               <div className="p-3 bg-card/20 border border-border/20 rounded space-y-1">
-                <div className="text-xs text-amber-400 font-medium">NEXUS Architect Role</div>
+                <div className="text-xs text-amber-800 font-medium">NEXUS Architect Role</div>
                 <div className="text-[10px] text-muted-foreground leading-relaxed">
                   NEXUS is the lead architect agent with a bird's-eye view of all sessions. It orchestrates specialist crews,
                   manages context memory automatically, routes tasks to the right specialist, and maintains continuity across

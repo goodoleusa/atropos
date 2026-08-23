@@ -701,13 +701,13 @@ ${modelRankings.slice(0, 3).map(m => {
   return (
     <div className="space-y-6">
       <div className="flex gap-2 justify-end">
-        <Button onClick={() => setShowCrewAIExporter(true)} variant="outline" className="border-purple-800 text-purple-400 min-h-[44px] px-2" title="Export to CrewAI" data-testid="export-crewai-btn">
+        <Button onClick={() => setShowCrewAIExporter(true)} variant="outline" className="border-purple-800 text-purple-700 min-h-[44px] px-2" title="Export to CrewAI" data-testid="export-crewai-btn">
           <Bot className="w-4 h-4" />
         </Button>
-        <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-400 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
+        <Button onClick={() => exportSessionReport('markdown')} variant="outline" className="border-amber-800 text-amber-800 min-h-[44px] px-2" title="Export Markdown" data-testid="export-markdown-btn">
           <FileText className="w-4 h-4" />
         </Button>
-        <Button onClick={() => exportSessionReport('json')} variant="outline" className="border-teal-800 text-teal-400 min-h-[44px] px-2" title="Export JSON" data-testid="export-json-btn">
+        <Button onClick={() => exportSessionReport('json')} variant="outline" className="border-teal-800 text-teal-800 min-h-[44px] px-2" title="Export JSON" data-testid="export-json-btn">
           <Download className="w-4 h-4" />
         </Button>
       </div>
@@ -715,7 +715,7 @@ ${modelRankings.slice(0, 3).map(m => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="border-amber-900/50 bg-card/50">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-amber-500 text-lg sm:text-xl">Model Selection</CardTitle>
+              <CardTitle className="text-amber-800 text-lg sm:text-xl">Model Selection</CardTitle>
               <CardDescription className="text-muted-foreground">Choose the AI intelligence layer</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 p-4 sm:p-6">
@@ -745,7 +745,7 @@ ${modelRankings.slice(0, 3).map(m => {
                       variant={enabledModules.includes(mod) ? 'default' : 'outline'}
                       className={`cursor-pointer justify-start gap-2 py-2 px-3 transition-all ${
                         enabledModules.includes(mod)
-                          ? 'bg-teal-900/50 text-teal-400 border-teal-500/50 shadow-[0_0_8px_rgba(20,184,166,0.3)]'
+                          ? 'bg-teal-900/50 text-teal-800 border-teal-500/50 shadow-[0_0_8px_rgba(20,184,166,0.3)]'
                           : 'bg-border/50 text-muted-foreground border-border hover:border-teal-500/30'
                       }`}
                       onClick={() => toggleModule(mod)}
@@ -762,7 +762,7 @@ ${modelRankings.slice(0, 3).map(m => {
 
         <Card className="bg-black/50 border-amber-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-base flex items-center gap-2">
               <Cpu className="w-5 h-5" /> Module Selection
             </CardTitle>
             <CardDescription className="text-muted-foreground text-sm">
@@ -785,7 +785,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{moduleDescriptions[mod].icon}</span>
                     <div className="flex-1">
-                      <p className={`font-bold ${enabledModules.includes(mod) ? 'text-amber-400' : 'text-muted-foreground'}`}>
+                      <p className={`font-bold ${enabledModules.includes(mod) ? 'text-amber-800' : 'text-muted-foreground'}`}>
                         {moduleDescriptions[mod].name}
                       </p>
                       <p className="text-xs text-muted-foreground">{moduleDescriptions[mod].desc}</p>
@@ -825,7 +825,7 @@ ${modelRankings.slice(0, 3).map(m => {
         <Card className="bg-black/50 border-amber-900/30">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-base flex items-center gap-2">
                 <Play className="w-5 h-5" /> {battleMode ? 'Model Battle' : 'Test Arena'}
               </CardTitle>
               <div className="flex gap-2">
@@ -833,7 +833,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   size="sm"
                   variant={showPentestLab ? 'default' : 'outline'}
                   onClick={() => setShowPentestLab(!showPentestLab)}
-                  className={`min-h-[40px] ${showPentestLab ? 'bg-teal-700 text-white' : 'border-teal-700 text-teal-400'}`}
+                  className={`min-h-[40px] ${showPentestLab ? 'bg-teal-700 text-white' : 'border-teal-700 text-teal-800'}`}
                   data-testid="toggle-pentest-lab"
                 >
                   <Shield className="w-4 h-4 mr-1" /> AI Pentest
@@ -842,7 +842,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   size="sm"
                   variant={battleMode ? 'default' : 'outline'}
                   onClick={() => setBattleMode(!battleMode)}
-                  className={`min-h-[40px] ${battleMode ? 'bg-purple-700 text-white' : 'border-purple-700 text-purple-400'}`}
+                  className={`min-h-[40px] ${battleMode ? 'bg-purple-700 text-white' : 'border-purple-700 text-purple-700'}`}
                   data-testid="toggle-battle-mode"
                 >
                   ⚔️ Battle
@@ -858,11 +858,11 @@ ${modelRankings.slice(0, 3).map(m => {
             {showPentestLab && (
               <div className="space-y-4 border-b border-teal-900/30 pb-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-teal-400 font-bold text-sm flex items-center gap-2">
+                  <h3 className="text-teal-800 font-bold text-sm flex items-center gap-2">
                     <Shield className="w-4 h-4" /> AI Pentesting Challenges (2025 Research)
                   </h3>
                   <Select value={challengeFilter} onValueChange={setChallengeFilter}>
-                    <SelectTrigger className="w-[120px] bg-black/50 border-teal-800 text-teal-400 min-h-[36px] text-xs">
+                    <SelectTrigger className="w-[120px] bg-black/50 border-teal-800 text-teal-800 min-h-[36px] text-xs">
                       <SelectValue placeholder="Filter" />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border">
@@ -897,7 +897,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <p className="text-teal-400 font-bold text-sm">{challenge.name}</p>
+                          <p className="text-teal-800 font-bold text-sm">{challenge.name}</p>
                           <p className="text-muted-foreground text-xs mt-1 line-clamp-2">{challenge.description}</p>
                         </div>
                         <div className="flex flex-col items-end gap-1">
@@ -970,7 +970,7 @@ ${modelRankings.slice(0, 3).map(m => {
                           <SelectItem key={m.id} value={m.id} className="min-h-[40px]">
                             <span className="flex items-center gap-2">
                               {m.name}
-                              <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
+                              <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-800'}`}>
                                 {m.tier.toUpperCase()}
                               </Badge>
                             </span>
@@ -1009,7 +1009,7 @@ ${modelRankings.slice(0, 3).map(m => {
                             <SelectItem key={m.id} value={m.id} className="min-h-[40px]" disabled={m.id === selectedModel}>
                               <span className="flex items-center gap-2">
                                 {m.name}
-                                <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-400'}`}>
+                                <Badge variant="outline" className={`text-[9px] ${m.tier === 'free' ? 'border-green-600 text-green-400' : 'border-amber-600 text-amber-800'}`}>
                                   {m.tier.toUpperCase()}
                                 </Badge>
                                 {m.id === selectedModel && <span className="text-muted-foreground">(Model A)</span>}
@@ -1073,7 +1073,7 @@ ${modelRankings.slice(0, 3).map(m => {
         {(response || responseB) && (
           <Card className="bg-black/50 border-teal-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-teal-500 text-base">
+              <CardTitle className="text-teal-800 text-base">
                 {battleMode && currentBattle ? 'Battle Results' : 'Response'}
               </CardTitle>
             </CardHeader>
@@ -1086,7 +1086,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Badge className="bg-amber-700 text-black">A</Badge>
-                        <span className="text-sm font-bold text-amber-400">{currentBattle.modelA.name}</span>
+                        <span className="text-sm font-bold text-amber-800">{currentBattle.modelA.name}</span>
                       </div>
                       <span className="text-xs text-muted-foreground">{currentBattle.modelA.latency}ms • {currentBattle.modelA.tokens} tok</span>
                     </div>
@@ -1100,7 +1100,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Badge className="bg-teal-700 text-black">B</Badge>
-                        <span className="text-sm font-bold text-teal-400">{currentBattle.modelB.name}</span>
+                        <span className="text-sm font-bold text-teal-800">{currentBattle.modelB.name}</span>
                       </div>
                       <span className="text-xs text-muted-foreground">{currentBattle.modelB.latency}ms • {currentBattle.modelB.tokens} tok</span>
                     </div>
@@ -1149,7 +1149,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     <div>
                       <div className="flex justify-between text-sm text-muted-foreground mb-2">
                         <span>Task Completion</span>
-                        <span className="text-amber-400">{taskCompletionRating}%</span>
+                        <span className="text-amber-800">{taskCompletionRating}%</span>
                       </div>
                       <Slider
                         value={[taskCompletionRating]}
@@ -1161,7 +1161,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     <div>
                       <div className="flex justify-between text-sm text-muted-foreground mb-2">
                         <span>Coherence</span>
-                        <span className="text-teal-400">{coherenceRating}%</span>
+                        <span className="text-teal-800">{coherenceRating}%</span>
                       </div>
                       <Slider
                         value={[coherenceRating]}
@@ -1173,7 +1173,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     <div>
                       <div className="flex justify-between text-sm text-muted-foreground mb-2">
                         <span>Context Awareness</span>
-                        <span className="text-purple-400">{contextRating}%</span>
+                        <span className="text-purple-700">{contextRating}%</span>
                       </div>
                       <Slider
                         value={[contextRating]}
@@ -1194,10 +1194,10 @@ ${modelRankings.slice(0, 3).map(m => {
           <Card className="bg-black/50 border-purple-900/30">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-purple-500 text-base flex items-center gap-2">
+                <CardTitle className="text-purple-700 text-base flex items-center gap-2">
                   ⚔️ Battle History ({battleResults.length})
                 </CardTitle>
-                <Button size="sm" variant="ghost" onClick={() => setBattleResults([])} className="text-red-400 min-h-[44px]">
+                <Button size="sm" variant="ghost" onClick={() => setBattleResults([])} className="text-red-700 min-h-[44px]">
                   Clear
                 </Button>
               </div>
@@ -1208,9 +1208,9 @@ ${modelRankings.slice(0, 3).map(m => {
                   <div key={battle.id} className="p-3 bg-card/30 rounded-lg border border-border">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2 text-xs">
-                        <span className={battle.winner === 'A' ? 'text-amber-400 font-bold' : 'text-muted-foreground'}>{battle.modelA.name}</span>
+                        <span className={battle.winner === 'A' ? 'text-amber-800 font-bold' : 'text-muted-foreground'}>{battle.modelA.name}</span>
                         <span className="text-muted-foreground">vs</span>
-                        <span className={battle.winner === 'B' ? 'text-teal-400 font-bold' : 'text-muted-foreground'}>{battle.modelB.name}</span>
+                        <span className={battle.winner === 'B' ? 'text-teal-800 font-bold' : 'text-muted-foreground'}>{battle.modelB.name}</span>
                       </div>
                       <Badge className={
                         battle.winner === 'A' ? 'bg-amber-700 text-black' :
@@ -1232,10 +1232,10 @@ ${modelRankings.slice(0, 3).map(m => {
           <Card className="bg-black/50 border-amber-900/30">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+                <CardTitle className="text-amber-800 text-base flex items-center gap-2">
                   <BarChart3 className="w-5 h-5" /> Run History ({runs.length})
                 </CardTitle>
-                <Button size="sm" variant="ghost" onClick={() => setRuns([])} className="text-red-400 min-h-[44px]">
+                <Button size="sm" variant="ghost" onClick={() => setRuns([])} className="text-red-700 min-h-[44px]">
                   <RefreshCw className="w-4 h-4 mr-1" /> Clear
                 </Button>
               </div>
@@ -1245,7 +1245,7 @@ ${modelRankings.slice(0, 3).map(m => {
                 {runs.slice(-5).reverse().map((run, i) => (
                   <div key={run.id} className="p-4 bg-card/30 rounded-lg border border-border">
                     <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline" className="border-amber-600 text-amber-400">
+                      <Badge variant="outline" className="border-amber-600 text-amber-800">
                         #{runs.length - i}
                       </Badge>
                       <span className="text-xs text-muted-foreground">{run.model.split('/')[1]}</span>
@@ -1253,8 +1253,8 @@ ${modelRankings.slice(0, 3).map(m => {
                     <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{run.prompt}</p>
                     <div className="flex flex-wrap gap-2 text-xs">
                       <span className="text-green-400">${run.costUsd.toFixed(4)}</span>
-                      <span className="text-purple-400">{run.latencyMs}ms</span>
-                      <span className="text-teal-400">{run.totalTokens} tok</span>
+                      <span className="text-purple-700">{run.latencyMs}ms</span>
+                      <span className="text-teal-800">{run.totalTokens} tok</span>
                     </div>
                     <div className="flex gap-2 mt-2">
                       <Badge className={`text-[10px] ${run.taskCompletion > 70 ? 'bg-green-900' : run.taskCompletion > 40 ? 'bg-amber-900' : 'bg-red-900'}`}>
@@ -1274,7 +1274,7 @@ ${modelRankings.slice(0, 3).map(m => {
         {sessionSummary.recommendations.length > 0 && (
           <Card className="bg-black/50 border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-base flex items-center gap-2">
                 <Lightbulb className="w-5 h-5" /> Recommendations
               </CardTitle>
             </CardHeader>
@@ -1282,7 +1282,7 @@ ${modelRankings.slice(0, 3).map(m => {
               <ul className="space-y-3">
                 {sessionSummary.recommendations.map((rec, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-foreground p-3 bg-card/30 rounded">
-                    <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-5 h-5 text-amber-800 shrink-0 mt-0.5" />
                     {rec}
                   </li>
                 ))}
@@ -1293,7 +1293,7 @@ ${modelRankings.slice(0, 3).map(m => {
 
         <Card className="bg-black/50 border-purple-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-purple-400 text-base flex items-center gap-2">
+            <CardTitle className="text-purple-700 text-base flex items-center gap-2">
               <Lightbulb className="w-5 h-5" /> Prompt Engineering Guide
             </CardTitle>
             <CardDescription className="text-muted-foreground">Master prompt crafting for security investigations</CardDescription>
@@ -1365,7 +1365,7 @@ ${modelRankings.slice(0, 3).map(m => {
 
         <Card className="bg-black/50 border-red-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-red-500 text-base flex items-center gap-2">
+            <CardTitle className="text-red-700 text-base flex items-center gap-2">
               <Bug className="w-5 h-5" /> Report Issue
             </CardTitle>
           </CardHeader>
@@ -1393,10 +1393,10 @@ ${modelRankings.slice(0, 3).map(m => {
       <Card className={`border-amber-900/30 bg-black/50 ${showCacheSimulator ? '' : 'cursor-pointer hover:border-amber-700/50 transition-colors'}`}>
         <CardHeader className="pb-3" onClick={() => setShowCacheSimulator(!showCacheSimulator)}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-amber-500 text-base flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-base flex items-center gap-2">
               <DollarSign className="w-5 h-5" /> Cache Cost Simulator
             </CardTitle>
-            <Badge variant="outline" className={`text-xs ${showCacheSimulator ? 'border-amber-500 text-amber-400' : 'border-border text-muted-foreground'}`}>
+            <Badge variant="outline" className={`text-xs ${showCacheSimulator ? 'border-amber-500 text-amber-800' : 'border-border text-muted-foreground'}`}>
               {showCacheSimulator ? 'Collapse' : 'Expand'}
             </Badge>
           </div>
@@ -1413,7 +1413,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   type="number"
                   value={cacheSimSystemTokens}
                   onChange={e => setCacheSimSystemTokens(Math.max(100, parseInt(e.target.value) || 100))}
-                  className="bg-black/50 border-border text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-system-tokens"
                 />
                 <p className="text-[10px] text-muted-foreground mt-1">Cached between requests</p>
@@ -1424,7 +1424,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   type="number"
                   value={cacheSimUserTokens}
                   onChange={e => setCacheSimUserTokens(Math.max(10, parseInt(e.target.value) || 10))}
-                  className="bg-black/50 border-border text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-user-tokens"
                 />
                 <p className="text-[10px] text-muted-foreground mt-1">Changes each request</p>
@@ -1435,7 +1435,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   type="number"
                   value={cacheSimOutputTokens}
                   onChange={e => setCacheSimOutputTokens(Math.max(50, parseInt(e.target.value) || 50))}
-                  className="bg-black/50 border-border text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-output-tokens"
                 />
                 <p className="text-[10px] text-muted-foreground mt-1">Model response size</p>
@@ -1446,7 +1446,7 @@ ${modelRankings.slice(0, 3).map(m => {
                   type="number"
                   value={cacheSimRequests}
                   onChange={e => setCacheSimRequests(Math.max(2, Math.min(500, parseInt(e.target.value) || 2)))}
-                  className="bg-black/50 border-border text-amber-400 text-sm min-h-[40px]"
+                  className="bg-black/50 border-border text-amber-800 text-sm min-h-[40px]"
                   data-testid="cache-sim-requests"
                 />
                 <p className="text-[10px] text-muted-foreground mt-1">2-500 requests</p>
@@ -1527,7 +1527,7 @@ ${modelRankings.slice(0, 3).map(m => {
                     </div>
 
                     <div className="flex justify-between text-[10px] text-muted-foreground">
-                      <span>Saved: <span className="text-teal-400 font-medium">${result.savings.toFixed(4)}</span></span>
+                      <span>Saved: <span className="text-teal-800 font-medium">${result.savings.toFixed(4)}</span></span>
                       <span>Per request: ${(result.noCacheCost / result.requests).toFixed(5)} → ${(result.cachedCost / result.requests).toFixed(5)}</span>
                     </div>
 
@@ -1564,21 +1564,21 @@ ${modelRankings.slice(0, 3).map(m => {
 
               return (
                 <div className="p-3 rounded-lg border border-amber-900/30 bg-amber-950/20 space-y-2">
-                  <h4 className="text-amber-400 text-xs font-bold flex items-center gap-1">
+                  <h4 className="text-amber-800 text-xs font-bold flex items-center gap-1">
                     <Lightbulb className="w-3 h-3" /> Key Insights
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                     <div className="p-2 bg-black/30 rounded border border-border">
                       <p className="text-muted-foreground">Highest Cache Savings</p>
-                      <p className="text-teal-400 font-bold">{bestSaver?.modelName} ({bestSaver?.savingsPercent.toFixed(1)}%)</p>
+                      <p className="text-teal-800 font-bold">{bestSaver?.modelName} ({bestSaver?.savingsPercent.toFixed(1)}%)</p>
                     </div>
                     <div className="p-2 bg-black/30 rounded border border-border">
                       <p className="text-muted-foreground">Cheapest with Caching</p>
-                      <p className="text-amber-400 font-bold">{cheapestCached?.modelName} (${cheapestCached?.cachedCost.toFixed(4)}/session)</p>
+                      <p className="text-amber-800 font-bold">{cheapestCached?.modelName} (${cheapestCached?.cachedCost.toFixed(4)}/session)</p>
                     </div>
                     <div className="p-2 bg-black/30 rounded border border-border">
                       <p className="text-muted-foreground">Monthly Savings (daily use)</p>
-                      <p className="text-teal-400 font-bold">${(monthlyNoCacheBest - monthlyCachedBest).toFixed(2)}/month</p>
+                      <p className="text-teal-800 font-bold">${(monthlyNoCacheBest - monthlyCachedBest).toFixed(2)}/month</p>
                     </div>
                   </div>
                   <p className="text-[10px] text-muted-foreground italic">
@@ -1615,7 +1615,7 @@ export default function AILab() {
   return (
     <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center text-muted-foreground">
       <div className="text-center space-y-2">
-        <Brain className="w-8 h-8 mx-auto text-amber-500 animate-pulse" />
+        <Brain className="w-8 h-8 mx-auto text-amber-800 animate-pulse" />
         <p className="text-sm">Redirecting to Investigation Hub...</p>
       </div>
     </div>

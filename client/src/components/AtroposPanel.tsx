@@ -679,11 +679,11 @@ Summarize key findings, highlight risks, and recommend next investigation steps.
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
-        return <CheckCircle2 className="h-4 w-4 text-teal-400" />;
+        return <CheckCircle2 className="h-4 w-4 text-teal-800" />;
       case 'error':
-        return <XCircle className="h-4 w-4 text-red-400" />;
+        return <XCircle className="h-4 w-4 text-red-700" />;
       case 'running':
-        return <Loader2 className="h-4 w-4 text-amber-400 animate-spin" />;
+        return <Loader2 className="h-4 w-4 text-amber-800 animate-spin" />;
       default:
         return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
@@ -780,12 +780,12 @@ Summarize key findings, highlight risks, and recommend next investigation steps.
             <div className="flex items-center justify-between gap-2">
               {healthStatus.available ? (
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-teal-400" />
+                  <CheckCircle2 className="h-5 w-5 text-teal-800" />
                   <span className="text-sm text-teal-300">Atropos binary is available</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-red-400" />
+                  <AlertCircle className="h-5 w-5 text-red-700" />
                   <span className="text-sm text-red-300">
                     Atropos binary not available: {healthStatus.error || 'Unknown error'}
                   </span>

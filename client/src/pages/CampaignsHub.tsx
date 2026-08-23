@@ -31,30 +31,30 @@ interface UnifiedCampaign {
 
 const CATEGORY_META: Record<string, { icon: any; label: string; color: string; bg: string }> = {
   all: { icon: <Layers className="w-3.5 h-3.5" />, label: 'All', color: 'text-foreground', bg: 'bg-border border-muted' },
-  civic: { icon: <Users className="w-3.5 h-3.5" />, label: 'Civic', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
-  movements: { icon: <Users className="w-3.5 h-3.5" />, label: 'Movements', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
+  civic: { icon: <Users className="w-3.5 h-3.5" />, label: 'Civic', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
+  movements: { icon: <Users className="w-3.5 h-3.5" />, label: 'Movements', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
   organizing: { icon: <Users className="w-3.5 h-3.5" />, label: 'Organizing', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
-  apt: { icon: <Skull className="w-3.5 h-3.5" />, label: 'APT', color: 'text-red-400', bg: 'bg-red-900/30 border-red-800' },
-  osint: { icon: <Globe className="w-3.5 h-3.5" />, label: 'OSINT', color: 'text-teal-400', bg: 'bg-teal-900/30 border-teal-800' },
+  apt: { icon: <Skull className="w-3.5 h-3.5" />, label: 'APT', color: 'text-red-700', bg: 'bg-red-900/30 border-red-800' },
+  osint: { icon: <Globe className="w-3.5 h-3.5" />, label: 'OSINT', color: 'text-teal-800', bg: 'bg-teal-900/30 border-teal-800' },
   forensics: { icon: <Search className="w-3.5 h-3.5" />, label: 'Forensics', color: 'text-blue-400', bg: 'bg-blue-900/30 border-blue-800' },
-  exploit: { icon: <Bug className="w-3.5 h-3.5" />, label: 'Exploit', color: 'text-red-400', bg: 'bg-red-900/30 border-red-800' },
-  defense: { icon: <Shield className="w-3.5 h-3.5" />, label: 'Defense', color: 'text-amber-400', bg: 'bg-amber-900/30 border-amber-800' },
+  exploit: { icon: <Bug className="w-3.5 h-3.5" />, label: 'Exploit', color: 'text-red-700', bg: 'bg-red-900/30 border-red-800' },
+  defense: { icon: <Shield className="w-3.5 h-3.5" />, label: 'Defense', color: 'text-amber-800', bg: 'bg-amber-900/30 border-amber-800' },
   recon: { icon: <Network className="w-3.5 h-3.5" />, label: 'Recon', color: 'text-cyan-400', bg: 'bg-cyan-900/30 border-cyan-800' },
-  social: { icon: <Users className="w-3.5 h-3.5" />, label: 'Social', color: 'text-purple-400', bg: 'bg-purple-900/30 border-purple-800' },
+  social: { icon: <Users className="w-3.5 h-3.5" />, label: 'Social', color: 'text-purple-700', bg: 'bg-purple-900/30 border-purple-800' },
   curriculum: { icon: <BookOpen className="w-3.5 h-3.5" />, label: 'Learning', color: 'text-emerald-400', bg: 'bg-emerald-900/30 border-emerald-800' },
   lab: { icon: <FlaskConical className="w-3.5 h-3.5" />, label: 'Labs', color: 'text-violet-400', bg: 'bg-violet-900/30 border-violet-800' },
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   beginner: 'border-emerald-700/60 text-emerald-400 bg-emerald-950/30',
-  intermediate: 'border-amber-700/60 text-amber-400 bg-amber-950/30',
-  advanced: 'border-red-700/60 text-red-400 bg-red-950/30',
-  expert: 'border-purple-700/60 text-purple-400 bg-purple-950/30',
+  intermediate: 'border-amber-700/60 text-amber-800 bg-amber-950/30',
+  advanced: 'border-red-700/60 text-red-700 bg-red-950/30',
+  expert: 'border-purple-700/60 text-purple-700 bg-purple-950/30',
 };
 
 const NATION_STATE_FLAGS: Record<string, { label: string; color: string }> = {
-  Russia: { label: 'RUS', color: 'text-red-400' },
-  China: { label: 'CHN', color: 'text-orange-400' },
+  Russia: { label: 'RUS', color: 'text-red-700' },
+  China: { label: 'CHN', color: 'text-orange-800' },
   DPRK: { label: 'DPRK', color: 'text-yellow-400' },
   Iran: { label: 'IRN', color: 'text-emerald-400' },
 };
@@ -158,7 +158,7 @@ export default function CampaignsHub() {
       <div className="max-w-6xl mx-auto px-4 pt-6 pb-16">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-mono font-bold text-amber-500" data-testid="hub-title">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-mono font-bold text-amber-800" data-testid="hub-title">
             Missions & Labs
           </h1>
           <p className="text-muted-foreground text-xs sm:text-sm mt-1">
@@ -295,7 +295,7 @@ export default function CampaignsHub() {
                             campaign.source === 'curriculum' ? 'bg-emerald-950/30 border-emerald-800/40' :
                             catMeta.bg
                           }`}>
-                            {campaign.icon || (aptInfo.isApt ? <Skull className="w-3.5 h-3.5 text-red-400" /> :
+                            {campaign.icon || (aptInfo.isApt ? <Skull className="w-3.5 h-3.5 text-red-700" /> :
                               campaign.source === 'lab' ? <FlaskConical className="w-3.5 h-3.5 text-violet-400" /> :
                               campaign.source === 'curriculum' ? <BookOpen className="w-3.5 h-3.5 text-emerald-400" /> :
                               catMeta.icon)}
@@ -344,7 +344,7 @@ export default function CampaignsHub() {
                             <span
                               key={tag}
                               className={`text-[9px] px-1.5 py-0.5 rounded ${
-                                tag === 'APT' ? 'text-red-400 bg-red-950/40' :
+                                tag === 'APT' ? 'text-red-700 bg-red-950/40' :
                                 NATION_STATE_FLAGS[tag] ? `${NATION_STATE_FLAGS[tag].color} bg-card/60` :
                                 tag === 'curriculum' ? 'text-emerald-400 bg-emerald-950/30' :
                                 tag === 'lab' ? 'text-violet-400 bg-violet-950/30' :

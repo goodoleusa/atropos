@@ -354,7 +354,7 @@ export default function CampaignCanvas({
                 onClick={() => setSelectedNode(node.id)}
                 className={`text-xs px-2 py-1 rounded transition-colors min-h-[32px] ${
                   node.id === selectedNode 
-                    ? 'bg-amber-900/50 text-amber-400 font-medium' 
+                    ? 'bg-amber-900/50 text-amber-800 font-medium' 
                     : 'text-muted-foreground hover:bg-border hover:text-foreground'
                 }`}
               >
@@ -370,7 +370,7 @@ export default function CampaignCanvas({
           <div className="flex items-center gap-4 text-[10px]">
             {nodeRelations.parents.length > 0 && (
               <div className="flex items-center gap-1.5">
-                <span className="text-purple-400 font-medium">↑ Parents:</span>
+                <span className="text-purple-700 font-medium">↑ Parents:</span>
                 {nodeRelations.parents.slice(0, 3).map(({ node }) => (
                   <button
                     key={node.id}
@@ -384,7 +384,7 @@ export default function CampaignCanvas({
             )}
             {nodeRelations.children.length > 0 && (
               <div className="flex items-center gap-1.5">
-                <span className="text-teal-400 font-medium">↓ Children:</span>
+                <span className="text-teal-800 font-medium">↓ Children:</span>
                 {nodeRelations.children.slice(0, 3).map(({ node }) => (
                   <button
                     key={node.id}
@@ -398,7 +398,7 @@ export default function CampaignCanvas({
             )}
             {nodeRelations.siblings.length > 0 && (
               <div className="flex items-center gap-1.5">
-                <span className="text-amber-400 font-medium">↔ Siblings:</span>
+                <span className="text-amber-800 font-medium">↔ Siblings:</span>
                 {nodeRelations.siblings.slice(0, 3).map(({ node }) => (
                   <button
                     key={node.id}
@@ -426,7 +426,7 @@ export default function CampaignCanvas({
               const node = campaign.nodes.find(n => n.id === selectedNode);
               if (node) setEditingNode(node);
             }}
-            className="min-h-[44px] min-w-[44px] p-0 border-amber-700 text-amber-400"
+            className="min-h-[44px] min-w-[44px] p-0 border-amber-700 text-amber-800"
             data-testid="mobile-edit-btn"
           >
             <Edit3 className="w-5 h-5" />
@@ -435,7 +435,7 @@ export default function CampaignCanvas({
             size="sm"
             variant="outline"
             onClick={() => setLinkingFrom(selectedNode)}
-            className="min-h-[44px] min-w-[44px] p-0 border-teal-700 text-teal-400"
+            className="min-h-[44px] min-w-[44px] p-0 border-teal-700 text-teal-800"
             data-testid="mobile-link-btn"
           >
             <Link2 className="w-5 h-5" />
@@ -444,7 +444,7 @@ export default function CampaignCanvas({
             size="sm"
             variant="outline"
             onClick={() => deleteNode(selectedNode)}
-            className="min-h-[44px] min-w-[44px] p-0 border-purple-700 text-purple-400"
+            className="min-h-[44px] min-w-[44px] p-0 border-purple-700 text-purple-700"
             data-testid="mobile-delete-btn"
           >
             <Edit3 className="w-5 h-5" />
@@ -465,14 +465,14 @@ export default function CampaignCanvas({
         <ScrollArea className="h-full p-4">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-amber-500 font-bold flex items-center gap-2">
+              <h3 className="text-amber-800 font-bold flex items-center gap-2">
                 <Play className="w-4 h-4" /> Story Flow
               </h3>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => addNode('step')}
-                className="border-amber-700 text-amber-400"
+                className="border-amber-700 text-amber-800"
               >
                 <Plus className="w-3 h-3 mr-1" /> Add Step
               </Button>
@@ -514,7 +514,7 @@ export default function CampaignCanvas({
                             </div>
                             <button
                               onClick={() => setEditingNode(node)}
-                              className="text-amber-400 text-sm font-bold hover:text-amber-300 text-left"
+                              className="text-amber-800 text-sm font-bold hover:text-amber-300 text-left"
                             >
                               {node.title}
                             </button>
@@ -525,7 +525,7 @@ export default function CampaignCanvas({
                               size="sm"
                               variant="outline"
                               onClick={() => setEditingNode(node)}
-                              className="border-amber-700 text-amber-400"
+                              className="border-amber-700 text-amber-800"
                             >
                               <Edit3 className="w-3 h-3 mr-1" /> Edit
                             </Button>
@@ -533,7 +533,7 @@ export default function CampaignCanvas({
                               size="sm"
                               variant="ghost"
                               onClick={() => addStoryNodeAfter(node.id)}
-                              className="text-teal-400"
+                              className="text-teal-800"
                             >
                               <Plus className="w-3 h-3 mr-1" /> {node.type === 'decision' ? 'Add Branch' : 'Add Next'}
                             </Button>
@@ -564,7 +564,7 @@ export default function CampaignCanvas({
                               <Badge
                                 key={clueId}
                                 variant="outline"
-                                className="text-[9px] border-purple-700 text-purple-400 cursor-pointer hover:bg-red-900/30"
+                                className="text-[9px] border-purple-700 text-purple-700 cursor-pointer hover:bg-red-900/30"
                                 onClick={() => removeClueFromNode(node.id, clueId)}
                               >
                                 🔗 {clueId} ×
@@ -605,10 +605,10 @@ export default function CampaignCanvas({
         <ScrollArea className="h-full p-4">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-amber-500 font-bold flex items-center gap-2">
+              <h3 className="text-amber-800 font-bold flex items-center gap-2">
                 <Key className="w-4 h-4" /> All Clues & Campaign Links
               </h3>
-              <Badge variant="outline" className="border-amber-700 text-amber-400">
+              <Badge variant="outline" className="border-amber-700 text-amber-800">
                 {sharedClues.length} clues
               </Badge>
             </div>
@@ -622,7 +622,7 @@ export default function CampaignCanvas({
                     <div key={clue.id} className="bg-card/30 border border-border rounded-lg p-3">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <p className="text-amber-400 font-medium text-sm">{clue.name}</p>
+                          <p className="text-amber-800 font-medium text-sm">{clue.name}</p>
                           <p className="text-muted-foreground text-xs">{clue.description}</p>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {clue.tags?.map(t => <Badge key={t} variant="outline" className="text-[8px] border-border text-muted-foreground">{t}</Badge>)}
@@ -631,7 +631,7 @@ export default function CampaignCanvas({
                         <div className="text-right shrink-0">
                           <p className="text-[10px] text-muted-foreground">Used in {linkedNodes.length} nodes</p>
                           {linkedNodes.slice(0, 3).map(n => (
-                            <button key={n.id} onClick={() => { setViewMode('canvas'); setSelectedNode(n.id); }} className="text-[9px] text-teal-400 hover:underline block">
+                            <button key={n.id} onClick={() => { setViewMode('canvas'); setSelectedNode(n.id); }} className="text-[9px] text-teal-800 hover:underline block">
                               → {n.title}
                             </button>
                           ))}
@@ -643,7 +643,7 @@ export default function CampaignCanvas({
               </div>
             )}
             <div className="mt-6">
-              <h4 className="text-teal-400 text-sm font-bold mb-2">Nodes with Linked Clues</h4>
+              <h4 className="text-teal-800 text-sm font-bold mb-2">Nodes with Linked Clues</h4>
               <div className="space-y-1">
                 {campaign.nodes.filter(n => n.metadata?.linkedClues?.length).map(node => (
                   <div key={node.id} className="flex items-center justify-between p-2 bg-card/30 rounded border border-border">
@@ -652,7 +652,7 @@ export default function CampaignCanvas({
                     </button>
                     <div className="flex gap-1">
                       {node.metadata?.linkedClues?.map(c => (
-                        <Badge key={c} variant="outline" className="text-[8px] border-purple-700 text-purple-400">🔗 {c}</Badge>
+                        <Badge key={c} variant="outline" className="text-[8px] border-purple-700 text-purple-700">🔗 {c}</Badge>
                       ))}
                     </div>
                   </div>
@@ -672,15 +672,15 @@ export default function CampaignCanvas({
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div className="bg-amber-950/20 border border-amber-900/30 rounded-lg p-3 text-center">
-                <p className="text-xl font-bold text-amber-400">{campaign.nodes.length}</p>
+                <p className="text-xl font-bold text-amber-800">{campaign.nodes.length}</p>
                 <p className="text-[10px] text-muted-foreground">Nodes</p>
               </div>
               <div className="bg-teal-950/20 border border-teal-900/30 rounded-lg p-3 text-center">
-                <p className="text-xl font-bold text-teal-400">{campaign.links.length}</p>
+                <p className="text-xl font-bold text-teal-800">{campaign.links.length}</p>
                 <p className="text-[10px] text-muted-foreground">Links</p>
               </div>
               <div className="bg-purple-950/20 border border-purple-900/30 rounded-lg p-3 text-center">
-                <p className="text-xl font-bold text-purple-400">{campaign.nodes.filter(n => n.type === 'decision').length}</p>
+                <p className="text-xl font-bold text-purple-700">{campaign.nodes.filter(n => n.type === 'decision').length}</p>
                 <p className="text-[10px] text-muted-foreground">Decisions</p>
               </div>
               <div className="bg-border/30 border border-border rounded-lg p-3 text-center">
@@ -690,30 +690,30 @@ export default function CampaignCanvas({
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="bg-card/30 border border-border rounded-lg">
-                <div className="p-3 pb-2"><p className="text-sm text-amber-400 font-semibold">Features Used</p></div>
+                <div className="p-3 pb-2"><p className="text-sm text-amber-800 font-semibold">Features Used</p></div>
                 <div className="px-3 pb-3 flex flex-wrap gap-1">
                   {Array.from(new Set(campaign.nodes.map(n => n.metadata?.featureType).filter(Boolean))).map(f => (
-                    <Badge key={f} variant="outline" className="border-amber-700 text-amber-400 capitalize">{f}</Badge>
+                    <Badge key={f} variant="outline" className="border-amber-700 text-amber-800 capitalize">{f}</Badge>
                   ))}
                   {campaign.nodes.every(n => !n.metadata?.featureType) && <span className="text-muted-foreground text-xs">None set</span>}
                 </div>
               </div>
               <div className="bg-card/30 border border-border rounded-lg">
-                <div className="p-3 pb-2"><p className="text-sm text-teal-400 font-semibold">Skills Covered</p></div>
+                <div className="p-3 pb-2"><p className="text-sm text-teal-800 font-semibold">Skills Covered</p></div>
                 <div className="px-3 pb-3 flex flex-wrap gap-1">
                   {Array.from(new Set(campaign.nodes.flatMap(n => n.metadata?.skills || []))).slice(0, 10).map(s => (
-                    <Badge key={s} variant="outline" className="border-teal-700 text-teal-400 text-[9px]">{s}</Badge>
+                    <Badge key={s} variant="outline" className="border-teal-700 text-teal-800 text-[9px]">{s}</Badge>
                   ))}
                   {campaign.nodes.every(n => !n.metadata?.skills?.length) && <span className="text-muted-foreground text-xs">None set</span>}
                 </div>
               </div>
             </div>
             <div className="bg-card/30 border border-border rounded-lg">
-              <div className="p-3 pb-2"><p className="text-sm text-purple-400 font-semibold">All Campaigns</p></div>
+              <div className="p-3 pb-2"><p className="text-sm text-purple-700 font-semibold">All Campaigns</p></div>
               <div className="px-3 pb-3 space-y-1">
                 {savedCampaigns.map(c => (
                   <div key={c.id} className="flex items-center justify-between p-2 bg-card/50 rounded">
-                    <button onClick={() => loadCampaign(c.id)} className={`text-sm ${c.id === campaign.id ? 'text-amber-400' : 'text-muted-foreground hover:text-foreground'}`}>
+                    <button onClick={() => loadCampaign(c.id)} className={`text-sm ${c.id === campaign.id ? 'text-amber-800' : 'text-muted-foreground hover:text-foreground'}`}>
                       {c.name}
                     </button>
                     <span className="text-[10px] text-muted-foreground">{c.nodes.length} nodes</span>
@@ -729,13 +729,13 @@ export default function CampaignCanvas({
                   const children = campaign.links.filter(l => l.source === node.id);
                   return (
                     <div key={node.id} className="text-xs p-2 bg-purple-950/20 rounded border border-purple-900/30">
-                      <p className="text-purple-400 font-medium">{node.title}</p>
+                      <p className="text-purple-700 font-medium">{node.title}</p>
                       <p className="text-muted-foreground text-[10px]">{node.metadata?.condition || node.content}</p>
                       <div className="mt-1 flex gap-1 flex-wrap">
                         {children.map(l => {
                           const target = campaign.nodes.find(n => n.id === l.target);
                           return target ? (
-                            <button key={l.id} onClick={() => { setViewMode('canvas'); setSelectedNode(target.id); }} className="text-[9px] px-1.5 py-0.5 bg-teal-900/30 text-teal-400 rounded hover:bg-teal-800/50">
+                            <button key={l.id} onClick={() => { setViewMode('canvas'); setSelectedNode(target.id); }} className="text-[9px] px-1.5 py-0.5 bg-teal-900/30 text-teal-800 rounded hover:bg-teal-800/50">
                               → {target.title} {l.label ? `(${l.label})` : ''}
                             </button>
                           ) : null;
@@ -871,7 +871,7 @@ export default function CampaignCanvas({
 
           {selectedNode && !editingNode && (
             <div className="fixed bottom-20 left-4 sm:absolute sm:bottom-4 sm:left-4 z-50 bg-card/90 backdrop-blur rounded-lg p-2 border border-amber-700/50">
-              <p className="text-[10px] text-amber-500 uppercase mb-2 text-center font-bold">Order</p>
+              <p className="text-[10px] text-amber-800 uppercase mb-2 text-center font-bold">Order</p>
               <div className="grid grid-cols-3 gap-1">
                 <div />
                 <Button
@@ -898,7 +898,7 @@ export default function CampaignCanvas({
                 </Button>
                 <div className="flex items-center justify-center text-[10px] text-muted-foreground">
                   {getNodeDepth(selectedNode) > 0 && (
-                    <span className="bg-purple-900/50 px-1.5 py-0.5 rounded text-purple-400">
+                    <span className="bg-purple-900/50 px-1.5 py-0.5 rounded text-purple-700">
                       L{getNodeDepth(selectedNode)}
                     </span>
                   )}
@@ -957,7 +957,7 @@ export default function CampaignCanvas({
       {testRunMode && testCurrentNode && (
         <div className="fixed inset-x-0 bottom-0 sm:absolute sm:inset-auto sm:bottom-4 sm:left-4 sm:right-4 z-50 bg-teal-950/95 backdrop-blur border-t sm:border sm:rounded-lg border-teal-700 p-4" data-testid="test-run-panel">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-teal-400 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-teal-800 flex items-center gap-2">
               <Play className="w-4 h-4" /> Test Run Mode
             </h3>
             <div className="flex gap-2">
@@ -972,7 +972,7 @@ export default function CampaignCanvas({
                   }
                 }}
                 disabled={testHistory.length <= 1}
-                className="min-h-[44px] min-w-[44px] text-teal-400"
+                className="min-h-[44px] min-w-[44px] text-teal-800"
                 data-testid="test-back-btn"
               >
                 <SkipBack className="w-4 h-4" />
@@ -992,7 +992,7 @@ export default function CampaignCanvas({
                     setTestStartNode(startNode);
                   }
                 }}
-                className="min-h-[44px] min-w-[44px] text-teal-400"
+                className="min-h-[44px] min-w-[44px] text-teal-800"
                 data-testid="test-restart-btn"
               >
                 <RotateCcw className="w-4 h-4" />

@@ -24,10 +24,10 @@ interface LeaderboardEntry {
 
 const RARITY_COLORS: Record<string, string> = {
   common: 'border-muted text-muted-foreground bg-card/20',
-  uncommon: 'border-teal-700 text-teal-400 bg-teal-900/20',
+  uncommon: 'border-teal-700 text-teal-800 bg-teal-900/20',
   rare: 'border-blue-700 text-blue-400 bg-blue-900/20',
-  epic: 'border-orange-700 text-orange-400 bg-orange-900/20',
-  legendary: 'border-amber-600 text-amber-400 bg-amber-900/20',
+  epic: 'border-orange-700 text-orange-800 bg-orange-900/20',
+  legendary: 'border-amber-600 text-amber-800 bg-amber-900/20',
 };
 
 export function PlayerStatsPanel() {
@@ -81,17 +81,17 @@ export function PlayerStatsPanel() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-amber-500/70 hover:text-amber-400 hover:bg-amber-900/20 gap-1.5"
+          className="text-amber-800/70 hover:text-amber-400 hover:bg-amber-900/20 gap-1.5"
           data-testid="button-player-stats"
         >
           <Star className="w-4 h-4" />
           <span className="font-mono text-xs">Lv.{level}</span>
-          <span className="font-mono text-[10px] text-amber-600">{xp} XP</span>
+          <span className="font-mono text-[10px] text-amber-800">{xp} XP</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground w-[calc(100vw-2rem)] max-w-lg max-h-[90vh] sm:max-h-[85vh] overflow-hidden rounded-xl">
         <DialogHeader>
-          <DialogTitle className="text-amber-500 font-orbitron flex items-center gap-2">
+          <DialogTitle className="text-amber-800 font-orbitron flex items-center gap-2">
             <Shield className="w-5 h-5" />
             Agent Profile
           </DialogTitle>
@@ -101,10 +101,10 @@ export function PlayerStatsPanel() {
           <div className="flex items-center justify-between mb-2">
             <div>
               <p className="text-foreground font-mono font-bold">{gameState.username}</p>
-              <p className="text-amber-500 text-xs">Level {level} - {title}</p>
+              <p className="text-amber-800 text-xs">Level {level} - {title}</p>
             </div>
             <div className="text-right">
-              <p className="text-amber-400 font-mono text-lg font-bold">{xp.toLocaleString()} XP</p>
+              <p className="text-amber-800 font-mono text-lg font-bold">{xp.toLocaleString()} XP</p>
               <p className="text-muted-foreground text-[10px]">{xpForNext > 0 ? `${xpProgress}/${xpForNext} to next level` : 'Max level'}</p>
             </div>
           </div>
@@ -150,12 +150,12 @@ export function PlayerStatsPanel() {
               >
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {[
-                    { label: 'Clues Found', value: gameState.inventory.length, icon: Target, color: 'text-teal-400' },
-                    { label: 'Quests Done', value: playerStats?.questCount || 0, icon: Trophy, color: 'text-amber-400' },
-                    { label: 'Campaigns', value: gameState.stats.campaignsCompleted, icon: Flame, color: 'text-orange-400' },
-                    { label: 'Commands Run', value: gameState.stats.commandsRun, icon: Zap, color: 'text-orange-400' },
+                    { label: 'Clues Found', value: gameState.inventory.length, icon: Target, color: 'text-teal-800' },
+                    { label: 'Quests Done', value: playerStats?.questCount || 0, icon: Trophy, color: 'text-amber-800' },
+                    { label: 'Campaigns', value: gameState.stats.campaignsCompleted, icon: Flame, color: 'text-orange-800' },
+                    { label: 'Commands Run', value: gameState.stats.commandsRun, icon: Zap, color: 'text-orange-800' },
                     { label: 'Play Time', value: `${gameState.stats.totalPlayTimeMinutes}m`, icon: Clock, color: 'text-muted-foreground' },
-                    { label: 'Achievements', value: gameState.achievements.length, icon: Award, color: 'text-amber-500' },
+                    { label: 'Achievements', value: gameState.achievements.length, icon: Award, color: 'text-amber-800' },
                   ].map(stat => (
                     <Card key={stat.label} className="bg-card border-border">
                       <CardContent className="p-3 flex items-center gap-2">
@@ -177,7 +177,7 @@ export function PlayerStatsPanel() {
                         <div key={i} className="flex items-center justify-between text-xs p-1.5 bg-card/50 rounded">
                           <span className="text-muted-foreground">{event.eventType.replace(/_/g, ' ')}</span>
                           {event.xpAwarded > 0 && (
-                            <Badge variant="outline" className="text-[10px] border-amber-800 text-amber-500">
+                            <Badge variant="outline" className="text-[10px] border-amber-800 text-amber-800">
                               +{event.xpAwarded} XP
                             </Badge>
                           )}
@@ -224,7 +224,7 @@ export function PlayerStatsPanel() {
                             </p>
                           </div>
                           {unlocked ? (
-                            <Award className="w-4 h-4 text-amber-400" />
+                            <Award className="w-4 h-4 text-amber-800" />
                           ) : (
                             <span className="text-[10px] text-muted-foreground">+{ach.xpReward} XP</span>
                           )}
@@ -257,21 +257,21 @@ export function PlayerStatsPanel() {
                         }`}
                       >
                         <span className={`font-mono font-bold text-sm w-6 text-center ${
-                          entry.rank === 1 ? 'text-amber-400' :
+                          entry.rank === 1 ? 'text-amber-800' :
                           entry.rank === 2 ? 'text-foreground' :
-                          entry.rank === 3 ? 'text-orange-600' :
+                          entry.rank === 3 ? 'text-orange-800' :
                           'text-muted-foreground'
                         }`}>
                           #{entry.rank}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-mono truncate ${isMe ? 'text-amber-400' : 'text-foreground'}`}>
+                          <p className={`text-sm font-mono truncate ${isMe ? 'text-amber-800' : 'text-foreground'}`}>
                             {entry.username}
                           </p>
                           <p className="text-[10px] text-muted-foreground">{entry.title}</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-amber-400 font-mono text-sm">{entry.xp.toLocaleString()}</p>
+                          <p className="text-amber-800 font-mono text-sm">{entry.xp.toLocaleString()}</p>
                           <p className="text-[10px] text-muted-foreground">Lv.{entry.level}</p>
                         </div>
                       </div>

@@ -68,7 +68,7 @@ export default function TerminalPage() {
         {/* Agent Chat Button */}
         <Button
           onClick={() => setAgentChatOpen(true)}
-          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-border hover:bg-border text-amber-500 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50 touch-manipulation active:scale-95 transition-transform"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-border hover:bg-border text-amber-800 shadow-lg shadow-amber-900/30 border-2 border-amber-900/50 touch-manipulation active:scale-95 transition-transform"
           data-testid="terminal-agent-button"
         >
           <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -82,7 +82,7 @@ export default function TerminalPage() {
         >
           <QrCode className="w-5 h-5 sm:w-6 sm:h-6" />
         </Button>
-        <span className="hidden sm:block absolute -bottom-6 right-0 text-xs text-amber-600/70 font-mono whitespace-nowrap">
+        <span className="hidden sm:block absolute -bottom-6 right-0 text-xs text-amber-800/70 font-mono whitespace-nowrap">
           QR | Agent
         </span>
       </motion.div>

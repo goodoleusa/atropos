@@ -13,8 +13,8 @@ import { Switch } from '@/components/ui/switch';
 import { USER_NAV, ADMIN_NAV, type NavItem } from '@/config/navConfig';
 
 const NAV_STYLES = {
-  amber: { active: 'bg-amber-900/30 text-amber-400', icon: 'text-amber-500' },
-  teal: { active: 'bg-teal-900/30 text-teal-400', icon: 'text-teal-500' },
+  amber: { active: 'bg-amber-900/30 text-amber-800', icon: 'text-amber-800' },
+  teal: { active: 'bg-teal-900/30 text-teal-800', icon: 'text-teal-800' },
 } as const;
 
 function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean }) {
@@ -30,7 +30,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
           className={`w-full justify-start min-h-[44px] relative group overflow-hidden mb-1 border ${
             isActive
               ? 'bg-amber-900/40 text-amber-300 border-amber-600/60 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
-              : 'text-amber-400 border-amber-800/40 hover:border-amber-700/60 hover:bg-amber-950/40'
+              : 'text-amber-800 border-amber-800/40 hover:border-amber-700/60 hover:bg-amber-950/40'
           }`}
           data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
         >
@@ -43,7 +43,7 @@ function NavItemButton({ item, isActive }: { item: NavItem; isActive: boolean })
             />
           )}
           <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/8 transition-colors duration-300" />
-          <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? 'text-amber-400 scale-110' : 'text-amber-500 group-hover:text-amber-400'}`} />
+          <Icon className={`w-4 h-4 mr-2 transition-all duration-300 ${isActive ? 'text-amber-800 scale-110' : 'text-amber-800 group-hover:text-amber-400'}`} />
           <span className="relative z-10 transition-all duration-300 group-hover:translate-x-1 uppercase font-orbitron text-[10px] tracking-widest font-bold">
             {item.label}
           </span>
@@ -132,10 +132,10 @@ export default function QuickNav() {
             <div className="px-3 py-2 border-b border-border mb-2">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <Trophy className="w-3 h-3 text-amber-500" />
-                  <span className="text-xs font-bold text-amber-400">Level {progression.level}</span>
+                  <Trophy className="w-3 h-3 text-amber-800" />
+                  <span className="text-xs font-bold text-amber-800">Level {progression.level}</span>
                 </div>
-                <Badge variant="outline" className="text-[9px] border-amber-600 text-amber-400">
+                <Badge variant="outline" className="text-[9px] border-amber-600 text-amber-800">
                   {progression.xp} / {progression.level * 100} XP
                 </Badge>
               </div>
@@ -149,10 +149,10 @@ export default function QuickNav() {
           {currentSession && (
             <div className="px-3 py-2 border-b border-border mb-2">
               <p className="text-[10px] text-muted-foreground uppercase">Active Session</p>
-              <p className="text-xs text-amber-400 font-bold truncate max-w-[150px]">{currentSession.name}</p>
+              <p className="text-xs text-amber-800 font-bold truncate max-w-[150px]">{currentSession.name}</p>
               <div className="flex gap-2 mt-1 text-[10px]">
-                <span className="text-amber-500">{targets.length} targets</span>
-                <span className="text-amber-400">{pendingFindings.length} findings</span>
+                <span className="text-amber-800">{targets.length} targets</span>
+                <span className="text-amber-800">{pendingFindings.length} findings</span>
               </div>
             </div>
           )}
@@ -175,7 +175,7 @@ export default function QuickNav() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start bg-amber-900/10 text-amber-500/80 hover:bg-amber-900/20 min-h-[44px] border border-amber-900/20"
+              className="w-full justify-start bg-amber-900/10 text-amber-800/80 hover:bg-amber-900/20 min-h-[44px] border border-amber-900/20"
               onClick={() => window.dispatchEvent(new CustomEvent('open-qr-modal'))}
               data-testid="quicknav-qr-tool"
             >
@@ -194,11 +194,11 @@ export default function QuickNav() {
                     style={{ width: `${Math.min(100, (gameState.inventory?.length || 0) * 5)}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-amber-400">{gameState.inventory?.length || 0} clues</span>
+                <span className="text-[10px] text-amber-800">{gameState.inventory?.length || 0} clues</span>
               </div>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-[10px] text-muted-foreground">Lv.{gameState.level || 1}</span>
-                <span className="text-[10px] text-amber-500">{(gameState.xp || 0).toLocaleString()} XP</span>
+                <span className="text-[10px] text-amber-800">{(gameState.xp || 0).toLocaleString()} XP</span>
               </div>
             </div>
             <div className="px-1 mt-1">
@@ -250,7 +250,7 @@ export default function QuickNav() {
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <Server className="w-5 h-5 text-amber-500/80" />
+                <Server className="w-5 h-5 text-amber-800/80" />
               </motion.div>
             </div>
           </div>

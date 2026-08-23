@@ -16,19 +16,19 @@ import type { LearningStyle } from '@/config/learningConfig';
 const STYLE_META: Record<LearningStyle, { label: string; icon: any; color: string; short: string }> = {
   experiential: { label: 'Experiential', icon: FlaskConical, color: 'text-emerald-400', short: 'Hands-on first, theory later' },
   visual: { label: 'Visual', icon: Eye, color: 'text-sky-400', short: 'Diagrams, maps, visual structure' },
-  analytical: { label: 'Analytical', icon: Brain, color: 'text-purple-400', short: 'Deep theory, citations, why' },
-  social: { label: 'Social', icon: Users, color: 'text-amber-400', short: 'Community, discussion, collaboration' },
+  analytical: { label: 'Analytical', icon: Brain, color: 'text-purple-700', short: 'Deep theory, citations, why' },
+  social: { label: 'Social', icon: Users, color: 'text-amber-800', short: 'Community, discussion, collaboration' },
   pragmatic: { label: 'Pragmatic', icon: Wrench, color: 'text-rose-400', short: 'Cheat sheets, rules, quick wins' },
 };
 
 const EXERCISE_TYPE_META: Record<string, { label: string; color: string }> = {
-  prompt_craft: { label: 'Prompt Craft', color: 'bg-amber-900/30 text-amber-400 border-amber-800/40' },
+  prompt_craft: { label: 'Prompt Craft', color: 'bg-amber-900/30 text-amber-800 border-amber-800/40' },
   comparison: { label: 'Compare', color: 'bg-sky-900/30 text-sky-400 border-sky-800/40' },
-  crew_build: { label: 'Crew Build', color: 'bg-purple-900/30 text-purple-400 border-purple-800/40' },
-  eval_run: { label: 'Eval Run', color: 'bg-teal-900/30 text-teal-400 border-teal-800/40' },
+  crew_build: { label: 'Crew Build', color: 'bg-purple-900/30 text-purple-700 border-purple-800/40' },
+  eval_run: { label: 'Eval Run', color: 'bg-teal-900/30 text-teal-800 border-teal-800/40' },
   observation: { label: 'Observe', color: 'bg-border/50 text-foreground border-border' },
-  debate: { label: 'Debate', color: 'bg-orange-900/30 text-orange-400 border-orange-800/40' },
-  failure_analysis: { label: 'Failure Lab', color: 'bg-red-900/30 text-red-400 border-red-800/40' },
+  debate: { label: 'Debate', color: 'bg-orange-900/30 text-orange-800 border-orange-800/40' },
+  failure_analysis: { label: 'Failure Lab', color: 'bg-red-900/30 text-red-700 border-red-800/40' },
   reflection: { label: 'Reflect', color: 'bg-indigo-900/30 text-indigo-400 border-indigo-800/40' },
 };
 
@@ -88,11 +88,11 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
           <div className="flex items-start gap-2">
             <span className="text-lg md:text-xl">{selectedMission.icon}</span>
             <div className="flex-1 min-w-0">
-              <h3 className="text-xs md:text-sm font-bold text-amber-400">{selectedMission.name}</h3>
+              <h3 className="text-xs md:text-sm font-bold text-amber-800">{selectedMission.name}</h3>
               <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{selectedMission.description}</p>
               <div className="flex items-center gap-2 md:gap-3 mt-1.5 text-[10px] text-muted-foreground flex-wrap">
                 <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {selectedMission.estimatedTime}</span>
-                <span className="flex items-center gap-1"><Star className="w-3 h-3 text-amber-600" /> {selectedMission.xpReward} XP</span>
+                <span className="flex items-center gap-1"><Star className="w-3 h-3 text-amber-800" /> {selectedMission.xpReward} XP</span>
                 <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">{selectedMission.difficulty}</Badge>
               </div>
               {progress > 0 && (
@@ -172,7 +172,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                             <button
                               key={i}
                               onClick={() => onSuggestionChip(prompt)}
-                              className="text-[9px] px-2 py-1 md:py-0.5 rounded-full bg-amber-900/20 border border-amber-800/30 text-amber-400 hover:bg-amber-900/40 active:bg-amber-900/60 transition-colors truncate max-w-[85vw] md:max-w-[200px]"
+                              className="text-[9px] px-2 py-1 md:py-0.5 rounded-full bg-amber-900/20 border border-amber-800/30 text-amber-800 hover:bg-amber-900/40 active:bg-amber-900/60 transition-colors truncate max-w-[85vw] md:max-w-[200px]"
                               title={prompt}
                               data-testid={`suggestion-chip-${i}`}
                             >
@@ -222,7 +222,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
   return (
     <div className="space-y-2 md:space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-[11px] md:text-xs font-orbitron text-amber-400 flex items-center gap-1.5 shrink-0">
+        <h3 className="text-[11px] md:text-xs font-orbitron text-amber-800 flex items-center gap-1.5 shrink-0">
           <Layers className="w-3.5 h-3.5" /> AI Mastery
         </h3>
         <div className="flex items-center gap-1.5 md:gap-2">
@@ -311,7 +311,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                                     <span className="text-[11px] font-medium text-white truncate">{mission.name}</span>
-                                    {isActiveMission && <Badge className="text-[7px] md:text-[8px] bg-teal-900/30 text-teal-400 border-0">Active</Badge>}
+                                    {isActiveMission && <Badge className="text-[7px] md:text-[8px] bg-teal-900/30 text-teal-800 border-0">Active</Badge>}
                                   </div>
                                   <div className="flex items-center gap-1.5 md:gap-2 mt-0.5 text-[9px] text-muted-foreground flex-wrap">
                                     <span>{mission.difficulty}</span>

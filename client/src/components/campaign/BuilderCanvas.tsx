@@ -36,7 +36,7 @@ export default function BuilderCanvas({
             data-testid="add-first-node"
             size="sm"
             variant="outline"
-            className="border-amber-600 text-amber-400 hover:bg-amber-950/40"
+            className="border-amber-600 text-amber-800 hover:bg-amber-950/40"
             onClick={onAddNode}
           >
             <Plus className="w-3 h-3 mr-1" />

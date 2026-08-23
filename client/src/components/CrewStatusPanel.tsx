@@ -6,11 +6,11 @@ import { useBackgroundTasks, useMissionFindings } from '@/hooks/useMissionBus';
 import { useLocation } from 'wouter';
 
 const CREW_AGENTS = [
-  { id: 'vuln_analyst', name: 'VulnAnalyst', icon: Bug, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', role: 'Vulnerability assessment' },
+  { id: 'vuln_analyst', name: 'VulnAnalyst', icon: Bug, color: 'text-red-700', bg: 'bg-red-500/10', border: 'border-red-500/20', role: 'Vulnerability assessment' },
   { id: 'osint_analyst', name: 'OSINTAnalyst', icon: Eye, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', role: 'Open-source intelligence' },
-  { id: 'threat_intel', name: 'ThreatIntel', icon: Radar, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20', role: 'Threat intelligence analysis' },
-  { id: 'secret_hunter', name: 'SecretHunter', icon: Lock, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', role: 'Credential & secret detection' },
-  { id: 'network_recon', name: 'NetworkRecon', icon: Network, color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/20', role: 'Network reconnaissance' },
+  { id: 'threat_intel', name: 'ThreatIntel', icon: Radar, color: 'text-purple-700', bg: 'bg-purple-500/10', border: 'border-purple-500/20', role: 'Threat intelligence analysis' },
+  { id: 'secret_hunter', name: 'SecretHunter', icon: Lock, color: 'text-amber-800', bg: 'bg-amber-500/10', border: 'border-amber-500/20', role: 'Credential & secret detection' },
+  { id: 'network_recon', name: 'NetworkRecon', icon: Network, color: 'text-teal-800', bg: 'bg-teal-500/10', border: 'border-teal-500/20', role: 'Network reconnaissance' },
   { id: 'synthesis', name: 'Synthesis', icon: Brain, color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20', role: 'Cross-analysis synthesis' },
 ] as const;
 
@@ -33,7 +33,7 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
   if (compact) {
     return (
       <div className="flex items-center gap-2 px-2" data-testid="crew-status-compact">
-        <Bot className="w-3.5 h-3.5 text-teal-500" />
+        <Bot className="w-3.5 h-3.5 text-teal-800" />
         <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Crew</span>
         <div className="flex gap-1">
           {agentActivity.map(a => (
@@ -46,7 +46,7 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
           ))}
         </div>
         {runningCount > 0 && (
-          <Badge variant="outline" className="text-[8px] border-amber-500/30 text-amber-400 px-1 py-0 h-4">
+          <Badge variant="outline" className="text-[8px] border-amber-500/30 text-amber-800 px-1 py-0 h-4">
             {runningCount} active
           </Badge>
         )}
@@ -58,7 +58,7 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
     <Card className="bg-[hsl(var(--card))] border-border/50" data-testid="crew-status-panel">
       <CardHeader className="p-3 pb-2">
         <CardTitle className="text-xs font-medium flex items-center gap-2 text-foreground">
-          <Zap className="w-3.5 h-3.5 text-teal-500" />
+          <Zap className="w-3.5 h-3.5 text-teal-800" />
           NEXUS CREW
           <Badge variant="outline" className="ml-auto text-[8px] border-border text-muted-foreground">
             {totalFindings} findings
@@ -80,7 +80,7 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
                 <div className="flex items-center gap-1.5">
                   <span className={`text-[10px] font-medium ${agent.color}`}>{agent.name}</span>
                   {agent.isRunning ? (
-                    <Badge className="text-[7px] bg-amber-500/20 text-amber-400 border-amber-500/30 px-1 py-0 h-3.5 animate-pulse">
+                    <Badge className="text-[7px] bg-amber-500/20 text-amber-800 border-amber-500/30 px-1 py-0 h-3.5 animate-pulse">
                       RUNNING
                     </Badge>
                   ) : agent.findingsCount > 0 ? (
@@ -104,7 +104,7 @@ export function CrewStatusPanel({ compact = false }: { compact?: boolean }) {
           <Button
             size="sm"
             variant="outline"
-            className="flex-1 h-6 text-[9px] border-teal-900/30 text-teal-500 hover:bg-teal-500/10"
+            className="flex-1 h-6 text-[9px] border-teal-900/30 text-teal-800 hover:bg-teal-500/10"
             onClick={() => setLocation('/agents')}
             data-testid="crew-deploy-all"
           >

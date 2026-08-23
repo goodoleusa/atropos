@@ -201,7 +201,7 @@ export const QuantumField = () => {
         
         {/* Tooltip */}
         <div className="absolute bottom-full left-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          <div className="bg-black/90 border border-amber-900/50 px-2 py-1 text-xs font-mono text-amber-600 whitespace-nowrap rounded">
+          <div className="bg-black/90 border border-amber-900/50 px-2 py-1 text-xs font-mono text-amber-800 whitespace-nowrap rounded">
             Ψ = {quantumState.probability.toFixed(3)}
           </div>
         </div>
@@ -216,8 +216,8 @@ export const QuantumField = () => {
             exit={{ opacity: 0, x: -20 }}
             className="hidden md:block fixed bottom-32 left-4 z-40 w-64 bg-[hsl(var(--card))]/95 border border-amber-900/50 rounded-lg p-4 backdrop-blur-md"
           >
-            <h3 className="text-amber-600 font-orbitron text-sm mb-3 flex items-center gap-2">
-              <span className="text-purple-500">Ψ</span> QUANTUM STATE
+            <h3 className="text-amber-800 font-orbitron text-sm mb-3 flex items-center gap-2">
+              <span className="text-purple-700">Ψ</span> QUANTUM STATE
             </h3>
             
             <div className="space-y-3 text-xs font-mono">
@@ -225,7 +225,7 @@ export const QuantumField = () => {
               <div>
                 <div className="flex justify-between text-muted-foreground mb-1">
                   <span>Wave Function</span>
-                  <span className="text-amber-500">{quantumState.probability.toFixed(4)}</span>
+                  <span className="text-amber-800">{quantumState.probability.toFixed(4)}</span>
                 </div>
                 <div className="h-2 bg-black/50 rounded overflow-hidden">
                   <motion.div
@@ -240,7 +240,7 @@ export const QuantumField = () => {
               <div>
                 <div className="flex justify-between text-muted-foreground mb-1">
                   <span>Entropy</span>
-                  <span className="text-purple-500">{quantumState.entropy.toFixed(4)}</span>
+                  <span className="text-purple-700">{quantumState.entropy.toFixed(4)}</span>
                 </div>
                 <div className="h-2 bg-black/50 rounded overflow-hidden">
                   <motion.div
@@ -301,7 +301,7 @@ export const QuantumField = () => {
                   ⚛️
                 </motion.div>
                 
-                <h3 className="text-amber-500 font-orbitron text-lg mb-2">
+                <h3 className="text-amber-800 font-orbitron text-lg mb-2">
                   WAVE FUNCTION COLLAPSED
                 </h3>
                 
@@ -315,7 +315,7 @@ export const QuantumField = () => {
                 
                 <div className="bg-black/50 rounded p-2 mb-4">
                   <p className="text-xs text-muted-foreground">
-                    Collapse Probability: <span className="text-amber-500">{(activeEvent.currentProb * 100).toFixed(1)}%</span>
+                    Collapse Probability: <span className="text-amber-800">{(activeEvent.currentProb * 100).toFixed(1)}%</span>
                   </p>
                   <p className="text-xs text-purple-600 italic mt-1">
                     {quantumMessages[Math.floor(Math.random() * quantumMessages.length)] || "Quantum fluctuation detected."}

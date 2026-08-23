@@ -15,10 +15,10 @@ interface SendToMenuProps {
 }
 
 const TARGETS = [
-  { id: 'report-builder', label: 'Report Builder', icon: FileText, path: '/investigate?tab=reports', color: 'text-amber-400', desc: 'Add as finding' },
-  { id: 'nexus', label: 'NEXUS Agent', icon: Bot, path: '/agent', color: 'text-teal-400', desc: 'Analyze further' },
+  { id: 'report-builder', label: 'Report Builder', icon: FileText, path: '/investigate?tab=reports', color: 'text-amber-800', desc: 'Add as finding' },
+  { id: 'nexus', label: 'NEXUS Agent', icon: Bot, path: '/agent', color: 'text-teal-800', desc: 'Analyze further' },
   { id: 'scanner', label: 'Scanner', icon: Radar, path: '/scanner', color: 'text-blue-400', desc: 'Deeper recon' },
-  { id: 'portfolio', label: 'Portfolio', icon: Briefcase, path: '/investigate?tab=portfolio', color: 'text-purple-400', desc: 'Showcase work' },
+  { id: 'portfolio', label: 'Portfolio', icon: Briefcase, path: '/investigate?tab=portfolio', color: 'text-purple-700', desc: 'Showcase work' },
 ] as const;
 
 export function SendToMenu({ finding, compact = false, onSent }: SendToMenuProps) {

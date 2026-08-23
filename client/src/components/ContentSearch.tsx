@@ -54,11 +54,11 @@ interface ContentSearchProps {
 }
 
 const typeConfig: Record<ContentType, { icon: typeof FileText; color: string; label: string }> = {
-  clue: { icon: FileText, color: 'text-amber-500', label: 'Clues' },
-  quest: { icon: Trophy, color: 'text-purple-500', label: 'Quests' },
-  message: { icon: MessageSquare, color: 'text-teal-500', label: 'Messages' },
+  clue: { icon: FileText, color: 'text-amber-800', label: 'Clues' },
+  quest: { icon: Trophy, color: 'text-purple-700', label: 'Quests' },
+  message: { icon: MessageSquare, color: 'text-teal-800', label: 'Messages' },
   location: { icon: MapPin, color: 'text-blue-500', label: 'Locations' },
-  route: { icon: Hash, color: 'text-orange-500', label: 'Routes' },
+  route: { icon: Hash, color: 'text-orange-800', label: 'Routes' },
   mystical: { icon: Sparkles, color: 'text-pink-500', label: 'Mystical' }
 };
 
@@ -233,7 +233,7 @@ export function ContentSearch({
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
-                className="border-amber-900/30 text-amber-600 hover:bg-amber-900/20"
+                className="border-amber-900/30 text-amber-800 hover:bg-amber-900/20"
                 data-testid="filter-dropdown"
               >
                 <Filter className="w-4 h-4 mr-2" />
@@ -242,7 +242,7 @@ export function ContentSearch({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[hsl(var(--card))] border-amber-900/30" align="end">
-              <DropdownMenuLabel className="text-amber-600 text-xs">Filter by Type</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-amber-800 text-xs">Filter by Type</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-amber-900/30" />
               {(Object.keys(typeConfig) as ContentType[]).map(type => (
                 <DropdownMenuCheckboxItem
@@ -281,7 +281,7 @@ export function ContentSearch({
                       <button
                         key={i}
                         onClick={() => setQuery(search)}
-                        className="px-2 py-1 text-xs bg-amber-900/20 text-amber-500 rounded hover:bg-amber-900/40 transition-colors"
+                        className="px-2 py-1 text-xs bg-amber-900/20 text-amber-800 rounded hover:bg-amber-900/40 transition-colors"
                       >
                         {search}
                       </button>
@@ -317,16 +317,16 @@ export function ContentSearch({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-amber-500 font-bold truncate">
+                          <span className="text-sm text-amber-800 font-bold truncate">
                             {highlightMatch(item.name, query)}
                           </span>
                           {item.rarity && (
                             <Badge 
                               variant="outline" 
                               className={`text-[9px] py-0 ${
-                                item.rarity === 'legendary' ? 'border-purple-500 text-purple-400' :
+                                item.rarity === 'legendary' ? 'border-purple-500 text-purple-700' :
                                 item.rarity === 'rare' ? 'border-blue-500 text-blue-400' :
-                                item.rarity === 'uncommon' ? 'border-teal-500 text-teal-400' :
+                                item.rarity === 'uncommon' ? 'border-teal-500 text-teal-800' :
                                 'border-border text-muted-foreground'
                               }`}
                             >

@@ -61,10 +61,10 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: "bg-red-500/20 text-red-400 border-red-500/30",
-  high: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  medium: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  low: "bg-teal-500/20 text-teal-400 border-teal-500/30",
+  critical: "bg-red-500/20 text-red-700 border-red-500/30",
+  high: "bg-orange-500/20 text-orange-800 border-orange-500/30",
+  medium: "bg-amber-500/20 text-amber-800 border-amber-500/30",
+  low: "bg-teal-500/20 text-teal-800 border-teal-500/30",
   info: "bg-muted/20 text-muted-foreground border-muted/30",
 };
 
@@ -373,14 +373,14 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                   </Button>
                 </div>
                 {remoteStatus !== "unknown" && (
-                  <Badge className={remoteStatus === "online" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                  <Badge className={remoteStatus === "online" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-700"}>
                     {remoteStatus === "online" ? "Connected" : "Offline"}
                   </Badge>
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
                 Deploy Atropos to Railway, Render, or your VPS using{" "}
-                <code className="text-amber-400">atropos serve</code>
+                <code className="text-amber-800">atropos serve</code>
               </p>
               <Button 
                 variant="outline"

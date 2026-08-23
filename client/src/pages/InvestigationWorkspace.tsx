@@ -63,13 +63,13 @@ export default function InvestigationWorkspace() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link href="/">
-                <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
+                <Button variant="ghost" size="sm" className="text-amber-800 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <Bot className="w-6 h-6 text-teal-400" />
+                <Bot className="w-6 h-6 text-teal-800" />
                 <h1 className="text-lg font-bold bg-gradient-to-r from-amber-400 to-teal-400 bg-clip-text text-transparent" data-testid="hub-title">
                   Investigation Hub
                 </h1>
@@ -81,7 +81,7 @@ export default function InvestigationWorkspace() {
                 onClick={() => setShowOutputs(!showOutputs)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all min-h-[36px] ${
                   toolOutputs.length > 0
-                    ? 'bg-teal-900/30 border-teal-700 text-teal-400 hover:bg-teal-900/50'
+                    ? 'bg-teal-900/30 border-teal-700 text-teal-800 hover:bg-teal-900/50'
                     : 'bg-card/30 border-border text-muted-foreground hover:border-muted'
                 }`}
                 data-testid="toggle-outputs-btn"
@@ -92,14 +92,14 @@ export default function InvestigationWorkspace() {
               </button>
               {pendingFindings.length > 0 && (
                 <Link href="/report">
-                  <Badge className="bg-amber-900/50 text-amber-400 border-amber-700 cursor-pointer hover:bg-amber-900/70" data-testid="findings-badge">
+                  <Badge className="bg-amber-900/50 text-amber-800 border-amber-700 cursor-pointer hover:bg-amber-900/70" data-testid="findings-badge">
                     <FileText className="w-3 h-3 mr-1" />
                     {pendingFindings.length} Findings
                   </Badge>
                 </Link>
               )}
               {currentSession && (
-                <Badge className="bg-teal-900/50 text-teal-400 border-teal-700" data-testid="session-badge">
+                <Badge className="bg-teal-900/50 text-teal-800 border-teal-700" data-testid="session-badge">
                   {currentSession.name}
                 </Badge>
               )}
@@ -132,10 +132,10 @@ export default function InvestigationWorkspace() {
                       <div key={output.id} className="px-3 py-2 hover:bg-card/30 transition-colors">
                         <div className="flex items-center gap-2 mb-0.5">
                           <Badge variant="outline" className={`text-[9px] py-0 ${
-                            output.type === 'scan' ? 'border-orange-700 text-orange-400' :
-                            output.type === 'recon' ? 'border-teal-700 text-teal-400' :
-                            output.type === 'finding' ? 'border-red-700 text-red-400' :
-                            output.type === 'analysis' ? 'border-purple-700 text-purple-400' :
+                            output.type === 'scan' ? 'border-orange-700 text-orange-800' :
+                            output.type === 'recon' ? 'border-teal-700 text-teal-800' :
+                            output.type === 'finding' ? 'border-red-700 text-red-700' :
+                            output.type === 'analysis' ? 'border-purple-700 text-purple-700' :
                             'border-border text-muted-foreground'
                           }`}>
                             {output.type}
@@ -222,7 +222,7 @@ export default function InvestigationWorkspace() {
           <TabsContent value="chat" className="space-y-4" data-testid="content-chat">
             <Card className="bg-gradient-to-br from-card/80 to-card/80 border-teal-900/30">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-teal-400">
+                <CardTitle className="flex items-center gap-2 text-teal-800">
                   <Bot className="w-5 h-5" />
                   NEXUS Agent
                 </CardTitle>
@@ -252,7 +252,7 @@ export default function InvestigationWorkspace() {
             <div className="grid md:grid-cols-2 gap-4">
               <Card className="bg-card/50 border-border">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-amber-400 flex items-center gap-2">
+                  <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                     <Target className="w-4 h-4" />
                     Active Learning Goals
                   </CardTitle>
@@ -263,7 +263,7 @@ export default function InvestigationWorkspace() {
                       {selectedGoalDetails.map(goal => goal && (
                         <Badge 
                           key={goal.id}
-                          className={CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-400'}
+                          className={CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-700'}
                         >
                           {goal.name}
                         </Badge>
@@ -277,7 +277,7 @@ export default function InvestigationWorkspace() {
 
               <Card className="bg-card/50 border-border">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-teal-400 flex items-center gap-2">
+                  <CardTitle className="text-sm text-teal-800 flex items-center gap-2">
                     <Zap className="w-4 h-4" />
                     Recommended Tools
                   </CardTitle>
@@ -286,7 +286,7 @@ export default function InvestigationWorkspace() {
                   {recommendedTools.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {recommendedTools.slice(0, 6).map(tool => (
-                        <Badge key={tool} variant="outline" className="text-teal-400 border-teal-800">
+                        <Badge key={tool} variant="outline" className="text-teal-800 border-teal-800">
                           {tool}
                         </Badge>
                       ))}
@@ -333,7 +333,7 @@ export default function InvestigationWorkspace() {
           <TabsContent value="learning" className="space-y-4" data-testid="content-learning">
             <Card className="bg-gradient-to-br from-card/80 to-card/80 border-amber-900/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-400">
+                <CardTitle className="flex items-center gap-2 text-amber-800">
                   <GraduationCap className="w-5 h-5" />
                   Learning Profile
                 </CardTitle>
@@ -351,7 +351,7 @@ export default function InvestigationWorkspace() {
                         onClick={() => setStyle(styleOption.id)}
                         className={`p-3 text-left rounded-lg border min-h-[80px] transition-all ${
                           style === styleOption.id
-                            ? 'bg-amber-900/30 border-amber-700 text-amber-400'
+                            ? 'bg-amber-900/30 border-amber-700 text-amber-800'
                             : 'bg-card/50 border-border text-muted-foreground hover:border-amber-700/50'
                         }`}
                         data-testid={`style-${styleOption.id}`}
@@ -375,7 +375,7 @@ export default function InvestigationWorkspace() {
                         onClick={() => setSkillLevel(level.id as any)}
                         className={`px-4 py-2 rounded-lg border min-h-[44px] transition-all ${
                           skillLevel === level.id
-                            ? 'bg-teal-900/30 border-teal-700 text-teal-400'
+                            ? 'bg-teal-900/30 border-teal-700 text-teal-800'
                             : 'bg-card/50 border-border text-muted-foreground hover:border-teal-700/50'
                         }`}
                         data-testid={`skill-${level.id}`}
@@ -422,9 +422,9 @@ export default function InvestigationWorkspace() {
                   <div className="p-4 bg-card/50 rounded-lg border border-border">
                     <h4 className="text-sm font-bold text-foreground mb-2">Profile Summary</h4>
                     <div className="space-y-1 text-xs text-muted-foreground">
-                      <p><span className="text-amber-400">Style:</span> {currentStyle?.name}</p>
-                      <p><span className="text-teal-400">Level:</span> {SKILL_LEVELS.find(l => l.id === skillLevel)?.name}</p>
-                      <p><span className="text-purple-400">Goals:</span> {goals.length} selected</p>
+                      <p><span className="text-amber-800">Style:</span> {currentStyle?.name}</p>
+                      <p><span className="text-teal-800">Level:</span> {SKILL_LEVELS.find(l => l.id === skillLevel)?.name}</p>
+                      <p><span className="text-purple-700">Goals:</span> {goals.length} selected</p>
                       <p><span className="text-foreground">Tools:</span> {recommendedTools.slice(0, 5).join(', ')}{recommendedTools.length > 5 ? '...' : ''}</p>
                     </div>
                   </div>

@@ -125,7 +125,7 @@ export function MultiplayerLobby() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-purple-400/70 hover:text-purple-300 hover:bg-purple-900/20"
+          className="text-purple-700/70 hover:text-purple-300 hover:bg-purple-900/20"
           data-testid="button-multiplayer"
         >
           <Users className="w-4 h-4 mr-1" />
@@ -134,7 +134,7 @@ export function MultiplayerLobby() {
       </DialogTrigger>
       <DialogContent className="bg-[hsl(var(--card))] border-purple-900/50 text-foreground max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-purple-400 font-orbitron flex items-center gap-2">
+          <DialogTitle className="text-purple-700 font-orbitron flex items-center gap-2">
             <Users className="w-5 h-5" />
             Multiplayer Lobbies
           </DialogTitle>
@@ -248,7 +248,7 @@ export function MultiplayerLobby() {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <ModeIcon className="w-4 h-4 text-purple-400" />
+                          <ModeIcon className="w-4 h-4 text-purple-700" />
                           <span className="font-medium text-foreground">{lobby.name}</span>
                           {inLobby && <Badge variant="secondary" className="text-[10px]">Joined</Badge>}
                         </div>
@@ -262,7 +262,7 @@ export function MultiplayerLobby() {
                           <span 
                             key={player.sessionToken}
                             className={`text-xs px-1.5 py-0.5 rounded ${
-                              i === 0 ? 'bg-amber-900/30 text-amber-400' : 'bg-border text-muted-foreground'
+                              i === 0 ? 'bg-amber-900/30 text-amber-800' : 'bg-border text-muted-foreground'
                             }`}
                           >
                             {i === 0 && <Crown className="w-3 h-3 inline mr-0.5" />}
@@ -277,7 +277,7 @@ export function MultiplayerLobby() {
                             size="sm"
                             variant="outline"
                             onClick={() => leaveLobby.mutate(lobby.lobbyId)}
-                            className="flex-1 border-red-900/50 text-red-400 hover:bg-red-900/20"
+                            className="flex-1 border-red-900/50 text-red-700 hover:bg-red-900/20"
                             data-testid={`button-leave-${lobby.lobbyId}`}
                           >
                             <LogOut className="w-3 h-3 mr-1" />

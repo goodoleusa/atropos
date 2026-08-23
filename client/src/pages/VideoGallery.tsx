@@ -138,7 +138,7 @@ export default function VideoGallery() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-amber-500">Video Gallery</h1>
+          <h1 className="text-3xl font-bold text-amber-800">Video Gallery</h1>
         </div>
 
         <div className="flex gap-2 mb-6 flex-wrap">
@@ -182,7 +182,7 @@ export default function VideoGallery() {
               
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-amber-400">{video.title}</h3>
+                  <h3 className="font-semibold text-amber-800">{video.title}</h3>
                   <span className="text-xs px-2 py-1 bg-border rounded text-muted-foreground">{video.category}</span>
                 </div>
                 <p className="text-xs text-muted-foreground mb-3 font-mono">{video.filename}</p>

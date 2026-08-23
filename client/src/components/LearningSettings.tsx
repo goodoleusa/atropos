@@ -64,15 +64,15 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
         data-testid="expand-learning-settings"
       >
         <span className="flex items-center gap-2 text-muted-foreground">
-          <BookOpen className="w-3 h-3 text-teal-500" />
+          <BookOpen className="w-3 h-3 text-teal-800" />
           Learning Profile
         </span>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-[9px] border-teal-800 text-teal-400 flex items-center gap-1">
+          <Badge variant="outline" className="text-[9px] border-teal-800 text-teal-800 flex items-center gap-1">
             <StyleIcon className="w-2.5 h-2.5" />
             {store.style}
           </Badge>
-          <Badge variant="outline" className="text-[9px] border-amber-800 text-amber-400">
+          <Badge variant="outline" className="text-[9px] border-amber-800 text-amber-800">
             {store.goals.length} goals
           </Badge>
           <ChevronDown className="w-3 h-3 text-muted-foreground" />
@@ -89,7 +89,7 @@ export function LearningSettings({ onProfileChange, compact = false }: LearningS
           className="w-full flex items-center justify-between text-xs text-muted-foreground hover:text-teal-400 min-h-[36px]"
         >
           <span className="flex items-center gap-2">
-            <BookOpen className="w-3 h-3 text-teal-500" />
+            <BookOpen className="w-3 h-3 text-teal-800" />
             Learning Profile Settings
           </span>
           <ChevronUp className="w-3 h-3" />

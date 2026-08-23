@@ -31,9 +31,9 @@ export function WikiLinkInput({
 
   const getIconForType = (type: string) => {
     switch (type) {
-      case 'clue': return <FileText className="w-3 h-3 text-amber-500" />;
-      case 'quest': return <Sparkles className="w-3 h-3 text-purple-500" />;
-      case 'location': return <MapPin className="w-3 h-3 text-teal-500" />;
+      case 'clue': return <FileText className="w-3 h-3 text-amber-800" />;
+      case 'quest': return <Sparkles className="w-3 h-3 text-purple-700" />;
+      case 'location': return <MapPin className="w-3 h-3 text-teal-800" />;
       case 'route': return <Link2 className="w-3 h-3 text-blue-500" />;
       default: return <FileText className="w-3 h-3 text-muted-foreground" />;
     }
@@ -103,7 +103,7 @@ export function WikiLinkInput({
       if (linkMatch) {
         const [, id, displayName] = linkMatch;
         return (
-          <span key={i} className="bg-amber-900/30 text-amber-400 px-1 rounded border border-amber-700/50">
+          <span key={i} className="bg-amber-900/30 text-amber-800 px-1 rounded border border-amber-700/50">
             {displayName || id}
           </span>
         );
@@ -136,7 +136,7 @@ export function WikiLinkInput({
               <CommandEmpty className="py-3 text-center text-muted-foreground text-xs">
                 No matching links found
               </CommandEmpty>
-              <CommandGroup heading="Available Links" className="text-amber-600 text-[10px]">
+              <CommandGroup heading="Available Links" className="text-amber-800 text-[10px]">
                 {filteredLinks.slice(0, 8).map((link) => (
                   <CommandItem
                     key={link.id}
@@ -147,7 +147,7 @@ export function WikiLinkInput({
                   >
                     {getIconForType(link.type)}
                     <div className="flex-1 min-w-0">
-                      <p className="text-amber-500 text-xs font-bold truncate">{link.name}</p>
+                      <p className="text-amber-800 text-xs font-bold truncate">{link.name}</p>
                       <p className="text-muted-foreground text-[10px] truncate">{link.id}</p>
                     </div>
                     <span className="text-[9px] text-muted-foreground uppercase">{link.type}</span>

@@ -206,7 +206,7 @@ export default function TheVoid() {
               className="absolute inset-0 flex flex-col items-center justify-center p-8"
             >
               <VisionIcon className="w-8 h-8 text-amber-700/50 mb-4" />
-              <p className="text-amber-600/70 text-sm md:text-base font-mono text-center leading-relaxed">
+              <p className="text-amber-800/70 text-sm md:text-base font-mono text-center leading-relaxed">
                 {vision.text}
               </p>
             </motion.div>
@@ -278,8 +278,8 @@ export default function TheVoid() {
               transition={{ duration: 2, repeat: Infinity }}
             >
               <div className="text-center">
-                <Sparkles className="w-10 h-10 text-amber-500 mx-auto mb-3" />
-                <h3 className="text-amber-500 font-orbitron text-lg mb-2">MANIFESTATION</h3>
+                <Sparkles className="w-10 h-10 text-amber-800 mx-auto mb-3" />
+                <h3 className="text-amber-800 font-orbitron text-lg mb-2">MANIFESTATION</h3>
                 <p className="text-amber-700 font-mono text-sm mb-1">{floatingClue.name}</p>
                 <p className="text-muted-foreground text-xs mb-4">{floatingClue.description}</p>
                 <Button
@@ -303,9 +303,9 @@ export default function TheVoid() {
           >
             <div className="bg-[hsl(var(--card))]/95 border border-teal-600/50 rounded-lg p-4 backdrop-blur-md">
               <div className="flex items-start gap-3">
-                <Terminal className="w-5 h-5 text-teal-500 mt-1 shrink-0" />
+                <Terminal className="w-5 h-5 text-teal-800 mt-1 shrink-0" />
                 <div>
-                  <h4 className="text-teal-400 font-orbitron text-sm mb-1">MISSION AVAILABLE</h4>
+                  <h4 className="text-teal-800 font-orbitron text-sm mb-1">MISSION AVAILABLE</h4>
                   <p className="text-teal-600 font-mono text-xs mb-2">{missionPrompt.name}</p>
                   <p className="text-muted-foreground text-xs mb-3">{missionPrompt.description}</p>
                   <code className="text-[10px] text-teal-700 bg-black/50 px-2 py-1 rounded block mb-3">
@@ -352,8 +352,8 @@ export default function TheVoid() {
               onClick={dismissEvent}
             >
               <div className="flex items-center gap-3">
-                <Moon className="w-4 h-4 text-amber-500" />
-                <p className="text-amber-400 font-mono text-sm italic">{tipMessage}</p>
+                <Moon className="w-4 h-4 text-amber-800" />
+                <p className="text-amber-800 font-mono text-sm italic">{tipMessage}</p>
               </div>
             </div>
           </motion.div>

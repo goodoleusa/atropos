@@ -253,7 +253,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           toast({
             title: "LEVEL UP!",
             description: `You are now Level ${data.newLevel}: ${data.title}`,
-            className: "border-amber-500 text-amber-400 bg-black/90 font-mono",
+            className: "border-amber-500 text-amber-800 bg-black/90 font-mono",
           });
         }
       }
@@ -275,7 +275,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             toast({
               title: "ACHIEVEMENT UNLOCKED",
               description: `${unlock.name} (+${unlock.xpReward} XP)`,
-              className: "border-amber-500 text-amber-400 bg-black/90 font-mono",
+              className: "border-amber-500 text-amber-800 bg-black/90 font-mono",
             });
           }
           setGameState(prev => ({
@@ -303,7 +303,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             toast({
               title: "QUEST COMPLETED",
               description: `Mission accomplished: ${questId}`,
-              className: "border-teal-500 text-teal-400 bg-black/90 font-mono",
+              className: "border-teal-500 text-teal-800 bg-black/90 font-mono",
             });
           }
           setGameState(prev => ({
@@ -420,7 +420,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       toast({
         title: "SESSION IMPORTED",
         description: `Restored session with ${serverSession.collectedClues?.length || 0} fragments`,
-        className: "border-teal-500 text-teal-400 bg-black/90 font-mono",
+        className: "border-teal-500 text-teal-800 bg-black/90 font-mono",
       });
       
       return true;
@@ -451,7 +451,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     toast({
       title: "MISSION ACCEPTED",
       description: `${mission.name} added to Mission Control`,
-      className: "border-teal-500 text-teal-400 bg-black/90 font-mono",
+      className: "border-teal-500 text-teal-800 bg-black/90 font-mono",
     });
   }, [toast]);
 

@@ -44,18 +44,18 @@ interface UserJourney {
 }
 
 const PERSONA_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  explorer: { bg: 'bg-teal-900/30', text: 'text-teal-400', label: 'Explorer' },
-  power_user: { bg: 'bg-amber-900/30', text: 'text-amber-400', label: 'Power User' },
+  explorer: { bg: 'bg-teal-900/30', text: 'text-teal-800', label: 'Explorer' },
+  power_user: { bg: 'bg-amber-900/30', text: 'text-amber-800', label: 'Power User' },
   learner: { bg: 'bg-blue-900/30', text: 'text-blue-400', label: 'Learner' },
   casual: { bg: 'bg-border/50', text: 'text-muted-foreground', label: 'Casual' },
-  analyst: { bg: 'bg-purple-900/30', text: 'text-purple-400', label: 'Analyst' },
-  builder: { bg: 'bg-orange-900/30', text: 'text-orange-400', label: 'Builder' },
+  analyst: { bg: 'bg-purple-900/30', text: 'text-purple-700', label: 'Analyst' },
+  builder: { bg: 'bg-orange-900/30', text: 'text-orange-800', label: 'Builder' },
 };
 
 const ENGAGEMENT_COLORS = {
   low: 'bg-border/30 text-muted-foreground border-muted/30',
-  medium: 'bg-amber-900/30 text-amber-400 border-amber-700/30',
-  high: 'bg-teal-900/30 text-teal-400 border-teal-700/30',
+  medium: 'bg-amber-900/30 text-amber-800 border-amber-700/30',
+  high: 'bg-teal-900/30 text-teal-800 border-teal-700/30',
 };
 
 function classifyPersona(events: BehaviorEvent[]): string {
@@ -116,7 +116,7 @@ function JourneyTimeline({ journey }: { journey: UserJourney }) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-amber-500" />
+            <User className="w-4 h-4 text-amber-800" />
             <code className="text-xs text-muted-foreground font-mono">{journey.sessionToken.slice(0, 12)}...</code>
             <Badge className={persona.bg + ' ' + persona.text + ' text-[9px]'}>{persona.label}</Badge>
             <Badge variant="outline" className={ENGAGEMENT_COLORS[journey.engagement] + ' text-[9px]'}>
@@ -132,10 +132,10 @@ function JourneyTimeline({ journey }: { journey: UserJourney }) {
             <div key={evt.id || i} className="flex items-center gap-1">
               <div className="group relative">
                 <div className={`px-2 py-1 rounded text-[10px] font-mono border cursor-default transition-colors
-                  ${evt.category === 'agent' ? 'bg-teal-900/20 border-teal-800/40 text-teal-400' :
-                    evt.category === 'terminal' ? 'bg-amber-900/20 border-amber-800/40 text-amber-400' :
+                  ${evt.category === 'agent' ? 'bg-teal-900/20 border-teal-800/40 text-teal-800' :
+                    evt.category === 'terminal' ? 'bg-amber-900/20 border-amber-800/40 text-amber-800' :
                     evt.category === 'navigation' ? 'bg-blue-900/20 border-blue-800/40 text-blue-400' :
-                    evt.category === 'quest' ? 'bg-purple-900/20 border-purple-800/40 text-purple-400' :
+                    evt.category === 'quest' ? 'bg-purple-900/20 border-purple-800/40 text-purple-700' :
                     'bg-card/40 border-border text-muted-foreground'}`}
                 >
                   {evt.actionType}
@@ -151,7 +151,7 @@ function JourneyTimeline({ journey }: { journey: UserJourney }) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-[10px] text-amber-500 h-6 px-2"
+              className="text-[10px] text-amber-800 h-6 px-2"
               onClick={() => setExpanded(!expanded)}
               data-testid="button-expand-journey"
             >
@@ -177,7 +177,7 @@ function PersonaBreakdown({ journeys }: { journeys: UserJourney[] }) {
   return (
     <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <Users className="w-4 h-4" /> User Personas
         </CardTitle>
         <CardDescription className="text-muted-foreground text-xs">Auto-classified from behavior patterns</CardDescription>
@@ -219,7 +219,7 @@ function EngagementFunnel({ journeys }: { journeys: UserJourney[] }) {
   return (
     <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <Target className="w-4 h-4" /> Engagement Funnel
         </CardTitle>
       </CardHeader>
@@ -252,7 +252,7 @@ function CategoryHeatmap({ trends }: { trends: BehaviorTrends | null }) {
   return (
     <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <BarChart3 className="w-4 h-4" /> Behavior Heatmap
         </CardTitle>
         <CardDescription className="text-muted-foreground text-xs">Category distribution across all sessions</CardDescription>
@@ -268,7 +268,7 @@ function CategoryHeatmap({ trends }: { trends: BehaviorTrends | null }) {
                 style={{ backgroundColor: `rgba(245, 158, 11, ${intensity * 0.3})` }}
                 data-testid={`heatmap-${cat.category}`}
               >
-                <div className="text-lg font-bold text-amber-400">{cat.count}</div>
+                <div className="text-lg font-bold text-amber-800">{cat.count}</div>
                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{cat.category}</div>
               </div>
             );
@@ -286,7 +286,7 @@ function ActionTimeline({ trends }: { trends: BehaviorTrends | null }) {
   return (
     <Card className="bg-card/80 border-border">
       <CardHeader className="pb-2">
-        <CardTitle className="text-amber-400 text-sm font-orbitron flex items-center gap-2">
+        <CardTitle className="text-amber-800 text-sm font-orbitron flex items-center gap-2">
           <Activity className="w-4 h-4" /> Action Types
         </CardTitle>
       </CardHeader>
@@ -390,13 +390,13 @@ function MarketingInsights({ journeys, trends }: { journeys: UserJourney[]; tren
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+        <h3 className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
           <TrendingUp className="w-4 h-4" /> Marketing Insights
         </h3>
         <Button
           size="sm"
           variant="outline"
-          className="border-amber-700 text-amber-400 hover:bg-amber-900/30"
+          className="border-amber-700 text-amber-800 hover:bg-amber-900/30"
           onClick={exportReport}
           data-testid="button-export-insights"
         >
@@ -411,11 +411,11 @@ function MarketingInsights({ journeys, trends }: { journeys: UserJourney[]; tren
             <Card key={insight.title} className="bg-card/80 border-border" data-testid={`insight-${insight.title.toLowerCase().replace(/\s+/g, '-')}`}>
               <CardContent className="pt-4 pb-3 px-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Icon className="w-4 h-4 text-amber-500" />
-                  {insight.severity === 'good' && <CheckCircle2 className="w-3 h-3 text-teal-500" />}
-                  {insight.severity === 'warn' && <AlertTriangle className="w-3 h-3 text-red-400" />}
+                  <Icon className="w-4 h-4 text-amber-800" />
+                  {insight.severity === 'good' && <CheckCircle2 className="w-3 h-3 text-teal-800" />}
+                  {insight.severity === 'warn' && <AlertTriangle className="w-3 h-3 text-red-700" />}
                 </div>
-                <div className="text-2xl font-bold text-amber-400">{insight.value}</div>
+                <div className="text-2xl font-bold text-amber-800">{insight.value}</div>
                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{insight.title}</div>
                 <div className="text-[10px] text-muted-foreground mt-0.5">{insight.description}</div>
               </CardContent>
@@ -464,7 +464,7 @@ export default function BehaviorAnalysis() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg md:text-xl font-orbitron text-amber-400 flex items-center gap-2">
+              <h1 className="text-lg md:text-xl font-orbitron text-amber-800 flex items-center gap-2">
                 <Eye className="w-5 h-5" /> Behavior Analysis
               </h1>
               <p className="text-[10px] md:text-xs text-muted-foreground mt-1 uppercase tracking-widest">Customer Journeys · User Profiles · Marketing Analytics</p>
@@ -476,7 +476,7 @@ export default function BehaviorAnalysis() {
                   variant={selectedDays === days ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedDays(days)}
-                  className={selectedDays === days ? "bg-amber-800 text-white" : "border-amber-900/50 text-amber-400"}
+                  className={selectedDays === days ? "bg-amber-800 text-white" : "border-amber-900/50 text-amber-800"}
                   data-testid={`button-days-${days}`}
                 >
                   {days}d
@@ -575,7 +575,7 @@ export default function BehaviorAnalysis() {
                 {trends?.flaggedSessions?.length ? (
                   <Card className="bg-card/80 border-red-900/30">
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-red-400 text-sm font-orbitron flex items-center gap-2">
+                      <CardTitle className="text-red-700 text-sm font-orbitron flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4" /> Flagged Sessions
                       </CardTitle>
                       <CardDescription className="text-muted-foreground text-xs">Sessions that triggered behavioral flags</CardDescription>
@@ -586,7 +586,7 @@ export default function BehaviorAnalysis() {
                           <div key={i} className="flex items-center justify-between bg-red-950/20 p-2 rounded border border-red-900/40">
                             <div className="flex items-center gap-2">
                               <code className="text-[10px] text-red-300 font-mono">{session.sessionToken?.substring(0, 12)}...</code>
-                              <Badge className="bg-red-900/30 text-red-400 text-[9px]">{session.reason}</Badge>
+                              <Badge className="bg-red-900/30 text-red-700 text-[9px]">{session.reason}</Badge>
                             </div>
                             <span className="text-[10px] text-muted-foreground">{new Date(session.timestamp).toLocaleString()}</span>
                           </div>

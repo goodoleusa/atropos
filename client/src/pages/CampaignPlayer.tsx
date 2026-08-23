@@ -73,9 +73,9 @@ const NODE_ICONS: Record<string, any> = {
 };
 
 const COLOR_ACCENTS: Record<string, string> = {
-  amber: 'border-amber-600 bg-amber-950/20 text-amber-400',
-  teal: 'border-teal-600 bg-teal-950/20 text-teal-400',
-  purple: 'border-purple-600 bg-purple-950/20 text-purple-400',
+  amber: 'border-amber-600 bg-amber-950/20 text-amber-800',
+  teal: 'border-teal-600 bg-teal-950/20 text-teal-800',
+  purple: 'border-purple-600 bg-purple-950/20 text-purple-700',
   stone: 'border-muted bg-card/20 text-muted-foreground',
 };
 
@@ -296,8 +296,8 @@ export default function CampaignPlayer() {
       <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center">
         <Card className="bg-card border-red-900/50 max-w-md">
           <CardContent className="p-8 text-center">
-            <Shield className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-red-400 font-mono text-lg mb-2">Campaign Not Found</h2>
+            <Shield className="w-12 h-12 text-red-700 mx-auto mb-4" />
+            <h2 className="text-red-700 font-mono text-lg mb-2">Campaign Not Found</h2>
             <p className="text-muted-foreground text-sm mb-4">This campaign doesn't exist or hasn't been published yet.</p>
             <Button onClick={() => navigate('/campaigns')} className="bg-amber-700 hover:bg-amber-600">
               Browse Campaigns
@@ -359,7 +359,7 @@ export default function CampaignPlayer() {
               transition={{ type: 'spring', stiffness: 200, damping: 15 }}
             >
               <div className="w-20 h-20 rounded-full bg-amber-900/30 border-2 border-amber-500/50 flex items-center justify-center backdrop-blur-sm">
-                <Sparkles className="w-8 h-8 text-amber-400" />
+                <Sparkles className="w-8 h-8 text-amber-800" />
               </div>
               <motion.div
                 className="absolute inset-0 rounded-full border-2 border-amber-400/30"
@@ -409,7 +409,7 @@ export default function CampaignPlayer() {
                 <ChevronLeft className="w-5 h-5" />
               </Button>
               <div className="min-w-0">
-                <h1 className="text-amber-500 font-mono text-xs sm:text-sm font-bold truncate" data-testid="campaign-title">{campaign.name}</h1>
+                <h1 className="text-amber-800 font-mono text-xs sm:text-sm font-bold truncate" data-testid="campaign-title">{campaign.name}</h1>
                 <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
                   <Badge variant="outline" className="border-border text-muted-foreground text-[9px] sm:text-[10px]">{campaign.category}</Badge>
                   <Badge variant="outline" className="border-border text-muted-foreground text-[9px] sm:text-[10px]">{campaign.difficulty}</Badge>
@@ -419,11 +419,11 @@ export default function CampaignPlayer() {
             <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
                 <p className="text-[10px] text-muted-foreground">CLUES</p>
-                <p className="text-amber-400 font-mono text-sm">{foundClues.size}/{totalClues}</p>
+                <p className="text-amber-800 font-mono text-sm">{foundClues.size}/{totalClues}</p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] text-muted-foreground">PROGRESS</p>
-                <p className="text-teal-400 font-mono text-sm">{Math.round(progress)}%</p>
+                <p className="text-teal-800 font-mono text-sm">{Math.round(progress)}%</p>
               </div>
             </div>
           </div>
@@ -454,14 +454,14 @@ export default function CampaignPlayer() {
                     onClick={() => isVisited ? navigateToNode(node.id) : null}
                     disabled={!isVisited}
                     className={`w-full text-left p-2 rounded text-xs flex items-center gap-2 transition-all ${
-                      isCurrent ? 'bg-amber-900/30 text-amber-400 border border-amber-700' :
+                      isCurrent ? 'bg-amber-900/30 text-amber-800 border border-amber-700' :
                       isVisited ? 'text-muted-foreground hover:bg-border/50 cursor-pointer' :
                       'text-muted-foreground cursor-not-allowed'
                     }`}
                     data-testid={`nav-node-${node.id}`}
                   >
                     {isVisited ? (
-                      <CheckCircle2 className={`w-3 h-3 shrink-0 ${isCurrent ? 'text-amber-400' : 'text-teal-600'}`} />
+                      <CheckCircle2 className={`w-3 h-3 shrink-0 ${isCurrent ? 'text-amber-800' : 'text-teal-600'}`} />
                     ) : (
                       <Lock className="w-3 h-3 shrink-0 text-muted-foreground" />
                     )}
@@ -501,10 +501,10 @@ export default function CampaignPlayer() {
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant="outline" className="text-[10px] border-border text-muted-foreground capitalize">{currentNode.type}</Badge>
                     {currentNode.metadata?.featureType && (
-                      <Badge variant="outline" className="text-[10px] border-teal-800 text-teal-500">{currentNode.metadata.featureType}</Badge>
+                      <Badge variant="outline" className="text-[10px] border-teal-800 text-teal-800">{currentNode.metadata.featureType}</Badge>
                     )}
                     {currentNode.metadata?.skillLevel && (
-                      <Badge variant="outline" className="text-[10px] border-purple-800 text-purple-500">{currentNode.metadata.skillLevel}</Badge>
+                      <Badge variant="outline" className="text-[10px] border-purple-800 text-purple-700">{currentNode.metadata.skillLevel}</Badge>
                     )}
                   </div>
                 </div>
@@ -523,7 +523,7 @@ export default function CampaignPlayer() {
                   )}
                   <div
                     className={`campaign-page-content ${
-                      currentNode.pageLayout === 'terminal' ? 'p-4 text-amber-400' :
+                      currentNode.pageLayout === 'terminal' ? 'p-4 text-amber-800' :
                       currentNode.pageLayout === 'dossier' ? 'p-6' :
                       currentNode.pageLayout === 'full-page' ? '' :
                       'p-6'
@@ -539,7 +539,7 @@ export default function CampaignPlayer() {
                     <div className="prose prose-invert prose-sm max-w-none">
                       {currentNode.content.split('\n').map((line, i) => {
                         if (line.startsWith('**') && line.endsWith('**')) {
-                          return <h3 key={i} className="text-amber-500 font-mono text-lg mb-2">{line.replace(/\*\*/g, '')}</h3>;
+                          return <h3 key={i} className="text-amber-800 font-mono text-lg mb-2">{line.replace(/\*\*/g, '')}</h3>;
                         }
                         if (line.startsWith('> ')) {
                           return <blockquote key={i} className="border-l-2 border-amber-700 pl-3 text-muted-foreground italic my-2">{line.slice(2)}</blockquote>;
@@ -551,7 +551,7 @@ export default function CampaignPlayer() {
                           return <li key={i} className="text-foreground ml-4 list-decimal my-1">{line.replace(/^\d+\.\s*/, '')}</li>;
                         }
                         if (line.startsWith('⚠️')) {
-                          return <p key={i} className="text-amber-400 bg-amber-900/10 border border-amber-900/30 rounded p-2 my-2 text-xs">{line}</p>;
+                          return <p key={i} className="text-amber-800 bg-amber-900/10 border border-amber-900/30 rounded p-2 my-2 text-xs">{line}</p>;
                         }
                         if (line.trim() === '') return <br key={i} />;
                         return <p key={i} className="text-foreground my-1">{line}</p>;
@@ -564,12 +564,12 @@ export default function CampaignPlayer() {
               {currentNode.metadata?.toolsForStep && currentNode.metadata.toolsForStep.length > 0 && (
                 <Card className="bg-teal-950/10 border-teal-900/30 mb-6">
                   <CardContent className="p-4">
-                    <p className="text-teal-500 text-xs font-mono mb-2 flex items-center gap-1">
+                    <p className="text-teal-800 text-xs font-mono mb-2 flex items-center gap-1">
                       <Zap className="w-3 h-3" /> TOOLS FOR THIS STEP
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {currentNode.metadata.toolsForStep.map(tool => (
-                        <Badge key={tool} variant="outline" className="border-teal-800 text-teal-400 text-xs">{tool}</Badge>
+                        <Badge key={tool} variant="outline" className="border-teal-800 text-teal-800 text-xs">{tool}</Badge>
                       ))}
                     </div>
                   </CardContent>
@@ -579,7 +579,7 @@ export default function CampaignPlayer() {
               {nodeClues.length > 0 && (
                 <Card className="bg-amber-950/10 border-amber-900/30 mb-6">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+                    <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                       <Search className="w-4 h-4" /> Hidden Intelligence ({nodeClues.filter(c => foundClues.has(c.id)).length}/{nodeClues.length})
                     </CardTitle>
                   </CardHeader>
@@ -620,20 +620,20 @@ export default function CampaignPlayer() {
                           <div className="flex items-center justify-between relative">
                             <div className="flex items-center gap-2">
                               <motion.span
-                                className={isFound ? 'text-teal-400' : 'text-amber-500'}
+                                className={isFound ? 'text-teal-800' : 'text-amber-800'}
                                 animate={justRevealed ? { scale: [1, 1.4, 1], rotate: [0, 15, -15, 0] } : {}}
                                 transition={{ duration: 0.5 }}
                               >
                                 {typeInfo.icon}
                               </motion.span>
-                              <span className={`text-xs font-mono ${isFound ? 'text-teal-400' : 'text-muted-foreground'}`}>{typeInfo.label}</span>
+                              <span className={`text-xs font-mono ${isFound ? 'text-teal-800' : 'text-muted-foreground'}`}>{typeInfo.label}</span>
                               {isFound && (
                                 <motion.span
                                   initial={justRevealed ? { scale: 0 } : { scale: 1 }}
                                   animate={{ scale: 1 }}
                                   transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
                                 >
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-500" />
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-800" />
                                 </motion.span>
                               )}
                             </div>
@@ -656,7 +656,7 @@ export default function CampaignPlayer() {
                                 exit={{ height: 0, opacity: 0 }}
                                 className="mt-2 text-xs overflow-hidden"
                               >
-                                <p className="text-amber-400/80 mb-1">{clue.hint}</p>
+                                <p className="text-amber-800/80 mb-1">{clue.hint}</p>
                                 <p className="text-muted-foreground">{typeInfo.tip}</p>
                               </motion.div>
                             )}
@@ -666,7 +666,7 @@ export default function CampaignPlayer() {
                               initial={justRevealed ? { opacity: 0, y: 10 } : {}}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.5 }}
-                              className="mt-1 text-teal-400/70 text-[10px] font-mono break-all"
+                              className="mt-1 text-teal-800/70 text-[10px] font-mono break-all"
                             >
                               FLAG{'{'}captured{'}'}
                             </motion.p>
@@ -704,8 +704,8 @@ export default function CampaignPlayer() {
               {isComplete ? (
                 <Card className="bg-gradient-to-br from-amber-950/30 to-teal-950/30 border-amber-700">
                   <CardContent className="p-8 text-center">
-                    <Award className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-                    <h3 className="text-amber-400 font-mono text-xl mb-2">Campaign Complete</h3>
+                    <Award className="w-16 h-16 text-amber-800 mx-auto mb-4" />
+                    <h3 className="text-amber-800 font-mono text-xl mb-2">Campaign Complete</h3>
                     <p className="text-muted-foreground text-sm mb-2">
                       You found {foundClues.size} of {totalClues} hidden clues.
                     </p>
@@ -782,7 +782,7 @@ export default function CampaignPlayer() {
                           <button
                             onClick={() => navigateToNode(nid)}
                             className={`text-[10px] px-1.5 py-0.5 rounded ${
-                              nid === currentNodeId ? 'bg-amber-900/30 text-amber-400' : 'text-muted-foreground hover:text-muted-foreground'
+                              nid === currentNodeId ? 'bg-amber-900/30 text-amber-800' : 'text-muted-foreground hover:text-muted-foreground'
                             }`}
                           >
                             {n?.title || nid.slice(0, 6)}

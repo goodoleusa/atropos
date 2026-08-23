@@ -50,7 +50,7 @@ interface ModelEntry {
 const COST_TIER_META: Record<CostTier, { label: string; color: string; bg: string; border: string; description: string }> = {
   free:    { label: 'FREE',    color: 'text-emerald-400', bg: 'bg-emerald-900/20', border: 'border-emerald-800/40', description: '$0 — no cost at all' },
   budget:  { label: 'BUDGET',  color: 'text-sky-400',     bg: 'bg-sky-900/20',     border: 'border-sky-800/40',     description: 'Under $1/M output — cheap even with heavy output' },
-  mid:     { label: 'MID',     color: 'text-amber-400',   bg: 'bg-amber-900/20',   border: 'border-amber-800/40',   description: '$1-10/M output — solid quality, watch output volume' },
+  mid:     { label: 'MID',     color: 'text-amber-800',   bg: 'bg-amber-900/20',   border: 'border-amber-800/40',   description: '$1-10/M output — solid quality, watch output volume' },
   premium: { label: 'PREMIUM', color: 'text-rose-400',    bg: 'bg-rose-900/20',     border: 'border-rose-800/40',    description: '$10+/M output — top quality, burns fast on long outputs' },
 };
 
@@ -58,10 +58,10 @@ const CATEGORY_META: Record<ModelCategory, { label: string; icon: any; color: st
   all:       { label: 'All Models',   icon: Globe,    color: 'text-muted-foreground' },
   free:      { label: 'Free',         icon: Zap,      color: 'text-emerald-400' },
   coding:    { label: 'Coding',       icon: Code,     color: 'text-sky-400' },
-  reasoning: { label: 'Reasoning',    icon: Brain,    color: 'text-purple-400' },
+  reasoning: { label: 'Reasoning',    icon: Brain,    color: 'text-purple-700' },
   speed:     { label: 'Speed',        icon: Zap,      color: 'text-yellow-400' },
-  trending:  { label: 'Trending',     icon: Flame,    color: 'text-orange-400' },
-  security:  { label: 'Security',     icon: Shield,   color: 'text-red-400' },
+  trending:  { label: 'Trending',     icon: Flame,    color: 'text-orange-800' },
+  security:  { label: 'Security',     icon: Shield,   color: 'text-red-700' },
 };
 
 const OPENROUTER_MODELS: ModelEntry[] = [
@@ -123,7 +123,7 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div className="bg-card border border-amber-900/40 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h3 className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+          <h3 className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
             <Cpu className="w-4 h-4" /> Choose Model (OpenRouter)
           </h3>
           <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6 text-muted-foreground hover:text-white">
@@ -194,7 +194,7 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
                               <div className="flex items-center gap-2">
                                 <span className="text-xs font-medium text-white">{m.name}</span>
                                 <span className="text-[9px] text-muted-foreground">{m.provider}</span>
-                                {isSelected && <Check className="w-3 h-3 text-amber-500" />}
+                                {isSelected && <Check className="w-3 h-3 text-amber-800" />}
                               </div>
                               <p className="text-[10px] text-muted-foreground mt-0.5">{m.strength}</p>
                               <p className="text-[10px] text-muted-foreground italic mt-0.5">{m.note}</p>
@@ -603,7 +603,7 @@ print(result)`,
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-orbitron font-bold text-amber-500 flex items-center gap-2" data-testid="crew-builder-title">
+              <h1 className="text-2xl font-orbitron font-bold text-amber-800 flex items-center gap-2" data-testid="crew-builder-title">
                 <Layers className="w-6 h-6" /> Crew Builder
               </h1>
               <p className="text-muted-foreground text-sm">Design, test, and evaluate AI agent teams</p>
@@ -644,7 +644,7 @@ print(result)`,
                 <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+                      <CardTitle className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
                         <Target className="w-4 h-4" /> Crew Objective
                       </CardTitle>
                     </div>
@@ -669,7 +669,7 @@ print(result)`,
                       <Switch checked={includeSynthesis} onCheckedChange={setIncludeSynthesis} className="data-[state=checked]:bg-amber-600" />
                       <span className="text-xs text-muted-foreground">Auto-Synthesis</span>
                     </div>
-                    <Button size="sm" variant="outline" className="border-teal-700 text-teal-400" onClick={addMember} disabled={crewMembers.length >= 6} data-testid="add-agent-btn">
+                    <Button size="sm" variant="outline" className="border-teal-700 text-teal-800" onClick={addMember} disabled={crewMembers.length >= 6} data-testid="add-agent-btn">
                       <Plus className="w-4 h-4 mr-1" /> Add Agent
                     </Button>
                   </div>
@@ -784,23 +784,23 @@ print(result)`,
               <div className="space-y-4">
                 <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-orbitron text-amber-400">Crew Summary</CardTitle>
+                    <CardTitle className="text-sm font-orbitron text-amber-800">Crew Summary</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="grid grid-cols-2 gap-2">
                       <div className="bg-card/50 rounded p-2 text-center">
-                        <p className="text-xl font-bold text-amber-400" data-testid="crew-size">{crewMembers.length}</p>
+                        <p className="text-xl font-bold text-amber-800" data-testid="crew-size">{crewMembers.length}</p>
                         <p className="text-[9px] text-muted-foreground uppercase">Agents</p>
                       </div>
                       <div className="bg-card/50 rounded p-2 text-center">
-                        <p className="text-xl font-bold text-teal-400">${totalEstCost.toFixed(2)}</p>
+                        <p className="text-xl font-bold text-teal-800">${totalEstCost.toFixed(2)}</p>
                         <p className="text-[9px] text-muted-foreground uppercase">Est. Cost</p>
                       </div>
                     </div>
 
                     {CREW_SIZE_GUIDANCE[crewMembers.length] && (
                       <div className="bg-card/30 rounded p-3 border border-border">
-                        <p className="text-xs text-amber-400 font-medium">{CREW_SIZE_GUIDANCE[crewMembers.length].label}</p>
+                        <p className="text-xs text-amber-800 font-medium">{CREW_SIZE_GUIDANCE[crewMembers.length].label}</p>
                         <p className="text-[10px] text-muted-foreground mt-1">{CREW_SIZE_GUIDANCE[crewMembers.length].quality}</p>
                         <p className="text-[10px] text-muted-foreground mt-0.5">{CREW_SIZE_GUIDANCE[crewMembers.length].tradeoff}</p>
                       </div>
@@ -808,8 +808,8 @@ print(result)`,
 
                     {crewMembers.length > 4 && (
                       <div className="flex items-start gap-2 bg-amber-900/10 border border-amber-900/30 rounded p-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                        <p className="text-[10px] text-amber-400">Past 4 agents, quality often decreases due to role overlap and synthesis overload. Consider removing agents unless each has a unique contribution.</p>
+                        <AlertTriangle className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
+                        <p className="text-[10px] text-amber-800">Past 4 agents, quality often decreases due to role overlap and synthesis overload. Consider removing agents unless each has a unique contribution.</p>
                       </div>
                     )}
 
@@ -835,7 +835,7 @@ print(result)`,
 
                 <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-orbitron text-teal-400">Task Input</CardTitle>
+                    <CardTitle className="text-sm font-orbitron text-teal-800">Task Input</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <Textarea
@@ -889,9 +889,9 @@ print(result)`,
                   <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
-                        <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
+                        <Loader2 className="w-5 h-5 animate-spin text-amber-800" />
                         <div className="flex-1">
-                          <p className="text-sm text-amber-400">{runningAgent} analyzing...</p>
+                          <p className="text-sm text-amber-800">{runningAgent} analyzing...</p>
                           <Progress value={runProgress} className="h-1 bg-card mt-1" />
                         </div>
                         <span className="text-xs text-muted-foreground">{Math.round(runProgress)}%</span>
@@ -903,13 +903,13 @@ print(result)`,
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-amber-400">{currentResults.length}</p>
+                      <p className="text-xl font-bold text-amber-800">{currentResults.length}</p>
                       <p className="text-[9px] text-muted-foreground uppercase">Agents Run</p>
                     </CardContent>
                   </Card>
                   <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-teal-400">
+                      <p className="text-xl font-bold text-teal-800">
                         {(currentResults.reduce((s, r) => s + r.latencyMs, 0) / 1000).toFixed(1)}s
                       </p>
                       <p className="text-[9px] text-muted-foreground uppercase">Total Time</p>
@@ -917,7 +917,7 @@ print(result)`,
                   </Card>
                   <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-purple-400">
+                      <p className="text-xl font-bold text-purple-700">
                         {currentResults.reduce((s, r) => s + (r.tokenUsage?.total || 0), 0).toLocaleString()}
                       </p>
                       <p className="text-[9px] text-muted-foreground uppercase">Tokens</p>
@@ -943,7 +943,7 @@ print(result)`,
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-sm text-white flex items-center gap-2">
-                              <Icon className="w-4 h-4 text-amber-500" />
+                              <Icon className="w-4 h-4 text-amber-800" />
                               {result.agentName}
                             </CardTitle>
                             <div className="flex items-center gap-2">
@@ -988,11 +988,11 @@ print(result)`,
                   <Card className="bg-[hsl(var(--card))] border-amber-900/40" data-testid="synthesis-result">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm text-amber-400 flex items-center gap-2">
+                        <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
                           <Brain className="w-4 h-4" /> Synthesis Report
                         </CardTitle>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-[9px] border-amber-700 text-amber-400">
+                          <Badge variant="outline" className="text-[9px] border-amber-700 text-amber-800">
                             {getModelInfo(synthesisResult.model)?.name}
                           </Badge>
                           <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">
@@ -1026,7 +1026,7 @@ print(result)`,
               <>
                 <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-orbitron text-purple-400 flex items-center gap-2">
+                    <CardTitle className="text-sm font-orbitron text-purple-700 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4" /> Price vs Performance
                     </CardTitle>
                   </CardHeader>
@@ -1034,7 +1034,7 @@ print(result)`,
                     <div className="space-y-2">
                       {evalHistory.map((run, idx) => (
                         <div key={run.id} className="flex items-center gap-3 p-3 rounded border border-border bg-card/50" data-testid={`eval-run-${idx}`}>
-                          <div className="w-8 h-8 rounded-full bg-purple-900/30 flex items-center justify-center text-purple-400 text-xs font-bold">
+                          <div className="w-8 h-8 rounded-full bg-purple-900/30 flex items-center justify-center text-purple-700 text-xs font-bold">
                             {run.crewSize}
                           </div>
                           <div className="flex-1">
@@ -1080,7 +1080,7 @@ print(result)`,
                 {evalHistory.length >= 2 && (
                   <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-orbitron text-amber-400 flex items-center gap-2">
+                      <CardTitle className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
                         <BarChart3 className="w-4 h-4" /> Comparison
                       </CardTitle>
                     </CardHeader>
@@ -1095,7 +1095,7 @@ print(result)`,
                           return (
                             <div key={run.id} className="grid grid-cols-4 gap-2 text-xs items-center">
                               <span className="text-muted-foreground">{run.crewSize} agents</span>
-                              <span className={run.totalLatencyMs === bestTime ? 'text-teal-400 font-bold' : 'text-muted-foreground'}>
+                              <span className={run.totalLatencyMs === bestTime ? 'text-teal-800 font-bold' : 'text-muted-foreground'}>
                                 {(run.totalLatencyMs / 1000).toFixed(1)}s
                               </span>
                               <span className="text-muted-foreground">{run.totalTokens.toLocaleString()}</span>

@@ -117,7 +117,7 @@ export function ClueGraph({
           variant="ghost"
           size="sm"
           onClick={() => setZoom(z => Math.min(3, z * 1.2))}
-          className="h-7 w-7 p-0 bg-black/50 text-amber-500 hover:bg-amber-900/30"
+          className="h-7 w-7 p-0 bg-black/50 text-amber-800 hover:bg-amber-900/30"
         >
           <ZoomIn className="w-4 h-4" />
         </Button>
@@ -125,7 +125,7 @@ export function ClueGraph({
           variant="ghost"
           size="sm"
           onClick={() => setZoom(z => Math.max(0.3, z * 0.8))}
-          className="h-7 w-7 p-0 bg-black/50 text-amber-500 hover:bg-amber-900/30"
+          className="h-7 w-7 p-0 bg-black/50 text-amber-800 hover:bg-amber-900/30"
         >
           <ZoomOut className="w-4 h-4" />
         </Button>
@@ -133,7 +133,7 @@ export function ClueGraph({
           variant="ghost"
           size="sm"
           onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
-          className="h-7 w-7 p-0 bg-black/50 text-amber-500 hover:bg-amber-900/30"
+          className="h-7 w-7 p-0 bg-black/50 text-amber-800 hover:bg-amber-900/30"
         >
           <Maximize2 className="w-4 h-4" />
         </Button>

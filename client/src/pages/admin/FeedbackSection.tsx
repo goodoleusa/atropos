@@ -35,15 +35,15 @@ interface FeedbackStats {
 }
 
 const TYPE_CONFIG: Record<string, { icon: any; color: string; label: string }> = {
-  bug: { icon: Bug, color: "text-red-400 bg-red-900/30 border-red-800/50", label: "Bug" },
+  bug: { icon: Bug, color: "text-red-700 bg-red-900/30 border-red-800/50", label: "Bug" },
   feature: { icon: Zap, color: "text-cyan-400 bg-cyan-900/30 border-cyan-800/50", label: "Feature" },
-  idea: { icon: Lightbulb, color: "text-amber-400 bg-amber-900/30 border-amber-800/50", label: "Idea" },
-  pain_point: { icon: AlertTriangle, color: "text-orange-400 bg-orange-900/30 border-orange-800/50", label: "Pain Point" },
+  idea: { icon: Lightbulb, color: "text-amber-800 bg-amber-900/30 border-amber-800/50", label: "Idea" },
+  pain_point: { icon: AlertTriangle, color: "text-orange-800 bg-orange-900/30 border-orange-800/50", label: "Pain Point" },
 };
 
 const STATUS_CONFIG: Record<string, { icon: any; color: string }> = {
   open: { icon: Clock, color: "text-muted-foreground" },
-  in_progress: { icon: ArrowUpCircle, color: "text-amber-400" },
+  in_progress: { icon: ArrowUpCircle, color: "text-amber-800" },
   resolved: { icon: CheckCircle, color: "text-green-400" },
   shipped: { icon: CheckCircle, color: "text-cyan-400" },
   dismissed: { icon: XCircle, color: "text-muted-foreground" },

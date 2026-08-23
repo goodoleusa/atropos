@@ -130,10 +130,10 @@ export function QuickPushSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-amber-400 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
           <Zap className="w-5 h-5" /> Quick Push Console
         </h3>
-        <Badge variant="outline" className="border-amber-600 text-amber-400">
+        <Badge variant="outline" className="border-amber-600 text-amber-800">
           {clues.length} Total Clues
         </Badge>
       </div>
@@ -142,7 +142,7 @@ export function QuickPushSection() {
         <div className="space-y-6">
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                 <Layers className="w-4 h-4" /> Clue Template
               </CardTitle>
               <CardDescription className="text-muted-foreground text-xs">
@@ -168,7 +168,7 @@ export function QuickPushSection() {
                       <Badge variant="outline" className="text-[10px] border-muted">
                         {template.type}
                       </Badge>
-                      <span className="text-[10px] text-amber-500">★{template.difficulty}</span>
+                      <span className="text-[10px] text-amber-800">★{template.difficulty}</span>
                     </div>
                   </button>
                 ))}
@@ -201,7 +201,7 @@ export function QuickPushSection() {
 
           <Card className="bg-[hsl(var(--card))] border-teal-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
                 <Map className="w-4 h-4" /> Target Zones
               </CardTitle>
               <CardDescription className="text-muted-foreground text-xs">
@@ -227,7 +227,7 @@ export function QuickPushSection() {
                 ))}
               </div>
               {selectedZones.length > 0 && (
-                <p className="text-xs text-teal-400 mt-2">
+                <p className="text-xs text-teal-800 mt-2">
                   Selected: {selectedZones.join(', ')}
                 </p>
               )}
@@ -236,7 +236,7 @@ export function QuickPushSection() {
 
           <Card className="bg-[hsl(var(--card))] border-purple-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+              <CardTitle className="text-purple-700 text-sm font-mono flex items-center gap-2">
                 <Target className="w-4 h-4" /> Link to Campaigns
               </CardTitle>
               <CardDescription className="text-muted-foreground text-xs">

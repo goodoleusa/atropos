@@ -28,8 +28,8 @@ export function SessionsPanel() {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-orbitron text-amber-500">Player Sessions</h3>
-          <Badge className="bg-amber-900/50 text-amber-400">Live View</Badge>
+          <h3 className="text-lg font-orbitron text-amber-800">Player Sessions</h3>
+          <Badge className="bg-amber-900/50 text-amber-800">Live View</Badge>
         </div>
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardContent className="p-8 text-center">
@@ -45,27 +45,27 @@ export function SessionsPanel() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-orbitron text-amber-500">Player Sessions</h3>
-        <Badge className="bg-teal-900/50 text-teal-400">{activeSessions.length} Active</Badge>
+        <h3 className="text-lg font-orbitron text-amber-800">Player Sessions</h3>
+        <Badge className="bg-teal-900/50 text-teal-800">{activeSessions.length} Active</Badge>
       </div>
       
       <div className="grid gap-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Card className="bg-teal-950/20 border-teal-900/30">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-teal-400">{activeSessions.length}</p>
+              <p className="text-2xl font-bold text-teal-800">{activeSessions.length}</p>
               <p className="text-xs text-muted-foreground">Active Now</p>
             </CardContent>
           </Card>
           <Card className="bg-amber-950/20 border-amber-900/30">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-amber-400">{sessions.length}</p>
+              <p className="text-2xl font-bold text-amber-800">{sessions.length}</p>
               <p className="text-xs text-muted-foreground">Total Sessions</p>
             </CardContent>
           </Card>
           <Card className="bg-teal-950/20 border-teal-900/30">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-teal-400">
+              <p className="text-2xl font-bold text-teal-800">
                 {sessions.reduce((acc, s) => acc + (s.cluesCollected || 0), 0)}
               </p>
               <p className="text-xs text-muted-foreground">Clues Collected</p>
@@ -73,7 +73,7 @@ export function SessionsPanel() {
           </Card>
           <Card className="bg-purple-950/20 border-purple-900/30">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-purple-400">
+              <p className="text-2xl font-bold text-purple-700">
                 {sessions.reduce((acc, s) => acc + (s.questsCompleted || 0), 0)}
               </p>
               <p className="text-xs text-muted-foreground">Quests Completed</p>
@@ -83,7 +83,7 @@ export function SessionsPanel() {
 
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader>
-            <CardTitle className="text-amber-500 text-sm flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
               <Server className="w-4 h-4" /> Recent Player Sessions
             </CardTitle>
           </CardHeader>
@@ -122,16 +122,16 @@ export function SessionsPanel() {
                     </div>
                     <div className="flex items-center gap-4 text-xs">
                       <div className="text-center">
-                        <p className="text-amber-400">{session.cluesCollected || 0}</p>
+                        <p className="text-amber-800">{session.cluesCollected || 0}</p>
                         <p className="text-muted-foreground">clues</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-teal-400">{session.questsCompleted || 0}</p>
+                        <p className="text-teal-800">{session.questsCompleted || 0}</p>
                         <p className="text-muted-foreground">quests</p>
                       </div>
                       <Badge variant="outline" className={
-                        isActive ? 'border-teal-700 text-teal-400' :
-                        isIdle ? 'border-amber-700 text-amber-400' :
+                        isActive ? 'border-teal-700 text-teal-800' :
+                        isIdle ? 'border-amber-700 text-amber-800' :
                         'border-border text-muted-foreground'
                       } data-testid={`session-status-${i}`}>
                         {timeAgo}

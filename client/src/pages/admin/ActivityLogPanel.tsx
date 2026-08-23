@@ -19,9 +19,9 @@ export function ActivityLogPanel() {
 
   const typeIcon = (type: string) => {
     switch (type) {
-      case 'command': return <Terminal className="w-3.5 h-3.5 text-amber-500" />;
-      case 'session': return <Users className="w-3.5 h-3.5 text-teal-500" />;
-      case 'behavior': return <Activity className="w-3.5 h-3.5 text-purple-500" />;
+      case 'command': return <Terminal className="w-3.5 h-3.5 text-amber-800" />;
+      case 'session': return <Users className="w-3.5 h-3.5 text-teal-800" />;
+      case 'behavior': return <Activity className="w-3.5 h-3.5 text-purple-700" />;
       default: return <Clock className="w-3.5 h-3.5 text-muted-foreground" />;
     }
   };
@@ -55,7 +55,7 @@ export function ActivityLogPanel() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
           <Activity className="w-5 h-5" /> Real-Time Activity Log
         </h3>
         <div className="flex items-center gap-3">
@@ -72,12 +72,12 @@ export function ActivityLogPanel() {
             size="sm"
             variant="outline"
             onClick={() => refetch()}
-            className="border-amber-900/50 text-amber-500 h-8"
+            className="border-amber-900/50 text-amber-800 h-8"
             data-testid="activity-refresh-btn"
           >
             Refresh
           </Button>
-          <Badge variant="outline" className="border-amber-900/50 text-amber-400">
+          <Badge variant="outline" className="border-amber-900/50 text-amber-800">
             {activities.length} events
           </Badge>
         </div>
@@ -86,7 +86,7 @@ export function ActivityLogPanel() {
       <div className="grid md:grid-cols-3 gap-3 mb-4">
         <Card className="bg-amber-950/20 border-amber-900/30">
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-amber-400">
+            <p className="text-2xl font-bold text-amber-800">
               {activities.filter(a => a.type === 'command').length}
             </p>
             <p className="text-xs text-muted-foreground">Commands</p>
@@ -94,7 +94,7 @@ export function ActivityLogPanel() {
         </Card>
         <Card className="bg-teal-950/20 border-teal-900/30">
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-teal-400">
+            <p className="text-2xl font-bold text-teal-800">
               {activities.filter(a => a.type === 'session').length}
             </p>
             <p className="text-xs text-muted-foreground">Sessions</p>
@@ -102,7 +102,7 @@ export function ActivityLogPanel() {
         </Card>
         <Card className="bg-purple-950/20 border-purple-900/30">
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-purple-400">
+            <p className="text-2xl font-bold text-purple-700">
               {activities.filter(a => a.type === 'behavior').length}
             </p>
             <p className="text-xs text-muted-foreground">Behaviors</p>
@@ -112,7 +112,7 @@ export function ActivityLogPanel() {
 
       <Card className="bg-[hsl(var(--card))] border-amber-900/30">
         <CardHeader className="pb-2">
-          <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+          <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
             <Clock className="w-4 h-4" /> Live Feed
           </CardTitle>
         </CardHeader>

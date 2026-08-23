@@ -80,9 +80,9 @@ const PRESET_OPTIONS: Record<string, { label: string; description: string }> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  running: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  completed: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
-  error: 'bg-red-500/20 text-red-400 border-red-500/30',
+  running: 'bg-amber-500/20 text-amber-800 border-amber-500/30',
+  completed: 'bg-teal-500/20 text-teal-800 border-teal-500/30',
+  error: 'bg-red-500/20 text-red-700 border-red-500/30',
   cancelled: 'bg-muted/20 text-muted-foreground border-muted/30',
 };
 
@@ -347,14 +347,14 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
-          <Radar className="w-5 h-5 text-amber-400" />
-          <h3 className="text-lg font-bold text-amber-400">SpiderFoot OSINT</h3>
+          <Radar className="w-5 h-5 text-amber-800" />
+          <h3 className="text-lg font-bold text-amber-800">SpiderFoot OSINT</h3>
           {health?.available ? (
-            <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30" data-testid="status-health-available">
+            <Badge className="bg-teal-500/20 text-teal-800 border-teal-500/30" data-testid="status-health-available">
               <Wifi className="w-3 h-3 mr-1" /> Online{health.version ? ` · ${health.version}` : ''}
             </Badge>
           ) : (
-            <Badge className="bg-red-500/20 text-red-400 border-red-500/30" data-testid="status-health-unavailable">
+            <Badge className="bg-red-500/20 text-red-700 border-red-500/30" data-testid="status-health-unavailable">
               <WifiOff className="w-3 h-3 mr-1" /> Offline
             </Badge>
           )}
@@ -362,12 +362,12 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
         <Button
           size="sm"
           variant={showApiKeys ? 'default' : 'outline'}
-          className={showApiKeys ? 'bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]' : 'border-border text-amber-400 hover:border-amber-700 min-h-[44px]'}
+          className={showApiKeys ? 'bg-amber-700 hover:bg-amber-600 text-black min-h-[44px]' : 'border-border text-amber-800 hover:border-amber-700 min-h-[44px]'}
           onClick={() => setShowApiKeys(!showApiKeys)}
           data-testid="button-toggle-api-keys"
         >
           <Settings className="w-4 h-4 mr-1" />
-          API Keys {configuredCount > 0 && <Badge variant="outline" className="ml-1 text-[10px] border-teal-500/30 text-teal-400">{configuredCount}</Badge>}
+          API Keys {configuredCount > 0 && <Badge variant="outline" className="ml-1 text-[10px] border-teal-500/30 text-teal-800">{configuredCount}</Badge>}
         </Button>
       </div>
 
@@ -375,7 +375,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
         <div className="lg:col-span-1 space-y-4">
           <Card className="bg-card/50 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-400 flex items-center gap-2 text-base">
+              <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                 <Target className="w-4 h-4" /> Scan Controls
               </CardTitle>
             </CardHeader>
@@ -432,13 +432,13 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
               </Button>
 
               {isScanning && (
-                <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-500/10 rounded-md p-2 border border-amber-500/20">
+                <div className="flex items-center gap-2 text-xs text-amber-800 bg-amber-500/10 rounded-md p-2 border border-amber-500/20">
                   <Loader2 className="w-3 h-3 animate-spin" />
                   <span>Scanning {scanResult?.target}...</span>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="ml-auto h-6 px-2 text-red-400 hover:text-red-300 min-h-0"
+                    className="ml-auto h-6 px-2 text-red-700 hover:text-red-300 min-h-0"
                     onClick={() => {
                       fetch(`/api/spiderfoot/scan/${activeScanId}/cancel`, { method: 'POST' });
                       setActiveScanId(null);
@@ -513,7 +513,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
           <Card className="bg-card/50 border-border">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-amber-400 flex items-center gap-2 text-base">
+                <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                   <Search className="w-4 h-4" /> Scan Results
                   {scanResult && scanResult.status !== 'running' && (
                     <Badge variant="outline" className={`text-[10px] ${STATUS_COLORS[scanResult.status] || ''}`}>
@@ -539,11 +539,11 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                     <FileSpreadsheet className="w-3 h-3" /> CSV
                   </Button>
                   <div className="w-px h-4 bg-border mx-1" />
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-teal-800 text-teal-400 hover:bg-teal-900/30 hover:border-teal-600 gap-1" onClick={handleSendToAgent} disabled={!onSendToAgent} data-testid="button-send-to-agent">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-teal-800 text-teal-800 hover:bg-teal-900/30 hover:border-teal-600 gap-1" onClick={handleSendToAgent} disabled={!onSendToAgent} data-testid="button-send-to-agent">
                     <MessageSquare className="w-3 h-3" /> Agent
                     <ArrowRight className="w-2.5 h-2.5" />
                   </Button>
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-orange-800 text-orange-400 hover:bg-orange-900/30 hover:border-orange-600 gap-1" onClick={handleSendToAtropos} disabled={!onSendToAtropos} data-testid="button-send-to-atropos">
+                  <Button size="sm" variant="outline" className="h-7 text-xs border-orange-800 text-orange-800 hover:bg-orange-900/30 hover:border-orange-600 gap-1" onClick={handleSendToAtropos} disabled={!onSendToAtropos} data-testid="button-send-to-atropos">
                     <Crosshair className="w-3 h-3" /> Scanner
                     <ArrowRight className="w-2.5 h-2.5" />
                   </Button>
@@ -557,12 +557,12 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                   <div className="text-sm">Run a scan to see results here</div>
                 </div>
               ) : scanResult?.status === 'error' ? (
-                <div className="text-center py-8 text-red-400">
+                <div className="text-center py-8 text-red-700">
                   <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-60" />
                   <div className="text-sm">{scanResult.error || 'Scan failed'}</div>
                 </div>
               ) : isScanning && (!scanResult?.results || scanResult.results.length === 0) ? (
-                <div className="text-center py-12 text-amber-400">
+                <div className="text-center py-12 text-amber-800">
                   <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin opacity-50" />
                   <div className="text-sm">Scanning in progress...</div>
                   <div className="text-[10px] text-muted-foreground mt-1">Results will appear as they arrive</div>
@@ -581,7 +581,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                           >
                             <div className="flex items-center gap-2">
                               {expandedTypes.has(type) ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
-                              <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/20">{type}</Badge>
+                              <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-800 border-amber-500/20">{type}</Badge>
                               <span className="text-xs text-muted-foreground">{results.length} result{results.length !== 1 ? 's' : ''}</span>
                             </div>
                           </button>
@@ -612,9 +612,9 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
         <Card className="bg-card/50 border-border" data-testid="card-api-keys">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-amber-400 flex items-center gap-2 text-base">
+              <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
                 <Key className="w-4 h-4" /> API Key Management
-                <Badge variant="outline" className="text-[10px] border-teal-500/30 text-teal-400">
+                <Badge variant="outline" className="text-[10px] border-teal-500/30 text-teal-800">
                   {configuredCount}/{apiKeysData?.services?.length || 0} configured
                 </Badge>
               </CardTitle>
@@ -632,7 +632,7 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-foreground">{svc.service}</span>
                         {svc.configured ? (
-                          <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-[10px]">
+                          <Badge className="bg-teal-500/20 text-teal-800 border-teal-500/30 text-[10px]">
                             <CheckCircle2 className="w-2.5 h-2.5 mr-0.5" /> Configured
                           </Badge>
                         ) : (

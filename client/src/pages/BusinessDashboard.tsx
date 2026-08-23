@@ -88,19 +88,19 @@ const defaultForm: ProjectFormData = {
 
 function getStatusColor(status: Project["status"]) {
   switch (status) {
-    case "complete": return "text-teal-400 bg-teal-400/10 border-teal-400/20";
-    case "on-track": return "text-teal-400 bg-teal-400/10 border-teal-400/20";
-    case "at-risk": return "text-amber-400 bg-amber-400/10 border-amber-400/20";
-    case "delayed": return "text-red-400 bg-red-400/10 border-red-400/20";
+    case "complete": return "text-teal-800 bg-teal-400/10 border-teal-400/20";
+    case "on-track": return "text-teal-800 bg-teal-400/10 border-teal-400/20";
+    case "at-risk": return "text-amber-800 bg-amber-400/10 border-amber-400/20";
+    case "delayed": return "text-red-700 bg-red-400/10 border-red-400/20";
     default: return "text-muted-foreground bg-muted/10 border-muted/20";
   }
 }
 
 function getPriorityColor(priority: Project["priority"]) {
   switch (priority) {
-    case "critical": return "text-red-400 bg-red-400/10 border-red-400/20";
-    case "high": return "text-amber-400 bg-amber-400/10 border-amber-400/20";
-    case "medium": return "text-teal-400 bg-teal-400/10 border-teal-400/20";
+    case "critical": return "text-red-700 bg-red-400/10 border-red-400/20";
+    case "high": return "text-amber-800 bg-amber-400/10 border-amber-400/20";
+    case "medium": return "text-teal-800 bg-teal-400/10 border-teal-400/20";
     case "low": return "text-muted-foreground bg-muted/10 border-muted/20";
     default: return "text-muted-foreground bg-muted/10 border-muted/20";
   }
@@ -108,10 +108,10 @@ function getPriorityColor(priority: Project["priority"]) {
 
 function getCategoryColor(category: Project["category"]) {
   switch (category) {
-    case "security": return "bg-red-500/20 text-red-400";
-    case "development": return "bg-teal-500/20 text-teal-400";
-    case "business": return "bg-amber-500/20 text-amber-400";
-    case "marketing": return "bg-purple-500/20 text-purple-400";
+    case "security": return "bg-red-500/20 text-red-700";
+    case "development": return "bg-teal-500/20 text-teal-800";
+    case "business": return "bg-amber-500/20 text-amber-800";
+    case "marketing": return "bg-purple-500/20 text-purple-700";
     case "operations": return "bg-blue-500/20 text-blue-400";
     case "general": return "bg-muted/20 text-muted-foreground";
     default: return "bg-muted/20 text-muted-foreground";
@@ -245,7 +245,7 @@ function ProjectForm({
                 set("goals", goals);
               }} />
               <span className={`flex-1 text-sm ${g.done ? "line-through text-muted-foreground" : "text-foreground"}`}>{g.text}</span>
-              <Button data-testid={`button-remove-goal-${i}`} variant="ghost" size="sm" className="text-red-400 hover:bg-red-400/10 h-6 w-6 p-0" onClick={() => {
+              <Button data-testid={`button-remove-goal-${i}`} variant="ghost" size="sm" className="text-red-700 hover:bg-red-400/10 h-6 w-6 p-0" onClick={() => {
                 set("goals", form.goals.filter((_, idx) => idx !== i));
               }}>
                 <X className="w-3 h-3" />
@@ -259,7 +259,7 @@ function ProjectForm({
                 setNewGoal("");
               }
             }} />
-            <Button data-testid="button-add-goal" variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10" disabled={!newGoal.trim()} onClick={() => {
+            <Button data-testid="button-add-goal" variant="outline" size="sm" className="border-amber-500/50 text-amber-800 hover:bg-amber-500/10" disabled={!newGoal.trim()} onClick={() => {
               if (newGoal.trim()) {
                 set("goals", [...form.goals, { text: newGoal.trim(), done: false }]);
                 setNewGoal("");
@@ -310,10 +310,10 @@ function ProjectCard({
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <Badge className={getStatusColor(project.status)} data-testid={`badge-status-${project.id}`}>{project.status}</Badge>
-            <Button data-testid={`button-edit-${project.id}`} variant="ghost" size="sm" className="text-amber-400 hover:bg-amber-500/10" onClick={() => setEditing(!editing)}>
+            <Button data-testid={`button-edit-${project.id}`} variant="ghost" size="sm" className="text-amber-800 hover:bg-amber-500/10" onClick={() => setEditing(!editing)}>
               {editing ? <ChevronUp className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
             </Button>
-            <Button data-testid={`button-delete-${project.id}`} variant="ghost" size="sm" className="text-red-400 hover:bg-red-400/10" onClick={() => {
+            <Button data-testid={`button-delete-${project.id}`} variant="ghost" size="sm" className="text-red-700 hover:bg-red-400/10" onClick={() => {
               if (window.confirm(`Delete "${project.name}"?`)) onDelete();
             }}>
               <Trash2 className="w-4 h-4" />
@@ -331,7 +331,7 @@ function ProjectCard({
             <div className="mb-3">
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-muted-foreground">Progress</span>
-                <span className="text-amber-400">{project.progress}%</span>
+                <span className="text-amber-800">{project.progress}%</span>
               </div>
               <Progress value={project.progress} className="h-2" />
             </div>
@@ -358,7 +358,7 @@ function ProjectCard({
                 <span className="text-xs text-muted-foreground block mb-1">Goals ({project.goals.filter((g) => g.done).length}/{project.goals.length})</span>
                 <div className="flex flex-wrap gap-1">
                   {project.goals.map((g, i) => (
-                    <span key={i} className={`text-xs px-2 py-0.5 rounded ${g.done ? "bg-teal-500/10 text-teal-400 line-through" : "bg-border text-foreground"}`}>{g.text}</span>
+                    <span key={i} className={`text-xs px-2 py-0.5 rounded ${g.done ? "bg-teal-500/10 text-teal-800 line-through" : "bg-border text-foreground"}`}>{g.text}</span>
                   ))}
                 </div>
               </div>
@@ -428,8 +428,8 @@ function InvestorView({ projects }: { projects: Project[] }) {
           <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl" />
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
-              <DollarSign className="w-8 h-8 text-teal-400" />
-              <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">+{metrics.business.growthRate}% MoM</Badge>
+              <DollarSign className="w-8 h-8 text-teal-800" />
+              <Badge className="bg-teal-500/20 text-teal-800 border-teal-500/30">+{metrics.business.growthRate}% MoM</Badge>
             </div>
             <div className="text-4xl font-bold mb-1">${(metrics.business.arr / 1000).toFixed(0)}K</div>
             <div className="text-sm text-muted-foreground">Annual Recurring Revenue</div>
@@ -440,8 +440,8 @@ function InvestorView({ projects }: { projects: Project[] }) {
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
-              <Brain className="w-8 h-8 text-amber-400" />
-              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">99% savings</Badge>
+              <Brain className="w-8 h-8 text-amber-800" />
+              <Badge className="bg-amber-500/20 text-amber-800 border-amber-500/30">99% savings</Badge>
             </div>
             <div className="text-4xl font-bold mb-1">$50</div>
             <div className="text-sm text-muted-foreground">Cost per client/month</div>
@@ -452,8 +452,8 @@ function InvestorView({ projects }: { projects: Project[] }) {
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
-              <Zap className="w-8 h-8 text-amber-400" />
-              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">300x faster</Badge>
+              <Zap className="w-8 h-8 text-amber-800" />
+              <Badge className="bg-amber-500/20 text-amber-800 border-amber-500/30">300x faster</Badge>
             </div>
             <div className="text-4xl font-bold mb-1">47s</div>
             <div className="text-sm text-muted-foreground">Avg Response Time</div>
@@ -464,8 +464,8 @@ function InvestorView({ projects }: { projects: Project[] }) {
           <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
-              <Award className="w-8 h-8 text-red-400" />
-              <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Real Impact</Badge>
+              <Award className="w-8 h-8 text-red-700" />
+              <Badge className="bg-red-500/20 text-red-700 border-red-500/30">Real Impact</Badge>
             </div>
             <div className="text-4xl font-bold mb-1">{metrics.impact.victimsHelped}</div>
             <div className="text-sm text-muted-foreground">Victims Helped</div>
@@ -478,7 +478,7 @@ function InvestorView({ projects }: { projects: Project[] }) {
         <Card className="bg-card/50 border-border p-6" data-testid="investor-threats">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Activity className="w-6 h-6 text-red-400" /> Live Threat Feed
+              <Activity className="w-6 h-6 text-red-700" /> Live Threat Feed
             </h2>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
@@ -495,12 +495,12 @@ function InvestorView({ projects }: { projects: Project[] }) {
               { time: '3m ago', severity: 'info', msg: 'Weekly scan completed - 247 assets healthy', client: 'Client A' },
             ].map((alert, idx) => (
               <div key={idx} className="flex items-start gap-3 p-3 bg-border/50 rounded-lg border border-border hover:border-muted transition-colors">
-                <AlertTriangle className={`w-5 h-5 mt-0.5 flex-shrink-0 ${alert.severity === 'critical' ? 'text-red-400' : alert.severity === 'high' ? 'text-orange-400' : alert.severity === 'medium' ? 'text-amber-400' : 'text-muted-foreground'}`} />
+                <AlertTriangle className={`w-5 h-5 mt-0.5 flex-shrink-0 ${alert.severity === 'critical' ? 'text-red-700' : alert.severity === 'high' ? 'text-orange-800' : alert.severity === 'medium' ? 'text-amber-800' : 'text-muted-foreground'}`} />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{alert.msg}</div>
                   <div className="text-xs text-muted-foreground mt-1">{alert.client} • {alert.time}</div>
                 </div>
-                <Badge className={`${alert.severity === 'critical' ? 'bg-red-500/20 text-red-400 border-red-500/30' : alert.severity === 'high' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : alert.severity === 'medium' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-muted/20 text-muted-foreground border-muted/30'}`}>{alert.severity}</Badge>
+                <Badge className={`${alert.severity === 'critical' ? 'bg-red-500/20 text-red-700 border-red-500/30' : alert.severity === 'high' ? 'bg-orange-500/20 text-orange-800 border-orange-500/30' : alert.severity === 'medium' ? 'bg-amber-500/20 text-amber-800 border-amber-500/30' : 'bg-muted/20 text-muted-foreground border-muted/30'}`}>{alert.severity}</Badge>
               </div>
             ))}
           </div>
@@ -508,33 +508,33 @@ function InvestorView({ projects }: { projects: Project[] }) {
 
         <Card className="bg-card/50 border-border p-6" data-testid="investor-agents">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <Brain className="w-6 h-6 text-teal-400" /> AI Agent Activity
+            <Brain className="w-6 h-6 text-teal-800" /> AI Agent Activity
           </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-border/50 rounded-lg">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center"><Shield className="w-5 h-5 text-teal-400" /></div>
+                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center"><Shield className="w-5 h-5 text-teal-800" /></div>
                 <div><div className="font-semibold">Recon Agents</div><div className="text-sm text-muted-foreground">Network scanning</div></div>
               </div>
-              <div className="text-right"><div className="text-2xl font-bold text-teal-400">{metrics.agents.scanning}</div><div className="text-xs text-muted-foreground">active now</div></div>
+              <div className="text-right"><div className="text-2xl font-bold text-teal-800">{metrics.agents.scanning}</div><div className="text-xs text-muted-foreground">active now</div></div>
             </div>
             <div className="flex items-center justify-between p-4 bg-border/50 rounded-lg">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center"><Target className="w-5 h-5 text-amber-400" /></div>
+                <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center"><Target className="w-5 h-5 text-amber-800" /></div>
                 <div><div className="font-semibold">Threat Hunters</div><div className="text-sm text-muted-foreground">Behavioral analysis</div></div>
               </div>
-              <div className="text-right"><div className="text-2xl font-bold text-amber-400">4</div><div className="text-xs text-muted-foreground">hunting now</div></div>
+              <div className="text-right"><div className="text-2xl font-bold text-amber-800">4</div><div className="text-xs text-muted-foreground">hunting now</div></div>
             </div>
             <div className="flex items-center justify-between p-4 bg-border/50 rounded-lg">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center"><Zap className="w-5 h-5 text-red-400" /></div>
+                <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center"><Zap className="w-5 h-5 text-red-700" /></div>
                 <div><div className="font-semibold">Incident Responders</div><div className="text-sm text-muted-foreground">Active containment</div></div>
               </div>
-              <div className="text-right"><div className="text-2xl font-bold text-red-400">{metrics.agents.responding}</div><div className="text-xs text-muted-foreground">responding</div></div>
+              <div className="text-right"><div className="text-2xl font-bold text-red-700">{metrics.agents.responding}</div><div className="text-xs text-muted-foreground">responding</div></div>
             </div>
             <div className="p-4 bg-gradient-to-r from-teal-500/10 to-amber-500/10 rounded-lg border border-teal-500/20">
               <div className="text-sm text-foreground mb-2">Total AI Cost (All Clients)</div>
-              <div className="text-3xl font-bold text-teal-400 mb-1">$0.00</div>
+              <div className="text-3xl font-bold text-teal-800 mb-1">$0.00</div>
               <div className="text-xs text-muted-foreground">100% FREE models (Ollama + Groq) • 99.9% margin</div>
             </div>
           </div>
@@ -545,13 +545,13 @@ function InvestorView({ projects }: { projects: Project[] }) {
         <h2 className="text-2xl font-bold mb-6">Unit Economics</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div><div className="text-muted-foreground text-sm mb-2">Customer Acquisition Cost</div><div className="text-4xl font-bold mb-2">$2,000</div><div className="text-sm text-muted-foreground">Cold outreach + demo + pilot</div></div>
-          <div><div className="text-muted-foreground text-sm mb-2">Lifetime Value</div><div className="text-4xl font-bold mb-2 text-teal-400">$72,000</div><div className="text-sm text-muted-foreground">12 months × $10k/mo × 60% margin</div></div>
-          <div><div className="text-muted-foreground text-sm mb-2">LTV:CAC Ratio</div><div className="text-4xl font-bold mb-2 text-amber-400">36:1</div><div className="text-sm text-muted-foreground">VCs want 3:1, we have 36:1</div></div>
+          <div><div className="text-muted-foreground text-sm mb-2">Lifetime Value</div><div className="text-4xl font-bold mb-2 text-teal-800">$72,000</div><div className="text-sm text-muted-foreground">12 months × $10k/mo × 60% margin</div></div>
+          <div><div className="text-muted-foreground text-sm mb-2">LTV:CAC Ratio</div><div className="text-4xl font-bold mb-2 text-amber-800">36:1</div><div className="text-sm text-muted-foreground">VCs want 3:1, we have 36:1</div></div>
         </div>
         <div className="mt-6 p-4 bg-teal-500/10 border border-teal-500/20 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
-            <CheckCircle2 className="w-5 h-5 text-teal-400" />
-            <span className="font-semibold text-teal-400">Exceptional Unit Economics</span>
+            <CheckCircle2 className="w-5 h-5 text-teal-800" />
+            <span className="font-semibold text-teal-800">Exceptional Unit Economics</span>
           </div>
           <div className="text-sm text-muted-foreground">36:1 LTV:CAC ratio means every $1 spent on acquisition returns $36. Industry benchmark: 3:1. We're 12x better than industry standard.</div>
         </div>
@@ -563,43 +563,43 @@ function InvestorView({ projects }: { projects: Project[] }) {
           <div className="p-6 bg-border/50 rounded-lg border border-border">
             <div className="text-lg font-semibold mb-4 text-foreground">Traditional SOC</div>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Monthly Cost:</span><span className="font-semibold text-red-400">$50,000</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Monthly Cost:</span><span className="font-semibold text-red-700">$50,000</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Team Size:</span><span className="font-semibold">5-10 humans</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Response Time:</span><span className="font-semibold">4-6 hours</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Scalability:</span><span className="font-semibold text-red-400">Limited</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Scalability:</span><span className="font-semibold text-red-700">Limited</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Coverage:</span><span className="font-semibold">8am-6pm</span></div>
             </div>
           </div>
           <div className="p-6 bg-gradient-to-br from-teal-500/10 to-amber-500/10 rounded-lg border border-teal-500/30">
-            <div className="text-lg font-semibold mb-4 text-teal-400">Atropos AI Security</div>
+            <div className="text-lg font-semibold mb-4 text-teal-800">Atropos AI Security</div>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Monthly Cost:</span><span className="font-semibold text-teal-400">$10,000</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Monthly Cost:</span><span className="font-semibold text-teal-800">$10,000</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Team Size:</span><span className="font-semibold">5 AI agents + 1 human</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Response Time:</span><span className="font-semibold text-teal-400">47 seconds</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Scalability:</span><span className="font-semibold text-teal-400">Infinite</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Response Time:</span><span className="font-semibold text-teal-800">47 seconds</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Scalability:</span><span className="font-semibold text-teal-800">Infinite</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Coverage:</span><span className="font-semibold">24/7/365</span></div>
             </div>
           </div>
         </div>
         <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-          <div className="p-4 bg-teal-500/10 rounded-lg border border-teal-500/20"><div className="text-3xl font-bold text-teal-400">80%</div><div className="text-sm text-muted-foreground mt-1">Cost Savings</div></div>
-          <div className="p-4 bg-teal-500/10 rounded-lg border border-teal-500/20"><div className="text-3xl font-bold text-teal-400">300x</div><div className="text-sm text-muted-foreground mt-1">Faster Response</div></div>
-          <div className="p-4 bg-amber-500/10 rounded-lg border border-amber-500/20"><div className="text-3xl font-bold text-amber-400">∞</div><div className="text-sm text-muted-foreground mt-1">Scalability</div></div>
+          <div className="p-4 bg-teal-500/10 rounded-lg border border-teal-500/20"><div className="text-3xl font-bold text-teal-800">80%</div><div className="text-sm text-muted-foreground mt-1">Cost Savings</div></div>
+          <div className="p-4 bg-teal-500/10 rounded-lg border border-teal-500/20"><div className="text-3xl font-bold text-teal-800">300x</div><div className="text-sm text-muted-foreground mt-1">Faster Response</div></div>
+          <div className="p-4 bg-amber-500/10 rounded-lg border border-amber-500/20"><div className="text-3xl font-bold text-amber-800">∞</div><div className="text-sm text-muted-foreground mt-1">Scalability</div></div>
         </div>
       </Card>
 
       <Card className="bg-card/50 border-border p-6" data-testid="investor-mission">
         <h2 className="text-2xl font-bold mb-6">Mission Impact</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="text-center"><div className="text-4xl font-bold text-amber-400 mb-2">{metrics.impact.casesSupported}</div><div className="text-sm text-muted-foreground">Cases Supported</div><div className="text-xs text-muted-foreground mt-1">For Polaris, Thorn, NCMEC</div></div>
-          <div className="text-center"><div className="text-4xl font-bold text-red-400 mb-2">{metrics.impact.victimsHelped}</div><div className="text-sm text-muted-foreground">Victims Helped</div><div className="text-xs text-muted-foreground mt-1">Investigation leads</div></div>
-          <div className="text-center"><div className="text-4xl font-bold text-teal-400 mb-2">{metrics.impact.networksDisrupted}</div><div className="text-sm text-muted-foreground">Networks Disrupted</div><div className="text-xs text-muted-foreground mt-1">Trafficking operations</div></div>
-          <div className="text-center"><div className="text-4xl font-bold text-teal-400 mb-2">{metrics.impact.arrestsFacilitated}</div><div className="text-sm text-muted-foreground">Arrests Facilitated</div><div className="text-xs text-muted-foreground mt-1">Intelligence led to prosecutions</div></div>
+          <div className="text-center"><div className="text-4xl font-bold text-amber-800 mb-2">{metrics.impact.casesSupported}</div><div className="text-sm text-muted-foreground">Cases Supported</div><div className="text-xs text-muted-foreground mt-1">For Polaris, Thorn, NCMEC</div></div>
+          <div className="text-center"><div className="text-4xl font-bold text-red-700 mb-2">{metrics.impact.victimsHelped}</div><div className="text-sm text-muted-foreground">Victims Helped</div><div className="text-xs text-muted-foreground mt-1">Investigation leads</div></div>
+          <div className="text-center"><div className="text-4xl font-bold text-teal-800 mb-2">{metrics.impact.networksDisrupted}</div><div className="text-sm text-muted-foreground">Networks Disrupted</div><div className="text-xs text-muted-foreground mt-1">Trafficking operations</div></div>
+          <div className="text-center"><div className="text-4xl font-bold text-teal-800 mb-2">{metrics.impact.arrestsFacilitated}</div><div className="text-sm text-muted-foreground">Arrests Facilitated</div><div className="text-xs text-muted-foreground mt-1">Intelligence led to prosecutions</div></div>
         </div>
         <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
-            <Award className="w-5 h-5 text-amber-400" />
-            <span className="font-semibold text-amber-400">Pro-Social + Profitable</span>
+            <Award className="w-5 h-5 text-amber-800" />
+            <span className="font-semibold text-amber-800">Pro-Social + Profitable</span>
           </div>
           <div className="text-sm text-muted-foreground">ESG investors love this: High social impact + exceptional financial returns. Every dollar invested fights human trafficking AND generates 36:1 returns.</div>
         </div>
@@ -617,7 +617,7 @@ function InvestorView({ projects }: { projects: Project[] }) {
                 </div>
                 <div className="flex items-center gap-3">
                   <Progress value={p.progress} className="h-2 w-24" />
-                  <span className="text-xs text-amber-400 w-8">{p.progress}%</span>
+                  <span className="text-xs text-amber-800 w-8">{p.progress}%</span>
                   <Badge className={getStatusColor(p.status)}>{p.status}</Badge>
                 </div>
               </div>
@@ -745,28 +745,28 @@ export default function BusinessDashboard() {
           <Card className="bg-card/50 border-border p-4" data-testid="card-total-projects">
             <div className="flex items-center justify-between mb-1">
               <span className="text-muted-foreground text-xs">Total Projects</span>
-              <Layers className="w-4 h-4 text-amber-400" />
+              <Layers className="w-4 h-4 text-amber-800" />
             </div>
             <div className="text-2xl md:text-3xl font-bold">{totalProjects}</div>
           </Card>
           <Card className="bg-card/50 border-border p-4" data-testid="card-in-progress">
             <div className="flex items-center justify-between mb-1">
               <span className="text-muted-foreground text-xs">In Progress</span>
-              <Activity className="w-4 h-4 text-amber-400" />
+              <Activity className="w-4 h-4 text-amber-800" />
             </div>
-            <div className="text-2xl md:text-3xl font-bold text-amber-400">{inProgress}</div>
+            <div className="text-2xl md:text-3xl font-bold text-amber-800">{inProgress}</div>
           </Card>
           <Card className="bg-card/50 border-border p-4" data-testid="card-completed">
             <div className="flex items-center justify-between mb-1">
               <span className="text-muted-foreground text-xs">Completed</span>
-              <CheckCircle2 className="w-4 h-4 text-teal-400" />
+              <CheckCircle2 className="w-4 h-4 text-teal-800" />
             </div>
-            <div className="text-2xl md:text-3xl font-bold text-teal-400">{completed}</div>
+            <div className="text-2xl md:text-3xl font-bold text-teal-800">{completed}</div>
           </Card>
           <Card className="bg-card/50 border-border p-4" data-testid="card-total-budget">
             <div className="flex items-center justify-between mb-1">
               <span className="text-muted-foreground text-xs">Total Budget</span>
-              <DollarSign className="w-4 h-4 text-amber-400" />
+              <DollarSign className="w-4 h-4 text-amber-800" />
             </div>
             <div className="text-2xl md:text-3xl font-bold">${totalBudget.toLocaleString()}</div>
           </Card>
@@ -834,7 +834,7 @@ export default function BusinessDashboard() {
                         <span className="text-sm font-semibold capitalize">{stage}</span>
                         <Badge className="bg-border text-foreground text-xs">{stageProjects.length}</Badge>
                       </div>
-                      <Button data-testid={`button-quick-add-${stage}`} variant="ghost" size="sm" className="h-6 w-6 p-0 text-amber-400 hover:bg-amber-500/10" onClick={() => setQuickAddStage(quickAddStage === stage ? null : stage)}>
+                      <Button data-testid={`button-quick-add-${stage}`} variant="ghost" size="sm" className="h-6 w-6 p-0 text-amber-800 hover:bg-amber-500/10" onClick={() => setQuickAddStage(quickAddStage === stage ? null : stage)}>
                         <Plus className="w-3 h-3" />
                       </Button>
                     </div>
@@ -877,30 +877,30 @@ export default function BusinessDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="bg-card/50 border-border p-5" data-testid="card-budget-allocated">
                 <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-5 h-5 text-amber-400" />
+                  <DollarSign className="w-5 h-5 text-amber-800" />
                   <span className="text-muted-foreground text-sm">Total Allocated</span>
                 </div>
                 <div className="text-3xl font-bold">${totalBudget.toLocaleString()}</div>
               </Card>
               <Card className="bg-card/50 border-border p-5" data-testid="card-budget-spent">
                 <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-5 h-5 text-red-400" />
+                  <TrendingUp className="w-5 h-5 text-red-700" />
                   <span className="text-muted-foreground text-sm">Total Spent</span>
                 </div>
-                <div className="text-3xl font-bold text-red-400">${totalSpent.toLocaleString()}</div>
+                <div className="text-3xl font-bold text-red-700">${totalSpent.toLocaleString()}</div>
               </Card>
               <Card className="bg-card/50 border-border p-5" data-testid="card-ai-savings">
                 <div className="flex items-center gap-2 mb-2">
-                  <Brain className="w-5 h-5 text-teal-400" />
+                  <Brain className="w-5 h-5 text-teal-800" />
                   <span className="text-muted-foreground text-sm">AI Savings</span>
                 </div>
-                <div className="text-3xl font-bold text-teal-400">${totalSavings.toLocaleString()}</div>
+                <div className="text-3xl font-bold text-teal-800">${totalSavings.toLocaleString()}</div>
               </Card>
             </div>
 
             <Card className="bg-card/50 border-border p-5">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-amber-400" /> Projects by Category
+                <BarChart3 className="w-5 h-5 text-amber-800" /> Projects by Category
               </h3>
               <div className="space-y-3">
                 {CATEGORIES.map((cat) => {
@@ -923,14 +923,14 @@ export default function BusinessDashboard() {
 
             <Card className="bg-card/50 border-border p-5">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-amber-400" /> Projects by Status
+                <Activity className="w-5 h-5 text-amber-800" /> Projects by Status
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {STATUSES.map((status) => {
                   const count = projects.filter((p) => p.status === status).length;
                   return (
                     <div key={status} className="bg-border/50 rounded-lg p-3 text-center" data-testid={`stat-status-${status}`}>
-                      <div className={`text-2xl font-bold ${status === "complete" || status === "on-track" ? "text-teal-400" : status === "at-risk" ? "text-amber-400" : "text-red-400"}`}>{count}</div>
+                      <div className={`text-2xl font-bold ${status === "complete" || status === "on-track" ? "text-teal-800" : status === "at-risk" ? "text-amber-800" : "text-red-700"}`}>{count}</div>
                       <div className="text-xs text-muted-foreground capitalize mt-1">{status}</div>
                     </div>
                   );
@@ -940,7 +940,7 @@ export default function BusinessDashboard() {
 
             <Card className="bg-card/50 border-border p-5">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-amber-400" /> Project Deadlines
+                <Calendar className="w-5 h-5 text-amber-800" /> Project Deadlines
               </h3>
               <div className="space-y-3">
                 {projects.length === 0 && <p className="text-muted-foreground text-sm">No projects to show.</p>}
@@ -959,7 +959,7 @@ export default function BusinessDashboard() {
                             <div className="text-xs text-muted-foreground">{p.timeline.started} → {p.timeline.deadline}</div>
                           </div>
                         </div>
-                        <Badge className={daysLeft < 0 ? "bg-red-400/10 text-red-400" : daysLeft < 7 ? "bg-amber-400/10 text-amber-400" : "bg-teal-400/10 text-teal-400"}>
+                        <Badge className={daysLeft < 0 ? "bg-red-400/10 text-red-700" : daysLeft < 7 ? "bg-amber-400/10 text-amber-800" : "bg-teal-400/10 text-teal-800"}>
                           {daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? "Today" : `${daysLeft}d left`}
                         </Badge>
                       </div>

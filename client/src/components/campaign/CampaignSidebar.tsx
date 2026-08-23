@@ -70,7 +70,7 @@ export default function CampaignSidebar({
     <>
       <button
         onClick={() => setShowFileTree(!showFileTree)}
-        className="sm:hidden flex items-center justify-between w-full p-3 bg-card/80 border-b border-amber-900/30 text-amber-500"
+        className="sm:hidden flex items-center justify-between w-full p-3 bg-card/80 border-b border-amber-900/30 text-amber-800"
         data-testid="mobile-file-tree-toggle"
       >
         <span className="flex items-center gap-2 text-sm font-bold">
@@ -82,17 +82,17 @@ export default function CampaignSidebar({
 
       <div className={`border-b sm:border-b-0 sm:border-r border-amber-900/30 p-2 sm:p-3 shrink-0 sm:w-[200px] bg-card/50 transition-all ${showFileTree ? 'max-h-[200px] sm:max-h-none' : 'max-h-0 sm:max-h-none overflow-hidden sm:overflow-visible'}`}>
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] text-amber-500 uppercase tracking-wider font-bold flex items-center gap-1">
+          <p className="text-[10px] text-amber-800 uppercase tracking-wider font-bold flex items-center gap-1">
             <FolderTree className="w-3 h-3" /> Campaigns
           </p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-400 hover:text-amber-300 touch-manipulation" data-testid="new-campaign-btn">
+              <Button size="sm" variant="ghost" className="p-0 h-8 w-8 text-amber-800 hover:text-amber-300 touch-manipulation" data-testid="new-campaign-btn">
                 <Plus className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-card border-amber-900/50">
-              <DropdownMenuLabel className="text-amber-500 text-xs">Quick Start</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-amber-800 text-xs">Quick Start</DropdownMenuLabel>
               {CAMPAIGN_TEMPLATES.map(t => (
                 <DropdownMenuItem key={t.id} onClick={() => createFromTemplate(t.id)} className="text-foreground hover:bg-amber-900/30 min-h-[44px] touch-manipulation" data-testid={`template-${t.id}`}>
                   <span className="mr-2">{t.icon}</span> {t.name}
@@ -149,9 +149,9 @@ export default function CampaignSidebar({
             disabled={isSyncing}
             className={`w-full justify-start text-xs min-h-[36px] ${
               isSyncing
-                ? 'border-teal-600 text-teal-400'
+                ? 'border-teal-600 text-teal-800'
                 : isUnsaved 
-                  ? 'border-amber-600 text-amber-400 animate-pulse' 
+                  ? 'border-amber-600 text-amber-800 animate-pulse' 
                   : 'border-border text-muted-foreground'
             }`}
             data-testid="save-campaign-btn"
@@ -182,9 +182,9 @@ export default function CampaignSidebar({
         <div className="flex sm:flex-col gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
           {NODE_TYPES.map(nt => {
             const buttonStyles: Record<string, string> = {
-              amber: 'border-amber-800 text-amber-400 hover:bg-amber-950/30',
-              purple: 'border-purple-800 text-purple-400 hover:bg-purple-950/30',
-              teal: 'border-teal-800 text-teal-400 hover:bg-teal-950/30',
+              amber: 'border-amber-800 text-amber-800 hover:bg-amber-950/30',
+              purple: 'border-purple-800 text-purple-700 hover:bg-purple-950/30',
+              teal: 'border-teal-800 text-teal-800 hover:bg-teal-950/30',
               stone: 'border-border text-muted-foreground hover:bg-card/30'
             };
             return (
@@ -206,7 +206,7 @@ export default function CampaignSidebar({
         <div className="border-t border-border mt-2 pt-2 hidden sm:block">
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Actions</p>
           {linkingFrom && (
-            <Badge className="bg-teal-900 text-teal-400 text-[10px] mb-2">
+            <Badge className="bg-teal-900 text-teal-800 text-[10px] mb-2">
               Linking mode: Click target node
             </Badge>
           )}
@@ -227,7 +227,7 @@ export default function CampaignSidebar({
                 size="sm"
                 variant="outline"
                 onClick={() => setLinkingFrom(selectedNode)}
-                className="w-full justify-start text-xs border-teal-700 text-teal-400 mb-1"
+                className="w-full justify-start text-xs border-teal-700 text-teal-800 mb-1"
               >
                 <Link2 className="w-3 h-3 mr-2" /> Link From
               </Button>
@@ -235,7 +235,7 @@ export default function CampaignSidebar({
                 size="sm"
                 variant="outline"
                 onClick={() => deleteNode(selectedNode)}
-                className="w-full justify-start text-xs border-purple-700 text-purple-400"
+                className="w-full justify-start text-xs border-purple-700 text-purple-700"
               >
                 <Trash2 className="w-3 h-3 mr-2" /> Delete
               </Button>

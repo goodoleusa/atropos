@@ -204,7 +204,7 @@ ${getFullPromptModifier()}
     <div className="space-y-6">
         <Card className="bg-black/50 border-amber-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-500 text-lg">How Iterative Agent Handoff Works</CardTitle>
+            <CardTitle className="text-amber-800 text-lg">How Iterative Agent Handoff Works</CardTitle>
             <CardDescription className="text-muted-foreground">
               Keep AI agents efficient by compressing history and passing focused context to fresh agents
             </CardDescription>
@@ -224,15 +224,15 @@ ${getFullPromptModifier()}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
-                      activeStep === step.num ? 'bg-amber-600 text-black' : 'bg-amber-900/50 text-amber-500'
+                      activeStep === step.num ? 'bg-amber-600 text-black' : 'bg-amber-900/50 text-amber-800'
                     }`}>
                       {step.num}
                     </span>
-                    <span className={activeStep === step.num ? 'text-amber-400' : 'text-muted-foreground'}>
+                    <span className={activeStep === step.num ? 'text-amber-800' : 'text-muted-foreground'}>
                       {step.icon}
                     </span>
                   </div>
-                  <p className={`text-xs font-bold ${activeStep === step.num ? 'text-amber-400' : 'text-muted-foreground'}`}>
+                  <p className={`text-xs font-bold ${activeStep === step.num ? 'text-amber-800' : 'text-muted-foreground'}`}>
                     {step.title}
                   </p>
                   <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{step.desc}</p>
@@ -260,17 +260,17 @@ ${getFullPromptModifier()}
           <TabsContent value="step-1" className="space-y-4">
             <Card className="bg-black/50 border-amber-900/30">
               <CardHeader>
-                <CardTitle className="text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <Cpu className="w-5 h-5" /> Step 1: Select Capability Modules
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  <span className="text-teal-400">WHY:</span> Instead of loading a massive prompt with everything, 
+                  <span className="text-teal-800">WHY:</span> Instead of loading a massive prompt with everything, 
                   we only include the modules the agent actually needs. This saves tokens and keeps the agent focused.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-3 text-xs">
-                  <p className="text-amber-400 font-bold mb-1">💡 The Problem We're Solving:</p>
+                  <p className="text-amber-800 font-bold mb-1">💡 The Problem We're Solving:</p>
                   <p className="text-muted-foreground">
                     Traditional prompts include ALL capabilities, wasting tokens on irrelevant context. 
                     If the user is doing crypto puzzles, why load terminal commands?
@@ -293,7 +293,7 @@ ${getFullPromptModifier()}
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{(moduleDescriptions[mod] as any)?.icon || '🧩'}</span>
                           <div>
-                            <p className="text-amber-500 text-sm font-bold">{(moduleDescriptions[mod] as any)?.name || mod}</p>
+                            <p className="text-amber-800 text-sm font-bold">{(moduleDescriptions[mod] as any)?.name || mod}</p>
                             <p className="text-muted-foreground text-xs">{(moduleDescriptions[mod] as any)?.desc || 'Capability module'}</p>
                           </div>
                         </div>
@@ -304,13 +304,13 @@ ${getFullPromptModifier()}
                 </div>
 
                 <div className="bg-black/50 border border-amber-900/20 rounded-lg p-3">
-                  <p className="text-amber-600 text-xs font-bold mb-2">CORE PROMPT (Always Included):</p>
+                  <p className="text-amber-800 text-xs font-bold mb-2">CORE PROMPT (Always Included):</p>
                   <pre className="text-[10px] text-muted-foreground font-mono whitespace-pre-wrap">{AGENT_CORE}</pre>
                 </div>
 
                 {/* Learning Style & Goals Section */}
                 <div className="border-t border-amber-900/30 pt-4">
-                  <p className="text-purple-400 font-bold text-sm mb-3 flex items-center gap-2">
+                  <p className="text-purple-700 font-bold text-sm mb-3 flex items-center gap-2">
                     🎓 Learning Adaptation
                   </p>
                   
@@ -383,7 +383,7 @@ ${getFullPromptModifier()}
                   </div>
                   
                   <div className="bg-purple-900/10 border border-purple-900/30 rounded-lg p-3 text-xs">
-                    <p className="text-purple-400 font-bold mb-1">📚 Selected Learning Profile:</p>
+                    <p className="text-purple-700 font-bold mb-1">📚 Selected Learning Profile:</p>
                     <p className="text-muted-foreground">
                       <span className="text-purple-300">{LEARNING_STYLES.find(s => s.id === learningStyle)?.name}</span> • 
                       <span className="text-teal-300 ml-1">{skillLevel}</span> • 
@@ -398,17 +398,17 @@ ${getFullPromptModifier()}
           <TabsContent value="step-2" className="space-y-4">
             <Card className="bg-black/50 border-amber-900/30">
               <CardHeader>
-                <CardTitle className="text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <Minimize2 className="w-5 h-5" /> Step 2: Compress Conversation History
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  <span className="text-teal-400">WHY:</span> Long conversations eat tokens. 
+                  <span className="text-teal-800">WHY:</span> Long conversations eat tokens. 
                   We compress 10+ messages into a dense "context blob" that preserves only critical information.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-3 text-xs">
-                  <p className="text-amber-400 font-bold mb-1">💡 The Problem We're Solving:</p>
+                  <p className="text-amber-800 font-bold mb-1">💡 The Problem We're Solving:</p>
                   <p className="text-muted-foreground">
                     After 10+ messages, context windows fill up. Instead of discarding history, 
                     we compress it into a structured summary that a new agent can understand instantly.
@@ -417,7 +417,7 @@ ${getFullPromptModifier()}
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-amber-600 text-sm">Raw Conversation History</Label>
+                    <Label className="text-amber-800 text-sm">Raw Conversation History</Label>
                     <p className="text-muted-foreground text-xs mb-2">Paste the long conversation you want to compress:</p>
                     <Textarea 
                       value={conversationHistory}
@@ -428,29 +428,29 @@ ${getFullPromptModifier()}
                     />
                   </div>
                   <div>
-                    <Label className="text-amber-600 text-sm">Compressed Context Blob</Label>
+                    <Label className="text-amber-800 text-sm">Compressed Context Blob</Label>
                     <p className="text-muted-foreground text-xs mb-2">Dense summary for handoff (edit manually or use AI):</p>
                     <Textarea 
                       value={compressedContext}
                       onChange={e => setCompressedContext(e.target.value)}
                       placeholder="[TASK] Decode base64 message from QR&#10;[STATE] {encoded: 'SGVsbG8...', decoded: 'Hello World'}&#10;[HISTORY] • Found QR in /void • Scanned payload&#10;[NEXT] Interpret decoded message"
-                      className="bg-black/50 border-teal-900/30 text-teal-400 h-40 text-xs font-mono"
+                      className="bg-black/50 border-teal-900/30 text-teal-800 h-40 text-xs font-mono"
                       data-testid="textarea-compressed-context"
                     />
                   </div>
                 </div>
 
                 <div className="bg-black/50 border border-amber-900/20 rounded-lg p-3">
-                  <p className="text-amber-600 text-xs font-bold mb-2">COMPRESSION TEMPLATE:</p>
+                  <p className="text-amber-800 text-xs font-bold mb-2">COMPRESSION TEMPLATE:</p>
                   <pre className="text-[10px] text-muted-foreground font-mono whitespace-pre-wrap">{CONTEXT_COMPRESSION_PROMPT}</pre>
                 </div>
 
                 <div className="bg-purple-900/10 border border-purple-900/30 rounded-lg p-3">
-                  <p className="text-purple-400 text-xs font-bold mb-1">⚡ Auto-Compression Triggers:</p>
+                  <p className="text-purple-700 text-xs font-bold mb-1">⚡ Auto-Compression Triggers:</p>
                   <ul className="text-muted-foreground text-xs space-y-1">
-                    <li>• After <span className="text-purple-400">{MEMORY_TRIGGERS.message_count} messages</span></li>
-                    <li>• When context exceeds <span className="text-purple-400">{MEMORY_TRIGGERS.token_threshold} tokens</span></li>
-                    <li>• On task completion: <span className="text-purple-400">{MEMORY_TRIGGERS.task_complete ? 'Yes' : 'No'}</span></li>
+                    <li>• After <span className="text-purple-700">{MEMORY_TRIGGERS.message_count} messages</span></li>
+                    <li>• When context exceeds <span className="text-purple-700">{MEMORY_TRIGGERS.token_threshold} tokens</span></li>
+                    <li>• On task completion: <span className="text-purple-700">{MEMORY_TRIGGERS.task_complete ? 'Yes' : 'No'}</span></li>
                   </ul>
                 </div>
               </CardContent>
@@ -460,17 +460,17 @@ ${getFullPromptModifier()}
           <TabsContent value="step-3" className="space-y-4">
             <Card className="bg-black/50 border-amber-900/30">
               <CardHeader>
-                <CardTitle className="text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <Target className="w-5 h-5" /> Step 3: Define Task Focus
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  <span className="text-teal-400">WHY:</span> Tell the new agent exactly what to do next. 
+                  <span className="text-teal-800">WHY:</span> Tell the new agent exactly what to do next. 
                   This prevents it from going off-track or repeating completed work.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-3 text-xs">
-                  <p className="text-amber-400 font-bold mb-1">💡 The Problem We're Solving:</p>
+                  <p className="text-amber-800 font-bold mb-1">💡 The Problem We're Solving:</p>
                   <p className="text-muted-foreground">
                     Without a clear directive, the new agent might ask "how can I help?" instead of 
                     continuing the work. The task focus is like handing off a relay baton.
@@ -478,13 +478,13 @@ ${getFullPromptModifier()}
                 </div>
 
                 <div>
-                  <Label className="text-amber-600 text-sm">Immediate Task Directive</Label>
+                  <Label className="text-amber-800 text-sm">Immediate Task Directive</Label>
                   <p className="text-muted-foreground text-xs mb-2">What should the new agent do first?</p>
                   <Textarea 
                     value={taskFocus}
                     onChange={e => setTaskFocus(e.target.value)}
                     placeholder="Analyze the decoded message 'Hello World' for hidden patterns. Check if it's a hint for the /archive route."
-                    className="bg-black/50 border-amber-900/30 text-amber-400 h-24 text-sm"
+                    className="bg-black/50 border-amber-900/30 text-amber-800 h-24 text-sm"
                     data-testid="textarea-task-focus"
                   />
                 </div>
@@ -494,7 +494,7 @@ ${getFullPromptModifier()}
                     variant="outline" 
                     size="sm"
                     onClick={() => setTaskFocus('Continue decoding the cipher chain from prior context')}
-                    className="border-amber-900/30 text-amber-600 text-xs"
+                    className="border-amber-900/30 text-amber-800 text-xs"
                     data-testid="button-preset-cipher"
                   >
                     Continue Cipher
@@ -503,7 +503,7 @@ ${getFullPromptModifier()}
                     variant="outline" 
                     size="sm"
                     onClick={() => setTaskFocus('Enumerate hidden routes and report findings')}
-                    className="border-amber-900/30 text-amber-600 text-xs"
+                    className="border-amber-900/30 text-amber-800 text-xs"
                     data-testid="button-preset-route"
                   >
                     Route Enum
@@ -512,7 +512,7 @@ ${getFullPromptModifier()}
                     variant="outline" 
                     size="sm"
                     onClick={() => setTaskFocus('Execute the pending payload and analyze results')}
-                    className="border-amber-900/30 text-amber-600 text-xs"
+                    className="border-amber-900/30 text-amber-800 text-xs"
                     data-testid="button-preset-payload"
                   >
                     Execute Payload
@@ -521,7 +521,7 @@ ${getFullPromptModifier()}
                     variant="outline" 
                     size="sm"
                     onClick={() => setTaskFocus('Summarize all collected clues and suggest next quest')}
-                    className="border-amber-900/30 text-amber-600 text-xs"
+                    className="border-amber-900/30 text-amber-800 text-xs"
                     data-testid="button-preset-clue"
                   >
                     Clue Summary
@@ -534,11 +534,11 @@ ${getFullPromptModifier()}
           <TabsContent value="step-4" className="space-y-4">
             <Card className="bg-black/50 border-amber-900/30">
               <CardHeader>
-                <CardTitle className="text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <Play className="w-5 h-5" /> Step 4: Generate & Handoff
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  <span className="text-teal-400">RESULT:</span> A compact, focused prompt that boots a new agent 
+                  <span className="text-teal-800">RESULT:</span> A compact, focused prompt that boots a new agent 
                   with full context in minimal tokens.
                 </CardDescription>
               </CardHeader>
@@ -563,7 +563,7 @@ ${getFullPromptModifier()}
                 {generatedPrompt && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label className="text-amber-600 text-sm">Generated System Prompt</Label>
+                      <Label className="text-amber-800 text-sm">Generated System Prompt</Label>
                       <Button 
                         variant="ghost" 
                         size="sm"
@@ -575,7 +575,7 @@ ${getFullPromptModifier()}
                       </Button>
                     </div>
                     <ScrollArea className="h-48 border border-amber-900/30 rounded-lg">
-                      <pre className="p-3 text-xs text-amber-400 font-mono whitespace-pre-wrap">{generatedPrompt}</pre>
+                      <pre className="p-3 text-xs text-amber-800 font-mono whitespace-pre-wrap">{generatedPrompt}</pre>
                     </ScrollArea>
                     <p className="text-muted-foreground text-xs">
                       Tokens: ~{Math.ceil(generatedPrompt.length / 4)} | Modules: {enabledModules.length}
@@ -586,7 +586,7 @@ ${getFullPromptModifier()}
                 {generatedHandoff && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label className="text-teal-400 text-sm">Generated Handoff Packet</Label>
+                      <Label className="text-teal-800 text-sm">Generated Handoff Packet</Label>
                       <Button 
                         variant="ghost" 
                         size="sm"
@@ -598,16 +598,16 @@ ${getFullPromptModifier()}
                       </Button>
                     </div>
                     <ScrollArea className="h-48 border border-teal-900/30 rounded-lg">
-                      <pre className="p-3 text-xs text-teal-400 font-mono whitespace-pre-wrap">{generatedHandoff}</pre>
+                      <pre className="p-3 text-xs text-teal-800 font-mono whitespace-pre-wrap">{generatedHandoff}</pre>
                     </ScrollArea>
                   </div>
                 )}
 
                 <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-3 text-xs">
-                  <p className="text-amber-400 font-bold mb-2">🚀 How to Use:</p>
+                  <p className="text-amber-800 font-bold mb-2">🚀 How to Use:</p>
                   <ol className="text-muted-foreground space-y-1 list-decimal list-inside">
-                    <li>Copy the <span className="text-amber-400">System Prompt</span> into your AI's system message</li>
-                    <li>Copy the <span className="text-teal-400">Handoff Packet</span> as the first user message</li>
+                    <li>Copy the <span className="text-amber-800">System Prompt</span> into your AI's system message</li>
+                    <li>Copy the <span className="text-teal-800">Handoff Packet</span> as the first user message</li>
                     <li>The new agent continues seamlessly from where the old one left off</li>
                     <li>Repeat when context fills up (every ~10 messages)</li>
                   </ol>
@@ -631,7 +631,7 @@ export default function PromptBuilder() {
   return (
     <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center text-muted-foreground">
       <div className="text-center space-y-2">
-        <Brain className="w-8 h-8 mx-auto text-amber-500 animate-pulse" />
+        <Brain className="w-8 h-8 mx-auto text-amber-800 animate-pulse" />
         <p className="text-sm">Redirecting to Investigation Hub...</p>
       </div>
     </div>

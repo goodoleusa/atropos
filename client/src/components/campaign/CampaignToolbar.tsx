@@ -78,7 +78,7 @@ export default function CampaignToolbar({
             else if (format === 'obsidian') exportCampaignObsidian();
           }}
         >
-          <SelectTrigger className="border-amber-800 text-amber-400 min-h-[44px] min-w-[44px] w-auto px-2 bg-transparent" data-testid="export-dropdown">
+          <SelectTrigger className="border-amber-800 text-amber-800 min-h-[44px] min-w-[44px] w-auto px-2 bg-transparent" data-testid="export-dropdown">
             <Download className="w-4 h-4" />
           </SelectTrigger>
           <SelectContent className="bg-card border-border">
@@ -111,7 +111,7 @@ export default function CampaignToolbar({
               stopTestRun();
             }
           }}
-          className={`min-h-[44px] min-w-[44px] px-3 ${testRunMode ? 'bg-teal-700 text-white' : 'border-teal-800 text-teal-400'}`}
+          className={`min-h-[44px] min-w-[44px] px-3 ${testRunMode ? 'bg-teal-700 text-white' : 'border-teal-800 text-teal-800'}`}
           disabled={campaign.nodes.length === 0}
           data-testid="test-run-btn"
         >
@@ -142,7 +142,7 @@ export default function CampaignToolbar({
                 {i > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground mx-0.5" />}
                 <button
                   onClick={() => setSelectedNode(nodeId)}
-                  className={`px-1.5 py-0.5 rounded ${nodeId === selectedNode ? 'bg-amber-900/50 text-amber-400' : 'bg-border/50 text-muted-foreground hover:bg-border'}`}
+                  className={`px-1.5 py-0.5 rounded ${nodeId === selectedNode ? 'bg-amber-900/50 text-amber-800' : 'bg-border/50 text-muted-foreground hover:bg-border'}`}
                 >
                   {node?.title || nodeId.slice(0, 8)}
                 </button>

@@ -342,11 +342,11 @@ export function CluePopover({ children, clueId, title, description, difficulty, 
             <div className="bg-card/95 border border-amber-900/40 rounded-lg p-3 shadow-xl shadow-amber-900/10 backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                <span className="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
+                <span className="text-[10px] font-mono text-amber-800 uppercase tracking-widest">
                   {clueId ? `CLUE::${clueId.slice(0, 8)}` : "INTEL"}
                 </span>
               </div>
-              <GlitchText text={title} className="text-xs font-bold text-amber-400 block mb-1" />
+              <GlitchText text={title} className="text-xs font-bold text-amber-800 block mb-1" />
               {description && (
                 <p className="text-[10px] text-muted-foreground leading-relaxed">{description}</p>
               )}

@@ -26,7 +26,7 @@ export default function AdminLogin() {
             title: "INVALID CREDENTIALS",
             description: "Authentication server is rejecting your handshake.",
             variant: "default",
-            className: "border-red-500 text-red-500 bg-card"
+            className: "border-red-500 text-red-700 bg-card"
          });
     }
   };

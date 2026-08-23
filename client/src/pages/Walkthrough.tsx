@@ -249,19 +249,19 @@ const INITIAL_FINDINGS: OverlapFinding[] = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  core: 'bg-amber-900/30 text-amber-400 border-amber-800/50',
-  ai: 'bg-purple-900/30 text-purple-400 border-purple-800/50',
-  tools: 'bg-orange-900/30 text-orange-400 border-orange-800/50',
-  learning: 'bg-teal-900/30 text-teal-400 border-teal-800/50',
+  core: 'bg-amber-900/30 text-amber-800 border-amber-800/50',
+  ai: 'bg-purple-900/30 text-purple-700 border-purple-800/50',
+  tools: 'bg-orange-900/30 text-orange-800 border-orange-800/50',
+  learning: 'bg-teal-900/30 text-teal-800 border-teal-800/50',
   meta: 'bg-border/50 text-muted-foreground border-border/50',
-  hidden: 'bg-red-900/30 text-red-400 border-red-800/50',
+  hidden: 'bg-red-900/30 text-red-700 border-red-800/50',
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
   low: 'bg-border text-muted-foreground border-border',
-  medium: 'bg-amber-900/40 text-amber-400 border-amber-800',
-  high: 'bg-orange-900/40 text-orange-400 border-orange-800',
-  critical: 'bg-red-900/40 text-red-400 border-red-800',
+  medium: 'bg-amber-900/40 text-amber-800 border-amber-800',
+  high: 'bg-orange-900/40 text-orange-800 border-orange-800',
+  critical: 'bg-red-900/40 text-red-700 border-red-800',
 };
 
 export default function Walkthrough() {
@@ -336,25 +336,25 @@ export default function Walkthrough() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link href="/">
-                <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
+                <Button variant="ghost" size="sm" className="text-amber-800 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <Map className="w-6 h-6 text-amber-400" />
+                <Map className="w-6 h-6 text-amber-800" />
                 <h1 className="text-lg font-bold bg-gradient-to-r from-amber-400 to-teal-400 bg-clip-text text-transparent" data-testid="walkthrough-title">
                   Platform Walkthrough
                 </h1>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className="bg-teal-900/50 text-teal-400 border-teal-700" data-testid="findings-count">
+              <Badge className="bg-teal-900/50 text-teal-800 border-teal-700" data-testid="findings-count">
                 <Lightbulb className="w-3 h-3 mr-1" />
                 {submittedCount}/{findings.length} submitted
               </Badge>
               <Link href="/recs">
-                <Button variant="outline" size="sm" className="border-amber-800/50 text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="view-recs-btn">
+                <Button variant="outline" size="sm" className="border-amber-800/50 text-amber-800 hover:text-amber-400 min-h-[44px]" data-testid="view-recs-btn">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View RECS
                 </Button>
@@ -384,7 +384,7 @@ export default function Walkthrough() {
           <TabsContent value="map" className="space-y-6" data-testid="content-map">
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <Map className="w-5 h-5" />
                   All Tools & Pages ({TOOLS.length})
                 </CardTitle>
@@ -463,7 +463,7 @@ export default function Walkthrough() {
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <CardTitle className="text-orange-400 flex items-center gap-2">
+                    <CardTitle className="text-orange-800 flex items-center gap-2">
                       <AlertTriangle className="w-5 h-5" />
                       Architectural Findings ({findings.length})
                     </CardTitle>
@@ -502,7 +502,7 @@ export default function Walkthrough() {
                               {finding.category}
                             </Badge>
                             {finding.submitted && (
-                              <Badge className="bg-teal-900/50 text-teal-400 border-teal-800">
+                              <Badge className="bg-teal-900/50 text-teal-800 border-teal-800">
                                 <CheckCircle className="w-3 h-3 mr-1" />
                                 Submitted
                               </Badge>
@@ -518,7 +518,7 @@ export default function Walkthrough() {
                               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Involved Tools</span>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {finding.involvedTools.map(t => (
-                                  <Badge key={t} variant="outline" className="text-[9px] border-amber-800/50 text-amber-500 py-0">{t}</Badge>
+                                  <Badge key={t} variant="outline" className="text-[9px] border-amber-800/50 text-amber-800 py-0">{t}</Badge>
                                 ))}
                               </div>
                             </div>
@@ -527,7 +527,7 @@ export default function Walkthrough() {
                               <ul className="mt-1 space-y-0.5">
                                 {finding.painPoints.map(p => (
                                   <li key={p} className="text-[11px] text-muted-foreground flex items-start gap-1">
-                                    <span className="text-orange-600 mt-0.5">-</span> {p}
+                                    <span className="text-orange-800 mt-0.5">-</span> {p}
                                   </li>
                                 ))}
                               </ul>
@@ -550,8 +550,8 @@ export default function Walkthrough() {
                           onClick={() => submitFinding(finding)}
                           className={`min-h-[40px] shrink-0 ${
                             finding.submitted
-                              ? 'border-teal-800 text-teal-500'
-                              : 'border-amber-800/50 text-amber-500 hover:bg-amber-900/30'
+                              ? 'border-teal-800 text-teal-800'
+                              : 'border-amber-800/50 text-amber-800 hover:bg-amber-900/30'
                           }`}
                           data-testid={`submit-finding-${finding.id}`}
                         >
@@ -574,7 +574,7 @@ export default function Walkthrough() {
           <TabsContent value="flow" className="space-y-6" data-testid="content-flow">
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-teal-400 flex items-center gap-2">
+                <CardTitle className="text-teal-800 flex items-center gap-2">
                   <Layers className="w-5 h-5" />
                   Recommended User Flow
                 </CardTitle>
@@ -629,7 +629,7 @@ export default function Walkthrough() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 flex items-center gap-2 text-sm">
+                <CardTitle className="text-amber-800 flex items-center gap-2 text-sm">
                   <Sparkles className="w-4 h-4" />
                   Architecture Summary
                 </CardTitle>
@@ -637,15 +637,15 @@ export default function Walkthrough() {
               <CardContent className="space-y-3">
                 <div className="grid sm:grid-cols-3 gap-4">
                   <div className="bg-card/80 rounded-lg p-4 border border-border" data-testid="stat-routes">
-                    <div className="text-2xl font-bold text-amber-400">{TOOLS.length}</div>
+                    <div className="text-2xl font-bold text-amber-800">{TOOLS.length}</div>
                     <div className="text-xs text-muted-foreground">Total Routes</div>
                   </div>
                   <div className="bg-card/80 rounded-lg p-4 border border-border" data-testid="stat-findings">
-                    <div className="text-2xl font-bold text-orange-400">{findings.length}</div>
+                    <div className="text-2xl font-bold text-orange-800">{findings.length}</div>
                     <div className="text-xs text-muted-foreground">Overlap Findings</div>
                   </div>
                   <div className="bg-card/80 rounded-lg p-4 border border-border" data-testid="stat-submitted">
-                    <div className="text-2xl font-bold text-teal-400">{submittedCount}</div>
+                    <div className="text-2xl font-bold text-teal-800">{submittedCount}</div>
                     <div className="text-xs text-muted-foreground">Recommendations Sent</div>
                   </div>
                 </div>

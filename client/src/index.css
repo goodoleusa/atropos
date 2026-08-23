@@ -59,24 +59,24 @@
   --popover: 35 45% 99%;
   --popover-foreground: 20 30% 14%;
 
-  --primary: 30 78% 38%;         /* Annealed Bronze/Amber — ink-safe on paper */
+  --primary: 30 80% 32%;         /* Annealed Bronze/Amber — 5.75:1 on paper */
   --primary-foreground: 35 45% 98%;
 
-  --secondary: 178 45% 26%;      /* Deep Teal (atropos's other identity hue) */
+  --secondary: 178 45% 26%;      /* Deep Teal (atropos's other identity hue) — 6.8:1 on paper */
   --secondary-foreground: 35 45% 98%;
 
   --muted: 32 25% 92%;
-  --muted-foreground: 25 15% 40%;
+  --muted-foreground: 25 20% 32%;  /* darkened from 40% lightness — 6.3:1 on paper */
 
-  --accent: 178 50% 32%;         /* Teal accent, mirrors old vapor-teal identity */
+  --accent: 178 58% 24%;         /* Teal accent, mirrors old vapor-teal identity — 6.9:1 on paper */
   --accent-foreground: 35 45% 98%;
 
-  --destructive: 5 65% 42%;      /* Deep Red, AA on paper */
+  --destructive: 5 65% 38%;      /* Deep Red — 6.7:1 on paper */
   --destructive-foreground: 35 45% 98%;
 
-  --border: 30 25% 84%;
-  --input: 30 25% 88%;
-  --ring: 30 78% 38%;
+  --border: 30 22% 50%;          /* darkened from 84% — 3.5:1 non-text contrast on paper */
+  --input: 30 22% 50%;
+  --ring: 30 80% 32%;
 }
 
 /* Scoped dark terminal/console treatment. The overall app is light, but a

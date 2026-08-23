@@ -95,7 +95,7 @@ export default function AdminDashboard() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center">
-        <div className="text-amber-600 font-mono text-sm animate-pulse">Authenticating...</div>
+        <div className="text-amber-800 font-mono text-sm animate-pulse">Authenticating...</div>
       </div>
     );
   }
@@ -106,9 +106,9 @@ export default function AdminDashboard() {
         <div className="max-w-lg w-full mx-4 text-center space-y-8">
           <div className="space-y-3">
             <div className="w-20 h-20 mx-auto rounded-2xl bg-amber-900/20 border-2 border-amber-700/50 flex items-center justify-center mb-6">
-              <ShieldAlert className="w-10 h-10 text-amber-500" />
+              <ShieldAlert className="w-10 h-10 text-amber-800" />
             </div>
-            <h1 className="text-3xl font-orbitron text-amber-500 tracking-tight">Admin Access</h1>
+            <h1 className="text-3xl font-orbitron text-amber-800 tracking-tight">Admin Access</h1>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto">
               This area is restricted. Sign in with your Replit account to continue.
             </p>
@@ -161,12 +161,12 @@ export default function AdminDashboard() {
             onClick={() => hasChildren && toggleNode(currentPath)}
           >
             {hasChildren ? (
-              isExpanded ? <ChevronDown className="w-3 h-3 text-amber-600" /> : <ChevronRight className="w-3 h-3 text-amber-600" />
+              isExpanded ? <ChevronDown className="w-3 h-3 text-amber-800" /> : <ChevronRight className="w-3 h-3 text-amber-800" />
             ) : (
               <File className="w-3 h-3 text-muted-foreground" />
             )}
             {hasChildren ? <Folder className="w-3 h-3 text-amber-700" /> : null}
-            <span className={`text-xs font-mono ${hasChildren ? 'text-amber-500 font-bold' : 'text-muted-foreground'}`}>
+            <span className={`text-xs font-mono ${hasChildren ? 'text-amber-800 font-bold' : 'text-muted-foreground'}`}>
               {key}
             </span>
             {!hasChildren && (
@@ -235,10 +235,10 @@ export default function AdminDashboard() {
         <div className="h-full flex flex-col">
           <div className="p-4 border-b border-amber-900/30 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-amber-600" />
-              <h1 className="text-sm font-orbitron text-amber-500 tracking-tighter uppercase">Admin Hub</h1>
+              <Trophy className="w-5 h-5 text-amber-800" />
+              <h1 className="text-sm font-orbitron text-amber-800 tracking-tighter uppercase">Admin Hub</h1>
             </div>
-            <Button variant="ghost" size="sm" className="md:hidden text-amber-500" onClick={() => setSidebarOpen(false)}>
+            <Button variant="ghost" size="sm" className="md:hidden text-amber-800" onClick={() => setSidebarOpen(false)}>
               <ChevronRight className="w-5 h-5 rotate-180" />
             </Button>
           </div>
@@ -312,7 +312,7 @@ export default function AdminDashboard() {
                 {user.profileImageUrl ? (
                   <img src={user.profileImageUrl} alt="" className="w-5 h-5 rounded-full border border-amber-900/40" />
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-amber-900/30 border border-amber-900/40 flex items-center justify-center text-[8px] text-amber-500">
+                  <div className="w-5 h-5 rounded-full bg-amber-900/30 border border-amber-900/40 flex items-center justify-center text-[8px] text-amber-800">
                     {(user.firstName || user.email || "A")[0].toUpperCase()}
                   </div>
                 )}
@@ -338,7 +338,7 @@ export default function AdminDashboard() {
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <header className="h-14 border-b border-amber-900/30 bg-[hsl(var(--card))]/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="md:hidden text-amber-500 p-2" onClick={() => setSidebarOpen(true)}>
+            <Button variant="ghost" size="sm" className="md:hidden text-amber-800 p-2" onClick={() => setSidebarOpen(true)}>
               <Terminal className="w-5 h-5" />
             </Button>
             <div>
@@ -356,7 +356,7 @@ export default function AdminDashboard() {
             <Button 
               variant="outline" 
               size="sm" 
-              className={`h-7 px-2 border-amber-900/30 text-[9px] font-bold ${gameState?.devMode ? 'text-teal-400 border-teal-500/50 bg-teal-950/20' : 'text-muted-foreground'}`}
+              className={`h-7 px-2 border-amber-900/30 text-[9px] font-bold ${gameState?.devMode ? 'text-teal-800 border-teal-500/50 bg-teal-950/20' : 'text-muted-foreground'}`}
               onClick={toggleDevMode}
             >
               DEV: {gameState?.devMode ? 'ON' : 'OFF'}

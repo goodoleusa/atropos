@@ -162,7 +162,7 @@ export default function AgentConfigSection() {
             <Brain className="w-6 h-6 text-black" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-amber-400 font-orbitron">AI Agent Configuration</h2>
+            <h2 className="text-lg font-bold text-amber-800 font-orbitron">AI Agent Configuration</h2>
             <p className="text-sm text-muted-foreground">Edit system prompts, models, and monitoring for all 6 security agents</p>
           </div>
         </div>
@@ -171,7 +171,7 @@ export default function AgentConfigSection() {
       <div className="grid lg:grid-cols-2 gap-6">
         <Card className="bg-card/50 border-amber-700/50 ring-1 ring-amber-500/20">
           <CardHeader className="bg-amber-950/20 border-b border-amber-900/30">
-            <CardTitle className="text-amber-400 flex items-center gap-2">
+            <CardTitle className="text-amber-800 flex items-center gap-2">
               <Bot className="w-5 h-5" /> Agent System Prompts
               <Badge className="bg-amber-500 text-black text-xs ml-2">EDITABLE</Badge>
             </CardTitle>
@@ -204,9 +204,9 @@ export default function AgentConfigSection() {
             
             <div className="p-3 rounded-lg bg-border/50 border border-border">
               <div className="flex items-center gap-2 mb-2">
-                <Icon className="w-5 h-5 text-amber-500" />
+                <Icon className="w-5 h-5 text-amber-800" />
                 <span className="font-medium text-white">{selectedAgentInfo?.name}</span>
-                <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-400">
+                <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-800">
                   Admin Protected
                 </Badge>
               </div>
@@ -247,7 +247,7 @@ export default function AgentConfigSection() {
             
             <div>
               <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
-                <Lock className="w-4 h-4 text-red-400" />
+                <Lock className="w-4 h-4 text-red-700" />
                 Base Instructions (Protected)
               </label>
               <Textarea
@@ -284,7 +284,7 @@ export default function AgentConfigSection() {
         <div className="space-y-6">
           <Card className="bg-card/50 border-amber-900/30">
             <CardHeader>
-              <CardTitle className="text-amber-500 flex items-center gap-2">
+              <CardTitle className="text-amber-800 flex items-center gap-2">
                 <Activity className="w-5 h-5" /> W&B Monitoring
                 {wandbConfig?.enabled && wandbConfig?.apiKeySet && (
                   <Badge className="bg-teal-500 text-black text-xs animate-pulse">LIVE</Badge>
@@ -297,7 +297,7 @@ export default function AgentConfigSection() {
             <CardContent className="space-y-4">
               {wandbLoading ? (
                 <div className="flex items-center justify-center py-4">
-                  <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
+                  <Loader2 className="w-6 h-6 animate-spin text-amber-800" />
                 </div>
               ) : (
                 <>
@@ -316,7 +316,7 @@ export default function AgentConfigSection() {
                       <div>
                         <p className={`text-sm font-medium ${
                           wandbConfig?.enabled && wandbConfig?.apiKeySet 
-                            ? 'text-teal-400' 
+                            ? 'text-teal-800' 
                             : 'text-muted-foreground'
                         }`}>
                           {wandbConfig?.enabled && wandbConfig?.apiKeySet 
@@ -327,8 +327,8 @@ export default function AgentConfigSection() {
                         </p>
                         {wandbConfig?.enabled && wandbConfig?.apiKeySet && wandbConfig?.project && (
                           <p className="text-xs text-muted-foreground">
-                            Project: <span className="text-teal-400">{wandbConfig.project}</span>
-                            {wandbConfig.entity && <> | Entity: <span className="text-teal-400">{wandbConfig.entity}</span></>}
+                            Project: <span className="text-teal-800">{wandbConfig.project}</span>
+                            {wandbConfig.entity && <> | Entity: <span className="text-teal-800">{wandbConfig.entity}</span></>}
                           </p>
                         )}
                       </div>
@@ -337,7 +337,7 @@ export default function AgentConfigSection() {
 
                   <div className="flex items-center justify-between p-3 rounded-lg bg-border/50 border border-border">
                     <div className="flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5 text-teal-400" />
+                      <BarChart3 className="w-5 h-5 text-teal-800" />
                       <span className="text-sm text-white">Enable W&B Logging</span>
                     </div>
                     <Switch
@@ -380,8 +380,8 @@ export default function AgentConfigSection() {
                   
                   <div>
                     <label className="text-sm text-muted-foreground mb-2 block flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-amber-400" />
-                      API Key {wandbConfig?.apiKeySet && <Badge className="bg-teal-500/20 text-teal-400 text-xs">Set</Badge>}
+                      <Lock className="w-4 h-4 text-amber-800" />
+                      API Key {wandbConfig?.apiKeySet && <Badge className="bg-teal-500/20 text-teal-800 text-xs">Set</Badge>}
                     </label>
                     <Input
                       type="password"
@@ -413,7 +413,7 @@ export default function AgentConfigSection() {
           
           <Card className="bg-card/50 border-amber-900/30">
             <CardHeader>
-              <CardTitle className="text-amber-500 flex items-center gap-2">
+              <CardTitle className="text-amber-800 flex items-center gap-2">
                 <Settings className="w-5 h-5" /> Agent Status
               </CardTitle>
             </CardHeader>
@@ -433,12 +433,12 @@ export default function AgentConfigSection() {
                       </div>
                       <div className="flex items-center gap-2">
                         {hasCustomConfig ? (
-                          <Badge className="bg-amber-500/20 text-amber-400 text-xs">Custom</Badge>
+                          <Badge className="bg-amber-500/20 text-amber-800 text-xs">Custom</Badge>
                         ) : (
                           <Badge variant="outline" className="text-xs border-muted text-muted-foreground">Default</Badge>
                         )}
                         {agentConfigs[agent.id]?.model && (
-                          <Badge variant="outline" className="text-xs border-teal-600 text-teal-400">
+                          <Badge variant="outline" className="text-xs border-teal-600 text-teal-800">
                             Model Override
                           </Badge>
                         )}

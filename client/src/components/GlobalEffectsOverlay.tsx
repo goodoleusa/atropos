@@ -457,7 +457,7 @@ function ScreenOverlays() {
             exit={{ opacity: 0 }}
             className="absolute inset-0 flex items-center justify-center"
           >
-            <span className="text-6xl md:text-9xl font-black text-amber-500/20 tracking-widest font-mono blur-[1px] select-none">
+            <span className="text-6xl md:text-9xl font-black text-amber-800/20 tracking-widest font-mono blur-[1px] select-none">
               {flashMsg}
             </span>
           </motion.div>

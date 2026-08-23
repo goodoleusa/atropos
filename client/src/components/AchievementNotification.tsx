@@ -145,14 +145,14 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
               <div className="flex gap-3 pt-3 border-t border-border">
                 {achievement.xpReward > 0 && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-amber-900/20 rounded border border-amber-900/30">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
-                    <span className="text-sm font-bold text-amber-400">+{achievement.xpReward} XP</span>
+                    <Sparkles className="w-4 h-4 text-amber-800" />
+                    <span className="text-sm font-bold text-amber-800">+{achievement.xpReward} XP</span>
                   </div>
                 )}
                 {achievement.currencyReward > 0 && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-orange-900/20 rounded border border-orange-900/30">
-                    <Zap className="w-4 h-4 text-orange-500" />
-                    <span className="text-sm font-bold text-orange-400">+{achievement.currencyReward} Credits</span>
+                    <Zap className="w-4 h-4 text-orange-800" />
+                    <span className="text-sm font-bold text-orange-800">+{achievement.currencyReward} Credits</span>
                   </div>
                 )}
               </div>

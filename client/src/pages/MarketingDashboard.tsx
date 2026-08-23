@@ -310,19 +310,19 @@ export default function MarketingDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link href="/">
-                <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
+                <Button variant="ghost" size="sm" className="text-amber-800 hover:text-amber-400 min-h-[44px]" data-testid="back-btn">
                   <ArrowLeft className="w-4 h-4 mr-2" /> Back
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-amber-400" />
-                <h1 className="text-lg font-bold text-amber-400" data-testid="marketing-title">
+                <Megaphone className="w-5 h-5 text-amber-800" />
+                <h1 className="text-lg font-bold text-amber-800" data-testid="marketing-title">
                   Marketing HQ
                 </h1>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className="bg-amber-900/30 text-amber-400 border-amber-800/50" data-testid="segment-badge">
+              <Badge className="bg-amber-900/30 text-amber-800 border-amber-800/50" data-testid="segment-badge">
                 {activeSegment === 'it_pro' ? 'IT Professional Segment' : 'Student Segment'}
               </Badge>
             </div>
@@ -390,7 +390,7 @@ export default function MarketingDashboard() {
           <TabsContent value="funnels" className="space-y-6 mt-6" data-testid="tab-funnels">
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <BarChart3 className="w-5 h-5" />
                   {activeSegment === 'it_pro' ? 'IT Pro Anti-Trafficking SME Funnel' : 'Student Cyber Bounty Hunter Funnel'}
                 </CardTitle>
@@ -427,7 +427,7 @@ export default function MarketingDashboard() {
                               <div className="grid sm:grid-cols-2 gap-3">
                                 <div className="space-y-2">
                                   <div>
-                                    <span className="text-[10px] uppercase tracking-wider text-amber-600 font-bold">Best Practice</span>
+                                    <span className="text-[10px] uppercase tracking-wider text-amber-800 font-bold">Best Practice</span>
                                     <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{step.bestPractice}</p>
                                   </div>
                                   <div>
@@ -437,7 +437,7 @@ export default function MarketingDashboard() {
                                 </div>
                                 <div className="space-y-2">
                                   <div>
-                                    <span className="text-[10px] uppercase tracking-wider text-amber-600 font-bold flex items-center gap-1">
+                                    <span className="text-[10px] uppercase tracking-wider text-amber-800 font-bold flex items-center gap-1">
                                       <Lightbulb className="w-3 h-3" /> Conversion Tip
                                     </span>
                                     <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{step.conversionTip}</p>
@@ -465,7 +465,7 @@ export default function MarketingDashboard() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-teal-400 text-sm flex items-center gap-2">
+                <CardTitle className="text-teal-800 text-sm flex items-center gap-2">
                   <Lightbulb className="w-4 h-4" />
                   Funnel Timing Research Summary
                 </CardTitle>
@@ -473,15 +473,15 @@ export default function MarketingDashboard() {
               <CardContent>
                 <div className="grid sm:grid-cols-3 gap-4">
                   <div className="bg-card/80 rounded-lg p-4 border border-border">
-                    <div className="text-2xl font-bold text-amber-400">3s</div>
+                    <div className="text-2xl font-bold text-amber-800">3s</div>
                     <div className="text-xs text-muted-foreground mt-1">Avg time to hook or lose on social media. Your headline must work in 3 seconds.</div>
                   </div>
                   <div className="bg-card/80 rounded-lg p-4 border border-border">
-                    <div className="text-2xl font-bold text-teal-400">10 min</div>
+                    <div className="text-2xl font-bold text-teal-800">10 min</div>
                     <div className="text-xs text-muted-foreground mt-1">Max time to "aha moment." If users don't see value in 10 min, 73% never return.</div>
                   </div>
                   <div className="bg-card/80 rounded-lg p-4 border border-border">
-                    <div className="text-2xl font-bold text-red-400">48h</div>
+                    <div className="text-2xl font-bold text-red-700">48h</div>
                     <div className="text-xs text-muted-foreground mt-1">Critical re-engagement window. If no return in 48 hours, send recovery email/push.</div>
                   </div>
                 </div>
@@ -493,7 +493,7 @@ export default function MarketingDashboard() {
           <TabsContent value="ab" className="space-y-6 mt-6" data-testid="tab-ab">
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-teal-400 flex items-center gap-2">
+                <CardTitle className="text-teal-800 flex items-center gap-2">
                   <Shuffle className="w-5 h-5" />
                   A/B Test: {activeSegment === 'it_pro' ? 'IT Professional' : 'Student'} Hero Campaign
                 </CardTitle>
@@ -527,7 +527,7 @@ export default function MarketingDashboard() {
                           <div className="flex items-center justify-between">
                             <Badge className="bg-border text-muted-foreground border-border">{v.label}</Badge>
                             {isWinner && (
-                              <Badge className="bg-amber-900/50 text-amber-400 border-amber-800">
+                              <Badge className="bg-amber-900/50 text-amber-800 border-amber-800">
                                 <CheckCircle className="w-3 h-3 mr-1" /> Winner
                               </Badge>
                             )}
@@ -537,13 +537,13 @@ export default function MarketingDashboard() {
                             <p className="text-xs text-muted-foreground leading-relaxed">{v.subheadline}</p>
                           </div>
                           <div className="flex gap-2">
-                            <Badge className="bg-amber-900/30 text-amber-400 border-amber-800/50 text-xs">{v.cta}</Badge>
+                            <Badge className="bg-amber-900/30 text-amber-800 border-amber-800/50 text-xs">{v.cta}</Badge>
                             <Badge variant="outline" className="border-border text-muted-foreground text-xs">{v.ctaSecondary}</Badge>
                           </div>
                           <div className="flex gap-4 text-xs text-muted-foreground pt-2 border-t border-border">
                             <span>Impressions: <span className="text-foreground">{v.impressions.toLocaleString()}</span></span>
-                            <span>CTR: <span className={`${parseFloat(ctr) > 10 ? 'text-teal-400' : 'text-foreground'}`}>{ctr}%</span></span>
-                            <span>CVR: <span className={`${parseFloat(cvr) > 12 ? 'text-amber-400' : 'text-foreground'}`}>{cvr}%</span></span>
+                            <span>CTR: <span className={`${parseFloat(ctr) > 10 ? 'text-teal-800' : 'text-foreground'}`}>{ctr}%</span></span>
+                            <span>CVR: <span className={`${parseFloat(cvr) > 12 ? 'text-amber-800' : 'text-foreground'}`}>{cvr}%</span></span>
                           </div>
                         </CardContent>
                       </Card>
@@ -554,7 +554,7 @@ export default function MarketingDashboard() {
                 {editingVariant && (
                   <Card className="bg-card/80 border-amber-900/30" data-testid="variant-editor">
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
+                      <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
                         <FileText className="w-4 h-4" />
                         Edit Copy — {variants.find(v => v.id === editingVariant)?.label}
                       </CardTitle>
@@ -610,32 +610,32 @@ export default function MarketingDashboard() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 text-sm">A/B Testing Best Practices</CardTitle>
+                <CardTitle className="text-amber-800 text-sm">A/B Testing Best Practices</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid sm:grid-cols-2 gap-3 text-xs text-muted-foreground">
                   <div className="flex items-start gap-2">
-                    <CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" />
                     <span>Test ONE variable at a time (headline OR CTA, not both)</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" />
                     <span>Minimum 1,000 impressions per variant before declaring winner</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" />
                     <span>CVR (conversion rate) matters more than CTR (click-through rate)</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" />
                     <span>Run tests for 7-14 days minimum to account for day-of-week effects</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" />
                     <span>Identity-based CTAs ("Become a...") outperform action-based ("Sign up") by 30%</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" />
                     <span>Short-form video ads convert 2-3x over static images for under-30 audience</span>
                   </div>
                 </div>
@@ -649,7 +649,7 @@ export default function MarketingDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <CardTitle className="text-amber-400 flex items-center gap-2">
+                    <CardTitle className="text-amber-800 flex items-center gap-2">
                       <MousePointerClick className="w-5 h-5" />
                       CTA Generator
                     </CardTitle>
@@ -674,7 +674,7 @@ export default function MarketingDashboard() {
                         data-testid={`generated-cta-${i}`}
                       >
                         <div className="flex items-center gap-2">
-                          <Badge className="bg-amber-900/30 text-amber-400 border-amber-800/50 text-xs shrink-0 w-6 h-6 flex items-center justify-center p-0">
+                          <Badge className="bg-amber-900/30 text-amber-800 border-amber-800/50 text-xs shrink-0 w-6 h-6 flex items-center justify-center p-0">
                             {i + 1}
                           </Badge>
                           <span className="text-sm text-foreground font-medium">{cta}</span>
@@ -694,7 +694,7 @@ export default function MarketingDashboard() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-teal-400 text-sm">CTA Templates by Category</CardTitle>
+                <CardTitle className="text-teal-800 text-sm">CTA Templates by Category</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {CTA_TEMPLATES.map(cat => (
@@ -721,7 +721,7 @@ export default function MarketingDashboard() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 text-sm">CTA Button Preview</CardTitle>
+                <CardTitle className="text-amber-800 text-sm">CTA Button Preview</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -742,7 +742,7 @@ export default function MarketingDashboard() {
           <TabsContent value="copy" className="space-y-6 mt-6" data-testid="tab-copy">
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-teal-400 flex items-center gap-2">
+                <CardTitle className="text-teal-800 flex items-center gap-2">
                   <FileText className="w-5 h-5" />
                   Key Phrases & Messaging Library
                 </CardTitle>
@@ -759,7 +759,7 @@ export default function MarketingDashboard() {
                     data-testid={`phrase-${kp.phrase.replace(/\s+/g, '-').toLowerCase()}`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-bold text-amber-400">{kp.phrase}</h3>
+                      <h3 className="text-sm font-bold text-amber-800">{kp.phrase}</h3>
                       <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                     </div>
                     <div className="grid sm:grid-cols-2 gap-2">
@@ -779,14 +779,14 @@ export default function MarketingDashboard() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 text-sm">Segment-Specific Messaging</CardTitle>
+                <CardTitle className="text-amber-800 text-sm">Segment-Specific Messaging</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-card/80 border border-amber-900/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <Briefcase className="w-4 h-4 text-amber-400" />
-                      <h3 className="text-sm font-bold text-amber-400">IT Professionals</h3>
+                      <Briefcase className="w-4 h-4 text-amber-800" />
+                      <h3 className="text-sm font-bold text-amber-800">IT Professionals</h3>
                     </div>
                     <div className="space-y-2 text-xs text-muted-foreground">
                       <p><span className="text-foreground font-medium">Pain:</span> "I have cybersecurity skills but no way to apply them for social good"</p>
@@ -798,8 +798,8 @@ export default function MarketingDashboard() {
                   </div>
                   <div className="bg-card/80 border border-teal-900/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <GraduationCap className="w-4 h-4 text-teal-400" />
-                      <h3 className="text-sm font-bold text-teal-400">Beginner Students</h3>
+                      <GraduationCap className="w-4 h-4 text-teal-800" />
+                      <h3 className="text-sm font-bold text-teal-800">Beginner Students</h3>
                     </div>
                     <div className="space-y-2 text-xs text-muted-foreground">
                       <p><span className="text-foreground font-medium">Pain:</span> "I want to learn cybersecurity but don't know where to start or can't afford certs"</p>
@@ -818,7 +818,7 @@ export default function MarketingDashboard() {
           <TabsContent value="brand" className="space-y-6 mt-6" data-testid="tab-brand">
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <Palette className="w-5 h-5" />
                   Brand Colors
                 </CardTitle>
@@ -850,7 +850,7 @@ export default function MarketingDashboard() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-teal-400 text-sm flex items-center gap-2">
+                <CardTitle className="text-teal-800 text-sm flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Typography
                 </CardTitle>
@@ -878,28 +878,28 @@ export default function MarketingDashboard() {
 
             <Card className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-amber-400 text-sm">Visual Style Guide</CardTitle>
+                <CardTitle className="text-amber-800 text-sm">Visual Style Guide</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid sm:grid-cols-2 gap-4 text-xs text-muted-foreground">
                   <div className="space-y-2">
                     <p className="text-foreground font-medium">Do:</p>
                     <ul className="space-y-1.5">
-                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" /> Dark backgrounds, molten bronze accents</li>
-                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" /> Terminal/hacker aesthetic for screenshots</li>
-                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" /> Real investigation screenshots, not stock photos</li>
-                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" /> Badge/achievement graphics for social sharing</li>
-                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" /> Subtle scanline overlay for on-brand feel</li>
+                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" /> Dark backgrounds, molten bronze accents</li>
+                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" /> Terminal/hacker aesthetic for screenshots</li>
+                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" /> Real investigation screenshots, not stock photos</li>
+                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" /> Badge/achievement graphics for social sharing</li>
+                      <li className="flex items-start gap-2"><CheckCircle className="w-3 h-3 text-amber-800 mt-0.5 shrink-0" /> Subtle scanline overlay for on-brand feel</li>
                     </ul>
                   </div>
                   <div className="space-y-2">
                     <p className="text-foreground font-medium">Don't:</p>
                     <ul className="space-y-1.5">
-                      <li className="flex items-start gap-2"><span className="text-red-500 mt-0.5 shrink-0">✕</span> Stock photos of people smiling at laptops</li>
-                      <li className="flex items-start gap-2"><span className="text-red-500 mt-0.5 shrink-0">✕</span> Green hacker-movie text (no Matrix vibes)</li>
-                      <li className="flex items-start gap-2"><span className="text-red-500 mt-0.5 shrink-0">✕</span> Bright white backgrounds or light mode</li>
-                      <li className="flex items-start gap-2"><span className="text-red-500 mt-0.5 shrink-0">✕</span> Generic "cybersecurity" imagery (padlocks, shields)</li>
-                      <li className="flex items-start gap-2"><span className="text-red-500 mt-0.5 shrink-0">✕</span> Corporate jargon ("synergy", "leverage", "ecosystem")</li>
+                      <li className="flex items-start gap-2"><span className="text-red-700 mt-0.5 shrink-0">✕</span> Stock photos of people smiling at laptops</li>
+                      <li className="flex items-start gap-2"><span className="text-red-700 mt-0.5 shrink-0">✕</span> Green hacker-movie text (no Matrix vibes)</li>
+                      <li className="flex items-start gap-2"><span className="text-red-700 mt-0.5 shrink-0">✕</span> Bright white backgrounds or light mode</li>
+                      <li className="flex items-start gap-2"><span className="text-red-700 mt-0.5 shrink-0">✕</span> Generic "cybersecurity" imagery (padlocks, shields)</li>
+                      <li className="flex items-start gap-2"><span className="text-red-700 mt-0.5 shrink-0">✕</span> Corporate jargon ("synergy", "leverage", "ecosystem")</li>
                     </ul>
                   </div>
                 </div>

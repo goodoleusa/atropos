@@ -167,7 +167,7 @@ export function EffectsPlaygroundSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-purple-400 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-purple-700 flex items-center gap-2">
           <Sparkles className="w-5 h-5" /> Effects Playground
         </h3>
         <div className="flex gap-2">
@@ -183,7 +183,7 @@ export function EffectsPlaygroundSection() {
             variant="outline" 
             size="sm" 
             onClick={copyConfigCode}
-            className="border-purple-600 text-purple-400"
+            className="border-purple-600 text-purple-700"
           >
             {copied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
             {copied ? 'Copied!' : 'Copy Config'}
@@ -215,7 +215,7 @@ export function EffectsPlaygroundSection() {
             <div className="space-y-4 pr-4">
               <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono">Reveal Type</CardTitle>
+                  <CardTitle className="text-purple-700 text-sm font-mono">Reveal Type</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -239,7 +239,7 @@ export function EffectsPlaygroundSection() {
 
               <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono">Visual Parameters</CardTitle>
+                  <CardTitle className="text-amber-800 text-sm font-mono">Visual Parameters</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -285,7 +285,7 @@ export function EffectsPlaygroundSection() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Parallax Depth</Label>
-                      <span className="text-xs text-amber-400">{config.parallaxDepth}px</span>
+                      <span className="text-xs text-amber-800">{config.parallaxDepth}px</span>
                     </div>
                     <Slider
                       value={[config.parallaxDepth]}
@@ -300,7 +300,7 @@ export function EffectsPlaygroundSection() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Animation Speed</Label>
-                      <span className="text-xs text-amber-400">{config.animationSpeed}s</span>
+                      <span className="text-xs text-amber-800">{config.animationSpeed}s</span>
                     </div>
                     <Slider
                       value={[config.animationSpeed]}
@@ -315,7 +315,7 @@ export function EffectsPlaygroundSection() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Blur Amount</Label>
-                      <span className="text-xs text-amber-400">{config.blurAmount}px</span>
+                      <span className="text-xs text-amber-800">{config.blurAmount}px</span>
                     </div>
                     <Slider
                       value={[config.blurAmount]}
@@ -348,13 +348,13 @@ export function EffectsPlaygroundSection() {
 
               <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-teal-500 text-sm font-mono">Advanced Effects</CardTitle>
+                  <CardTitle className="text-teal-800 text-sm font-mono">Advanced Effects</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Distortion Level</Label>
-                      <span className="text-xs text-teal-400">{(config.distortionLevel * 100).toFixed(0)}%</span>
+                      <span className="text-xs text-teal-800">{(config.distortionLevel * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[config.distortionLevel]}
@@ -369,7 +369,7 @@ export function EffectsPlaygroundSection() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Scanline Opacity</Label>
-                      <span className="text-xs text-teal-400">{(config.scanlineOpacity * 100).toFixed(0)}%</span>
+                      <span className="text-xs text-teal-800">{(config.scanlineOpacity * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[config.scanlineOpacity]}
@@ -384,7 +384,7 @@ export function EffectsPlaygroundSection() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Chromatic Offset</Label>
-                      <span className="text-xs text-teal-400">{config.chromaticOffset}px</span>
+                      <span className="text-xs text-teal-800">{config.chromaticOffset}px</span>
                     </div>
                     <Slider
                       value={[config.chromaticOffset]}
@@ -406,7 +406,7 @@ export function EffectsPlaygroundSection() {
             <div className="space-y-4 pr-4">
               <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+                  <CardTitle className="text-purple-700 text-sm font-mono flex items-center gap-2">
                     <Eye className="w-4 h-4" /> Live Preview
                     <Badge className="bg-green-900/50 text-green-400 text-[10px]">LIVE</Badge>
                   </CardTitle>
@@ -490,7 +490,7 @@ export function EffectsPlaygroundSection() {
             <div className="space-y-4 pr-4">
               <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+                  <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
                     <Layers className="w-4 h-4" /> Select Clue Types
                   </CardTitle>
                   <CardDescription className="text-muted-foreground text-xs">
@@ -519,25 +519,25 @@ export function EffectsPlaygroundSection() {
 
               <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono">Effect Summary</CardTitle>
+                  <CardTitle className="text-purple-700 text-sm font-mono">Effect Summary</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="flex justify-between p-2 bg-black/30 rounded">
                       <span className="text-muted-foreground">Reveal Type:</span>
-                      <span className="text-purple-400">{config.revealType}</span>
+                      <span className="text-purple-700">{config.revealType}</span>
                     </div>
                     <div className="flex justify-between p-2 bg-black/30 rounded">
                       <span className="text-muted-foreground">Intensity:</span>
-                      <span className="text-amber-400">{config.intensity}</span>
+                      <span className="text-amber-800">{config.intensity}</span>
                     </div>
                     <div className="flex justify-between p-2 bg-black/30 rounded">
                       <span className="text-muted-foreground">Parallax:</span>
-                      <span className="text-teal-400">{config.parallaxDepth}px</span>
+                      <span className="text-teal-800">{config.parallaxDepth}px</span>
                     </div>
                     <div className="flex justify-between p-2 bg-black/30 rounded">
                       <span className="text-muted-foreground">Animation:</span>
-                      <span className="text-teal-400">{config.animationSpeed}s</span>
+                      <span className="text-teal-800">{config.animationSpeed}s</span>
                     </div>
                   </div>
                 </CardContent>
@@ -560,7 +560,7 @@ export function EffectsPlaygroundSection() {
             <div className="space-y-6 pr-4">
               <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono">Border & Container Effects</CardTitle>
+                  <CardTitle className="text-amber-800 text-sm font-mono">Border & Container Effects</CardTitle>
                   <CardDescription className="text-muted-foreground text-xs">Apply to cards, buttons, and containers</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -583,7 +583,7 @@ export function EffectsPlaygroundSection() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Intensity</Label>
-                      <span className="text-xs text-amber-400">{(moltenIntensity * 100).toFixed(0)}%</span>
+                      <span className="text-xs text-amber-800">{(moltenIntensity * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[moltenIntensity]}
@@ -605,7 +605,7 @@ export function EffectsPlaygroundSection() {
                     <MoltenWrapper effect={moltenEffect} intensity={moltenIntensity} className="rounded-lg">
                       <div className="bg-[hsl(var(--card))] border border-border rounded-lg p-6 text-center relative">
                         {showParticles && <SlagParticles count={6} />}
-                        <p className="text-amber-500 font-mono">Sample Container</p>
+                        <p className="text-amber-800 font-mono">Sample Container</p>
                         <p className="text-muted-foreground text-xs mt-1">With {moltenEffect} effect</p>
                       </div>
                     </MoltenWrapper>
@@ -615,7 +615,7 @@ export function EffectsPlaygroundSection() {
 
               <Card className="bg-[hsl(var(--card))] border-amber-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-amber-500 text-sm font-mono">Text Effects</CardTitle>
+                  <CardTitle className="text-amber-800 text-sm font-mono">Text Effects</CardTitle>
                   <CardDescription className="text-muted-foreground text-xs">Apply to headings and labels</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -636,7 +636,7 @@ export function EffectsPlaygroundSection() {
                   </div>
 
                   <div className="pt-4 text-center">
-                    <MoltenText effect={moltenTextEffect} intensity={moltenIntensity} as="h2" className="text-2xl font-orbitron text-amber-500">
+                    <MoltenText effect={moltenTextEffect} intensity={moltenIntensity} as="h2" className="text-2xl font-orbitron text-amber-800">
                       MOLTEN HEADER
                     </MoltenText>
                   </div>
@@ -645,7 +645,7 @@ export function EffectsPlaygroundSection() {
 
               <Card className="bg-[hsl(var(--card))] border-purple-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-500 text-sm font-mono">Subliminal Overlay</CardTitle>
+                  <CardTitle className="text-purple-700 text-sm font-mono">Subliminal Overlay</CardTitle>
                   <CardDescription className="text-muted-foreground text-xs">Global page effects - glitches, scanlines, messages</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -670,7 +670,7 @@ export function EffectsPlaygroundSection() {
 
               <Card className="bg-[hsl(var(--card))] border-teal-900/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-teal-500 text-sm font-mono">Video Overlay</CardTitle>
+                  <CardTitle className="text-teal-800 text-sm font-mono">Video Overlay</CardTitle>
                   <CardDescription className="text-muted-foreground text-xs">For hero video sections</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -693,7 +693,7 @@ export function EffectsPlaygroundSection() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <Label className="text-muted-foreground text-xs">Intensity</Label>
-                      <span className="text-xs text-teal-400">{(videoIntensity * 100).toFixed(0)}%</span>
+                      <span className="text-xs text-teal-800">{(videoIntensity * 100).toFixed(0)}%</span>
                     </div>
                     <Slider
                       value={[videoIntensity]}
@@ -752,7 +752,7 @@ export function EffectsPlaygroundSection() {
               </Card>
 
               <div className="bg-amber-900/10 border border-amber-900/30 rounded-lg p-4">
-                <h4 className="text-amber-500 font-mono text-sm mb-2">Usage Examples</h4>
+                <h4 className="text-amber-800 font-mono text-sm mb-2">Usage Examples</h4>
                 <pre className="text-[10px] text-muted-foreground overflow-x-auto">
 {`// Border effect on a card
 <MoltenWrapper effect="${moltenEffect}" intensity={${moltenIntensity}}>
@@ -799,7 +799,7 @@ function EffectPreviewBox({ children, label, active }: { children: React.ReactNo
       </div>
       {active && children}
       <div className="absolute bottom-1 left-2">
-        <span className={`text-[9px] font-mono ${active ? 'text-amber-500' : 'text-muted-foreground'}`}>{label}</span>
+        <span className={`text-[9px] font-mono ${active ? 'text-amber-800' : 'text-muted-foreground'}`}>{label}</span>
       </div>
       {!active && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -886,7 +886,7 @@ function GlobalSiteFXTab() {
               checked={gfx.enabled}
               onCheckedChange={(v) => setGfx({ enabled: v })}
             />
-            <span className={`text-sm font-mono ${gfx.enabled ? "text-teal-400" : "text-muted-foreground"}`}>
+            <span className={`text-sm font-mono ${gfx.enabled ? "text-teal-800" : "text-muted-foreground"}`}>
               {gfx.enabled ? "ACTIVE" : "DISABLED"}
             </span>
           </div>
@@ -903,7 +903,7 @@ function GlobalSiteFXTab() {
 
         <Card className="bg-[hsl(var(--card))] border-teal-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
               <Paintbrush className="w-4 h-4" /> Presets
             </CardTitle>
           </CardHeader>
@@ -931,7 +931,7 @@ function GlobalSiteFXTab() {
 
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-amber-800 text-sm font-mono flex items-center gap-2">
               <Monitor className="w-4 h-4" /> Screen Overlays
             </CardTitle>
             <CardDescription className="text-muted-foreground text-[10px]">These effects layer over the entire page. Previews below show each one in isolation.</CardDescription>
@@ -1029,7 +1029,7 @@ function GlobalSiteFXTab() {
 
         <Card className="bg-[hsl(var(--card))] border-red-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-red-400 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-red-700 text-sm font-mono flex items-center gap-2">
               <Zap className="w-4 h-4" /> Timed Effects
             </CardTitle>
             <CardDescription className="text-muted-foreground text-[10px]">
@@ -1076,7 +1076,7 @@ function GlobalSiteFXTab() {
               <div className="relative h-12 rounded border border-border overflow-hidden bg-gradient-to-r from-card to-card">
                 <div className="absolute inset-0 flex items-center justify-center">
                   {previewFlash ? (
-                    <span className="text-lg font-black text-amber-500/30 tracking-widest font-mono blur-[0.5px]">{previewFlash}</span>
+                    <span className="text-lg font-black text-amber-800/30 tracking-widest font-mono blur-[0.5px]">{previewFlash}</span>
                   ) : (
                     <span className="text-[10px] text-muted-foreground font-mono">flash every {gfx.subliminalIntervalMs || 5000}ms for {gfx.subliminalDurationMs || 100}ms</span>
                   )}
@@ -1114,7 +1114,7 @@ function GlobalSiteFXTab() {
 
         <Card className="bg-[hsl(var(--card))] border-purple-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-purple-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-purple-700 text-sm font-mono flex items-center gap-2">
               <MousePointer className="w-4 h-4" /> Cursor Effects
             </CardTitle>
           </CardHeader>
@@ -1166,7 +1166,7 @@ function GlobalSiteFXTab() {
 
         <Card className="bg-[hsl(var(--card))] border-teal-900/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-teal-500 text-sm font-mono flex items-center gap-2">
+            <CardTitle className="text-teal-800 text-sm font-mono flex items-center gap-2">
               <Sparkles className="w-4 h-4" /> Background Effects
             </CardTitle>
           </CardHeader>
@@ -1385,7 +1385,7 @@ function LivePreviewCard({ config, text, intensityMultiplier }: { config: Effect
           {config.revealType === 'glitch' && isHovered ? (
             <div className="relative">
               <span 
-                className="absolute text-red-500 font-mono text-lg font-bold"
+                className="absolute text-red-700 font-mono text-lg font-bold"
                 style={{ transform: `translate(${config.chromaticOffset}px, 0)` }}
               >
                 {text}

@@ -12,17 +12,17 @@ export function MessagesPanel({ chaosEnabled, setChaosEnabled, subliminalMessage
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-teal-400 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-teal-800 flex items-center gap-2">
           <MessageSquare className="w-5 h-5" /> Game Narrative & Message Tree
         </h3>
-        <Badge variant="outline" className="border-teal-600 text-teal-400">
+        <Badge variant="outline" className="border-teal-600 text-teal-800">
           Read Only / Simulation
         </Badge>
       </div>
       <div className="grid lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 bg-[hsl(var(--card))] border-amber-900/30 overflow-hidden">
           <CardHeader className="bg-amber-950/10 border-b border-amber-900/20">
-            <CardTitle className="text-amber-500 font-mono text-sm flex items-center gap-2">
+            <CardTitle className="text-amber-800 font-mono text-sm flex items-center gap-2">
               <Folder className="w-4 h-4" /> root/messages/config
             </CardTitle>
           </CardHeader>
@@ -33,7 +33,7 @@ export function MessagesPanel({ chaosEnabled, setChaosEnabled, subliminalMessage
         <div className="space-y-4">
           <Card className="bg-[hsl(var(--card))] border-teal-900/30">
             <CardHeader>
-              <CardTitle className="text-teal-400 font-mono text-sm flex items-center gap-2">
+              <CardTitle className="text-teal-800 font-mono text-sm flex items-center gap-2">
                 <Zap className="w-4 h-4" /> Chaos Overlay
               </CardTitle>
             </CardHeader>
@@ -52,13 +52,13 @@ export function MessagesPanel({ chaosEnabled, setChaosEnabled, subliminalMessage
           </Card>
           <Card className="bg-[hsl(var(--card))] border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-500 font-mono text-sm">System Simulation</CardTitle>
+              <CardTitle className="text-amber-800 font-mono text-sm">System Simulation</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button className="w-full bg-amber-900/20 border border-amber-700/30 text-amber-500 text-xs py-6 hover:bg-amber-900/40">
+              <Button className="w-full bg-amber-900/20 border border-amber-700/30 text-amber-800 text-xs py-6 hover:bg-amber-900/40">
                 <Zap className="w-4 h-4 mr-2" /> TRIGGER CHAOS FLASH
               </Button>
-              <Button className="w-full bg-teal-900/20 border border-teal-700/30 text-teal-500 text-xs py-6 hover:bg-teal-900/40">
+              <Button className="w-full bg-teal-900/20 border border-teal-700/30 text-teal-800 text-xs py-6 hover:bg-teal-900/40">
                 <Sparkles className="w-4 h-4 mr-2" /> SPAWN MYSTICAL POPUP
               </Button>
             </CardContent>
@@ -73,7 +73,7 @@ export function TerminalPanel() {
   return (
     <Card className="bg-[hsl(var(--card))] border-amber-900/30">
       <CardHeader>
-        <CardTitle className="text-amber-500 font-mono">Available Terminal Commands</CardTitle>
+        <CardTitle className="text-amber-800 font-mono">Available Terminal Commands</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -90,7 +90,7 @@ export function TerminalPanel() {
           ].map((item) => (
             <div key={item.cmd} className="p-3 rounded border border-amber-900/20 bg-black/30">
               <div className="flex items-center gap-2 mb-1">
-                <code className="text-amber-400 text-sm font-bold">{item.cmd}</code>
+                <code className="text-amber-800 text-sm font-bold">{item.cmd}</code>
                 <Badge variant="outline" className="text-[9px] border-border text-muted-foreground">{item.category}</Badge>
               </div>
               <p className="text-muted-foreground text-xs">{item.desc}</p>
@@ -105,23 +105,23 @@ export function TerminalPanel() {
 export function ConfigPanel({ gameState, clues, quests }: { gameState: any; clues: any[]; quests: any[] }) {
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+      <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
         <Settings className="w-5 h-5" /> System Configuration
       </h3>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-amber-500 text-sm">Game State</CardTitle>
+            <CardTitle className="text-amber-800 text-sm">Game State</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-xs text-muted-foreground">
-            <div className="flex justify-between"><span>Dev Mode</span><span className={gameState.devMode ? 'text-teal-400' : 'text-muted-foreground'}>{gameState.devMode ? 'ON' : 'OFF'}</span></div>
-            <div className="flex justify-between"><span>Total Clues</span><span className="text-amber-400">{clues.length}</span></div>
-            <div className="flex justify-between"><span>Total Quests</span><span className="text-amber-400">{quests.length}</span></div>
+            <div className="flex justify-between"><span>Dev Mode</span><span className={gameState.devMode ? 'text-teal-800' : 'text-muted-foreground'}>{gameState.devMode ? 'ON' : 'OFF'}</span></div>
+            <div className="flex justify-between"><span>Total Clues</span><span className="text-amber-800">{clues.length}</span></div>
+            <div className="flex justify-between"><span>Total Quests</span><span className="text-amber-800">{quests.length}</span></div>
           </CardContent>
         </Card>
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-amber-500 text-sm">Database</CardTitle>
+            <CardTitle className="text-amber-800 text-sm">Database</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
             <p>PostgreSQL with Drizzle ORM</p>
@@ -130,7 +130,7 @@ export function ConfigPanel({ gameState, clues, quests }: { gameState: any; clue
         </Card>
         <Card className="bg-[hsl(var(--card))] border-amber-900/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-amber-500 text-sm">API</CardTitle>
+            <CardTitle className="text-amber-800 text-sm">API</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
             <p>Express + TypeScript</p>
@@ -146,12 +146,12 @@ export function CampaignsPanel({ onOpenBuilder }: { onOpenBuilder: (campaignId?:
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2">
+        <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2">
           <Rocket className="w-5 h-5" /> Investigation Campaigns
         </h3>
         <Button
           onClick={() => onOpenBuilder()}
-          className="bg-amber-900/30 text-amber-400 hover:bg-amber-900/50 border border-amber-700/30"
+          className="bg-amber-900/30 text-amber-800 hover:bg-amber-900/50 border border-amber-700/30"
           size="sm"
         >
           <Plus className="w-4 h-4 mr-1" /> New Campaign
@@ -161,7 +161,7 @@ export function CampaignsPanel({ onOpenBuilder }: { onOpenBuilder: (campaignId?:
         {AGENT_CAMPAIGNS.map((campaign) => (
           <Card key={campaign.id} className="bg-[hsl(var(--card))] border-amber-900/30 hover:border-amber-700/50 transition-all cursor-pointer" onClick={() => { onOpenBuilder(campaign.id); }}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
+              <CardTitle className="text-amber-800 text-sm flex items-center gap-2">
                 <Target className="w-4 h-4" /> {campaign.name}
               </CardTitle>
             </CardHeader>

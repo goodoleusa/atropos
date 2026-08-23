@@ -644,10 +644,10 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono w-[95vw] max-w-5xl h-[90vh] flex flex-col p-2 sm:p-4" data-testid="api-playground-dialog">
         <DialogHeader className="shrink-0">
-          <DialogTitle className="flex items-center gap-2 text-amber-500 font-orbitron text-lg sm:text-xl">
+          <DialogTitle className="flex items-center gap-2 text-amber-800 font-orbitron text-lg sm:text-xl">
             <Terminal className="w-5 h-5" />
             API Playground
-            <Badge variant="outline" className="border-teal-600 text-teal-400 text-[10px] ml-2">
+            <Badge variant="outline" className="border-teal-600 text-teal-800 text-[10px] ml-2">
               MODULAR
             </Badge>
           </DialogTitle>
@@ -679,7 +679,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                   <div className="space-y-2">
                     {categories.map(cat => (
                       <div key={cat}>
-                        <h4 className="text-xs text-amber-600 font-bold mb-2 sticky top-0 bg-[hsl(var(--card))] py-1">{cat}</h4>
+                        <h4 className="text-xs text-amber-800 font-bold mb-2 sticky top-0 bg-[hsl(var(--card))] py-1">{cat}</h4>
                         {API_ENDPOINTS.filter(e => e.category === cat).map(endpoint => (
                           <button
                             key={endpoint.path + endpoint.method}
@@ -709,7 +709,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                             </div>
                             <p className="text-[10px] text-muted-foreground mt-1">{endpoint.description}</p>
                             {endpoint.rateLimit && (
-                              <Badge variant="outline" className="text-[8px] border-orange-800 text-orange-400 mt-1">
+                              <Badge variant="outline" className="text-[8px] border-orange-800 text-orange-800 mt-1">
                                 <Clock className="w-2 h-2 mr-1" /> {endpoint.rateLimit}
                               </Badge>
                             )}
@@ -727,7 +727,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <Badge className="bg-amber-900">{selectedEndpoint.method}</Badge>
-                            <span className="text-sm text-amber-400">{selectedEndpoint.path}</span>
+                            <span className="text-sm text-amber-800">{selectedEndpoint.path}</span>
                           </div>
                           <Button
                             size="sm"
@@ -743,7 +743,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                         {selectedEndpoint.params?.map(param => (
                           <div key={param.name} className="mb-2">
                             <label className="text-[10px] text-muted-foreground block mb-1">
-                              {param.name} {param.required && <span className="text-red-400">*</span>}
+                              {param.name} {param.required && <span className="text-red-700">*</span>}
                               <span className="text-muted-foreground ml-2">({param.type})</span>
                             </label>
                             <Input
@@ -797,7 +797,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                             </Button>
                           </div>
                           <ScrollArea className="h-32">
-                            <pre className="text-[10px] text-teal-400 whitespace-pre-wrap">{response}</pre>
+                            <pre className="text-[10px] text-teal-800 whitespace-pre-wrap">{response}</pre>
                           </ScrollArea>
                         </div>
                       )}
@@ -821,24 +821,24 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                     <Card key={quest.id} className={`bg-card/30 border-border ${completedQuests.includes(quest.id) ? 'border-teal-600/50' : ''}`}>
                       <CardHeader className="pb-2">
                         <CardTitle className="text-sm flex items-center justify-between">
-                          <span className="text-amber-400">{quest.title}</span>
+                          <span className="text-amber-800">{quest.title}</span>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline" className={`text-[10px] ${
                               quest.difficulty === 'beginner' ? 'border-green-600 text-green-400' :
                               quest.difficulty === 'intermediate' ? 'border-blue-600 text-blue-400' :
-                              quest.difficulty === 'advanced' ? 'border-orange-600 text-orange-400' :
-                              'border-red-600 text-red-400'
+                              quest.difficulty === 'advanced' ? 'border-orange-600 text-orange-800' :
+                              'border-red-600 text-red-700'
                             }`}>
                               {quest.difficulty}
                             </Badge>
-                            <span className="text-xs text-amber-500">{quest.xp} XP</span>
+                            <span className="text-xs text-amber-800">{quest.xp} XP</span>
                           </div>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="text-xs space-y-2">
                         <p className="text-muted-foreground">{quest.description}</p>
                         <div>
-                          <h5 className="text-[10px] text-amber-600 font-bold mb-1">Objectives:</h5>
+                          <h5 className="text-[10px] text-amber-800 font-bold mb-1">Objectives:</h5>
                           <ul className="space-y-1">
                             {quest.objectives.map((obj, i) => (
                               <li key={i} className="flex items-start gap-2 text-muted-foreground">
@@ -878,7 +878,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                               toast({ title: 'Quest Completed!', description: `+${quest.xp} XP earned` });
                             }
                           }}
-                          className={`w-full mt-2 min-h-[48px] touch-manipulation ${completedQuests.includes(quest.id) ? 'border-teal-600 text-teal-400' : 'border-amber-800 text-amber-400'}`}
+                          className={`w-full mt-2 min-h-[48px] touch-manipulation ${completedQuests.includes(quest.id) ? 'border-teal-600 text-teal-800' : 'border-amber-800 text-amber-800'}`}
                           data-testid={`complete-quest-${quest.id}`}
                         >
                           {completedQuests.includes(quest.id) ? (
@@ -899,8 +899,8 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                 <div className="space-y-4 pr-2">
                   <div className="p-3 bg-amber-900/20 rounded border border-amber-800/50">
                     <div className="flex items-center gap-2 mb-2">
-                      <AlertTriangle className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm text-amber-400 font-bold">Educational Purpose Only</span>
+                      <AlertTriangle className="w-4 h-4 text-amber-800" />
+                      <span className="text-sm text-amber-800 font-bold">Educational Purpose Only</span>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       These exercises teach QR security concepts. Real-world C2 techniques like QuickResponseC2 
@@ -912,18 +912,18 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                     <Card key={exercise.id} className="bg-card/30 border-border">
                       <CardHeader className="pb-2">
                         <CardTitle className="text-sm flex items-center gap-2">
-                          <QrCode className="w-4 h-4 text-amber-500" />
-                          <span className="text-amber-400">{exercise.title}</span>
+                          <QrCode className="w-4 h-4 text-amber-800" />
+                          <span className="text-amber-800">{exercise.title}</span>
                         </CardTitle>
                         <p className="text-[10px] text-muted-foreground">{exercise.concept}</p>
                       </CardHeader>
                       <CardContent className="text-xs space-y-3">
                         <div>
-                          <h5 className="text-[10px] text-amber-600 font-bold mb-1">Scenario:</h5>
+                          <h5 className="text-[10px] text-amber-800 font-bold mb-1">Scenario:</h5>
                           <p className="text-muted-foreground">{exercise.scenario}</p>
                         </div>
                         <div>
-                          <h5 className="text-[10px] text-amber-600 font-bold mb-1">Steps:</h5>
+                          <h5 className="text-[10px] text-amber-800 font-bold mb-1">Steps:</h5>
                           <ol className="space-y-1 text-muted-foreground">
                             {exercise.steps.map((step, i) => (
                               <li key={i}>{step}</li>
@@ -931,11 +931,11 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                           </ol>
                         </div>
                         <div className="p-2 bg-teal-900/20 rounded border border-teal-800/50">
-                          <h5 className="text-[10px] text-teal-400 font-bold mb-1">Real-World Example:</h5>
+                          <h5 className="text-[10px] text-teal-800 font-bold mb-1">Real-World Example:</h5>
                           <p className="text-muted-foreground">{exercise.realWorldExample}</p>
                         </div>
                         <div className="p-2 bg-red-900/20 rounded border border-red-800/50">
-                          <h5 className="text-[10px] text-red-400 font-bold mb-1">Security Implication:</h5>
+                          <h5 className="text-[10px] text-red-700 font-bold mb-1">Security Implication:</h5>
                           <p className="text-muted-foreground">{exercise.securityImplication}</p>
                         </div>
                       </CardContent>
@@ -951,10 +951,10 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                   <div className="p-3 bg-card/50 rounded border border-amber-900/30 mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Key className="w-4 h-4 text-amber-500" />
-                        <span className="text-sm text-amber-400 font-bold">Cryptographic Session Auth</span>
+                        <Key className="w-4 h-4 text-amber-800" />
+                        <span className="text-sm text-amber-800 font-bold">Cryptographic Session Auth</span>
                       </div>
-                      <Badge variant="outline" className="border-purple-600 text-purple-400 text-[10px]">
+                      <Badge variant="outline" className="border-purple-600 text-purple-700 text-[10px]">
                         PLACEHOLDER MODULE
                       </Badge>
                     </div>
@@ -965,7 +965,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                       size="sm"
                       variant="outline"
                       onClick={() => copyToClipboard(CRYPTO_AUTH_DOCS, 'crypto')}
-                      className="border-amber-800 text-amber-400"
+                      className="border-amber-800 text-amber-800"
                     >
                       {copiedId === 'crypto' ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
                       Copy Docs
@@ -986,10 +986,10 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                   <div className="p-3 bg-card/50 rounded border border-amber-900/30 mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-amber-500" />
-                        <span className="text-sm text-amber-400 font-bold">Hardened SSH Cyber Range</span>
+                        <Shield className="w-4 h-4 text-amber-800" />
+                        <span className="text-sm text-amber-800 font-bold">Hardened SSH Cyber Range</span>
                       </div>
-                      <Badge variant="outline" className="border-purple-600 text-purple-400 text-[10px]">
+                      <Badge variant="outline" className="border-purple-600 text-purple-700 text-[10px]">
                         PLACEHOLDER MODULE
                       </Badge>
                     </div>
@@ -1001,7 +1001,7 @@ export function ApiPlayground({ open, onOpenChange }: ApiPlaygroundProps) {
                       size="sm"
                       variant="outline"
                       onClick={() => copyToClipboard(SSH_HARDENING_DOCS, 'ssh')}
-                      className="border-amber-800 text-amber-400"
+                      className="border-amber-800 text-amber-800"
                     >
                       {copiedId === 'ssh' ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
                       Copy Pseudocode

@@ -33,7 +33,7 @@ export default function BuilderPreview({ campaign, node, onSelectNode }: Builder
               const t = campaign.nodes.find(n => n.title.toLowerCase() === title.toLowerCase());
               if (t) onSelectNode(t.id);
             }}
-            className="text-amber-500 font-mono font-bold hover:underline"
+            className="text-amber-800 font-mono font-bold hover:underline"
           >
             {title}
           </button>
@@ -65,7 +65,7 @@ export default function BuilderPreview({ campaign, node, onSelectNode }: Builder
         </div>
         {node.metadata?.learningGoals && node.metadata.learningGoals.length > 0 && (
           <div className="mt-8 p-4 bg-teal-950/20 border border-teal-900/30 rounded-lg">
-            <h3 className="text-xs font-bold text-teal-400 uppercase tracking-wider mb-2">Learning Goals</h3>
+            <h3 className="text-xs font-bold text-teal-800 uppercase tracking-wider mb-2">Learning Goals</h3>
             <ul className="space-y-1">
               {node.metadata.learningGoals.map((g, i) => (
                 <li key={i} className="text-sm text-muted-foreground">· {g}</li>

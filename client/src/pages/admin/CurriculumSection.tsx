@@ -223,9 +223,9 @@ export function CurriculumSection() {
   const difficultyColor = (d: string) => {
     switch (d) {
       case 'beginner': return 'bg-emerald-900/30 text-emerald-400 border-emerald-800/40';
-      case 'intermediate': return 'bg-amber-900/30 text-amber-400 border-amber-800/40';
-      case 'advanced': return 'bg-orange-900/30 text-orange-400 border-orange-800/40';
-      case 'expert': return 'bg-red-900/30 text-red-400 border-red-800/40';
+      case 'intermediate': return 'bg-amber-900/30 text-amber-800 border-amber-800/40';
+      case 'advanced': return 'bg-orange-900/30 text-orange-800 border-orange-800/40';
+      case 'expert': return 'bg-red-900/30 text-red-700 border-red-800/40';
       default: return 'bg-border text-muted-foreground';
     }
   };
@@ -233,7 +233,7 @@ export function CurriculumSection() {
   if (statsLoading || tracksLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw className="w-6 h-6 text-amber-500 animate-spin" />
+        <RefreshCw className="w-6 h-6 text-amber-800 animate-spin" />
       </div>
     );
   }
@@ -242,7 +242,7 @@ export function CurriculumSection() {
     <div className="space-y-6 pb-12">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h3 className="text-lg font-orbitron text-amber-500 flex items-center gap-2" data-testid="curriculum-title">
+          <h3 className="text-lg font-orbitron text-amber-800 flex items-center gap-2" data-testid="curriculum-title">
             <GraduationCap className="w-5 h-5" /> Curriculum Dashboard
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
@@ -255,7 +255,7 @@ export function CurriculumSection() {
             variant="outline"
             onClick={() => seedMutation.mutate()}
             disabled={seedMutation.isPending}
-            className="border-amber-800/50 text-amber-400 hover:bg-amber-900/30"
+            className="border-amber-800/50 text-amber-800 hover:bg-amber-900/30"
             data-testid="btn-seed-curriculum"
           >
             <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${seedMutation.isPending ? 'animate-spin' : ''}`} />
@@ -267,12 +267,12 @@ export function CurriculumSection() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" data-testid="curriculum-stats">
           {[
-            { label: 'Total Tracks', value: stats.totalTracks, icon: Layers, color: 'text-amber-500' },
-            { label: 'AI Tracks', value: stats.aiTracks, icon: Brain, color: 'text-teal-500' },
+            { label: 'Total Tracks', value: stats.totalTracks, icon: Layers, color: 'text-amber-800' },
+            { label: 'AI Tracks', value: stats.aiTracks, icon: Brain, color: 'text-teal-800' },
             { label: 'OSINT Tracks', value: stats.osintTracks, icon: Globe, color: 'text-cyan-500' },
-            { label: 'Missions', value: stats.totalMissions, icon: Target, color: 'text-amber-400' },
+            { label: 'Missions', value: stats.totalMissions, icon: Target, color: 'text-amber-800' },
             { label: 'Exercises', value: stats.totalExercises, icon: Zap, color: 'text-emerald-500' },
-            { label: 'Objectives', value: stats.totalObjectives, icon: BookOpen, color: 'text-purple-400' },
+            { label: 'Objectives', value: stats.totalObjectives, icon: BookOpen, color: 'text-purple-700' },
           ].map(s => (
             <Card key={s.label} className="bg-[hsl(var(--card))] border-border/50">
               <CardContent className="p-3 text-center">
@@ -288,7 +288,7 @@ export function CurriculumSection() {
       <Card className={`bg-[hsl(var(--card))] transition-colors ${workflowGuideOpen ? 'border-teal-800/40' : 'border-border/40'}`} data-testid="workflow-guide-card">
         <CardHeader className="p-3 pb-0 cursor-pointer" onClick={() => setWorkflowGuideOpen(o => !o)}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm text-teal-500 flex items-center gap-2">
+            <CardTitle className="text-sm text-teal-800 flex items-center gap-2">
               <Wrench className="w-4 h-4" /> Content Workflow Guide
             </CardTitle>
             <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-muted-foreground" data-testid="toggle-workflow-guide">
@@ -299,9 +299,9 @@ export function CurriculumSection() {
         {workflowGuideOpen && (
           <CardContent className="p-3 pt-2 space-y-2">
             {[
-              { icon: <Sparkles className="w-3.5 h-3.5 text-amber-400" />, title: 'Spark to Campaign', desc: 'Idea → NEXUS → Recommendation → Content Generator → Publish' },
-              { icon: <Target className="w-3.5 h-3.5 text-teal-400" />, title: 'Gap-Fill', desc: 'Stats → Identify gap → Content Generator → Test → Iterate' },
-              { icon: <Zap className="w-3.5 h-3.5 text-purple-400" />, title: 'Quick Deploy', desc: 'Collectibles → Template → Zones → Push' },
+              { icon: <Sparkles className="w-3.5 h-3.5 text-amber-800" />, title: 'Spark to Campaign', desc: 'Idea → NEXUS → Recommendation → Content Generator → Publish' },
+              { icon: <Target className="w-3.5 h-3.5 text-teal-800" />, title: 'Gap-Fill', desc: 'Stats → Identify gap → Content Generator → Test → Iterate' },
+              { icon: <Zap className="w-3.5 h-3.5 text-purple-700" />, title: 'Quick Deploy', desc: 'Collectibles → Template → Zones → Push' },
               { icon: <GraduationCap className="w-3.5 h-3.5 text-amber-300" />, title: 'Deep Dive Track', desc: 'Plan → Seed → Missions → Exercises → Styles → Activate' },
             ].map(wf => (
               <div key={wf.title} className="flex items-center gap-2 p-2 bg-card/50 border border-border/30 rounded" data-testid={`workflow-${wf.title.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -313,7 +313,7 @@ export function CurriculumSection() {
               </div>
             ))}
             <p className="text-[9px] text-muted-foreground pt-1">
-              Full docs in <a href="/wiki" className="text-teal-500 hover:underline">Wiki</a>
+              Full docs in <a href="/wiki" className="text-teal-800 hover:underline">Wiki</a>
             </p>
           </CardContent>
         )}
@@ -322,7 +322,7 @@ export function CurriculumSection() {
       <Card className={`bg-[hsl(var(--card))] transition-colors ${genOpen ? 'border-amber-800/40' : 'border-border/40'}`} data-testid="content-generator-card">
         <CardHeader className="p-3 pb-0 cursor-pointer" onClick={() => setGenOpen(o => !o)}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm text-amber-500 flex items-center gap-2">
+            <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
               <Sparkles className="w-4 h-4" /> Content Generator
             </CardTitle>
             <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-muted-foreground" data-testid="toggle-content-generator">
@@ -334,7 +334,7 @@ export function CurriculumSection() {
         {genOpen && (
           <CardContent className="p-3 pt-2 space-y-4">
             <div>
-              <span className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Source Selection</span>
+              <span className="text-[10px] text-amber-800 uppercase font-bold tracking-wider">Source Selection</span>
               {recs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                   {recs.map((rec: any) => {
@@ -348,7 +348,7 @@ export function CurriculumSection() {
                       >
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-[11px] font-medium text-white truncate">{rec.title}</span>
-                          {rec.priority && <Badge className={`text-[7px] border ${rec.priority === 'critical' ? 'bg-red-900/30 text-red-400 border-red-800/40' : rec.priority === 'high' ? 'bg-orange-900/30 text-orange-400 border-orange-800/40' : 'bg-border text-muted-foreground border-border'}`}>{rec.priority}</Badge>}
+                          {rec.priority && <Badge className={`text-[7px] border ${rec.priority === 'critical' ? 'bg-red-900/30 text-red-700 border-red-800/40' : rec.priority === 'high' ? 'bg-orange-900/30 text-orange-800 border-orange-800/40' : 'bg-border text-muted-foreground border-border'}`}>{rec.priority}</Badge>}
                           {rec.category && <Badge variant="outline" className="text-[7px] border-border text-muted-foreground">{rec.category}</Badge>}
                         </div>
                         {rec.painPointsAddressed?.length > 0 && (
@@ -374,7 +374,7 @@ export function CurriculumSection() {
             </div>
 
             <div>
-              <span className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Generation Config</span>
+              <span className="text-[10px] text-amber-800 uppercase font-bold tracking-wider">Generation Config</span>
               <div className="space-y-3 mt-2">
                 <div>
                   <Label className="text-[9px] text-muted-foreground uppercase mb-1 block">Content Type</Label>
@@ -424,7 +424,7 @@ export function CurriculumSection() {
                     ))}
                   </div>
                 </div>
-                {genError && <p className="text-xs text-red-400">{genError}</p>}
+                {genError && <p className="text-xs text-red-700">{genError}</p>}
                 <Button
                   onClick={() => generateDraftMutation.mutate({
                     recIds: genSelectedRecs,
@@ -446,7 +446,7 @@ export function CurriculumSection() {
 
             {genDraft && (
               <div className="space-y-3 border-t border-amber-900/30 pt-3">
-                <span className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Draft Review & Edit</span>
+                <span className="text-[10px] text-amber-800 uppercase font-bold tracking-wider">Draft Review & Edit</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div>
                     <Label className="text-[9px] text-muted-foreground uppercase">Mission Name</Label>
@@ -488,7 +488,7 @@ export function CurriculumSection() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-[9px] text-muted-foreground uppercase">Objectives</Label>
-                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: [...(d.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-400 hover:text-amber-300" data-testid="gen-add-objective">
+                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: [...(d.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-300" data-testid="gen-add-objective">
                       <Plus className="w-3 h-3 mr-1" /> Add
                     </Button>
                   </div>
@@ -501,7 +501,7 @@ export function CurriculumSection() {
                           className="h-7 text-xs bg-black/50 border-amber-900/30 flex-1"
                           data-testid={`input-gen-objective-${i}`}
                         />
-                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: d.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-400 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-objective-${i}`}>
+                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, objectives: d.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-objective-${i}`}>
                           <X className="w-3 h-3" />
                         </Button>
                       </div>
@@ -512,7 +512,7 @@ export function CurriculumSection() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-[9px] text-muted-foreground uppercase">Key Takeaways</Label>
-                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: [...(d.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-amber-400 hover:text-amber-300" data-testid="gen-add-takeaway">
+                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: [...(d.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-300" data-testid="gen-add-takeaway">
                       <Plus className="w-3 h-3 mr-1" /> Add
                     </Button>
                   </div>
@@ -525,7 +525,7 @@ export function CurriculumSection() {
                           className="h-7 text-xs bg-black/50 border-amber-900/30 flex-1"
                           data-testid={`input-gen-takeaway-${i}`}
                         />
-                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: d.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-400 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-takeaway-${i}`}>
+                        <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, keyTakeaways: d.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300 shrink-0 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-takeaway-${i}`}>
                           <X className="w-3 h-3" />
                         </Button>
                       </div>
@@ -535,8 +535,8 @@ export function CurriculumSection() {
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <Label className="text-[9px] text-teal-500 uppercase font-bold">Exercises</Label>
-                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: [...(d.exercises || []), { id: "", title: "", type: "observation", instructions: "", hints: [], successCriteria: [] }] }))} className="h-7 text-[10px] text-teal-400 hover:text-teal-300" data-testid="gen-add-exercise">
+                    <Label className="text-[9px] text-teal-800 uppercase font-bold">Exercises</Label>
+                    <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: [...(d.exercises || []), { id: "", title: "", type: "observation", instructions: "", hints: [], successCriteria: [] }] }))} className="h-7 text-[10px] text-teal-800 hover:text-teal-300" data-testid="gen-add-exercise">
                       <Plus className="w-3 h-3 mr-1" /> Add Exercise
                     </Button>
                   </div>
@@ -544,8 +544,8 @@ export function CurriculumSection() {
                     {(genDraft.exercises || []).map((ex: any, ei: number) => (
                       <div key={ei} className="rounded border border-border/40 bg-card/30 p-2 space-y-1.5" data-testid={`gen-exercise-item-${ei}`}>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[9px] text-teal-500 uppercase font-bold">Exercise {ei + 1}</span>
-                          <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: d.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-400 hover:text-red-300 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-exercise-${ei}`}>
+                          <span className="text-[9px] text-teal-800 uppercase font-bold">Exercise {ei + 1}</span>
+                          <Button size="sm" variant="ghost" onClick={() => setGenDraft((d: any) => ({ ...d, exercises: d.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300 min-h-[44px] min-w-[44px]" data-testid={`gen-delete-exercise-${ei}`}>
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
@@ -586,7 +586,7 @@ export function CurriculumSection() {
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Teaching Adaptations</span>
+                  <span className="text-[10px] text-amber-800 uppercase font-bold tracking-wider">Teaching Adaptations</span>
                   <div className="space-y-2 mt-2">
                     {["experiential", "visual", "analytical", "social", "pragmatic"].map(style => (
                       <div key={style}>
@@ -624,7 +624,7 @@ export function CurriculumSection() {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
-                  <Button variant="ghost" onClick={() => setGenDraft(null)} className="text-red-400 hover:text-red-300 min-h-[44px]" data-testid="btn-discard-draft">
+                  <Button variant="ghost" onClick={() => setGenDraft(null)} className="text-red-700 hover:text-red-300 min-h-[44px]" data-testid="btn-discard-draft">
                     <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Discard Draft
                   </Button>
                   <div className="flex flex-col items-end gap-1">
@@ -649,15 +649,15 @@ export function CurriculumSection() {
       {tracks.length === 0 && (
         <Card className="bg-amber-950/20 border-amber-900/30">
           <CardContent className="p-6 text-center">
-            <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-3" />
-            <p className="text-sm text-amber-400 font-medium">No curriculum in database</p>
+            <AlertTriangle className="w-8 h-8 text-amber-800 mx-auto mb-3" />
+            <p className="text-sm text-amber-800 font-medium">No curriculum in database</p>
             <p className="text-xs text-muted-foreground mt-1">Click "Seed from Config" to populate from the static curriculum definition.</p>
           </CardContent>
         </Card>
       )}
 
       {[
-        { label: 'AI Mastery', trackList: aiTracks, catColor: 'text-teal-500', borderColor: 'border-teal-900/40' },
+        { label: 'AI Mastery', trackList: aiTracks, catColor: 'text-teal-800', borderColor: 'border-teal-900/40' },
         { label: 'Cyber OSINT', trackList: osintTracks, catColor: 'text-cyan-500', borderColor: 'border-cyan-900/40' },
       ].map(section => section.trackList.length > 0 && (
         <div key={section.label} className="space-y-3">
@@ -681,7 +681,7 @@ export function CurriculumSection() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <CardTitle className="text-sm text-white truncate">{track.name}</CardTitle>
                           <Badge variant="outline" className="text-[8px] border-border text-muted-foreground">{track.trackId}</Badge>
-                          {!track.isActive && <Badge className="text-[8px] bg-red-900/30 text-red-400 border-0">Disabled</Badge>}
+                          {!track.isActive && <Badge className="text-[8px] bg-red-900/30 text-red-700 border-0">Disabled</Badge>}
                         </div>
                         <div className="flex items-center gap-3 mt-0.5 text-[10px] text-muted-foreground">
                           <span>{track.missions.length} missions</span>
@@ -771,7 +771,7 @@ export function CurriculumSection() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className={`h-9 w-9 p-0 min-h-[44px] min-w-[44px] shrink-0 ${isMissionEditing ? 'text-amber-400' : 'text-muted-foreground hover:text-amber-400'}`}
+                                className={`h-9 w-9 p-0 min-h-[44px] min-w-[44px] shrink-0 ${isMissionEditing ? 'text-amber-800' : 'text-muted-foreground hover:text-amber-400'}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (isMissionEditing) {
@@ -795,11 +795,11 @@ export function CurriculumSection() {
                                 {mission.objectives?.length > 0 && (
                                   <div>
                                     <div className="flex items-center justify-between mb-1.5">
-                                      <span className="text-[9px] text-amber-600 uppercase font-bold tracking-wider">Objectives ({mission.objectives.length})</span>
+                                      <span className="text-[9px] text-amber-800 uppercase font-bold tracking-wider">Objectives ({mission.objectives.length})</span>
                                       <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="h-7 text-[10px] text-amber-400 hover:text-amber-300"
+                                        className="h-7 text-[10px] text-amber-800 hover:text-amber-300"
                                         onClick={(e) => { e.stopPropagation(); startEditMission(track.trackId, mission, mi); setExpandedMission(mKey); }}
                                         data-testid={`quick-edit-objectives-${mission.id}`}
                                       >
@@ -893,8 +893,8 @@ export function CurriculumSection() {
 
                                 <div>
                                   <div className="flex items-center justify-between mb-1">
-                                    <label className="text-[9px] text-amber-500 uppercase font-bold">Objectives ({(missionEditForm.objectives || []).length})</label>
-                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: [...(f.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-400 hover:text-amber-300" data-testid="add-objective">
+                                    <label className="text-[9px] text-amber-800 uppercase font-bold">Objectives ({(missionEditForm.objectives || []).length})</label>
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: [...(f.objectives || []), ""] }))} className="h-7 text-[10px] text-amber-800 hover:text-amber-300" data-testid="add-objective">
                                       <Plus className="w-3 h-3 mr-1" /> Add
                                     </Button>
                                   </div>
@@ -915,7 +915,7 @@ export function CurriculumSection() {
                                           placeholder="Learning objective..."
                                           data-testid={`input-objective-${i}`}
                                         />
-                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: f.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-400 hover:text-red-300 shrink-0" data-testid={`delete-objective-${i}`}>
+                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, objectives: f.objectives.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-700 hover:text-red-300 shrink-0" data-testid={`delete-objective-${i}`}>
                                           <X className="w-3 h-3" />
                                         </Button>
                                       </div>
@@ -950,7 +950,7 @@ export function CurriculumSection() {
                                           placeholder="Key takeaway..."
                                           data-testid={`input-takeaway-${i}`}
                                         />
-                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: f.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-400 hover:text-red-300 shrink-0" data-testid={`delete-takeaway-${i}`}>
+                                        <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: f.keyTakeaways.filter((_: any, idx: number) => idx !== i) }))} className="h-8 w-8 p-0 text-red-700 hover:text-red-300 shrink-0" data-testid={`delete-takeaway-${i}`}>
                                           <X className="w-3 h-3" />
                                         </Button>
                                       </div>
@@ -963,8 +963,8 @@ export function CurriculumSection() {
 
                                 <div>
                                   <div className="flex items-center justify-between mb-1">
-                                    <label className="text-[9px] text-teal-500 uppercase font-bold">Exercises ({(missionEditForm.exercises || []).length})</label>
-                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: [...(f.exercises || []), { title: "", type: "", instructions: "", hints: [], successCriteria: "" }] }))} className="h-7 text-[10px] text-teal-400 hover:text-teal-300" data-testid="add-exercise">
+                                    <label className="text-[9px] text-teal-800 uppercase font-bold">Exercises ({(missionEditForm.exercises || []).length})</label>
+                                    <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: [...(f.exercises || []), { title: "", type: "", instructions: "", hints: [], successCriteria: "" }] }))} className="h-7 text-[10px] text-teal-800 hover:text-teal-300" data-testid="add-exercise">
                                       <Plus className="w-3 h-3 mr-1" /> Add
                                     </Button>
                                   </div>
@@ -972,8 +972,8 @@ export function CurriculumSection() {
                                     {(missionEditForm.exercises || []).map((ex: any, ei: number) => (
                                       <div key={ei} className="rounded border border-border/40 bg-card/30 p-2.5 space-y-1.5" data-testid={`exercise-item-${ei}`}>
                                         <div className="flex items-center justify-between gap-2">
-                                          <span className="text-[9px] text-teal-500 uppercase font-bold">Exercise {ei + 1}</span>
-                                          <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: f.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-400 hover:text-red-300" data-testid={`delete-exercise-${ei}`}>
+                                          <span className="text-[9px] text-teal-800 uppercase font-bold">Exercise {ei + 1}</span>
+                                          <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, exercises: f.exercises.filter((_: any, idx: number) => idx !== ei) }))} className="h-7 w-7 p-0 text-red-700 hover:text-red-300" data-testid={`delete-exercise-${ei}`}>
                                             <Trash2 className="w-3 h-3" />
                                           </Button>
                                         </div>

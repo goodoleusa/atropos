@@ -68,8 +68,8 @@ const MODELS = {
 };
 
 const TIER_COLORS: Record<string, { header: string; item: string; tag: string }> = {
-  premium: { header: 'text-red-400', item: 'text-red-400', tag: '💎' },
-  budget:  { header: 'text-amber-400', item: 'text-amber-400', tag: '⚡' },
+  premium: { header: 'text-red-700', item: 'text-red-700', tag: '💎' },
+  budget:  { header: 'text-amber-800', item: 'text-amber-800', tag: '⚡' },
   free:    { header: 'text-emerald-400', item: 'text-emerald-400', tag: '' },
 };
 
@@ -954,11 +954,11 @@ ${learningProfile}`;
       <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono w-[95vw] max-w-2xl h-[90vh] md:h-[80vh] flex flex-col p-3 md:p-6">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-amber-600 font-orbitron flex items-center gap-2 text-sm md:text-base">
+            <DialogTitle className="text-amber-800 font-orbitron flex items-center gap-2 text-sm md:text-base">
               <Bot className="w-4 h-4 md:w-5 md:h-5" />
               NEXUS AGENT
               {activeCampaign && (
-                <span className="text-xs text-teal-400 ml-2 hidden md:inline">
+                <span className="text-xs text-teal-800 ml-2 hidden md:inline">
                   [{activeCampaign.name}]
                 </span>
               )}
@@ -1000,7 +1000,7 @@ ${learningProfile}`;
                   className="text-muted-foreground hover:text-purple-500 h-7 px-1"
                   data-testid="export-report"
                 >
-                  <Save className="w-3.5 h-3.5 text-purple-500" />
+                  <Save className="w-3.5 h-3.5 text-purple-700" />
                   <span className="text-[9px] ml-0.5 hidden md:inline">Report</span>
                 </Button>
                 <div className="w-px h-4 bg-amber-900/20 mx-1" />
@@ -1010,7 +1010,7 @@ ${learningProfile}`;
                   onClick={compressContext}
                   disabled={isCompressing || messages.length < 3}
                   title={promptConfig.compressedContext ? 'Re-compress context' : 'Compress context to save memory'}
-                  className={`h-7 px-1 ${promptConfig.compressedContext ? 'text-teal-500' : 'text-muted-foreground hover:text-teal-500'}`}
+                  className={`h-7 px-1 ${promptConfig.compressedContext ? 'text-teal-800' : 'text-muted-foreground hover:text-teal-500'}`}
                   data-testid="compress-context-btn"
                 >
                   {isCompressing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
@@ -1032,7 +1032,7 @@ ${learningProfile}`;
           {/* Model Selector - mobile optimized */}
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-500 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
+              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-800 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50 max-h-72">
@@ -1062,7 +1062,7 @@ ${learningProfile}`;
               variant="outline"
               size="sm"
               onClick={() => { setShowMissionBriefing(!showMissionBriefing); if (!showMissionBriefing) setShowPromptStudio(false); }}
-              className={`h-7 px-2 text-xs border-amber-900/30 ${showMissionBriefing ? 'bg-teal-900/30 text-teal-400 border-teal-900/30' : 'text-muted-foreground'}`}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showMissionBriefing ? 'bg-teal-900/30 text-teal-800 border-teal-900/30' : 'text-muted-foreground'}`}
               data-testid="toggle-mission-briefing"
             >
               <GraduationCap className="w-3 h-3 mr-1" />
@@ -1072,7 +1072,7 @@ ${learningProfile}`;
               variant="outline"
               size="sm"
               onClick={() => { setShowPromptStudio(!showPromptStudio); if (!showPromptStudio) setShowMissionBriefing(false); }}
-              className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-400' : 'text-muted-foreground'}`}
+              className={`h-7 px-2 text-xs border-amber-900/30 ${showPromptStudio ? 'bg-amber-900/30 text-amber-800' : 'text-muted-foreground'}`}
               data-testid="toggle-prompt-studio"
             >
               <Settings2 className="w-3 h-3 mr-1" />
@@ -1109,22 +1109,22 @@ ${learningProfile}`;
         {/* Context Memory Bar */}
         {messages.length > 0 && (
           <div className="flex-shrink-0 flex items-center gap-2 px-2 py-1 bg-card/50 border-b border-border/30" data-testid="memory-status-bar">
-            <Zap className={`w-3 h-3 ${promptConfig.compressedContext ? 'text-teal-400' : 'text-muted-foreground'}`} />
+            <Zap className={`w-3 h-3 ${promptConfig.compressedContext ? 'text-teal-800' : 'text-muted-foreground'}`} />
             <span className="text-[9px] text-muted-foreground">
               {messages.length} msgs · ~{estimateTokens(messages.map(m => m.content).join(' ')).toLocaleString()} tokens
             </span>
             {promptConfig.compressedContext && (
-              <Badge variant="outline" className="text-[7px] border-teal-900/30 text-teal-500 px-1 py-0 h-3.5" data-testid="compressed-badge">
+              <Badge variant="outline" className="text-[7px] border-teal-900/30 text-teal-800 px-1 py-0 h-3.5" data-testid="compressed-badge">
                 COMPRESSED
               </Badge>
             )}
             {isCompressing && (
-              <Badge className="text-[7px] bg-amber-500/20 text-amber-400 border-amber-500/30 px-1 py-0 h-3.5 animate-pulse">
+              <Badge className="text-[7px] bg-amber-500/20 text-amber-800 border-amber-500/30 px-1 py-0 h-3.5 animate-pulse">
                 COMPRESSING...
               </Badge>
             )}
             {missionBusSummary && missionBusSummary.recentFindings.length > 0 && (
-              <Badge variant="outline" className="text-[7px] border-amber-900/30 text-amber-500 px-1 py-0 h-3.5 ml-auto" data-testid="bus-findings-badge">
+              <Badge variant="outline" className="text-[7px] border-amber-900/30 text-amber-800 px-1 py-0 h-3.5 ml-auto" data-testid="bus-findings-badge">
                 {missionBusSummary.recentFindings.length} bus findings
               </Badge>
             )}
@@ -1144,7 +1144,7 @@ ${learningProfile}`;
             <div className="flex-shrink-0 bg-teal-950/40 border-b border-teal-900/20 px-2 py-1 md:px-3 md:py-1" data-testid="mission-status-bar">
               <div className="flex items-center gap-1.5 min-h-[24px] md:min-h-[26px]">
                 <span className="text-xs">{mission.icon}</span>
-                <span className="text-[9px] md:text-[10px] font-medium text-teal-400 truncate max-w-[80px] md:max-w-[160px]">{mission.name}</span>
+                <span className="text-[9px] md:text-[10px] font-medium text-teal-800 truncate max-w-[80px] md:max-w-[160px]">{mission.name}</span>
                 <span className="text-[8px] md:text-[9px] text-muted-foreground">·</span>
                 {exercise ? (
                   <span className="text-[8px] md:text-[9px] text-muted-foreground truncate max-w-[100px] md:max-w-[200px]">
@@ -1208,8 +1208,8 @@ ${learningProfile}`;
               <div className="space-y-4">
                 {/* Module Header */}
                 <div className="text-center py-2">
-                  <Rocket className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 text-teal-500 opacity-70" />
-                  <p className="text-sm md:text-base text-amber-500 font-bold">Choose an Agent Module</p>
+                  <Rocket className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 text-teal-800 opacity-70" />
+                  <p className="text-sm md:text-base text-amber-800 font-bold">Choose an Agent Module</p>
                   <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Select a skill module or start a freeform session</p>
                 </div>
 
@@ -1225,7 +1225,7 @@ ${learningProfile}`;
                       <div className="flex items-start gap-2">
                         <span className="text-xl md:text-2xl">{campaign.icon}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-amber-500 font-bold text-xs md:text-sm truncate group-hover:text-amber-400">
+                          <p className="text-amber-800 font-bold text-xs md:text-sm truncate group-hover:text-amber-400">
                             {campaign.name}
                           </p>
                           <p className="text-muted-foreground text-[10px] md:text-xs line-clamp-2 mt-0.5">
@@ -1257,8 +1257,8 @@ ${learningProfile}`;
                     className="w-full p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg hover:bg-amber-900/30 transition-all text-center"
                     data-testid="freeform-session"
                   >
-                    <Terminal className="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-amber-600" />
-                    <p className="text-amber-500 font-bold text-xs md:text-sm">Freeform Session</p>
+                    <Terminal className="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-amber-800" />
+                    <p className="text-amber-800 font-bold text-xs md:text-sm">Freeform Session</p>
                     <p className="text-muted-foreground text-[10px] md:text-xs">Start without a module template</p>
                   </button>
                 </div>
@@ -1279,7 +1279,7 @@ ${learningProfile}`;
                       variant="outline"
                       size="sm"
                       onClick={() => setInput(action.payload)}
-                      className="border-amber-900/30 text-amber-600 text-[10px] md:text-xs h-6 md:h-7 px-2"
+                      className="border-amber-900/30 text-amber-800 text-[10px] md:text-xs h-6 md:h-7 px-2"
                     >
                       {action.label}
                     </Button>
@@ -1310,12 +1310,12 @@ ${learningProfile}`;
                 <div
                   className={`max-w-[80%] rounded-lg px-4 py-2 ${
                     msg.role === 'user'
-                      ? 'bg-amber-900/30 text-amber-400'
+                      ? 'bg-amber-900/30 text-amber-800'
                       : 'bg-black/50 border border-amber-900/20 text-foreground'
                   }`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="flex items-center gap-1 text-amber-600 text-xs mb-1">
+                    <div className="flex items-center gap-1 text-amber-800 text-xs mb-1">
                       <Bot className="w-3 h-3" /> NEXUS
                     </div>
                   )}
@@ -1336,7 +1336,7 @@ ${learningProfile}`;
                   {/* Atropos Scan Suggestions */}
                   {msg.scanSuggestions && msg.scanSuggestions.length > 0 && (
                     <div className="mt-3 p-3 bg-orange-900/20 border border-orange-900/50 rounded-lg">
-                      <div className="text-xs text-orange-400 mb-2 flex items-center gap-1">
+                      <div className="text-xs text-orange-800 mb-2 flex items-center gap-1">
                         <Zap className="w-3 h-3" />
                         <span>Atropos Scan Suggestions</span>
                       </div>
@@ -1371,7 +1371,7 @@ ${learningProfile}`;
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-black/50 border border-amber-900/20 rounded-lg px-4 py-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-800" />
                 </div>
               </div>
             )}
@@ -1391,7 +1391,7 @@ ${learningProfile}`;
                 }
               }}
               placeholder="Enter command, payload, or question..."
-              className="bg-black/50 border-amber-900/30 text-amber-500 font-mono resize-none h-16 md:h-20 text-xs md:text-sm"
+              className="bg-black/50 border-amber-900/30 text-amber-800 font-mono resize-none h-16 md:h-20 text-xs md:text-sm"
             />
             <Button
               onClick={sendMessage}
@@ -1422,14 +1422,14 @@ ${learningProfile}`;
     >
       <DialogContent className="bg-[hsl(var(--card))] border-amber-900/50 text-foreground font-mono max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-amber-500 font-orbitron text-sm">Module Target Setup</DialogTitle>
+          <DialogTitle className="text-amber-800 font-orbitron text-sm">Module Target Setup</DialogTitle>
         </DialogHeader>
         {pendingCampaign ? (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground">Agent Module</p>
-                <p className="text-sm text-amber-400 font-bold">{pendingCampaign.name}</p>
+                <p className="text-sm text-amber-800 font-bold">{pendingCampaign.name}</p>
               </div>
               <Button
                 size="sm"
@@ -1440,7 +1440,7 @@ ${learningProfile}`;
                     setUseDummyTargets(true);
                   }
                 }}
-                className="border-amber-700 text-amber-400"
+                className="border-amber-700 text-amber-800"
               >
                 Use Dummy Data
               </Button>
@@ -1453,7 +1453,7 @@ ${learningProfile}`;
                     <Label className="text-[10px] text-muted-foreground uppercase">
                       {field.label}
                     </Label>
-                    {field.required && <Badge variant="outline" className="text-[8px] border-red-700 text-red-400">Required</Badge>}
+                    {field.required && <Badge variant="outline" className="text-[8px] border-red-700 text-red-700">Required</Badge>}
                   </div>
                   <Input
                     value={targetValues[field.key] || ''}
@@ -1472,7 +1472,7 @@ ${learningProfile}`;
             </div>
 
             {useDummyTargets && (
-              <p className="text-[10px] text-teal-400">Dummy data loaded. You can edit any field.</p>
+              <p className="text-[10px] text-teal-800">Dummy data loaded. You can edit any field.</p>
             )}
 
             <div className="flex gap-2 pt-2">

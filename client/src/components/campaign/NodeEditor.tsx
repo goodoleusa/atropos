@@ -45,7 +45,7 @@ export default function NodeEditor({
     <div className="fixed inset-x-0 bottom-0 max-h-[70vh] sm:relative sm:inset-auto sm:max-h-none z-50 sm:z-0 bg-[hsl(var(--card))] sm:bg-transparent sm:w-72 sm:border-l border-amber-900/30 border-t sm:border-t-0 rounded-t-2xl sm:rounded-none p-4 overflow-y-auto shadow-2xl sm:shadow-none">
       <div className="sm:hidden w-12 h-1 bg-muted rounded-full mx-auto mb-3" />
       <div className="flex items-center justify-between mb-4 sticky top-0 bg-[hsl(var(--card))] py-2 z-10">
-        <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2">
+        <h3 className="text-sm font-bold text-amber-800 flex items-center gap-2">
           <Edit3 className="w-4 h-4" /> Edit Node
         </h3>
         <Button size="sm" variant="ghost" onClick={() => setEditingNode(null)} className="min-h-[44px] min-w-[44px]">
@@ -122,7 +122,7 @@ export default function NodeEditor({
               {parseWikilinks(editingNode.content).map((link, i) => {
                 const target = findNodeByTitle(link);
                 return (
-                  <Badge key={i} variant="outline" className={`text-[9px] ${target ? 'border-teal-700 text-teal-400' : 'border-red-700 text-red-400'}`}>
+                  <Badge key={i} variant="outline" className={`text-[9px] ${target ? 'border-teal-700 text-teal-800' : 'border-red-700 text-red-700'}`}>
                     {target ? <Link className="w-2 h-2 mr-1" /> : '⚠'} {link}
                   </Badge>
                 );
@@ -140,7 +140,7 @@ export default function NodeEditor({
               <p className="text-[10px] text-muted-foreground uppercase mb-1">Links Graph</p>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <p className="text-purple-400 text-[9px] mb-1">← Backlinks ({backlinks.length})</p>
+                  <p className="text-purple-700 text-[9px] mb-1">← Backlinks ({backlinks.length})</p>
                   {backlinks.slice(0, 5).map(n => (
                     <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-purple-400 text-[10px] truncate w-full text-left">
                       {n.title}
@@ -148,7 +148,7 @@ export default function NodeEditor({
                   ))}
                 </div>
                 <div>
-                  <p className="text-teal-400 text-[9px] mb-1">→ Forward ({forwardLinks.length})</p>
+                  <p className="text-teal-800 text-[9px] mb-1">→ Forward ({forwardLinks.length})</p>
                   {forwardLinks.slice(0, 5).map(n => (
                     <button key={n.id} onClick={() => setEditingNode(n)} className="block text-muted-foreground hover:text-teal-400 text-[10px] truncate w-full text-left">
                       {n.title}
@@ -240,7 +240,7 @@ export default function NodeEditor({
           <div className="grid grid-cols-2 gap-1 mt-1 max-h-[120px] overflow-y-auto">
             {Object.entries(SKILL_CATEGORIES).map(([cat, subskills]) => (
               <div key={cat} className="space-y-0.5">
-                <p className="text-[9px] text-amber-600 uppercase">{cat}</p>
+                <p className="text-[9px] text-amber-800 uppercase">{cat}</p>
                 {subskills.map(skill => {
                   const skillId = `${cat}:${skill}`;
                   const isSelected = editingNode.metadata?.skills?.includes(skillId);
@@ -299,12 +299,12 @@ export default function NodeEditor({
                       disabled={isLinked}
                     >
                       <span className="flex items-center gap-2">
-                        <span className="text-purple-400">🔗</span>
+                        <span className="text-purple-700">🔗</span>
                         <span>{clue.name}</span>
                         {clue.tags?.length > 0 && (
                           <span className="text-[9px] text-muted-foreground">[{clue.tags.slice(0, 2).join(', ')}]</span>
                         )}
-                        {isLinked && <span className="text-teal-400 text-[9px]">✓</span>}
+                        {isLinked && <span className="text-teal-800 text-[9px]">✓</span>}
                       </span>
                     </SelectItem>
                   );
@@ -319,7 +319,7 @@ export default function NodeEditor({
                 <Badge 
                   key={i} 
                   variant="outline" 
-                  className="text-[10px] border-purple-600 text-purple-400 cursor-pointer hover:bg-red-900/30 hover:border-red-600 transition-colors flex items-center gap-1"
+                  className="text-[10px] border-purple-600 text-purple-700 cursor-pointer hover:bg-red-900/30 hover:border-red-600 transition-colors flex items-center gap-1"
                   onClick={() => {
                     const newClues = editingNode.metadata?.linkedClues?.filter(c => c !== clueId) || [];
                     const newMeta = { ...editingNode.metadata, linkedClues: newClues };
@@ -407,7 +407,7 @@ export default function NodeEditor({
               />
               <div className="flex flex-wrap gap-1 mt-1">
                 {editingNode.metadata.toolsForStep?.map((tool, i) => (
-                  <Badge key={i} variant="outline" className="text-[8px] border-amber-600 text-amber-400">
+                  <Badge key={i} variant="outline" className="text-[8px] border-amber-600 text-amber-800">
                     {tool}
                   </Badge>
                 ))}
@@ -479,7 +479,7 @@ export default function NodeEditor({
         </div>
 
         <div className="space-y-3 border-t border-purple-900/30 pt-4">
-          <div className="flex items-center gap-2 text-purple-400">
+          <div className="flex items-center gap-2 text-purple-700">
             <GraduationCap className="w-4 h-4" />
             <span className="text-xs font-bold">Learning Goals</span>
           </div>
@@ -526,7 +526,7 @@ export default function NodeEditor({
                     }}
                     className={`px-2 py-1 text-[10px] rounded border min-h-[32px] transition-colors ${
                       isSelected
-                        ? CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-400 border-purple-700'
+                        ? CATEGORY_COLORS[goal.category] || 'bg-purple-900/50 text-purple-700 border-purple-700'
                         : 'bg-card/50 text-muted-foreground border-border hover:border-purple-700'
                     }`}
                   >

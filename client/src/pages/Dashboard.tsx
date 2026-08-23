@@ -112,7 +112,7 @@ export default function Dashboard() {
   if (loadingProg || loadingAch) {
     return (
       <div className="min-h-screen bg-[hsl(var(--card))] flex items-center justify-center">
-        <div className="text-amber-500 font-mono">Loading your profile...</div>
+        <div className="text-amber-800 font-mono">Loading your profile...</div>
       </div>
     );
   }
@@ -147,8 +147,8 @@ export default function Dashboard() {
   const rarityColors: Record<string, string> = {
     common: 'border-muted bg-card/30 text-muted-foreground',
     rare: 'border-blue-600 bg-blue-900/30 text-blue-400',
-    epic: 'border-purple-600 bg-purple-900/30 text-purple-400',
-    legendary: 'border-amber-600 bg-amber-900/30 text-amber-400'
+    epic: 'border-purple-600 bg-purple-900/30 text-purple-700',
+    legendary: 'border-amber-600 bg-amber-900/30 text-amber-800'
   };
 
   return (
@@ -157,12 +157,12 @@ export default function Dashboard() {
       <header className="border-b border-amber-900/30 bg-[hsl(var(--card))] sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Trophy className="w-6 h-6 text-amber-600" />
-            <h1 className="font-orbitron text-xl font-bold text-amber-500">PLAYER PROFILE</h1>
+            <Trophy className="w-6 h-6 text-amber-800" />
+            <h1 className="font-orbitron text-xl font-bold text-amber-800">PLAYER PROFILE</h1>
           </div>
           <div className="flex items-center gap-2">
             <Link href="/terminal">
-              <Button variant="outline" size="sm" className="border-amber-900/50 text-amber-600 hover:bg-amber-950/30">
+              <Button variant="outline" size="sm" className="border-amber-900/50 text-amber-800 hover:bg-amber-950/30">
                 Terminal
               </Button>
             </Link>
@@ -184,7 +184,7 @@ export default function Dashboard() {
                 {/* Avatar/Level Badge */}
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full bg-amber-900/30 border-4 border-amber-600 flex items-center justify-center">
-                    <span className="text-4xl font-orbitron font-bold text-amber-500">{level}</span>
+                    <span className="text-4xl font-orbitron font-bold text-amber-800">{level}</span>
                   </div>
                   {progression?.prestigeLevel && progression.prestigeLevel > 0 && (
                     <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-purple-900 border-2 border-purple-500 flex items-center justify-center">
@@ -195,20 +195,20 @@ export default function Dashboard() {
 
                 {/* Player Info */}
                 <div className="flex-1 text-center md:text-left">
-                  <h2 className="text-3xl font-orbitron font-bold text-amber-500 mb-2">
+                  <h2 className="text-3xl font-orbitron font-bold text-amber-800 mb-2">
                     {gameState.username}
                   </h2>
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
-                    <Badge variant="outline" className="border-amber-600 text-amber-400">
+                    <Badge variant="outline" className="border-amber-600 text-amber-800">
                       Level {level}
                     </Badge>
                     {progression?.prestigeLevel && progression.prestigeLevel > 0 && (
-                      <Badge className="bg-purple-900/30 text-purple-400 border-purple-700">
+                      <Badge className="bg-purple-900/30 text-purple-700 border-purple-700">
                         Prestige {progression.prestigeLevel}
                       </Badge>
                     )}
                     {globalRank && (
-                      <Badge variant="outline" className="border-teal-600 text-teal-400">
+                      <Badge variant="outline" className="border-teal-600 text-teal-800">
                         Rank #{globalRank.rank}
                       </Badge>
                     )}
@@ -221,7 +221,7 @@ export default function Dashboard() {
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Level {level} Progress</span>
-                      <span className="text-amber-500">{xp} / {xpForNextLevel} XP</span>
+                      <span className="text-amber-800">{xp} / {xpForNextLevel} XP</span>
                     </div>
                     <Progress value={xpProgress} className="h-3 bg-card">
                       <div className="h-full bg-gradient-to-r from-amber-600 to-amber-500 rounded-full" style={{ width: `${xpProgress}%` }} />
@@ -230,8 +230,8 @@ export default function Dashboard() {
 
                   {/* Currency */}
                   <div className="flex items-center gap-2 text-lg">
-                    <Sparkles className="w-5 h-5 text-amber-500" />
-                    <span className="text-amber-400 font-bold">{progression?.currency || 0}</span>
+                    <Sparkles className="w-5 h-5 text-amber-800" />
+                    <span className="text-amber-800 font-bold">{progression?.currency || 0}</span>
                     <span className="text-muted-foreground text-sm">Credits</span>
                   </div>
                 </div>
@@ -239,19 +239,19 @@ export default function Dashboard() {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="p-4 bg-teal-950/20 rounded-lg border border-teal-900/30">
-                    <div className="text-3xl font-bold text-teal-400">{stats.campaignsCompleted}</div>
+                    <div className="text-3xl font-bold text-teal-800">{stats.campaignsCompleted}</div>
                     <div className="text-xs text-muted-foreground">Campaigns</div>
                   </div>
                   <div className="p-4 bg-amber-950/20 rounded-lg border border-amber-900/30">
-                    <div className="text-3xl font-bold text-amber-400">{achievements.length}</div>
+                    <div className="text-3xl font-bold text-amber-800">{achievements.length}</div>
                     <div className="text-xs text-muted-foreground">Achievements</div>
                   </div>
                   <div className="p-4 bg-purple-950/20 rounded-lg border border-purple-900/30">
-                    <div className="text-3xl font-bold text-purple-400">{stats.cluesFound}</div>
+                    <div className="text-3xl font-bold text-purple-700">{stats.cluesFound}</div>
                     <div className="text-xs text-muted-foreground">Clues Found</div>
                   </div>
                   <div className="p-4 bg-orange-950/20 rounded-lg border border-orange-900/30">
-                    <div className="text-3xl font-bold text-orange-400">{stats.currentStreak}</div>
+                    <div className="text-3xl font-bold text-orange-800">{stats.currentStreak}</div>
                     <div className="text-xs text-muted-foreground">Day Streak</div>
                   </div>
                 </div>
@@ -262,7 +262,7 @@ export default function Dashboard() {
 
         {/* Skills */}
         <section>
-          <h3 className="text-xl font-orbitron text-amber-600 mb-4 flex items-center gap-2">
+          <h3 className="text-xl font-orbitron text-amber-800 mb-4 flex items-center gap-2">
             <Target className="w-5 h-5" /> Skill Specializations
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -368,7 +368,7 @@ export default function Dashboard() {
           {todayChallenge && (
             <Card className="bg-[hsl(var(--card))] border-amber-900/30">
               <CardHeader>
-                <CardTitle className="text-amber-500 flex items-center gap-2">
+                <CardTitle className="text-amber-800 flex items-center gap-2">
                   <Calendar className="w-5 h-5" /> Daily Challenge
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -380,7 +380,7 @@ export default function Dashboard() {
                   <h4 className="font-bold text-lg text-foreground mb-2">{todayChallenge.title}</h4>
                   <p className="text-sm text-muted-foreground mb-3">{todayChallenge.description}</p>
                   <div className="flex gap-2 mb-3">
-                    <Badge variant="outline" className="border-amber-700 text-amber-400 capitalize">
+                    <Badge variant="outline" className="border-amber-700 text-amber-800 capitalize">
                       {todayChallenge.difficulty}
                     </Badge>
                     <Badge variant="outline" className="border-border text-muted-foreground">
@@ -393,12 +393,12 @@ export default function Dashboard() {
                   <div className="text-xs text-muted-foreground uppercase mb-2">Rewards</div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
-                      <Zap className="w-4 h-4 text-amber-500" />
-                      <span className="text-amber-400 font-bold">{todayChallenge.xpReward} XP</span>
+                      <Zap className="w-4 h-4 text-amber-800" />
+                      <span className="text-amber-800 font-bold">{todayChallenge.xpReward} XP</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Sparkles className="w-4 h-4 text-amber-500" />
-                      <span className="text-amber-400 font-bold">{todayChallenge.currencyReward} Credits</span>
+                      <Sparkles className="w-4 h-4 text-amber-800" />
+                      <span className="text-amber-800 font-bold">{todayChallenge.currencyReward} Credits</span>
                     </div>
                   </div>
                 </div>
@@ -423,25 +423,25 @@ export default function Dashboard() {
 
         {/* Statistics Grid */}
         <section>
-          <h3 className="text-xl font-orbitron text-amber-600 mb-4 flex items-center gap-2">
+          <h3 className="text-xl font-orbitron text-amber-800 mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5" /> Statistics
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <Card className="bg-[hsl(var(--card))] border-teal-900/30">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-teal-400">{stats.campaignsCompleted}</div>
+                <div className="text-2xl font-bold text-teal-800">{stats.campaignsCompleted}</div>
                 <div className="text-xs text-muted-foreground">Campaigns</div>
               </CardContent>
             </Card>
             <Card className="bg-[hsl(var(--card))] border-amber-900/30">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-amber-400">{stats.cluesFound}</div>
+                <div className="text-2xl font-bold text-amber-800">{stats.cluesFound}</div>
                 <div className="text-xs text-muted-foreground">Clues</div>
               </CardContent>
             </Card>
             <Card className="bg-[hsl(var(--card))] border-purple-900/30">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-purple-400">{stats.hiddenCluesFound}</div>
+                <div className="text-2xl font-bold text-purple-700">{stats.hiddenCluesFound}</div>
                 <div className="text-xs text-muted-foreground">Hidden</div>
               </CardContent>
             </Card>
@@ -453,13 +453,13 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-[hsl(var(--card))] border-orange-900/30">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-orange-400">{stats.toolsUsed}</div>
+                <div className="text-2xl font-bold text-orange-800">{stats.toolsUsed}</div>
                 <div className="text-xs text-muted-foreground">Tools Used</div>
               </CardContent>
             </Card>
             <Card className="bg-[hsl(var(--card))] border-red-900/30">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-red-400">
+                <div className="text-2xl font-bold text-red-700">
                   {Math.floor(stats.totalPlayTimeMinutes / 60)}h
                 </div>
                 <div className="text-xs text-muted-foreground">Play Time</div>
@@ -471,9 +471,9 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-3 gap-4 mt-4">
             <Card className="bg-gradient-to-br from-orange-950/30 to-[hsl(var(--card))] border-orange-900/30">
               <CardContent className="p-6 flex items-center gap-4">
-                <Flame className="w-10 h-10 text-orange-500" />
+                <Flame className="w-10 h-10 text-orange-800" />
                 <div>
-                  <div className="text-2xl font-bold text-orange-400">{stats.currentStreak}</div>
+                  <div className="text-2xl font-bold text-orange-800">{stats.currentStreak}</div>
                   <div className="text-sm text-muted-foreground">Day Streak</div>
                   <div className="text-xs text-muted-foreground">Record: {stats.longestStreak}</div>
                 </div>
@@ -483,9 +483,9 @@ export default function Dashboard() {
             {stats.fastestCampaignTime && (
               <Card className="bg-gradient-to-br from-teal-950/30 to-[hsl(var(--card))] border-teal-900/30">
                 <CardContent className="p-6 flex items-center gap-4">
-                  <Clock className="w-10 h-10 text-teal-500" />
+                  <Clock className="w-10 h-10 text-teal-800" />
                   <div>
-                    <div className="text-2xl font-bold text-teal-400">{stats.fastestCampaignTime}m</div>
+                    <div className="text-2xl font-bold text-teal-800">{stats.fastestCampaignTime}m</div>
                     <div className="text-sm text-muted-foreground">Speed Record</div>
                     <div className="text-xs text-muted-foreground">Personal best</div>
                   </div>
@@ -496,12 +496,12 @@ export default function Dashboard() {
             {globalRank && (
               <Card className="bg-gradient-to-br from-amber-950/30 to-[hsl(var(--card))] border-amber-900/30">
                 <CardContent className="p-6 flex items-center gap-4">
-                  <Medal className="w-10 h-10 text-amber-500" />
+                  <Medal className="w-10 h-10 text-amber-800" />
                   <div>
-                    <div className="text-2xl font-bold text-amber-400">#{globalRank.rank}</div>
+                    <div className="text-2xl font-bold text-amber-800">#{globalRank.rank}</div>
                     <div className="text-sm text-muted-foreground">Global Rank</div>
                     <Link href="/leaderboards">
-                      <div className="text-xs text-amber-600 hover:text-amber-500 flex items-center gap-1">
+                      <div className="text-xs text-amber-800 hover:text-amber-500 flex items-center gap-1">
                         View leaderboards <ExternalLink className="w-3 h-3" />
                       </div>
                     </Link>
@@ -515,10 +515,10 @@ export default function Dashboard() {
         {/* Recent Achievements */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-orbitron text-amber-600 flex items-center gap-2">
+            <h3 className="text-xl font-orbitron text-amber-800 flex items-center gap-2">
               <Award className="w-5 h-5" /> Recent Achievements
             </h3>
-            <Badge variant="outline" className="border-amber-700 text-amber-400">
+            <Badge variant="outline" className="border-amber-700 text-amber-800">
               {achievements.length} / {allAchievements.length}
             </Badge>
           </div>
@@ -540,8 +540,8 @@ export default function Dashboard() {
                         <Badge 
                           variant="outline" 
                           className={`text-[9px] capitalize ${
-                            def.rarity === 'legendary' ? 'border-amber-600 text-amber-400' :
-                            def.rarity === 'epic' ? 'border-purple-600 text-purple-400' :
+                            def.rarity === 'legendary' ? 'border-amber-600 text-amber-800' :
+                            def.rarity === 'epic' ? 'border-purple-600 text-purple-700' :
                             def.rarity === 'rare' ? 'border-blue-600 text-blue-400' :
                             'border-muted text-muted-foreground'
                           }`}
@@ -571,7 +571,7 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mb-2">No achievements yet</p>
                 <p className="text-xs text-muted-foreground mb-4">Complete campaigns and investigations to unlock achievements</p>
                 <Link href="/investigate">
-                  <Button variant="outline" className="border-amber-900/50 text-amber-600">
+                  <Button variant="outline" className="border-amber-900/50 text-amber-800">
                     Start Investigating <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
@@ -583,11 +583,11 @@ export default function Dashboard() {
         {/* All Achievements Overview */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-orbitron text-amber-600 flex items-center gap-2">
+            <h3 className="text-xl font-orbitron text-amber-800 flex items-center gap-2">
               <Trophy className="w-5 h-5" /> All Achievements
             </h3>
             <div className="flex gap-2">
-              <Badge className="bg-amber-900/30 text-amber-400 border-amber-800">
+              <Badge className="bg-amber-900/30 text-amber-800 border-amber-800">
                 {achievements.length} Unlocked
               </Badge>
               <Badge variant="outline" className="border-border text-muted-foreground">
@@ -619,10 +619,10 @@ export default function Dashboard() {
                         <p className="text-xs text-muted-foreground min-h-[32px]">{ach.description}</p>
                         <div className="flex items-center justify-center gap-2 text-xs">
                           {ach.xpReward > 0 && (
-                            <span className="text-amber-500">+{ach.xpReward} XP</span>
+                            <span className="text-amber-800">+{ach.xpReward} XP</span>
                           )}
                           {ach.currencyReward > 0 && (
-                            <span className="text-amber-500">+{ach.currencyReward} Credits</span>
+                            <span className="text-amber-800">+{ach.currencyReward} Credits</span>
                           )}
                         </div>
                       </>
@@ -641,8 +641,8 @@ export default function Dashboard() {
           <Link href="/investigate">
             <Card className="bg-[hsl(var(--card))] border-teal-900/30 hover:border-teal-700/50 transition-all cursor-pointer h-full">
               <CardContent className="p-6 text-center space-y-2">
-                <Target className="w-10 h-10 mx-auto text-teal-500" />
-                <h4 className="font-bold text-teal-400">Start Investigation</h4>
+                <Target className="w-10 h-10 mx-auto text-teal-800" />
+                <h4 className="font-bold text-teal-800">Start Investigation</h4>
                 <p className="text-xs text-muted-foreground">Begin a new OSINT campaign</p>
               </CardContent>
             </Card>
@@ -651,8 +651,8 @@ export default function Dashboard() {
           <Link href="/leaderboards">
             <Card className="bg-[hsl(var(--card))] border-amber-900/30 hover:border-amber-700/50 transition-all cursor-pointer h-full">
               <CardContent className="p-6 text-center space-y-2">
-                <Users className="w-10 h-10 mx-auto text-amber-500" />
-                <h4 className="font-bold text-amber-400">Leaderboards</h4>
+                <Users className="w-10 h-10 mx-auto text-amber-800" />
+                <h4 className="font-bold text-amber-800">Leaderboards</h4>
                 <p className="text-xs text-muted-foreground">Compare your ranking</p>
               </CardContent>
             </Card>
@@ -661,8 +661,8 @@ export default function Dashboard() {
           <Link href="/terminal">
             <Card className="bg-[hsl(var(--card))] border-purple-900/30 hover:border-purple-700/50 transition-all cursor-pointer h-full">
               <CardContent className="p-6 text-center space-y-2">
-                <Zap className="w-10 h-10 mx-auto text-purple-500" />
-                <h4 className="font-bold text-purple-400">Terminal</h4>
+                <Zap className="w-10 h-10 mx-auto text-purple-700" />
+                <h4 className="font-bold text-purple-700">Terminal</h4>
                 <p className="text-xs text-muted-foreground">Access command interface</p>
               </CardContent>
             </Card>

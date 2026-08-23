@@ -289,11 +289,11 @@ export default function CampaignBuilder() {
       {/* Header */}
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-3 z-50 gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <Button data-testid="toggle-sidebar" variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-amber-500 shrink-0">
+          <Button data-testid="toggle-sidebar" variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-amber-800 shrink-0">
             <Menu className="w-5 h-5" />
           </Button>
-          <Shield className="w-5 h-5 text-amber-500 shrink-0 hidden sm:block" />
-          <h1 className="font-bold tracking-tighter text-amber-500 hidden md:block uppercase text-sm">Nexus Architect</h1>
+          <Shield className="w-5 h-5 text-amber-800 shrink-0 hidden sm:block" />
+          <h1 className="font-bold tracking-tighter text-amber-800 hidden md:block uppercase text-sm">Nexus Architect</h1>
           <Separator orientation="vertical" className="h-6 bg-border hidden sm:block" />
           <div className="relative hidden sm:block">
             <Button data-testid="select-campaign" variant="outline" size="sm" className="border-border text-muted-foreground h-8 text-xs max-w-[180px] truncate" onClick={() => setCampaignSelectorOpen(true)}>
@@ -342,12 +342,12 @@ export default function CampaignBuilder() {
       {/* Campaign Selector Dialog */}
       <Dialog open={campaignSelectorOpen} onOpenChange={setCampaignSelectorOpen}>
         <DialogContent className="bg-card border-border max-w-md">
-          <DialogHeader><DialogTitle className="text-amber-500">Load Campaign</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-amber-800">Load Campaign</DialogTitle></DialogHeader>
           <ScrollArea className="max-h-[400px]">
             <div className="space-y-1">
               {savedCampaigns.map(c => (
                 <Button key={c.id} data-testid={`load-campaign-${c.id}`} variant="ghost" className="w-full justify-start text-xs text-foreground h-9" onClick={() => { loadCampaign(c.id); setCampaignSelectorOpen(false); }}>
-                  <FileText className="w-3.5 h-3.5 mr-2 text-amber-500/50" />{c.name}
+                  <FileText className="w-3.5 h-3.5 mr-2 text-amber-800/50" />{c.name}
                 </Button>
               ))}
               {savedCampaigns.length === 0 && <p className="text-xs text-muted-foreground p-4 text-center">No saved campaigns yet.</p>}
