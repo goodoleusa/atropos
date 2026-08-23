@@ -70,7 +70,7 @@ const MODELS = {
 const TIER_COLORS: Record<string, { header: string; item: string; tag: string }> = {
   premium: { header: 'text-red-700', item: 'text-red-700', tag: '💎' },
   budget:  { header: 'text-amber-800', item: 'text-amber-800', tag: '⚡' },
-  free:    { header: 'text-emerald-400', item: 'text-emerald-400', tag: '' },
+  free:    { header: 'text-emerald-700', item: 'text-emerald-700', tag: '' },
 };
 
 const MODEL_LIST = [
@@ -1032,7 +1032,7 @@ ${learningProfile}`;
           {/* Model Selector - mobile optimized */}
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="bg-black/50 border-amber-900/30 text-amber-800 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
+              <SelectTrigger className="bg-muted border-amber-900/30 text-amber-800 text-xs h-7 w-full md:w-auto md:min-w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-[hsl(var(--card))] border-amber-900/50 max-h-72">
@@ -1162,7 +1162,7 @@ ${learningProfile}`;
                   {exercise && !completedExerciseIds.includes(exercise.id) && (
                     <button
                       onClick={() => markExerciseDone(exercise.id)}
-                      className="p-1 rounded text-emerald-600 hover:text-emerald-400 hover:bg-emerald-900/20 transition-colors"
+                      className="p-1 rounded text-emerald-600 hover:text-emerald-800 hover:bg-emerald-900/20 transition-colors"
                       title="Mark step done"
                       data-testid="mark-exercise-done"
                     >
@@ -1172,7 +1172,7 @@ ${learningProfile}`;
                   {currentExerciseIdx < totalEx - 1 && (
                     <button
                       onClick={goToNextExercise}
-                      className="p-1 rounded text-teal-600 hover:text-teal-400 hover:bg-teal-900/20 transition-colors"
+                      className="p-1 rounded text-teal-600 hover:text-teal-800 hover:bg-teal-900/20 transition-colors"
                       title="Next step"
                       data-testid="next-exercise-btn"
                     >
@@ -1181,7 +1181,7 @@ ${learningProfile}`;
                   )}
                   <button
                     onClick={() => setShowMissionBriefing(!showMissionBriefing)}
-                    className="p-1 rounded text-muted-foreground hover:text-amber-400 hover:bg-amber-900/20 transition-colors"
+                    className="p-1 rounded text-muted-foreground hover:text-amber-700 hover:bg-amber-900/20 transition-colors"
                     title="Mission briefing"
                     data-testid="open-briefing-btn"
                   >
@@ -1219,13 +1219,13 @@ ${learningProfile}`;
                     <button
                       key={campaign.id}
                       onClick={() => startCampaign(campaign)}
-                      className="text-left p-3 bg-black/50 border border-amber-900/20 rounded-lg hover:border-amber-600/50 hover:bg-amber-900/10 transition-all group"
+                      className="text-left p-3 bg-muted border border-amber-900/20 rounded-lg hover:border-amber-600/50 hover:bg-amber-900/10 transition-all group"
                       data-testid={`campaign-${campaign.id}`}
                     >
                       <div className="flex items-start gap-2">
                         <span className="text-xl md:text-2xl">{campaign.icon}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-amber-800 font-bold text-xs md:text-sm truncate group-hover:text-amber-400">
+                          <p className="text-amber-800 font-bold text-xs md:text-sm truncate group-hover:text-amber-600">
                             {campaign.name}
                           </p>
                           <p className="text-muted-foreground text-[10px] md:text-xs line-clamp-2 mt-0.5">
@@ -1295,7 +1295,7 @@ ${learningProfile}`;
                     setCaptureEnabled(false);
                     setContextCampaign('');
                   }}
-                  className="mt-3 text-muted-foreground hover:text-teal-400 text-[10px] md:text-xs"
+                  className="mt-3 text-muted-foreground hover:text-teal-800 text-[10px] md:text-xs"
                 >
                   <ArrowLeft className="w-3 h-3 mr-1" /> Back to Modules
                 </Button>
@@ -1311,7 +1311,7 @@ ${learningProfile}`;
                   className={`max-w-[80%] rounded-lg px-4 py-2 ${
                     msg.role === 'user'
                       ? 'bg-amber-900/30 text-amber-800'
-                      : 'bg-black/50 border border-amber-900/20 text-foreground'
+                      : 'bg-muted border border-amber-900/20 text-foreground'
                   }`}
                 >
                   {msg.role === 'assistant' && (
@@ -1346,7 +1346,7 @@ ${learningProfile}`;
                             key={idx}
                             size="sm"
                             variant="outline"
-                            className="w-full text-xs bg-orange-900/30 border-orange-700/50 text-orange-300 hover:bg-orange-900/50 hover:text-orange-200 h-auto py-2"
+                            className="w-full text-xs bg-orange-900/30 border-orange-700/50 text-orange-800 hover:bg-orange-900/50 hover:text-orange-900 h-auto py-2"
                             onClick={async () => {
                               setLoading(true);
                               const result = await executeAtroposScan(suggestion.script, suggestion.target);
@@ -1370,7 +1370,7 @@ ${learningProfile}`;
 
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-black/50 border border-amber-900/20 rounded-lg px-4 py-2">
+                <div className="bg-muted border border-amber-900/20 rounded-lg px-4 py-2">
                   <Loader2 className="w-4 h-4 animate-spin text-amber-800" />
                 </div>
               </div>
@@ -1391,7 +1391,7 @@ ${learningProfile}`;
                 }
               }}
               placeholder="Enter command, payload, or question..."
-              className="bg-black/50 border-amber-900/30 text-amber-800 font-mono resize-none h-16 md:h-20 text-xs md:text-sm"
+              className="bg-muted border-amber-900/30 text-amber-800 font-mono resize-none h-16 md:h-20 text-xs md:text-sm"
             />
             <Button
               onClick={sendMessage}
@@ -1462,7 +1462,7 @@ ${learningProfile}`;
                       setUseDummyTargets(false);
                       setTargetValues((prev) => ({ ...prev, [field.key]: e.target.value }));
                     }}
-                    className="bg-black/50 border-amber-900/30 text-amber-300 text-sm"
+                    className="bg-muted border-amber-900/30 text-amber-800 text-sm"
                   />
                   {field.helpText && (
                     <p className="text-[10px] text-muted-foreground mt-1">{field.helpText}</p>

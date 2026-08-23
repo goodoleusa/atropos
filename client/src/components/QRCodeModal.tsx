@@ -1394,22 +1394,22 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
 
         <Tabs defaultValue="generate" className="w-full">
           <TabsList className="bg-amber-950/30 border border-amber-900/30 flex-wrap h-auto">
-            <TabsTrigger value="session" className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-400">
+            <TabsTrigger value="session" className="data-[state=active]:bg-teal-900/50 data-[state=active]:text-teal-800">
               <Key className="w-3 h-3 mr-1" /> Session
             </TabsTrigger>
-            <TabsTrigger value="generate" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400">
+            <TabsTrigger value="generate" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-800">
               Generate
             </TabsTrigger>
-            <TabsTrigger value="export" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400">
+            <TabsTrigger value="export" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-800">
               Export
             </TabsTrigger>
-            <TabsTrigger value="agent" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400">
+            <TabsTrigger value="agent" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-800">
               <Bot className="w-3 h-3 mr-1" /> Agent
             </TabsTrigger>
-            <TabsTrigger value="c2" className="data-[state=active]:bg-red-900/50 data-[state=active]:text-red-400">
+            <TabsTrigger value="c2" className="data-[state=active]:bg-red-900/50 data-[state=active]:text-red-800">
               <Radio className="w-3 h-3 mr-1" /> C2
             </TabsTrigger>
-            <TabsTrigger value="import" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-400">
+            <TabsTrigger value="import" className="data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-800">
               Decode
             </TabsTrigger>
           </TabsList>
@@ -1509,7 +1509,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                     <SelectItem 
                       key={preset.id} 
                       value={preset.id}
-                      className="text-amber-800 focus:bg-amber-900/30 focus:text-amber-400"
+                      className="text-amber-800 focus:bg-amber-900/30 focus:text-amber-900"
                     >
                       {preset.name}
                     </SelectItem>
@@ -1751,7 +1751,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                         <SelectItem 
                           key={template.id} 
                           value={template.id}
-                          className="text-red-700 focus:bg-red-900/30 focus:text-red-400"
+                          className="text-red-700 focus:bg-red-900/30 focus:text-red-900"
                         >
                           {template.name}
                         </SelectItem>
@@ -1911,7 +1911,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                             variant="ghost"
                             size="sm"
                             onClick={() => { setActiveMission(null); setMissionStep(0); }}
-                            className="text-muted-foreground hover:text-amber-400 min-h-[44px]"
+                            className="text-muted-foreground hover:text-amber-700 min-h-[44px]"
                             data-testid="mission-back"
                           >
                             Back
@@ -2076,7 +2076,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                             <p className="text-xs text-foreground">{mission.realWorldCase}</p>
                           </div>
                           <div className="p-3 bg-blue-950/20 rounded border border-blue-900/20">
-                            <p className="text-xs text-blue-400 font-bold mb-1">DEFENDER PERSPECTIVE:</p>
+                            <p className="text-xs text-blue-700 font-bold mb-1">DEFENDER PERSPECTIVE:</p>
                             <p className="text-xs text-foreground">{mission.defenderPerspective}</p>
                           </div>
                         </div>
@@ -2150,9 +2150,9 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                 <div className="flex flex-wrap gap-1">
                   {['physical', 'digital', 'social', 'supply_chain'].map((cat) => (
                     <span key={cat} className={`text-xs px-2 py-1 rounded border ${
-                      cat === 'physical' ? 'border-blue-800 text-blue-400' :
+                      cat === 'physical' ? 'border-blue-800 text-blue-700' :
                       cat === 'digital' ? 'border-purple-800 text-purple-700' :
-                      cat === 'social' ? 'border-pink-800 text-pink-400' :
+                      cat === 'social' ? 'border-pink-800 text-pink-700' :
                       'border-orange-800 text-orange-800'
                     }`}>
                       {cat.replace('_', ' ')}
@@ -2243,7 +2243,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                       <div className="flex items-center justify-between">
                         <button
                           onClick={() => { setActiveLabId(null); setLabStep(0); setLabScanResults([]); setLabQrResults({}); }}
-                          className="text-xs text-muted-foreground hover:text-amber-400 flex items-center gap-1"
+                          className="text-xs text-muted-foreground hover:text-amber-700 flex items-center gap-1"
                           data-testid="lab-back-btn"
                         >
                           <ChevronLeft className="w-3 h-3" /> Back to Labs
@@ -2381,7 +2381,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                                         {scan.isMalicious ? 'HIJACKED' : 'SAFE'}
                                       </span>
                                     </div>
-                                    <p className={`break-all ${scan.isMalicious ? 'text-red-300' : 'text-teal-300'}`}>
+                                    <p className={`break-all ${scan.isMalicious ? 'text-red-800' : 'text-teal-800'}`}>
                                       {scan.result}
                                     </p>
                                   </div>
@@ -2409,7 +2409,7 @@ export const QRCodeModal = ({ open, onOpenChange }: QRCodeModalProps) => {
                             
                             <div className="grid grid-cols-1 gap-3 mb-3">
                               <div className="p-2 bg-blue-950/20 rounded border border-blue-900/30">
-                                <p className="text-xs text-blue-400 font-bold mb-1">How to Detect This Attack:</p>
+                                <p className="text-xs text-blue-700 font-bold mb-1">How to Detect This Attack:</p>
                                 <p className="text-xs text-foreground">{lab.detection}</p>
                               </div>
                               <div className="p-2 bg-teal-950/20 rounded border border-teal-900/30">
