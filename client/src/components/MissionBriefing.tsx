@@ -150,7 +150,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                     </button>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
-                        <span className={`text-[11px] md:text-xs font-medium ${isDone ? 'text-muted-foreground line-through' : 'text-white'}`}>{exercise.title}</span>
+                        <span className={`text-[11px] md:text-xs font-medium ${isDone ? 'text-muted-foreground line-through' : 'text-gray-900 dark:text-white'}`}>{exercise.title}</span>
                         <Badge className={`text-[7px] md:text-[8px] border px-1 py-0 ${typeMeta.color}`}>{typeMeta.label}</Badge>
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-0.5 md:mt-1 leading-relaxed">{exercise.instructions}</p>
@@ -270,7 +270,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                       <span className="text-base md:text-lg">{track.icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
-                          <span className="text-[11px] md:text-xs font-medium text-white truncate">{track.name}</span>
+                          <span className="text-[11px] md:text-xs font-medium text-gray-900 dark:text-white truncate">{track.name}</span>
                           {track.order === 0 && (
                             <Badge className="text-[7px] md:text-[8px] bg-emerald-900/30 text-emerald-800 border-0">Foundation</Badge>
                           )}
@@ -310,7 +310,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                                 <span className="text-sm">{mission.icon}</span>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
-                                    <span className="text-[11px] font-medium text-white truncate">{mission.name}</span>
+                                    <span className="text-[11px] font-medium text-gray-900 dark:text-white truncate">{mission.name}</span>
                                     {isActiveMission && <Badge className="text-[7px] md:text-[8px] bg-teal-900/30 text-teal-800 border-0">Active</Badge>}
                                   </div>
                                   <div className="flex items-center gap-1.5 md:gap-2 mt-0.5 text-[9px] text-muted-foreground flex-wrap">

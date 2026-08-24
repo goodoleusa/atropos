@@ -55,7 +55,7 @@ export default function BuilderPreview({ campaign, node, onSelectNode }: Builder
     <div className="flex-1 overflow-y-auto p-4 sm:p-12">
       <div className="max-w-3xl mx-auto w-full">
         <div className="border-l-4 border-amber-500 pl-6 py-2 mb-8 bg-amber-500/5 rounded-r">
-          <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{node.title}</h1>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{node.title}</h1>
           <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-[0.2em] mt-1">
             {node.type} · {node.pageLayout || 'card'}
           </p>

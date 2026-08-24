@@ -4,11 +4,11 @@ import { Brain, Eye, Users, Wrench, FlaskConical } from 'lucide-react';
 import type { LearningStyle } from '@/config/learningConfig';
 
 const STYLES: Record<LearningStyle, { label: string; short: string; icon: any; color: string; bg: string }> = {
-  experiential: { label: 'Experiential', short: 'Hands-on', icon: FlaskConical, color: 'text-emerald-400', bg: 'bg-emerald-900/20 border-emerald-800/30' },
-  visual: { label: 'Visual', short: 'Visual', icon: Eye, color: 'text-sky-400', bg: 'bg-sky-900/20 border-sky-800/30' },
-  analytical: { label: 'Analytical', short: 'Deep', icon: Brain, color: 'text-purple-700', bg: 'bg-purple-900/20 border-purple-800/30' },
-  social: { label: 'Social', short: 'Collab', icon: Users, color: 'text-amber-800', bg: 'bg-amber-900/20 border-amber-800/30' },
-  pragmatic: { label: 'Pragmatic', short: 'Quick', icon: Wrench, color: 'text-rose-400', bg: 'bg-rose-900/20 border-rose-800/30' },
+  experiential: { label: 'Experiential', short: 'Hands-on', icon: FlaskConical, color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-800/30' },
+  visual: { label: 'Visual', short: 'Visual', icon: Eye, color: 'text-sky-700 dark:text-sky-400', bg: 'bg-sky-100 dark:bg-sky-900/20 border-sky-300 dark:border-sky-800/30' },
+  analytical: { label: 'Analytical', short: 'Deep', icon: Brain, color: 'text-purple-700', bg: 'bg-purple-100 dark:bg-purple-900/20 border-purple-300 dark:border-purple-800/30' },
+  social: { label: 'Social', short: 'Collab', icon: Users, color: 'text-amber-800', bg: 'bg-amber-100 dark:bg-amber-900/20 border-amber-300 dark:border-amber-800/30' },
+  pragmatic: { label: 'Pragmatic', short: 'Quick', icon: Wrench, color: 'text-rose-700 dark:text-rose-400', bg: 'bg-rose-100 dark:bg-rose-900/20 border-rose-300 dark:border-rose-800/30' },
 };
 
 interface LearningStyleBadgeProps {
