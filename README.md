@@ -78,6 +78,16 @@ Presets: `minimal`, `learner`, `civic`, `security`, `marketing`, `full`. See `te
 - [`04-CAMPAIGN_LEARNING_TEMPLATE`](docs/04-CAMPAIGN_LEARNING_TEMPLATE.md) — build new campaigns
 - [`.cursorrules`](.cursorrules) — architecture and coding conventions
 
+## Blurb ideas
+
+> *Learn to hunt threats the way real analysts do. AI-guided investigations, live recon tooling, and a Rust OSINT scanner — wrapped in XP, levels, and leaderboards.*
+
+> *What if CTF challenges met an RPG progression system and an AI investigation partner?*
+
+> *Stop watching security tutorials. Start running actual investigations. 23 campaigns, a multi-agent AI copilot, and a Rust-powered scanner — built for people who learn by doing.*
+
+> *Gamified OSINT & cybersecurity training — real tools, AI-guided investigations, QR C2 labs, from crypto tracing to dark web intel.*
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
