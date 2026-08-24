@@ -67,6 +67,18 @@ interface ApiKeyService {
   maskedValue: string | null;
 }
 
+interface SpiderLead {
+  id: string;
+  ts: string;
+  scanId: string;
+  target: string;
+  status: 'new' | 'promoted';
+  type: string;
+  data: string;
+  module: string;
+  source?: string;
+}
+
 const PRESET_OPTIONS: Record<string, { label: string; description: string }> = {
   all: { label: 'All Modules', description: 'Run every available module - comprehensive but slow' },
   full_passive: { label: 'Full Passive', description: 'All passive modules - no direct target contact' },
@@ -103,6 +115,8 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [sessionToken] = useState(() => `sf-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+  const [spiderScanId, setSpiderScanId] = useState<string | null>(null);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
 
   const { data: health } = useQuery<HealthStatus>({
     queryKey: ['/api/spiderfoot/health'],
@@ -133,6 +147,38 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
     queryFn: () => fetch('/api/spiderfoot/api-keys').then(r => r.json()),
     enabled: showApiKeys,
   });
+
+  const { data: spiderScanStatus } = useQuery<SFScanResponse>({
+    queryKey: ['/api/spiderfoot/scan', spiderScanId],
+    queryFn: () => fetch(`/api/spiderfoot/scan/${spiderScanId}`).then(r => r.json()),
+    enabled: !!spiderScanId,
+    // Keep polling unless we have a definitive terminal status — a transient
+    // 404 can land if this query's first poll races the scan's own
+    // registration server-side, and that must not be mistaken for "done".
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status === 'completed' || status === 'error' ? false : 3000;
+    },
+  });
+
+  const { data: leadsData, refetch: refetchLeads } = useQuery<{ leads: SpiderLead[]; count: number }>({
+    queryKey: ['/api/spiderfoot/leads'],
+    queryFn: () => fetch('/api/spiderfoot/leads?status=new').then(r => r.json()),
+    enabled: health?.available === true,
+  });
+
+  useEffect(() => {
+    if (spiderScanId && spiderScanStatus?.status === 'completed') {
+      const count = spiderScanStatus.resultCount ?? spiderScanStatus.results?.length ?? 0;
+      toast({ title: 'Leads Sourced', description: `${count} raw lead(s) from ${spiderScanStatus.target} — review below` });
+      refetchLeads();
+      setSpiderScanId(null);
+    }
+    if (spiderScanId && spiderScanStatus?.status === 'error') {
+      toast({ title: 'Spider Scan Error', description: spiderScanStatus.error || 'Scan failed', variant: 'destructive' });
+      setSpiderScanId(null);
+    }
+  }, [spiderScanId, spiderScanStatus?.status]);
 
   useEffect(() => {
     if (activeScanId && scanResult?.status === 'running') {
@@ -185,6 +231,45 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
     },
   });
 
+  const startSpiderMutation = useMutation({
+    mutationFn: async (params: { target: string; modules?: string[]; useCase?: string }) => {
+      const res = await fetch('/api/spiderfoot/spider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...params, sessionToken }),
+      });
+      if (!res.ok) throw new Error('Spider scan request failed');
+      return res.json() as Promise<SFScanResponse>;
+    },
+    onSuccess: (data) => {
+      setSpiderScanId(data.scanId);
+      toast({ title: 'Sourcing Leads', description: `Spidering ${data.target}...` });
+    },
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to start spider scan', variant: 'destructive' });
+    },
+  });
+
+  const promoteLeadsMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const res = await fetch('/api/spiderfoot/leads/promote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      if (!res.ok) throw new Error('Promote request failed');
+      return res.json() as Promise<{ promoted: SpiderLead[]; skipped: string[] }>;
+    },
+    onSuccess: (data) => {
+      toast({ title: 'Leads Promoted', description: `${data.promoted.length} lead(s) promoted for investigation` });
+      setSelectedLeadIds(new Set());
+      refetchLeads();
+    },
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to promote leads', variant: 'destructive' });
+    },
+  });
+
   const saveKeyMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: string }) => {
       const res = await fetch('/api/spiderfoot/api-keys', {
@@ -233,6 +318,34 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
       params.useCase = 'passive';
     }
     startScanMutation.mutate(params);
+  };
+
+  const isSpidering = spiderScanId !== null;
+
+  const handleStartSpider = () => {
+    if (!target.trim()) {
+      toast({ title: 'Target Required', description: 'Enter a domain, IP, or URL to source leads from', variant: 'destructive' });
+      return;
+    }
+    const params: { target: string; modules?: string[]; useCase?: string } = { target: target.trim() };
+    if (selectedPreset === 'all') {
+      params.useCase = 'all';
+    } else if (selectedPreset === 'custom') {
+      params.useCase = 'passive';
+    } else if (modulesData?.presets?.[selectedPreset]) {
+      params.modules = modulesData.presets[selectedPreset];
+    } else {
+      params.useCase = 'passive';
+    }
+    startSpiderMutation.mutate(params);
+  };
+
+  const toggleLeadSelection = (id: string) => {
+    setSelectedLeadIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
   const groupedResults = (scanResult?.results || []).reduce<Record<string, SFResult[]>>((acc, r) => {
@@ -447,6 +560,74 @@ export function SpiderFootTab({ onSendToAgent, onSendToAtropos }: SpiderFootTabP
                   >
                     <X className="w-3 h-3" />
                   </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/50 border-border" data-testid="card-spider-mode">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-amber-800 flex items-center gap-2 text-base">
+                <Crosshair className="w-4 h-4" /> Spider Mode
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Raw investigation: source leads from the target above without committing them as results yet.
+                Review and promote the ones worth keeping.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                onClick={handleStartSpider}
+                disabled={isSpidering || startSpiderMutation.isPending || !target.trim()}
+                variant="outline"
+                className="w-full border-amber-700/40 text-amber-800 hover:bg-amber-500/10 min-h-[44px]"
+                data-testid="button-start-spider"
+              >
+                {isSpidering || startSpiderMutation.isPending ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sourcing Leads...</>
+                ) : (
+                  <><Crosshair className="w-4 h-4 mr-2" /> Source Leads</>
+                )}
+              </Button>
+
+              {leadsData && leadsData.count > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">{leadsData.count} untriaged lead{leadsData.count === 1 ? '' : 's'}</span>
+                    <Button
+                      size="sm"
+                      className="h-7 bg-amber-700 hover:bg-amber-600 text-black text-xs"
+                      disabled={selectedLeadIds.size === 0 || promoteLeadsMutation.isPending}
+                      onClick={() => promoteLeadsMutation.mutate(Array.from(selectedLeadIds))}
+                      data-testid="button-promote-leads"
+                    >
+                      Promote {selectedLeadIds.size > 0 ? `(${selectedLeadIds.size})` : ''}
+                    </Button>
+                  </div>
+                  <ScrollArea className="h-40 rounded-md border border-border bg-card/60">
+                    <div className="p-2 space-y-1">
+                      {leadsData.leads.map(lead => (
+                        <label
+                          key={lead.id}
+                          className="flex items-start gap-2 text-xs p-1.5 rounded hover:bg-muted/40 cursor-pointer"
+                          data-testid={`row-lead-${lead.id}`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="mt-0.5"
+                            checked={selectedLeadIds.has(lead.id)}
+                            onChange={() => toggleLeadSelection(lead.id)}
+                          />
+                          <span className="flex-1 min-w-0">
+                            <span className="text-foreground font-medium">{lead.type}</span>
+                            {' '}
+                            <span className="text-muted-foreground break-all">{lead.data}</span>
+                            <span className="block text-muted-foreground/70">via {lead.module}</span>
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </ScrollArea>
                 </div>
               )}
             </CardContent>

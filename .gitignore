@@ -6,6 +6,8 @@ __pycache__
 server/public
 vite.config.ts.*
 .atropos-cache
+.spiderfoot-keys.json
+.spider-leads.jsonl
 *.tar.gz
 *.pem
 .env
