@@ -55,8 +55,8 @@ atropos/
 ├── shared/          # Drizzle schema + shared types
 ├── tools/atropos/   # Rust OSINT scanner
 ├── templates/       # Modular starter kit — assemble a custom deployment
-├── obsidian-vault/  # Offline campaign/content authoring
-└── docs/            # Architecture, curriculum, and integration guides
+├── spiderfoot/      # OSINT web analysis modules
+└── docs/            # Numbered guides + archive
 ```
 
 ## Modular starter kit
@@ -72,9 +72,10 @@ Presets: `minimal`, `learner`, `civic`, `security`, `marketing`, `full`. See `te
 
 ## Documentation
 
-- [`docs/CURRICULUM.md`](docs/CURRICULUM.md) — the experiential learning framework behind the campaigns
-- [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) — onboarding guide
-- [`docs/SPINOFF_AND_HOSTING_GUIDE.md`](docs/SPINOFF_AND_HOSTING_GUIDE.md) — fork and deploy your own instance
+- [`01-GETTING_STARTED`](docs/01-GETTING_STARTED.md) — onboarding guide
+- [`02-CURRICULUM`](docs/02-CURRICULUM.md) — experiential learning framework
+- [`03-SPINOFF_AND_HOSTING_GUIDE`](docs/03-SPINOFF_AND_HOSTING_GUIDE.md) — fork and deploy your own instance
+- [`04-CAMPAIGN_LEARNING_TEMPLATE`](docs/04-CAMPAIGN_LEARNING_TEMPLATE.md) — build new campaigns
 - [`.cursorrules`](.cursorrules) — architecture and coding conventions
 
 ## License
