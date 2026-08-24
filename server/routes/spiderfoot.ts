@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { spiderfootService, type SpiderFootScanParams } from "../services/spiderfoot";
+import { sourceLeads, listLeads, promoteLeads } from "../services/spiderLeads";
 import fs from "fs/promises";
 import path from "path";
 
@@ -190,6 +191,84 @@ router.get("/scan/:scanId/export", (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Content-Disposition', `attachment; filename="spiderfoot-${scanId}.json"`);
   res.json(result);
+});
+
+// Spider mode: raw lead-sourcing, separate from the immediate-ingest /scan
+// endpoint above. Each finding lands untriaged (status "new") instead of
+// being treated as a finished result; /leads/promote is the explicit review
+// step. Mirrors flowsearch's spider/leads/promote scout_corpus verbs
+// (scripts/reader/c_scout_server.py) so both apps share one design.
+router.post("/spider", async (req: Request, res: Response) => {
+  try {
+    const { target, modules, useCase, eventTypes, maxThreads, sessionToken } = req.body;
+
+    if (!target || typeof target !== 'string' || target.trim().length === 0) {
+      return res.status(400).json({ error: "Target is required" });
+    }
+
+    const apiKeys = await loadApiKeys();
+
+    const params: SpiderFootScanParams = {
+      target: target.trim(),
+      modules: modules || undefined,
+      useCase: useCase || 'passive',
+      eventTypes: eventTypes || undefined,
+      maxThreads: maxThreads || 3,
+    };
+
+    const { scanId, promise } = spiderfootService.runScan(params, apiKeys);
+
+    scanHistory.push({
+      scanId,
+      target: params.target,
+      status: 'running',
+      startedAt: new Date().toISOString(),
+      resultCount: 0,
+      modules: params.modules,
+      useCase: params.useCase,
+      sessionToken: sessionToken || undefined,
+    });
+
+    res.json({ scanId, status: 'running', target: params.target, mode: 'spider' });
+
+    promise.then(async (result) => {
+      const entry = scanHistory.find(h => h.scanId === scanId);
+      if (entry) {
+        entry.status = result.status;
+        entry.completedAt = result.completedAt;
+        entry.resultCount = result.resultCount;
+      }
+      if (result.status === 'completed' && result.results.length > 0) {
+        await sourceLeads(scanId, params.target, result.results);
+      }
+      scanResults.set(scanId, result);
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/leads", async (req: Request, res: Response) => {
+  try {
+    const status = req.query.status as string | undefined;
+    const leads = await listLeads(status);
+    res.json({ leads, count: leads.length });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/leads/promote", async (req: Request, res: Response) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "ids (non-empty array of lead ids) is required" });
+    }
+    const result = await promoteLeads(ids);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 router.get("/active", (_req: Request, res: Response) => {
