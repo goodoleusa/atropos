@@ -269,15 +269,15 @@ export function CurriculumSection() {
           {[
             { label: 'Total Tracks', value: stats.totalTracks, icon: Layers, color: 'text-amber-800' },
             { label: 'AI Tracks', value: stats.aiTracks, icon: Brain, color: 'text-teal-800' },
-            { label: 'OSINT Tracks', value: stats.osintTracks, icon: Globe, color: 'text-cyan-500' },
+            { label: 'OSINT Tracks', value: stats.osintTracks, icon: Globe, color: 'text-cyan-700 dark:text-cyan-500' },
             { label: 'Missions', value: stats.totalMissions, icon: Target, color: 'text-amber-800' },
-            { label: 'Exercises', value: stats.totalExercises, icon: Zap, color: 'text-emerald-500' },
+            { label: 'Exercises', value: stats.totalExercises, icon: Zap, color: 'text-emerald-600 dark:text-emerald-500' },
             { label: 'Objectives', value: stats.totalObjectives, icon: BookOpen, color: 'text-purple-700' },
           ].map(s => (
             <Card key={s.label} className="bg-[hsl(var(--card))] border-border/50">
               <CardContent className="p-3 text-center">
                 <s.icon className={`w-4 h-4 mx-auto mb-1 ${s.color}`} />
-                <div className="text-xl font-bold text-white">{s.value}</div>
+                <div className="text-xl font-bold text-gray-900 dark:text-white">{s.value}</div>
                 <div className="text-[9px] text-muted-foreground uppercase tracking-widest">{s.label}</div>
               </CardContent>
             </Card>
@@ -307,7 +307,7 @@ export function CurriculumSection() {
               <div key={wf.title} className="flex items-center gap-2 p-2 bg-card/50 border border-border/30 rounded" data-testid={`workflow-${wf.title.toLowerCase().replace(/\s+/g, '-')}`}>
                 {wf.icon}
                 <div className="min-w-0 flex-1">
-                  <span className="text-[11px] font-semibold text-white">{wf.title}</span>
+                  <span className="text-[11px] font-semibold text-gray-900 dark:text-white">{wf.title}</span>
                   <p className="text-[9px] text-muted-foreground truncate">{wf.desc}</p>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export function CurriculumSection() {
                         data-testid={`rec-card-${rec.id}`}
                       >
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[11px] font-medium text-white truncate">{rec.title}</span>
+                          <span className="text-[11px] font-medium text-gray-900 dark:text-white truncate">{rec.title}</span>
                           {rec.priority && <Badge className={`text-[7px] border ${rec.priority === 'critical' ? 'bg-red-900/30 text-red-700 border-red-800/40' : rec.priority === 'high' ? 'bg-orange-900/30 text-orange-800 border-orange-800/40' : 'bg-border text-muted-foreground border-border'}`}>{rec.priority}</Badge>}
                           {rec.category && <Badge variant="outline" className="text-[7px] border-border text-muted-foreground">{rec.category}</Badge>}
                         </div>
@@ -398,7 +398,7 @@ export function CurriculumSection() {
                   <select
                     value={genTargetTrack}
                     onChange={e => setGenTargetTrack(e.target.value)}
-                    className="w-full h-8 text-xs bg-card border border-border rounded px-2 text-white"
+                    className="w-full h-8 text-xs bg-card border border-border rounded px-2 text-gray-900 dark:text-white"
                     data-testid="select-gen-target-track"
                   >
                     <option value="">Select a track...</option>
@@ -464,7 +464,7 @@ export function CurriculumSection() {
                   </div>
                   <div>
                     <Label className="text-[9px] text-muted-foreground uppercase">Difficulty</Label>
-                    <select value={genDraft.difficulty || 'intermediate'} onChange={e => setGenDraft((d: any) => ({ ...d, difficulty: e.target.value }))} className="w-full h-8 text-xs bg-card border border-border rounded px-1 text-white" data-testid="select-gen-difficulty">
+                    <select value={genDraft.difficulty || 'intermediate'} onChange={e => setGenDraft((d: any) => ({ ...d, difficulty: e.target.value }))} className="w-full h-8 text-xs bg-card border border-border rounded px-1 text-gray-900 dark:text-white" data-testid="select-gen-difficulty">
                       <option value="beginner">Beginner</option>
                       <option value="intermediate">Intermediate</option>
                       <option value="advanced">Advanced</option>
@@ -559,7 +559,7 @@ export function CurriculumSection() {
                             <select
                               value={ex.type}
                               onChange={e => setGenDraft((d: any) => { const u = [...d.exercises]; u[ei] = { ...u[ei], type: e.target.value }; return { ...d, exercises: u }; })}
-                              className="w-full h-7 text-xs bg-black/50 border border-amber-900/30 rounded px-1 text-white"
+                              className="w-full h-7 text-xs bg-black/50 border border-amber-900/30 rounded px-1 text-gray-900 dark:text-white"
                               data-testid={`select-gen-exercise-type-${ei}`}
                             >
                               {["prompt_craft", "comparison", "crew_build", "eval_run", "observation", "debate", "failure_analysis", "reflection"].map(t => (
@@ -658,7 +658,7 @@ export function CurriculumSection() {
 
       {[
         { label: 'AI Mastery', trackList: aiTracks, catColor: 'text-teal-800', borderColor: 'border-teal-900/40' },
-        { label: 'Cyber OSINT', trackList: osintTracks, catColor: 'text-cyan-500', borderColor: 'border-cyan-900/40' },
+        { label: 'Cyber OSINT', trackList: osintTracks, catColor: 'text-cyan-700 dark:text-cyan-500', borderColor: 'border-cyan-900/40' },
       ].map(section => section.trackList.length > 0 && (
         <div key={section.label} className="space-y-3">
           <div className="flex items-center gap-2 px-1">
@@ -679,7 +679,7 @@ export function CurriculumSection() {
                       <span className="text-lg">{track.icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <CardTitle className="text-sm text-white truncate">{track.name}</CardTitle>
+                          <CardTitle className="text-sm text-gray-900 dark:text-white truncate">{track.name}</CardTitle>
                           <Badge variant="outline" className="text-[8px] border-border text-muted-foreground">{track.trackId}</Badge>
                           {!track.isActive && <Badge className="text-[8px] bg-red-900/30 text-red-700 border-0">Disabled</Badge>}
                         </div>
@@ -758,7 +758,7 @@ export function CurriculumSection() {
                               <span className="text-sm">{mission.icon}</span>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-[11px] font-medium text-white truncate">{mission.name}</span>
+                                  <span className="text-[11px] font-medium text-gray-900 dark:text-white truncate">{mission.name}</span>
                                   <Badge className={`text-[7px] border ${difficultyColor(mission.difficulty)}`}>{mission.difficulty}</Badge>
                                 </div>
                                 <div className="flex items-center gap-2 mt-0.5 text-[9px] text-muted-foreground">
@@ -869,7 +869,7 @@ export function CurriculumSection() {
                                   <div className="grid grid-cols-3 gap-1">
                                     <div>
                                       <label className="text-[9px] text-muted-foreground uppercase">Difficulty</label>
-                                      <select value={missionEditForm.difficulty || 'beginner'} onChange={e => setMissionEditForm(f => ({ ...f, difficulty: e.target.value }))} className="w-full h-8 text-xs bg-card border border-border rounded px-1 text-white" data-testid="select-mission-difficulty">
+                                      <select value={missionEditForm.difficulty || 'beginner'} onChange={e => setMissionEditForm(f => ({ ...f, difficulty: e.target.value }))} className="w-full h-8 text-xs bg-card border border-border rounded px-1 text-gray-900 dark:text-white" data-testid="select-mission-difficulty">
                                         <option value="beginner">Beginner</option>
                                         <option value="intermediate">Intermediate</option>
                                         <option value="advanced">Advanced</option>
@@ -928,7 +928,7 @@ export function CurriculumSection() {
 
                                 <div>
                                   <div className="flex items-center justify-between mb-1">
-                                    <label className="text-[9px] text-emerald-500 uppercase font-bold">Key Takeaways ({(missionEditForm.keyTakeaways || []).length})</label>
+                                    <label className="text-[9px] text-emerald-600 dark:text-emerald-500 uppercase font-bold">Key Takeaways ({(missionEditForm.keyTakeaways || []).length})</label>
                                     <Button size="sm" variant="ghost" onClick={() => setMissionEditForm(f => ({ ...f, keyTakeaways: [...(f.keyTakeaways || []), ""] }))} className="h-7 text-[10px] text-emerald-800 hover:text-emerald-600" data-testid="add-takeaway">
                                       <Plus className="w-3 h-3 mr-1" /> Add
                                     </Button>

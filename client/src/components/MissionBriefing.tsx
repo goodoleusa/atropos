@@ -79,7 +79,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
           <button onClick={() => setSelectedMission(null)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-amber-700 transition-colors min-h-[36px] md:min-h-0 px-1" data-testid="back-to-tracks">
             <ChevronRight className="w-3.5 h-3.5 md:w-3 md:h-3 rotate-180" /> Back
           </button>
-          <button onClick={onClose} className="p-2 md:p-1.5 rounded text-muted-foreground hover:text-white hover:bg-border/50 transition-colors" data-testid="close-mission-detail">
+          <button onClick={onClose} className="p-2 md:p-1.5 rounded text-muted-foreground hover:text-gray-900 dark:hover:text-white hover:bg-border/50 transition-colors" data-testid="close-mission-detail">
             <X className="w-4 h-4 md:w-3.5 md:h-3.5" />
           </button>
         </div>
@@ -143,7 +143,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                   <div className="flex items-start gap-2">
                     <button onClick={() => toggleExercise(exercise.id)} className="mt-0.5 shrink-0 p-0.5 min-w-[24px] min-h-[24px] flex items-center justify-center">
                       {isDone ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
                       ) : (
                         <Circle className="w-4 h-4 text-muted-foreground hover:text-amber-500 transition-colors" />
                       )}
@@ -230,7 +230,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
             <StyleIcon className={`w-3 h-3 ${styleMeta.color}`} />
             <span className={`text-[9px] ${styleMeta.color}`}>{styleMeta.label}</span>
           </div>
-          <button onClick={onClose} className="p-1.5 md:p-1 rounded text-muted-foreground hover:text-white hover:bg-border/50 transition-colors shrink-0" data-testid="close-tracks">
+          <button onClick={onClose} className="p-1.5 md:p-1 rounded text-muted-foreground hover:text-gray-900 dark:hover:text-white hover:bg-border/50 transition-colors shrink-0" data-testid="close-tracks">
             <X className="w-4 h-4 md:w-3.5 md:h-3.5" />
           </button>
         </div>
@@ -317,7 +317,7 @@ export function MissionBriefing({ onStartMission, onSuggestionChip, onClose, act
                                     <span>{mission.difficulty}</span>
                                     <span className="flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" /> {mission.estimatedTime}</span>
                                     <span className="flex items-center gap-0.5"><Star className="w-2.5 h-2.5 text-amber-700" /> {mission.xpReward}</span>
-                                    {mProgress > 0 && <span className="text-emerald-500">{mProgress}%</span>}
+                                    {mProgress > 0 && <span className="text-emerald-600 dark:text-emerald-500">{mProgress}%</span>}
                                   </div>
                                 </div>
                                 <ChevronRight className="w-3.5 h-3.5 md:w-3 md:h-3 text-muted-foreground shrink-0" />

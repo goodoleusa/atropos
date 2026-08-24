@@ -242,7 +242,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         <TabsContent value="simulate" className="space-y-4">
           <Card className="bg-card/50 border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-200 flex items-center gap-2">
+              <CardTitle className="text-amber-800 dark:text-amber-200 flex items-center gap-2">
                 <Terminal className="w-5 h-5" /> Simulated Scan
               </CardTitle>
               <CardDescription>Run demo scans to test the NEXUS workflow</CardDescription>
@@ -301,7 +301,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         <TabsContent value="import" className="space-y-4">
           <Card className="bg-card/50 border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-200 flex items-center gap-2">
+              <CardTitle className="text-amber-800 dark:text-amber-200 flex items-center gap-2">
                 <FileJson className="w-5 h-5" /> Import Scan Results
               </CardTitle>
               <CardDescription>Paste JSON output from Atropos, BBOT, or Nuclei</CardDescription>
@@ -346,7 +346,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         <TabsContent value="remote" className="space-y-4">
           <Card className="bg-card/50 border-amber-900/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-amber-200 flex items-center gap-2">
+              <CardTitle className="text-amber-800 dark:text-amber-200 flex items-center gap-2">
                 <Server className="w-5 h-5" /> Remote Atropos Server
               </CardTitle>
               <CardDescription>Connect to an Atropos instance running elsewhere</CardDescription>
@@ -373,7 +373,7 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
                   </Button>
                 </div>
                 {remoteStatus !== "unknown" && (
-                  <Badge className={remoteStatus === "online" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-700"}>
+                  <Badge className={remoteStatus === "online" ? "bg-green-500/20 text-green-700 dark:text-green-400" : "bg-red-500/20 text-red-700"}>
                     {remoteStatus === "online" ? "Connected" : "Offline"}
                   </Badge>
                 )}
@@ -398,8 +398,8 @@ export function AtroposScanner({ onAnalyzeWithNexus }: AtroposScannerProps) {
         <Card className="terminal-panel bg-card/50 border-amber-900/30">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-amber-200 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-400" /> Scan Results
+              <CardTitle className="text-amber-800 dark:text-amber-200 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-700 dark:text-green-400" /> Scan Results
               </CardTitle>
               <Badge className={SEVERITY_COLORS[scanResult.summary.riskLevel] || SEVERITY_COLORS.info}>
                 Risk: {scanResult.summary.riskLevel.toUpperCase()} ({scanResult.summary.riskScore}/100)

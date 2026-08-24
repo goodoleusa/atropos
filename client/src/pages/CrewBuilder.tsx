@@ -48,10 +48,10 @@ interface ModelEntry {
 }
 
 const COST_TIER_META: Record<CostTier, { label: string; color: string; bg: string; border: string; description: string }> = {
-  free:    { label: 'FREE',    color: 'text-emerald-400', bg: 'bg-emerald-900/20', border: 'border-emerald-800/40', description: '$0 — no cost at all' },
-  budget:  { label: 'BUDGET',  color: 'text-sky-400',     bg: 'bg-sky-900/20',     border: 'border-sky-800/40',     description: 'Under $1/M output — cheap even with heavy output' },
-  mid:     { label: 'MID',     color: 'text-amber-800',   bg: 'bg-amber-900/20',   border: 'border-amber-800/40',   description: '$1-10/M output — solid quality, watch output volume' },
-  premium: { label: 'PREMIUM', color: 'text-rose-400',    bg: 'bg-rose-900/20',     border: 'border-rose-800/40',    description: '$10+/M output — top quality, burns fast on long outputs' },
+  free:    { label: 'FREE',    color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/20', border: 'border-emerald-300 dark:border-emerald-800/40', description: '$0 — no cost at all' },
+  budget:  { label: 'BUDGET',  color: 'text-sky-700 dark:text-sky-400',     bg: 'bg-sky-100 dark:bg-sky-900/20',     border: 'border-sky-300 dark:border-sky-800/40',     description: 'Under $1/M output — cheap even with heavy output' },
+  mid:     { label: 'MID',     color: 'text-amber-800',   bg: 'bg-amber-100 dark:bg-amber-900/20',   border: 'border-amber-300 dark:border-amber-800/40',   description: '$1-10/M output — solid quality, watch output volume' },
+  premium: { label: 'PREMIUM', color: 'text-rose-700 dark:text-rose-400',    bg: 'bg-rose-100 dark:bg-rose-900/20',     border: 'border-rose-300 dark:border-rose-800/40',    description: '$10+/M output — top quality, burns fast on long outputs' },
 };
 
 const CATEGORY_META: Record<ModelCategory, { label: string; icon: any; color: string }> = {
@@ -126,7 +126,7 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
           <h3 className="text-sm font-orbitron text-amber-800 flex items-center gap-2">
             <Cpu className="w-4 h-4" /> Choose Model (OpenRouter)
           </h3>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6 text-muted-foreground hover:text-white">
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6 text-muted-foreground hover:text-gray-900 dark:hover:text-white">
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -138,7 +138,7 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search models..."
-              className="pl-8 h-8 bg-card/50 border-border text-white text-xs"
+              className="pl-8 h-8 bg-card/50 border-border text-gray-900 dark:text-white text-xs"
               autoFocus
             />
           </div>
@@ -192,7 +192,7 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="text-xs font-medium text-white">{m.name}</span>
+                                <span className="text-xs font-medium text-gray-900 dark:text-white">{m.name}</span>
                                 <span className="text-[9px] text-muted-foreground">{m.provider}</span>
                                 {isSelected && <Check className="w-3 h-3 text-amber-800" />}
                               </div>
@@ -201,7 +201,7 @@ function ModelPickerPopup({ value, onChange, onClose }: { value: string; onChang
                             </div>
                             <div className="text-right shrink-0 space-y-0.5">
                               {m.costTier === 'free' ? (
-                                <Badge className="bg-emerald-900/30 text-emerald-400 text-[9px] border-0">FREE</Badge>
+                                <Badge className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[9px] border-0">FREE</Badge>
                               ) : (
                                 <>
                                   <div className="text-[9px] text-muted-foreground">
@@ -621,16 +621,16 @@ print(result)`,
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-card/50 border border-amber-900/30 mb-6">
-            <TabsTrigger value="build" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-400" data-testid="tab-build">
+            <TabsTrigger value="build" className="data-[state=active]:bg-amber-900/30 data-[state=active]:text-amber-700 dark:data-[state=active]:text-amber-400" data-testid="tab-build">
               <Settings2 className="w-4 h-4 mr-2" /> Build Crew
             </TabsTrigger>
-            <TabsTrigger value="results" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-400" data-testid="tab-results">
+            <TabsTrigger value="results" className="data-[state=active]:bg-teal-900/30 data-[state=active]:text-teal-700 dark:data-[state=active]:text-teal-400" data-testid="tab-results">
               <FileText className="w-4 h-4 mr-2" /> Results
               {currentResults.length > 0 && (
                 <Badge className="ml-2 bg-teal-600 text-xs">{currentResults.length}</Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="eval" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-400" data-testid="tab-eval">
+            <TabsTrigger value="eval" className="data-[state=active]:bg-purple-900/30 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-400" data-testid="tab-eval">
               <BarChart3 className="w-4 h-4 mr-2" /> Eval History
               {evalHistory.length > 0 && (
                 <Badge className="ml-2 bg-purple-600 text-xs">{evalHistory.length}</Badge>
@@ -654,14 +654,14 @@ print(result)`,
                       value={objective}
                       onChange={(e) => setObjective(e.target.value)}
                       placeholder="What should this crew accomplish?"
-                      className="bg-card/50 border-border text-white"
+                      className="bg-card/50 border-border text-gray-900 dark:text-white"
                       data-testid="crew-objective-input"
                     />
                   </CardContent>
                 </Card>
 
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-orbitron text-white flex items-center gap-2">
+                  <h2 className="text-sm font-orbitron text-gray-900 dark:text-white flex items-center gap-2">
                     Crew Members ({crewMembers.length}/6)
                   </h2>
                   <div className="flex items-center gap-4">
@@ -690,7 +690,7 @@ print(result)`,
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <Select value={member.agentId} onValueChange={(v) => updateMember(idx, { agentId: v })}>
-                                  <SelectTrigger className="w-48 bg-card/50 border-border text-white h-8" data-testid={`agent-select-${idx}`}>
+                                  <SelectTrigger className="w-48 bg-card/50 border-border text-gray-900 dark:text-white h-8" data-testid={`agent-select-${idx}`}>
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent className="bg-card border-border">
@@ -705,7 +705,7 @@ print(result)`,
                                   Agent {idx + 1}
                                 </Badge>
                               </div>
-                              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-400 h-6 w-6 p-0" onClick={() => removeMember(idx)} disabled={crewMembers.length <= 1}>
+                              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-600 dark:hover:text-red-400 h-6 w-6 p-0" onClick={() => removeMember(idx)} disabled={crewMembers.length <= 1}>
                                 <Minus className="w-3 h-3" />
                               </Button>
                             </div>
@@ -715,7 +715,7 @@ print(result)`,
                                 <Label className="text-[10px] text-muted-foreground uppercase">Model (OpenRouter)</Label>
                                 <button
                                   onClick={() => setModelPickerIdx(idx)}
-                                  className="w-full flex items-center justify-between gap-2 bg-card/50 border border-border rounded-md px-3 h-8 text-xs text-white hover:border-amber-700 transition-colors"
+                                  className="w-full flex items-center justify-between gap-2 bg-card/50 border border-border rounded-md px-3 h-8 text-xs text-gray-900 dark:text-white hover:border-amber-700 transition-colors"
                                   data-testid={`model-select-${idx}`}
                                 >
                                   <div className="flex items-center gap-2 min-w-0">
@@ -749,7 +749,7 @@ print(result)`,
                                 value={member.customPromptAddition}
                                 onChange={(e) => updateMember(idx, { customPromptAddition: e.target.value })}
                                 placeholder="Additional focus instructions for this agent..."
-                                className="bg-card/50 border-border text-white h-8 text-xs"
+                                className="bg-card/50 border-border text-gray-900 dark:text-white h-8 text-xs"
                               />
                             </div>
 
@@ -757,7 +757,7 @@ print(result)`,
                               <span className="flex items-center gap-1">
                                 <DollarSign className="w-3 h-3" />
                                 {modelInfo?.costTier === 'free' ? (
-                                  <span className="text-emerald-500">Free</span>
+                                  <span className="text-emerald-600 dark:text-emerald-500">Free</span>
                                 ) : modelInfo ? (
                                   <span className={COST_TIER_META[modelInfo.costTier].color}>
                                     ~${estimateRunCost(modelInfo).toFixed(3)}/run · ${modelInfo.outputPer1M}/M out
@@ -842,7 +842,7 @@ print(result)`,
                       value={taskInput}
                       onChange={(e) => setTaskInput(e.target.value)}
                       placeholder="Paste scan results, investigation data, or describe the scenario to analyze..."
-                      className="bg-card/50 border-border text-white min-h-[200px] text-xs font-mono"
+                      className="bg-card/50 border-border text-gray-900 dark:text-white min-h-[200px] text-xs font-mono"
                       data-testid="task-input"
                     />
                     <Button
@@ -925,7 +925,7 @@ print(result)`,
                   </Card>
                   <Card className="bg-[hsl(var(--card))] border-border">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xl font-bold text-green-400">
+                      <p className="text-xl font-bold text-green-700 dark:text-green-400">
                         ${currentResults.reduce((s, r) => s + r.costEstimate, 0).toFixed(3)}
                       </p>
                       <p className="text-[9px] text-muted-foreground uppercase">Est. Cost</p>
@@ -942,7 +942,7 @@ print(result)`,
                       <Card key={idx} className="bg-[hsl(var(--card))] border-border" data-testid={`result-card-${result.agentId}`}>
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm text-white flex items-center gap-2">
+                            <CardTitle className="text-sm text-gray-900 dark:text-white flex items-center gap-2">
                               <Icon className="w-4 h-4 text-amber-800" />
                               {result.agentName}
                             </CardTitle>
@@ -955,7 +955,7 @@ print(result)`,
                                 {(result.latencyMs / 1000).toFixed(1)}s
                               </Badge>
                               {result.costEstimate > 0 && (
-                                <Badge variant="outline" className="text-[9px] border-green-700 text-green-400">
+                                <Badge variant="outline" className="text-[9px] border-green-700 text-green-700 dark:text-green-400">
                                   <DollarSign className="w-3 h-3 mr-1" />
                                   ${result.costEstimate.toFixed(3)}
                                 </Badge>
@@ -968,7 +968,7 @@ print(result)`,
                             <pre className="text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed">{result.output}</pre>
                           </ScrollArea>
                           <div className="flex gap-2 mt-3">
-                            <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-white text-[10px] h-6"
+                            <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-gray-900 dark:hover:text-white text-[10px] h-6"
                               onClick={() => { navigator.clipboard.writeText(result.output); toast({ title: 'Copied' }); }}>
                               <Copy className="w-3 h-3 mr-1" /> Copy
                             </Button>
@@ -1099,7 +1099,7 @@ print(result)`,
                                 {(run.totalLatencyMs / 1000).toFixed(1)}s
                               </span>
                               <span className="text-muted-foreground">{run.totalTokens.toLocaleString()}</span>
-                              <span className={run.totalCost === bestCost ? 'text-green-400 font-bold' : 'text-muted-foreground'}>
+                              <span className={run.totalCost === bestCost ? 'text-green-700 dark:text-green-400 font-bold' : 'text-muted-foreground'}>
                                 ${run.totalCost.toFixed(3)}
                               </span>
                             </div>

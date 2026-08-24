@@ -310,7 +310,7 @@ export function SitemapPanel() {
                       <div key={item.id} className={`flex items-center gap-2 py-1.5 px-2 rounded hover:bg-card/30 group transition-colors`} data-testid={`sitemap-row-${item.id}`}>
                         <IconComp className={`w-3.5 h-3.5 ${colors.text} shrink-0`} />
                         <Link href={item.path.includes(':') ? '#' : item.path} className="flex-1 min-w-0">
-                          <span className="text-xs text-foreground group-hover:text-white font-medium truncate block">{item.name}</span>
+                          <span className="text-xs text-foreground group-hover:text-foreground font-medium truncate block">{item.name}</span>
                         </Link>
                         <span className="text-[8px] text-muted-foreground font-mono shrink-0">{item.path}</span>
                         <Badge variant="outline" className="text-[7px] px-1 py-0 border-border text-muted-foreground shrink-0">{item.pageLayout}</Badge>
@@ -341,7 +341,7 @@ export function SitemapPanel() {
                         <div className="flex-1 min-w-0">
                           <Link href={item.path.includes(':') ? '#' : item.path}>
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-foreground group-hover:text-white transition-colors truncate">{item.name}</span>
+                              <span className="text-xs font-bold text-foreground group-hover:text-foreground transition-colors truncate">{item.name}</span>
                               <ArrowRight className="w-2.5 h-2.5 text-muted-foreground group-hover:text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0" />
                             </div>
                           </Link>

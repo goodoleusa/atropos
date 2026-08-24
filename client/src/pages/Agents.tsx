@@ -467,7 +467,7 @@ export default function Agents() {
               >
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                   wizardStep === step.num ? 'bg-amber-500 text-black' :
-                  wizardStep > step.num ? 'bg-border text-white' : 'bg-border text-muted-foreground'
+                  wizardStep > step.num ? 'bg-border text-gray-900 dark:text-white' : 'bg-border text-muted-foreground'
                 }`}>
                   {wizardStep > step.num ? <Check className="w-4 h-4" /> : step.num}
                 </div>
@@ -499,7 +499,7 @@ export default function Agents() {
         {wizardStep === 1 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-orbitron text-white">Choose Your Agent</h2>
+              <h2 className="text-lg font-orbitron text-gray-900 dark:text-white">Choose Your Agent</h2>
               <p className="text-xs text-muted-foreground">Click an agent to proceed</p>
             </div>
 
@@ -525,7 +525,7 @@ export default function Agents() {
                           <div className="p-2 rounded-lg bg-card/50">
                             {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-5 h-5" />}
                           </div>
-                          <CardTitle className="text-lg text-white">{agent.name}</CardTitle>
+                          <CardTitle className="text-lg text-gray-900 dark:text-white">{agent.name}</CardTitle>
                         </div>
                         <ArrowRight className="w-4 h-4 text-muted-foreground" />
                       </div>
@@ -559,11 +559,11 @@ export default function Agents() {
                   {AGENT_ICONS[(selectedAgent as any).moduleId] || <Bot className="w-6 h-6" />}
                 </div>
                 <div>
-                  <h3 className="text-white font-medium text-lg">{selectedAgent.name}</h3>
+                  <h3 className="text-gray-900 dark:text-white font-medium text-lg">{selectedAgent.name}</h3>
                   <p className="text-sm text-muted-foreground">{selectedAgent.description}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setWizardStep(1)} className="text-muted-foreground hover:text-white">
+              <Button variant="ghost" size="sm" onClick={() => setWizardStep(1)} className="text-muted-foreground hover:text-gray-900 dark:hover:text-white">
                 <RotateCcw className="w-4 h-4 mr-1" /> Change
               </Button>
             </div>
@@ -636,7 +636,7 @@ export default function Agents() {
                         variant="outline" 
                         onClick={fetchLatestScan}
                         disabled={loadingScan}
-                        className="w-full justify-start border-border text-teal-800 hover:text-teal-300 hover:border-teal-500/40 h-11"
+                        className="w-full justify-start border-border text-teal-800 hover:text-teal-700 dark:hover:text-teal-300 hover:border-teal-500/40 h-11"
                         data-testid="import-atropos-scan"
                       >
                         {loadingScan ? <Loader2 className="w-4 h-4 mr-3 animate-spin" /> : <Radar className="w-4 h-4 mr-3" />}
@@ -652,7 +652,7 @@ export default function Agents() {
                               size="sm"
                               onClick={() => fetchThreatIntel(feed.id)}
                               disabled={loadingFeed === feed.id}
-                              className="justify-start border-border text-foreground hover:text-white hover:border-amber-500/30 text-xs h-9"
+                              className="justify-start border-border text-foreground hover:text-gray-900 dark:hover:text-white hover:border-amber-500/30 text-xs h-9"
                               data-testid={`feed-${feed.id}`}
                             >
                               {loadingFeed === feed.id ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <span className="mr-2">{feed.icon}</span>}
@@ -714,7 +714,7 @@ export default function Agents() {
         {wizardStep === 3 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-orbitron text-white flex items-center gap-2">
+              <h2 className="text-lg font-orbitron text-gray-900 dark:text-white flex items-center gap-2">
                 <Brain className="w-5 h-5 text-amber-800" />
                 {selectedAgent?.name} - Analysis
               </h2>
@@ -815,7 +815,7 @@ export default function Agents() {
                         >
                           <div className="flex items-center gap-2">
                             {AGENT_ICONS[(agent as any).moduleId] || <Bot className="w-4 h-4" />}
-                            <span className="text-sm text-white">{agent.name}</span>
+                            <span className="text-sm text-gray-900 dark:text-white">{agent.name}</span>
                           </div>
                           <Switch
                             checked={selectedAgentsForExport.includes(agent.id)}
@@ -897,7 +897,7 @@ ${agents.slice(0, 2).map(a => `  {
                     <div className="flex items-center gap-3">
                       {AGENT_ICONS[run.agentId] || AGENT_ICONS[agents.find(a => a.id.toString() === run.agentId)?.moduleId || ''] || <Bot className="w-4 h-4" />}
                       <div>
-                        <span className="text-sm text-white">{run.agentId}</span>
+                        <span className="text-sm text-gray-900 dark:text-white">{run.agentId}</span>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           {run.latencyMs && <span>{run.latencyMs}ms</span>}
                           {run.tokenUsage && <span>{run.tokenUsage.total} tokens</span>}

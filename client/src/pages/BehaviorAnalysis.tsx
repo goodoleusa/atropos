@@ -46,7 +46,7 @@ interface UserJourney {
 const PERSONA_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   explorer: { bg: 'bg-teal-900/30', text: 'text-teal-800', label: 'Explorer' },
   power_user: { bg: 'bg-amber-900/30', text: 'text-amber-800', label: 'Power User' },
-  learner: { bg: 'bg-blue-900/30', text: 'text-blue-400', label: 'Learner' },
+  learner: { bg: 'bg-blue-900/30', text: 'text-blue-700 dark:text-blue-400', label: 'Learner' },
   casual: { bg: 'bg-border/50', text: 'text-muted-foreground', label: 'Casual' },
   analyst: { bg: 'bg-purple-900/30', text: 'text-purple-700', label: 'Analyst' },
   builder: { bg: 'bg-orange-900/30', text: 'text-orange-800', label: 'Builder' },
@@ -134,7 +134,7 @@ function JourneyTimeline({ journey }: { journey: UserJourney }) {
                 <div className={`px-2 py-1 rounded text-[10px] font-mono border cursor-default transition-colors
                   ${evt.category === 'agent' ? 'bg-teal-900/20 border-teal-800/40 text-teal-800' :
                     evt.category === 'terminal' ? 'bg-amber-900/20 border-amber-800/40 text-amber-800' :
-                    evt.category === 'navigation' ? 'bg-blue-900/20 border-blue-800/40 text-blue-400' :
+                    evt.category === 'navigation' ? 'bg-blue-900/20 border-blue-800/40 text-blue-700 dark:text-blue-400' :
                     evt.category === 'quest' ? 'bg-purple-900/20 border-purple-800/40 text-purple-700' :
                     'bg-card/40 border-border text-muted-foreground'}`}
                 >
@@ -233,7 +233,7 @@ function EngagementFunnel({ journeys }: { journeys: UserJourney[] }) {
                 <div className="flex-1 flex items-center">
                   <div className={`h-6 ${stage.color} rounded flex items-center justify-end pr-2 transition-all`}
                     style={{ width: `${w}%` }}>
-                    <span className="text-[10px] text-white font-bold">{stage.count}</span>
+                    <span className="text-[10px] text-gray-900 dark:text-white font-bold">{stage.count}</span>
                   </div>
                 </div>
               </div>
@@ -506,13 +506,13 @@ export default function BehaviorAnalysis() {
           ) : (
             <Tabs defaultValue="journeys" className="space-y-6">
               <TabsList className="bg-transparent border-0 gap-4 h-10 p-0">
-                <TabsTrigger value="journeys" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 font-orbitron text-[10px] tracking-widest uppercase" data-testid="tab-journeys">
+                <TabsTrigger value="journeys" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-700 dark:data-[state=active]:text-amber-400 rounded-none px-0 font-orbitron text-[10px] tracking-widest uppercase" data-testid="tab-journeys">
                   <Map className="w-4 h-4 mr-2" /> Journeys
                 </TabsTrigger>
-                <TabsTrigger value="profiles" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 font-orbitron text-[10px] tracking-widest uppercase" data-testid="tab-profiles">
+                <TabsTrigger value="profiles" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-700 dark:data-[state=active]:text-amber-400 rounded-none px-0 font-orbitron text-[10px] tracking-widest uppercase" data-testid="tab-profiles">
                   <Users className="w-4 h-4 mr-2" /> Profiles
                 </TabsTrigger>
-                <TabsTrigger value="marketing" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-400 rounded-none px-0 font-orbitron text-[10px] tracking-widest uppercase" data-testid="tab-marketing">
+                <TabsTrigger value="marketing" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent data-[state=active]:text-amber-700 dark:data-[state=active]:text-amber-400 rounded-none px-0 font-orbitron text-[10px] tracking-widest uppercase" data-testid="tab-marketing">
                   <TrendingUp className="w-4 h-4 mr-2" /> Marketing
                 </TabsTrigger>
               </TabsList>
@@ -585,7 +585,7 @@ export default function BehaviorAnalysis() {
                         {trends.flaggedSessions.map((session: any, i: number) => (
                           <div key={i} className="flex items-center justify-between bg-red-950/20 p-2 rounded border border-red-900/40">
                             <div className="flex items-center gap-2">
-                              <code className="text-[10px] text-red-300 font-mono">{session.sessionToken?.substring(0, 12)}...</code>
+                              <code className="text-[10px] text-red-700 dark:text-red-300 font-mono">{session.sessionToken?.substring(0, 12)}...</code>
                               <Badge className="bg-red-900/30 text-red-700 text-[9px]">{session.reason}</Badge>
                             </div>
                             <span className="text-[10px] text-muted-foreground">{new Date(session.timestamp).toLocaleString()}</span>

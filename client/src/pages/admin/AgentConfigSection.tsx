@@ -205,7 +205,7 @@ export default function AgentConfigSection() {
             <div className="p-3 rounded-lg bg-border/50 border border-border">
               <div className="flex items-center gap-2 mb-2">
                 <Icon className="w-5 h-5 text-amber-800" />
-                <span className="font-medium text-white">{selectedAgentInfo?.name}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{selectedAgentInfo?.name}</span>
                 <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-800">
                   Admin Protected
                 </Badge>
@@ -338,7 +338,7 @@ export default function AgentConfigSection() {
                   <div className="flex items-center justify-between p-3 rounded-lg bg-border/50 border border-border">
                     <div className="flex items-center gap-2">
                       <BarChart3 className="w-5 h-5 text-teal-800" />
-                      <span className="text-sm text-white">Enable W&B Logging</span>
+                      <span className="text-sm text-gray-900 dark:text-white">Enable W&B Logging</span>
                     </div>
                     <Switch
                       checked={wandbConfig?.enabled || false}
@@ -429,7 +429,7 @@ export default function AgentConfigSection() {
                     >
                       <div className="flex items-center gap-2">
                         <AgentIcon className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-white">{agent.name}</span>
+                        <span className="text-sm text-gray-900 dark:text-white">{agent.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {hasCustomConfig ? (

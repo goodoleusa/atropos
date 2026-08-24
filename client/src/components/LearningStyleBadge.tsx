@@ -60,7 +60,7 @@ export function LearningStyleBadge({ size = 'sm', showLabel = false }: LearningS
                 key={key}
                 onClick={() => { setStyle(key); setOpen(false); }}
                 className={`w-full flex items-center gap-2 px-2 py-2 md:py-1.5 rounded text-left transition-colors min-h-[40px] md:min-h-0 ${
-                  isActive ? `${meta.bg} ${meta.color}` : 'text-muted-foreground hover:bg-card hover:text-white'
+                  isActive ? `${meta.bg} ${meta.color}` : 'text-muted-foreground hover:bg-card hover:text-gray-900 dark:hover:text-white'
                 }`}
                 data-testid={`style-option-${key}`}
               >

@@ -1514,14 +1514,14 @@ ${modelRankings.slice(0, 3).map(m => {
                         <span className="text-[10px] text-muted-foreground w-16 shrink-0">No cache</span>
                         <div className="flex-1 h-5 bg-border rounded-sm overflow-hidden relative">
                           <div className="h-full bg-red-700/80 rounded-sm" style={{ width: `${barWidthNormal}%` }} />
-                          <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-mono">${result.noCacheCost.toFixed(4)}</span>
+                          <span className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-900 dark:text-white font-mono">${result.noCacheCost.toFixed(4)}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-16 shrink-0">Cached</span>
                         <div className="flex-1 h-5 bg-border rounded-sm overflow-hidden relative">
                           <div className="h-full bg-teal-700/80 rounded-sm transition-all duration-500" style={{ width: `${Math.max(barWidthCached, 2)}%` }} />
-                          <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-mono">${result.cachedCost.toFixed(4)}</span>
+                          <span className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-900 dark:text-white font-mono">${result.cachedCost.toFixed(4)}</span>
                         </div>
                       </div>
                     </div>

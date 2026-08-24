@@ -507,7 +507,7 @@ export default function CampaignCanvas({
                                 node.color === 'amber' ? 'bg-amber-700 text-white' :
                                 node.color === 'purple' ? 'bg-purple-700 text-white' :
                                 node.color === 'teal' ? 'bg-teal-700 text-white' :
-                                'bg-border text-white'
+                                'bg-border text-foreground'
                               }>
                                 {node.type}
                               </Badge>
@@ -1034,7 +1034,7 @@ export default function CampaignCanvas({
                     currentNode.color === 'amber' ? 'bg-amber-700 text-white' :
                     currentNode.color === 'purple' ? 'bg-purple-700 text-white' :
                     currentNode.color === 'teal' ? 'bg-teal-700 text-white' :
-                    'bg-border text-white'
+                    'bg-border text-foreground'
                   }>
                     {nodeType?.icon} {nodeType?.label}
                   </Badge>

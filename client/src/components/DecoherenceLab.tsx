@@ -592,7 +592,7 @@ export function DecoherenceLab() {
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className={`text-[11px] font-medium ${isDone ? 'text-muted-foreground' : 'text-white'}`}>{exercise.title}</span>
+                              <span className={`text-[11px] font-medium ${isDone ? 'text-muted-foreground' : 'text-gray-900 dark:text-white'}`}>{exercise.title}</span>
                               <span className={`text-[8px] md:text-[9px] ${DIFFICULTY_COLOR[exercise.difficulty]}`}>{exercise.difficulty}</span>
                             </div>
                             <p className="text-[9px] md:text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{exercise.objective}</p>

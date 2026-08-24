@@ -1396,7 +1396,7 @@ function LivePreviewCard({ config, text, intensityMultiplier }: { config: Effect
               >
                 {text}
               </span>
-              <span className="relative text-white font-mono text-lg font-bold">{text}</span>
+              <span className="relative text-foreground font-mono text-lg font-bold">{text}</span>
             </div>
           ) : (
             <span 
