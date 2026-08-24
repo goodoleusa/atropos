@@ -6,8 +6,6 @@ __pycache__
 server/public
 vite.config.ts.*
 .atropos-cache
-.spiderfoot-keys.json
-.spider-leads.jsonl
 *.tar.gz
 *.pem
 .env
@@ -29,7 +27,4 @@ vite.config.ts.*
 *_maltego_export_*.graphml.md5
 *_maltego_export_*.json.md5
 *_maltego_export_*.txt.md5
-obsidian-vault/.obsidian/workspace.json
-
-# Claude Code harness-managed scratch state (agent worktrees, etc.)
-.claude/
+obsidian-vault/
