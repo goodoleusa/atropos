@@ -41,5 +41,36 @@ Not every wave gates every other wave. The charter's `ordering` field (`sequenti
 - Mandatory shoot/seance visual verification for UI-touching work
 - Respect charter `ordering`/`seq_after`: never pick up a `sequential` charter before its `seq_after` dependency is done
 
+## New Additions (2026-08-25 session)
+
+- **W1-infra-hygiene** — debloat: merge `astro-retrofuture`'s duplicate
+  homepage drafts. `composed.astro` (manifest-driven, `site.modules.json`,
+  backs the `/studio/edit/compose` editor) becomes the one live `/`;
+  `index.astro`'s sections (hero carousel, `WhatIsReckon`,
+  `CyberSignalConfidence`, curated blog grid) get migrated into new block
+  `_types` on the composed renderer, then `index.astro` is deleted outright
+  — no parked duplicate file. See `/root/.claude/plans/memoized-churning-bunny.md`
+  for the full step-by-step.
+- **W4-platform-api** — add `/api/compositions` (list/save/publish) to
+  `runtime/mcp-server/server.py`, next to the existing `corpus_sync_endpoint`.
+  Replaces a dead-end wire to `report_editor_server.py` (single-tenant,
+  hardcoded to `astro-retrofuture`'s own `project.config.json` — wrong
+  backend for the corpus-reader's compose page). No Caddyfile change
+  needed; `reader.retrofuture.tech` already proxies all of `/api/*` to
+  `mcp-server:8080`.
+- **W8-specialized-products** — Vigil: full interactive port of
+  `revenant-proof-v2/viz/VigilCircle.jsx` onto `retrofuture.tech` as a
+  flagship cryptographic-skill showcase. Ported natively to Svelte (site
+  has no React integration — matches the "prefer Svelte" standing
+  doctrine), re-skinned to the real DS (`revenant-ds.css` /
+  `_shared/ds/global-tokens.css`), landing as a dedicated `/vigil` page
+  plus one `vigil-teaser` block on the (now-composed) homepage.
+- Already shipped this session, not tracked as its own charter item: fixed
+  the `reader.retrofuture.tech` Caddy proxy gap for `/write/*` + `/read/*`
+  → `mcp-server` (was 405ing; `reckon@d933d8ea37`, confirmed
+  `reload-caddy` succeeded on deploy).
+
 ## Active Now
 **W3** — Ingest Claude Design HTML → Svelte flowsearch components
+**W1 / W4 / W8** — see New Additions above; full plan at
+`/root/.claude/plans/memoized-churning-bunny.md`
